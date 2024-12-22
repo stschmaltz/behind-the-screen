@@ -1,0 +1,33 @@
+.borderCircle {
+  border-radius: 9999px;
+}
+
+.colorInherit {
+  color: inherit;
+}
+
+.padding1px {
+  padding-top: 1px;
+}
+
+.textOutline {
+  -webkit-text-stroke: 0.2px black;
+}
+
+.flex {
+  display: flex;
+}
+
+.lineClamp {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.scrollTouch {
+  -webkit-overflow-scrolling: touch; /* Lets it scroll lazy */
+}
+
+.required-text {
+  margin-top: 0 !important;
+}
