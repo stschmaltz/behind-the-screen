@@ -59,7 +59,7 @@ export default class MyDocument extends Document {
           />
 
           <meta name="twitter:card" content="summary" />
-          <meta name="twitter:url" content="https://shanefindsthestars.app" />
+          <meta name="twitter:url" content="https://dungeon-master-essentials.com" />
           <meta name="twitter:title" content="Example App" />
           <meta
             name="twitter:description"
@@ -67,19 +67,19 @@ export default class MyDocument extends Document {
           />
           <meta
             name="twitter:image"
-            content="https://shanefindsthestars.app/images/profile.png"
+            content="https://dungeon-master-essentials.com/images/profile.png"
           />
           <meta property="og:type" content="website" />
-          <meta property="og:title" content="shanefindsthestars.app" />
+          <meta property="og:title" content="dungeon-master-essentials.com" />
           <meta
             property="og:description"
             content="Placeholder app for getting started quickly."
           />
           <meta property="og:site_name" content="Example App" />
-          <meta property="og:url" content="https://shanefindsthestars.app" />
+          <meta property="og:url" content="https://dungeon-master-essentials.com" />
           <meta
             property="og:image"
-            content="https://shanefindsthestars.app/images/profile.png"
+            content="https://dungeon-master-essentials.com/images/profile.png"
           />
         </Head>
         <body>

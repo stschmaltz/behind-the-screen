@@ -6,6 +6,7 @@ import { AppProps } from 'next/app';
 import Head from 'next/head';
 import { CurrentUserProvider } from '../context/UserContext';
 import { usePWASetup } from '../hooks/use-pwa-setup.hook';
+import { Layout } from '../components/layout';
 
 export default function App({ Component, pageProps }: AppProps) {
   usePWASetup();
@@ -20,7 +21,9 @@ export default function App({ Component, pageProps }: AppProps) {
       </Head>
       <UserProvider user={pageProps.user}>
         <CurrentUserProvider>
-          <Component {...pageProps} />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </CurrentUserProvider>
       </UserProvider>
       <Analytics />
