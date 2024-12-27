@@ -5,7 +5,7 @@ import { TYPES } from '../../container/types'; // <-- import the symbols
 import { UserRepositoryInterface } from '../../repositories/user.repository/user.repository.interface';
 
 const userRepository = appContainer.get<UserRepositoryInterface>(
-  TYPES.UserRepository
+  TYPES.UserRepository,
 );
 
 const mutationTypeDefs = /* GraphQL */ `
@@ -22,7 +22,7 @@ const mutationResolver = {
   Mutation: {
     async userSignIn(
       _: never,
-      { input: { email } }: UserSignInInput
+      { input: { email } }: UserSignInInput,
     ): Promise<{ user: UserObject }> {
       try {
         const user = await userRepository.handleUserSignIn(email);

@@ -1,4 +1,3 @@
-import { Container } from '@chakra-ui/react';
 import Head from 'next/head';
 import { ReactNode } from 'react';
 import styles from '../styles/layout.module.css';
@@ -12,19 +11,19 @@ export default function Layout(input: {
   const { children } = input;
 
   return (
-    <Container maxW={'50rem'} minH={'100vh'}>
+    <div className="mx-auto min-h-screen max-w-[50rem]">
       <Head>
         <link rel="icon" href="/favicon.ico" />
         <meta name="description" content="App to help organize exercises" />
         <meta
           property="og:image"
-          content={`https://shanefindsthestars.app/images/profile.png`}
+          content="https://shanefindsthestars.app/images/profile.png"
         />
         <meta name="og:title" content={siteTitle} />
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
-      <header className={styles.header}></header>
+      <header className={styles.header} />
       <main>{children}</main>
-    </Container>
+    </div>
   );
 }

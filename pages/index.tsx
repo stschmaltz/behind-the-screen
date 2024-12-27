@@ -1,46 +1,41 @@
 import Link from 'next/link';
-import { Box, Button, Container, Flex } from '@chakra-ui/react';
+
 import Layout from '../components/layout';
-import { theme } from '../styles/theme';
-import BasicLoader from '../components/BasicLoader';
 import { useUserSignIn } from '../hooks/use-user-sign-in.hook';
 
 export default function Home() {
   const [isLoading, currentUser] = useUserSignIn();
 
-  if (isLoading) <BasicLoader />;
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Layout home>
-      <Container pos="relative" mt={5} p={0} width="100%" maxW="inherit">
+      {/* Container replacement */}
+      <div className="relative mt-5 p-0 w-full max-w-none">
         {currentUser ? (
           <>
-            hey
-            <Link href="/api/auth/logout?returnTo=http%3A%2F%2Flocalhost%3A3000">
+            <span className="mr-2">hey</span>
+            <Link
+              href="/api/auth/logout?returnTo=http%3A%2F%2Flocalhost%3A3000"
+              className="text-blue-600 hover:underline"
+            >
               Logout
             </Link>
           </>
         ) : (
-          <Box h="80vh">
-            <Flex h="100%" justifyContent={'center'} alignSelf={'center'}>
+          // Box replacement
+          <div className="h-[80vh]">
+            {/* Flex replacement */}
+            <div className="flex h-full items-center justify-center">
               <Link href="/api/auth/login">
-                <Button
-                  size={'lg'}
-                  fontSize={'2xl'}
-                  w={'30vw'}
-                  h={'6vh'}
-                  textColor={theme.colors.gray['100']}
-                  colorScheme="brandSecondary"
-                  mt="40vh"
-                  p={5}
-                >
-                  Login
-                </Button>
+                <button className="btn btn-primary">Loginz</button>
               </Link>
-            </Flex>
-          </Box>
+            </div>
+          </div>
         )}
-      </Container>
+      </div>
     </Layout>
   );
 }

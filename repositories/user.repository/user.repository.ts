@@ -36,10 +36,17 @@ class UserRepository implements UserRepositoryInterface {
 
   public async handleUserSignIn(email: string): Promise<UserObject> {
     const { db } = await getDbClient();
+    console.log('email', email);
 
     const user = await db
       .collection(collectionName)
-      .findOneAndUpdate({ email }, { $set: { email } }, { upsert: true });
+      .findOneAndUpdate(
+        { email },
+        { $set: { email } },
+        { upsert: true, returnDocument: 'after' },
+      );
+    console.log(user);
+    console.log(user.value);
 
     if (!user.value) {
       throw new Error('User not found');

@@ -28,7 +28,7 @@ async function asyncFetch(query: string, variables?: object) {
 
     const json = await res.json();
     if (json.errors) {
-      throw new Error('Failed to fetch API');
+      throw new Error('API request failed');
     }
     return json.data;
   } catch (error) {

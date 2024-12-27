@@ -1,12 +1,10 @@
-import { Box, Text } from '@chakra-ui/react';
-
 export default function Offline() {
   return (
-    <Box>
-      <Text>
+    <div className="flex h-full items-center justify-center">
+      <p className="text-center">
         Offline Functionality Coming Soon. For now, please connect to the
         internet to use placeholder.
-      </Text>
-    </Box>
+      </p>
+    </div>
   );
 }

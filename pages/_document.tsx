@@ -1,7 +1,5 @@
-import { ColorModeScript } from '@chakra-ui/react';
 import Document, { Head, Html, Main, NextScript } from 'next/document';
 import { DocumentContext } from 'next/document';
-import { theme } from '../styles/theme';
 
 export default class MyDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
@@ -13,15 +11,15 @@ export default class MyDocument extends Document {
 
   render() {
     return (
-      <Html lang="en">
+      <Html data-theme="cyberpunk" lang="en">
         <Head>
-          <meta name="application-name" content="Starfinder App" />
+          <meta name="application-name" content="Example App" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta
             name="apple-mobile-web-app-status-bar-style"
             content="default"
           />
-          <meta name="apple-mobile-web-app-title" content="Starfinder App" />
+          <meta name="apple-mobile-web-app-title" content="Example App" />
           <meta
             name="description"
             content="Organize your workouts, join the fam."
@@ -62,7 +60,7 @@ export default class MyDocument extends Document {
 
           <meta name="twitter:card" content="summary" />
           <meta name="twitter:url" content="https://shanefindsthestars.app" />
-          <meta name="twitter:title" content="Starfinder App" />
+          <meta name="twitter:title" content="Example App" />
           <meta
             name="twitter:description"
             content="Organize your workouts, join the fam."
@@ -77,7 +75,7 @@ export default class MyDocument extends Document {
             property="og:description"
             content="Placeholder app for getting started quickly."
           />
-          <meta property="og:site_name" content="Starfinder App" />
+          <meta property="og:site_name" content="Example App" />
           <meta property="og:url" content="https://shanefindsthestars.app" />
           <meta
             property="og:image"
@@ -85,7 +83,6 @@ export default class MyDocument extends Document {
           />
         </Head>
         <body>
-          <ColorModeScript initialColorMode={theme.config.initialColorMode} />
           <Main />
           <NextScript />
         </body>
