@@ -2,6 +2,7 @@ import Link from 'next/link';
 
 import Layout from '../components/layout';
 import { useUserSignIn } from '../hooks/use-user-sign-in.hook';
+import HomePage from '../components/pages/Home';
 
 export default function Home() {
   const [isLoading, currentUser] = useUserSignIn();
@@ -16,13 +17,13 @@ export default function Home() {
       <div className="relative mt-5 p-0 w-full max-w-none">
         {currentUser ? (
           <>
-            <span className="mr-2">hey</span>
             <Link
               href="/api/auth/logout?returnTo=http%3A%2F%2Flocalhost%3A3000"
               className="text-blue-600 hover:underline"
             >
               Logout
             </Link>
+            <HomePage></HomePage>
           </>
         ) : (
           // Box replacement
