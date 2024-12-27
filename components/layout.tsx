@@ -21,7 +21,9 @@ export function Layout({ children }: LayoutProps) {
     <div className="min-h-screen flex flex-col">
       {/* Header or top nav */}
       <header className="bg-gray-800 text-white flex items-center justify-between p-4">
-        <h1 className="text-2xl">DM Companion</h1>
+        <Link href="/">
+          <h1 className="text-2xl">DM Companion</h1>
+        </Link>
         {/* Tab Bar / Nav Links */}
         <NavBar router={router}></NavBar>
       </header>
@@ -41,7 +43,6 @@ export function Layout({ children }: LayoutProps) {
           )}
         </div>
       ) : (
-        // Box replacement
         <div
           className="flex h-full items-center justify-center w-full
         min-h-[80vh]"
