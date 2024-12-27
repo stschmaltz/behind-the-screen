@@ -3,7 +3,6 @@ export default function LootGenerator() {
     <div className="flex h-full items-center justify-center">
       <div>Loot Generator</div>
       {/* back button */}
-      
     </div>
   );
 }

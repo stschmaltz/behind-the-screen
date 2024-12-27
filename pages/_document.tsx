@@ -59,7 +59,10 @@ export default class MyDocument extends Document {
           />
 
           <meta name="twitter:card" content="summary" />
-          <meta name="twitter:url" content="https://dungeon-master-essentials.com" />
+          <meta
+            name="twitter:url"
+            content="https://dungeon-master-essentials.com"
+          />
           <meta name="twitter:title" content="Example App" />
           <meta
             name="twitter:description"
@@ -76,7 +79,10 @@ export default class MyDocument extends Document {
             content="Placeholder app for getting started quickly."
           />
           <meta property="og:site_name" content="Example App" />
-          <meta property="og:url" content="https://dungeon-master-essentials.com" />
+          <meta
+            property="og:url"
+            content="https://dungeon-master-essentials.com"
+          />
           <meta
             property="og:image"
             content="https://dungeon-master-essentials.com/images/profile.png"

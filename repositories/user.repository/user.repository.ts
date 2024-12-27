@@ -36,7 +36,7 @@ class UserRepository implements UserRepositoryInterface {
 
   public async handleUserSignIn(email: string): Promise<UserObject> {
     console.log('handleUserSignIn', email);
-    
+
     const { db } = await getDbClient();
 
     const user = await db
