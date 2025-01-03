@@ -1,8 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useUserSignIn } from '../hooks/use-user-sign-in.hook';
 import NavBar from './NavBar';
+import { useUserSignIn } from '../hooks/use-user-sign-in.hook';
 
 interface LayoutProps {
   children: React.ReactNode;

@@ -1,8 +1,3 @@
-import Link from 'next/link';
-
-import { Layout } from '../components/layout';
-import { useUserSignIn } from '../hooks/use-user-sign-in.hook';
-
 export default function Home() {
   return (
     <div>

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { NextRouter, useRouter } from 'next/router';
+import { NextRouter } from 'next/router';
 import React from 'react';
 
 interface Props {
