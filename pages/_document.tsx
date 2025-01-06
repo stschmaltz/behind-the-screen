@@ -13,13 +13,16 @@ export default class MyDocument extends Document {
     return (
       <Html data-theme="cyberpunk" lang="en">
         <Head>
-          <meta name="application-name" content="Example App" />
+          <meta name="application-name" content="Dungeon Master Essentials" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta
             name="apple-mobile-web-app-status-bar-style"
             content="default"
           />
-          <meta name="apple-mobile-web-app-title" content="Example App" />
+          <meta
+            name="apple-mobile-web-app-title"
+            content="Dungeon Master Essentials"
+          />
           <meta
             name="description"
             content="Organize your workouts, join the fam."
@@ -63,7 +66,7 @@ export default class MyDocument extends Document {
             name="twitter:url"
             content="https://dungeon-master-essentials.com"
           />
-          <meta name="twitter:title" content="Example App" />
+          <meta name="twitter:title" content="Dungeon Master Essentials" />
           <meta
             name="twitter:description"
             content="Organize your workouts, join the fam."
@@ -78,7 +81,7 @@ export default class MyDocument extends Document {
             property="og:description"
             content="Placeholder app for getting started quickly."
           />
-          <meta property="og:site_name" content="Example App" />
+          <meta property="og:site_name" content="Dungeon Master Essentials" />
           <meta
             property="og:url"
             content="https://dungeon-master-essentials.com"

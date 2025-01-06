@@ -1,6 +1,8 @@
 import Link from 'next/link';
 
-export default function Encounters() {
+import { NextPage } from 'next';
+
+const EncountersPage: NextPage = () => {
   return (
     <div className="flex h-full items-center justify-center flex-col">
       <div>Encounters</div>
@@ -16,4 +18,6 @@ export default function Encounters() {
       </ul>
     </div>
   );
-}
+};
+
+export default EncountersPage;

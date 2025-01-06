@@ -1,6 +1,6 @@
 {
-  "name": "Example App",
-  "short_name": "example",
+  "name": "Dungeon Master Essentials",
+  "short_name": "dm-essentials",
   "icons": [
     {
       "src": "/icons/android-icon-36x36.png",

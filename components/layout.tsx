@@ -12,19 +12,18 @@ export function Layout({ children }: LayoutProps) {
   const [isLoading, currentUser] = useUserSignIn();
   const router = useRouter();
 
-  if (isLoading) {
+  console.log('currentUser', currentUser);
+  console.log('isLoading', isLoading);
+  if (isLoading && !currentUser) {
     return <div>Loading...</div>;
   }
-  // You can check the current route to highlight the active tab
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header or top nav */}
       <header className="bg-gray-800 text-white flex items-center justify-between p-4">
         <Link href="/">
           <h1 className="text-2xl">DM Companion</h1>
         </Link>
-        {/* Tab Bar / Nav Links */}
         <NavBar router={router}></NavBar>
       </header>
       {currentUser ? (

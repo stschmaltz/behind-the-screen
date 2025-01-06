@@ -1,8 +1,11 @@
-export default function LootGenerator() {
+import { NextPage } from 'next';
+
+const LootGeneratorPage: NextPage = () => {
   return (
     <div className="flex h-full items-center justify-center">
       <div>Loot Generator</div>
-      {/* back button */}
     </div>
   );
-}
+};
+
+export default LootGeneratorPage;
