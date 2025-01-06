@@ -1,9 +1,9 @@
+import { NextPage } from 'next';
 import { useCurrentUserContext } from '../context/UserContext';
 
-import { NextPage } from 'next';
-
 const HomePage: NextPage = () => {
-  const { currentUser, setCurrentUser } = useCurrentUserContext();
+  const { currentUser } = useCurrentUserContext();
+
   return (
     <div>
       <div className="relative mt-5 p-0 w-full max-w-none">
