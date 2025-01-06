@@ -45,12 +45,6 @@ interface Encounter {
   currentTurn: number;
   createdAt: Date;
 }
-interface Player {
-  id: number;
-  name: string;
-  conditions: Condition[];
-  armorClass: number;
-}
 
 const EncountersPage: NextPage = () => {
   const encounters: Encounter[] = [
