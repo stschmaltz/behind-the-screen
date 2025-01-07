@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { ObjectId } from "bson";
 import { OmitId } from "./mongo-helpers";
 
 type Condition =

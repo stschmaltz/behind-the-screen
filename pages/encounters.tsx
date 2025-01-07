@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 import { NextPage } from 'next';
-import { ObjectId } from 'mongodb';
+import { ObjectId } from 'bson';
 import { Encounter } from '../types/encounters';
 
 const EncountersPage: NextPage = () => {
