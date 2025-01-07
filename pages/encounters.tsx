@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 import { NextPage } from 'next';
-import { Encounter } from '../types/encounters';
 import { ObjectId } from 'mongodb';
+import { Encounter } from '../types/encounters';
 
 const EncountersPage: NextPage = () => {
   const encounters: Encounter[] = [

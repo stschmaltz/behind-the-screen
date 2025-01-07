@@ -36,7 +36,6 @@ const FormInput: React.FC<FormInputProps> = ({
         type={type}
         value={value}
         onChange={onChange}
-        // Only apply min/max/step if the input is type="number"
         {...(type === 'number' && { min, max, step })}
       />
     </div>

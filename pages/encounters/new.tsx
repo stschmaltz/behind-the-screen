@@ -1,8 +1,8 @@
 import { NextPage } from 'next';
 import { useState } from 'react';
 import {
-  NewEncounterTemplate,
   EncounterCharacter,
+  NewEncounterTemplate,
 } from '../../types/encounters';
 import FormInput from '../../components/FormInput';
 
