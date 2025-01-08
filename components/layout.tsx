@@ -19,26 +19,27 @@ export function Layout({ children }: LayoutProps) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="bg-gray-800 text-white flex items-center justify-between p-4">
+    <div className="min-h-screen flex flex-col w-full ">
+      <header className="navbar bg-primary text-white flex items-center justify-between p-4">
         <Link href="/">
           <h1 className="text-2xl">DM Companion</h1>
         </Link>
         <NavBar router={router} />
-        <div className="flex items-center gap-2">
-          <ThemeSwitcher />
-        </div>
+        <ThemeSwitcher />
       </header>
 
       {currentUser ? (
-        <div className="p-4 min-h-[85vh] overflow-auto flex flex-col">
-          <Link
-            href="/api/auth/logout?returnTo=http%3A%2F%2Flocalhost%3A3000"
-            className="text-blue-600 hover:underline"
-          >
-            Logout
-          </Link>
-          <main className="p-4 overflow-auto flex-grow">{children}</main>
+        <div className="p-4 min-h-[85vh] overflow-auto flex flex-col bg-content-100">
+          <div className="flex justify-between items-center">
+            <Link
+              href="/api/auth/logout?returnTo=http%3A%2F%2Flocalhost%3A3000"
+              className="text-blue-600 hover:underline"
+            >
+              Logout
+            </Link>
+          </div>
+
+          <main className="p-4 overflow-y-auto flex-grow">{children}</main>
 
           {router.pathname !== '/' && (
             <Link href="/" className=" w-full p-4">
