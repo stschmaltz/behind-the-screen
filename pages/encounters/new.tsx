@@ -30,7 +30,7 @@ const NewEncounterPage: NextPage = () => {
     <div className="flex h-full flex-col items-center justify-center">
       <h1 className="text-xl font-bold mb-4">New Encounter</h1>
 
-      <form className="w-full max-w-lg bg-base-300 shadow-md rounded px-8 pt-6 pb-8 mb-4 max-h-[70vh] overflow-y-auto">
+      <form className="w-full max-w-xl bg-base-300 shadow-md rounded px-8 pt-6 pb-8 mb-4 max-h-[70vh] overflow-y-auto">
         <FormInput
           id="name"
           label="Name"
