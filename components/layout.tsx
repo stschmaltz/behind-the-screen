@@ -22,7 +22,7 @@ export function Layout({ children }: LayoutProps) {
     <div className="min-h-screen flex flex-col w-full ">
       <header className="navbar bg-primary text-white flex items-center justify-between p-4">
         <Link href="/">
-          <h1 className="text-2xl">DM Companion</h1>
+          <h1 className="text-2xl">DM Essentials</h1>
         </Link>
         <NavBar router={router} />
         <ThemeSwitcher />
