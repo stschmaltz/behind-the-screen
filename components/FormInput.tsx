@@ -2,13 +2,14 @@ import React from 'react';
 
 interface FormInputProps {
   id: string;
-  label: string;
+  label?: string;
   type?: React.HTMLInputTypeAttribute;
   value?: string | number;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   min?: number;
   max?: number;
   step?: number;
+  width?: string;
 }
 
 const FormInput: React.FC<FormInputProps> = ({
@@ -20,23 +21,25 @@ const FormInput: React.FC<FormInputProps> = ({
   min,
   max,
   step,
+  width,
 }) => {
+  const widthClass = width ? width : type === 'number' ? 'w-2/12' : 'w-full';
+
   return (
-    <div className="mb-4">
-      <label
-        className="block text-gray-700 text-sm font-bold mb-2"
-        htmlFor={label}
-      >
-        {label}
-      </label>
+    <div className={`form-control ${widthClass}`}>
+      {label && (
+        <label htmlFor={id} className="label">
+          <span className="label-text">{label}</span>
+        </label>
+      )}
       <input
-        className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
         id={id}
         name={label}
         type={type}
         value={value}
         onChange={onChange}
         {...(type === 'number' && { min, max, step })}
+        className="input input-bordered"
       />
     </div>
   );

@@ -1,5 +1,5 @@
-import { ObjectId } from "bson";
-import { OmitId } from "./mongo-helpers";
+import { ObjectId } from 'bson';
+import { OmitId } from './mongo-helpers';
 
 type Condition =
   | 'blinded'
@@ -26,7 +26,7 @@ export interface EncounterCharacter {
 }
 
 export interface EncounterTemplate {
-    _id: ObjectId;
+  _id: ObjectId;
   name: string;
   description?: string;
   notes: string[];
@@ -43,7 +43,7 @@ export interface Encounter extends EncounterTemplate {
   enemies: EncounterCharacter[];
   status: 'active' | 'inactive';
   players: {
-      _id: ObjectId;
+    _id: ObjectId;
   }[];
   npcs: EncounterCharacter[];
   initiativeOrder: {

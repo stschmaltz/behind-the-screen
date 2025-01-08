@@ -11,7 +11,7 @@ export default class MyDocument extends Document {
 
   render() {
     return (
-      <Html data-theme="cyberpunk" lang="en">
+      <Html lang="en">
         <Head>
           <meta name="application-name" content="Dungeon Master Essentials" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -36,7 +36,6 @@ export default class MyDocument extends Document {
           <meta name="msapplication-TileColor" content="#2B5797" />
           <meta name="msapplication-tap-highlight" content="no" />
           <meta name="theme-color" content="#E63946" />
-
           <link
             rel="icon"
             type="image/png"
@@ -50,17 +49,11 @@ export default class MyDocument extends Document {
             href="/icons/favicon-16x16.png"
           />
           <link rel="manifest" href="/manifest.json" />
-          {/* <link
-            rel="mask-icon"
-            href="/icons/safari-pinned-tab.svg"
-            color="#5bbad5"
-          /> */}
           <link rel="shortcut icon" href="/favicon.ico" />
           <link
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=optional"
           />
-
           <meta name="twitter:card" content="summary" />
           <meta
             name="twitter:url"
