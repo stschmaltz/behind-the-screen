@@ -58,8 +58,8 @@ const NewEncounterPage: NextPage = () => {
           }
         />
 
-        <div className="flex items-center justify-between">
-          <Button onClick={handleSave} label="Save" />
+        <div className="mt-10">
+          <Button className="w-full" onClick={handleSave} label="Save" />
         </div>
       </form>
     </div>
