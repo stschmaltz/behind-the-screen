@@ -33,6 +33,7 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
     onEnemiesChange(enemies.filter((_, i) => i !== index));
   };
   console.log('enemies', enemies);
+
   return (
     <div className="mb-4">
       <label className="label">Enemies</label>
