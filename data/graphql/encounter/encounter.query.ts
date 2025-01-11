@@ -1,4 +1,3 @@
-// graphql/encounter/encounter.query.ts
 const encounterQueryTypeDefs = /* GraphQL */ `
   extend type Query {
     encounterById(id: String!): Encounter

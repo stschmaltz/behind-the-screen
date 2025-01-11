@@ -1,5 +1,3 @@
-// graphql/user/user.mutation.ts
-
 import { appContainer } from '../../../container/inversify.config';
 import { TYPES } from '../../../container/types';
 import { UserRepositoryInterface } from '../../../repositories/user.repository/user.repository.interface';

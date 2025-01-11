@@ -1,4 +1,3 @@
-// snippets/user.ts
 export const fullUser = `{ _id, email }`;
 
 export interface ApiUser {

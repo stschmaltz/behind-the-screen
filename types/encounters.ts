@@ -1,7 +1,7 @@
 import { ObjectId } from 'bson';
 import { OmitId } from './mongo-helpers';
 
-type Condition =
+export type Condition =
   | 'blinded'
   | 'charmed'
   | 'deafened'
@@ -31,7 +31,7 @@ export interface EncounterTemplate {
   description?: string;
   notes: string[];
   enemies: EncounterCharacter[];
-  status: 'active' | 'inactive';
+  status: 'active' | 'inactive' | 'completed';
   createdAt: Date;
 }
 
@@ -41,7 +41,7 @@ export interface Encounter extends EncounterTemplate {
   description?: string;
   notes: string[];
   enemies: EncounterCharacter[];
-  status: 'active' | 'inactive';
+  status: 'active' | 'inactive' | 'completed';
   players: {
     _id: ObjectId;
   }[];

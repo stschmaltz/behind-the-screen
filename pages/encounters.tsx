@@ -1,41 +1,66 @@
 import Link from 'next/link';
 
 import { NextPage } from 'next';
-import { ObjectId } from 'bson';
+import { useEffect, useState } from 'react';
 import { Encounter } from '../types/encounters';
+import { asyncFetch } from '../data/graphql/graphql-fetcher';
+import {
+  allEncountersQuery,
+  AllEncountersResponse,
+} from '../data/graphql/snippets/encounter';
 
 const EncountersPage: NextPage = () => {
-  const encounters: Encounter[] = [
-    {
-      _id: new ObjectId(),
-      name: 'Goblin Ambush',
-      description: 'A group of goblins ambush the party.',
-      notes: ['Goblins are hiding in the trees.'],
-      enemies: [
-        {
-          name: 'Goblin 1',
-          maxHP: 7,
-          currentHP: 7,
-          conditions: [],
-          armorClass: 15,
-        },
-        {
-          name: 'Goblin 2',
-          maxHP: 7,
-          currentHP: 7,
-          conditions: [],
-          armorClass: 15,
-        },
-      ],
-      status: 'inactive',
-      players: [{ _id: new ObjectId() }],
-      npcs: [],
-      initiativeOrder: [],
-      currentRound: 0,
-      currentTurn: 0,
-      createdAt: new Date(),
-    },
-  ];
+  // const encounters: Encounter[] = [
+  //   {
+  //     _id: new ObjectId(),
+  //     name: 'Goblin Ambush',
+  //     description: 'A group of goblins ambush the party.',
+  //     notes: ['Goblins are hiding in the trees.'],
+  //     enemies: [
+  //       {
+  //         name: 'Goblin 1',
+  //         maxHP: 7,
+  //         currentHP: 7,
+  //         conditions: [],
+  //         armorClass: 15,
+  //       },
+  //       {
+  //         name: 'Goblin 2',
+  //         maxHP: 7,
+  //         currentHP: 7,
+  //         conditions: [],
+  //         armorClass: 15,
+  //       },
+  //     ],
+  //     status: 'inactive',
+  //     players: [{ _id: new ObjectId() }],
+  //     npcs: [],
+  //     initiativeOrder: [],
+  //     currentRound: 0,
+  //     currentTurn: 0,
+  //     createdAt: new Date(),
+  //   },
+  // ];
+  const [encounters, setEncounters] = useState<Encounter[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = (await asyncFetch(
+          allEncountersQuery,
+        )) as AllEncountersResponse;
+        setEncounters(
+          data.allEncounters
+            .map((encounter) => ({
+              ...encounter,
+            }))
+            .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()),
+        );
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+  }, []);
 
   return (
     <div className="flex h-full items-center justify-center flex-col">

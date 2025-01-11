@@ -1,4 +1,3 @@
-// graphql/user/user.query.ts
 const userQueryTypeDefs = /* GraphQL */ `
   extend type Query {
     me: User!

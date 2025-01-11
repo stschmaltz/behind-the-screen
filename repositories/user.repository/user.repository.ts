@@ -1,4 +1,3 @@
-// user.repository.ts
 import { ObjectId } from 'bson';
 import {
   UserDocument,
@@ -51,7 +50,6 @@ class UserRepository implements UserRepositoryInterface {
       throw new Error('User not found');
     }
 
-    // Note: user.value is the original document before update unless you specify { returnDocument: 'after' } in MongoDB 4.x/5.x driver
     return {
       _id: user.value._id,
       email: user.value.email,

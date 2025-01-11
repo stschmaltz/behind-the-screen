@@ -1,4 +1,3 @@
-// graphql/index.ts
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import { userTypeDefs } from './user/user.typedefs';
 import { userQueryTypeDefs, userQueryResolver } from './user/user.query';
