@@ -1,10 +1,5 @@
-import { createSchema, createYoga } from 'graphql-yoga';
-import { resolvers, typeDefs } from '../../data/graphql';
-
-const schema = createSchema({
-  typeDefs,
-  resolvers,
-});
+import { createYoga } from 'graphql-yoga';
+import { schema } from '../../data/graphql';
 
 export default createYoga({
   schema,

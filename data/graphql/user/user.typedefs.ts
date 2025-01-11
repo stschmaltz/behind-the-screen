@@ -1,3 +1,4 @@
+// graphql/user/user.typeDefs.ts
 const userTypeDefs = /* GraphQL */ `
   type User {
     _id: String!
