@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react';
 import { useCurrentUserContext } from '../context/UserContext';
 import { asyncFetch } from '../data/graphql/graphql-fetcher';
 import {
-  signInUserMutationGraphQL,
+  ApiUser,
+  signInUserMutation,
   SignInUserMutationResponse,
-} from '../data/graphql/snippets/mutation';
-import { ApiUser } from '../data/graphql/snippets/user';
+} from '../data/graphql/snippets/user';
 
 function useUserSignIn(): readonly [
   boolean,
@@ -21,7 +21,7 @@ function useUserSignIn(): readonly [
   useEffect(() => {
     if (user) {
       setIsLoadingPlaceholders(true);
-      asyncFetch(signInUserMutationGraphQL, {
+      asyncFetch(signInUserMutation, {
         input: { email: user.email },
       }).then((data: SignInUserMutationResponse) => {
         setCurrentUser && setCurrentUser(data.userSignIn.user);
