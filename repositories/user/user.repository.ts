@@ -46,13 +46,13 @@ class UserRepository implements UserRepositoryInterface {
         { upsert: true, returnDocument: 'after' },
       );
 
-    if (!user.value) {
+    if (!user) {
       throw new Error('User not found');
     }
 
     return {
-      _id: user.value._id,
-      email: user.value.email,
+      _id: user._id,
+      email: user.email,
     };
   }
 
