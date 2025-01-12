@@ -2,7 +2,6 @@
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { ObjectId } from 'bson';
 import { asyncFetch } from '../../data/graphql/graphql-fetcher';
 import {
   encounterByIdQuery,
