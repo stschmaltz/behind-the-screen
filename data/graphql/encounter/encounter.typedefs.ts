@@ -14,7 +14,7 @@ export const encounterTypeDefs = /* GraphQL */ `
     notes: [String!]!
     enemies: [EncounterCharacter!]!
     status: String!
-    createdAt: String!
+    createdAt: Date!
   }
 
   type Encounter {
@@ -29,6 +29,7 @@ export const encounterTypeDefs = /* GraphQL */ `
     initiativeOrder: [InitiativeOrder!]!
     currentRound: Int!
     currentTurn: Int!
+    createdAt: Date!
   }
 
   type EncounterPlayerId {

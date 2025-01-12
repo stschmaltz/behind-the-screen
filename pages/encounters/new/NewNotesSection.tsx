@@ -1,6 +1,6 @@
 import React, { ChangeEvent } from 'react';
-import Button from '../Button';
-import FormInput from '../FormInput';
+import Button from '../../../components/Button';
+import FormInput from '../../../components/FormInput';
 
 interface NewNotesSectionProps {
   notes: string[];

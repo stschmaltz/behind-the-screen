@@ -14,6 +14,8 @@ import {
   encounterQueryResolver,
   encounterQueryTypeDefs,
 } from './encounter/encounter.query';
+import { dateScalarTypeDefs } from './scalars/date/date.typedef';
+import { dateScalarResolver } from './scalars/date/date.resolver';
 
 const baseSchema = /* GraphQL */ `
   type Query
@@ -22,19 +24,21 @@ const baseSchema = /* GraphQL */ `
 
 const typeDefs = [
   baseSchema,
+  dateScalarTypeDefs,
   userTypeDefs,
   userQueryTypeDefs,
   userMutationTypeDefs,
   encounterTypeDefs,
-  encounterMutationTypeDefs,
   encounterQueryTypeDefs,
+  encounterMutationTypeDefs,
 ];
 
 const resolvers = [
+  dateScalarResolver,
   userQueryResolver,
   userMutationResolver,
-  encounterMutationResolver,
   encounterQueryResolver,
+  encounterMutationResolver,
 ];
 
 const schema = makeExecutableSchema({
