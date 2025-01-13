@@ -1,6 +1,6 @@
 import { appContainer } from '../../../container/inversify.config';
 import { TYPES } from '../../../container/types';
-import { UserRepositoryInterface } from '../../../repositories/user.repository/user.repository.interface';
+import { UserRepositoryInterface } from '../../../repositories/user/user.repository.interface';
 import { UserObject } from '../../../types/user';
 
 const userRepository = appContainer.get<UserRepositoryInterface>(

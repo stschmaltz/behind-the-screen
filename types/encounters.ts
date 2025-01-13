@@ -1,5 +1,5 @@
 import { ObjectId } from 'bson';
-import { OmitId } from './mongo-helpers';
+import { OmitMongoFields } from './mongo-helpers';
 
 export type Condition =
   | 'blinded'
@@ -54,5 +54,5 @@ export interface Encounter extends EncounterTemplate {
   currentTurn: number;
 }
 
-export type NewEncounterTemplate = OmitId<EncounterTemplate>;
-export type NewEncounter = OmitId<Encounter>;
+export type NewEncounterTemplate = OmitMongoFields<EncounterTemplate>;
+export type NewEncounter = OmitMongoFields<Encounter>;

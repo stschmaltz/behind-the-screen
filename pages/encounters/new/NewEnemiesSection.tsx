@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from 'react';
-import { EncounterCharacter } from '../../types/encounters';
-import FormInput from '../FormInput';
-import Button from '../Button';
+import { EncounterCharacter } from '../../../types/encounters';
+import FormInput from '../../../components/FormInput';
+import Button from '../../../components/Button';
 
 interface NewEnemiesSectionProps {
   enemies: EncounterCharacter[];
@@ -32,7 +32,6 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
   const removeEnemy = (index: number) => {
     onEnemiesChange(enemies.filter((_, i) => i !== index));
   };
-  console.log('enemies', enemies);
 
   return (
     <div className="mb-4">
