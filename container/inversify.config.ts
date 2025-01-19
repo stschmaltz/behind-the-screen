@@ -8,6 +8,8 @@ import { UserRepositoryInterface } from '../repositories/user/user.repository.in
 import { UserRepository } from '../repositories/user/user.repository';
 import { EncounterRepositoryInterface } from '../repositories/encounter/encounter.repository.interface';
 import { EncounterRepository } from '../repositories/encounter/encounter.repository';
+import { PlayerRepositoryInterface } from '../repositories/player/player.repository.interface';
+import { PlayerRepository } from '../repositories/player/player.repository';
 
 const appContainer = new Container();
 
@@ -22,5 +24,9 @@ appContainer
 appContainer
   .bind<EncounterRepositoryInterface>(TYPES.EncounterRepository)
   .toConstantValue(new EncounterRepository());
+
+appContainer
+  .bind<PlayerRepositoryInterface>(TYPES.PlayerRepository)
+  .toConstantValue(new PlayerRepository());
 
 export { appContainer };

@@ -10,6 +10,8 @@ interface FormInputProps {
   max?: number;
   step?: number;
   width?: string;
+  placeholder?: string;
+  className?: string;
 }
 
 const FormInput: React.FC<FormInputProps> = ({
@@ -22,6 +24,8 @@ const FormInput: React.FC<FormInputProps> = ({
   max,
   step,
   width,
+  placeholder,
+  className,
 }) => {
   const widthClass = width ? width : type === 'number' ? 'w-2/12' : 'w-full';
 
@@ -39,7 +43,8 @@ const FormInput: React.FC<FormInputProps> = ({
         value={value}
         onChange={onChange}
         {...(type === 'number' && { min, max, step })}
-        className="input input-bordered"
+        className={`input input-bordered ${className}`}
+        placeholder={placeholder}
       />
     </div>
   );

@@ -1,4 +1,3 @@
-import { ObjectId } from 'bson';
 import { OmitMongoFields } from './mongo-helpers';
 
 export type Condition =
@@ -26,7 +25,7 @@ export interface EncounterCharacter {
 }
 
 export interface EncounterTemplate {
-  _id: ObjectId;
+  _id: string;
   name: string;
   description?: string;
   notes: string[];
@@ -36,14 +35,14 @@ export interface EncounterTemplate {
 }
 
 export interface Encounter extends EncounterTemplate {
-  _id: ObjectId;
+  _id: string;
   name: string;
   description?: string;
   notes: string[];
   enemies: EncounterCharacter[];
   status: 'active' | 'inactive' | 'completed';
   players: {
-    _id: ObjectId;
+    _id: string;
   }[];
   npcs: EncounterCharacter[];
   initiativeOrder: {

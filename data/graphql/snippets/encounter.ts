@@ -1,7 +1,8 @@
 import { ObjectId } from 'bson';
 import { Encounter } from '../../../types/encounters';
 
-export const fullEncounter = `{
+export const fullEncounter = /* GraphQL */ `
+  {
     _id
     name
     description
@@ -31,32 +32,33 @@ export const fullEncounter = `{
     currentRound
     currentTurn
     createdAt
-  }`;
+  }
+`;
 
-export const saveEncounterMutation = `
-mutation saveEncounter($input: NewEncounterInput!) {
-  saveEncounter(input: $input) ${fullEncounter}
-}
+export const saveEncounterMutation = /* GraphQL */ `
+  mutation saveEncounter($input: NewEncounterInput!) {
+    saveEncounter(input: $input) ${fullEncounter}
+  }
 `;
 
 export interface SaveEncounterMutationResponse {
   saveEncounter: Encounter;
 }
 
-export const allEncountersQuery = `
-query allEncounters {
-  allEncounters ${fullEncounter}
-}
+export const allEncountersQuery = /* GraphQL */ `
+  query allEncounters {
+    allEncounters ${fullEncounter}
+  }
 `;
 
 export interface AllEncountersResponse {
   allEncounters: Encounter[];
 }
 
-export const encounterByIdQuery = `
-query encounterById($id: String!) {
-  encounterById(id: $id) ${fullEncounter}
-}
+export const encounterByIdQuery = /* GraphQL */ `
+  query encounterById($id: String!) {
+    encounterById(id: $id) ${fullEncounter}
+  }
 `;
 
 export interface EncounterByIdResponse {

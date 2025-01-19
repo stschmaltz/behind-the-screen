@@ -1,4 +1,4 @@
-import { makeExecutableSchema } from '@graphql-tools/schema';
+  import { makeExecutableSchema } from '@graphql-tools/schema';
 import { userTypeDefs } from './user/user.typedefs';
 import { userQueryTypeDefs, userQueryResolver } from './user/user.query';
 import {
@@ -16,6 +16,9 @@ import {
 } from './encounter/encounter.query';
 import { dateScalarTypeDefs } from './scalars/date/date.typedef';
 import { dateScalarResolver } from './scalars/date/date.resolver';
+import { playerMutationResolver, playerMutationTypeDefs } from './player/player.mutation';
+import { playerQueryResolver, playerQueryTypeDefs } from './player/player.query';
+import { playerTypeDefs } from './player/player.typedefs';
 
 const baseSchema = /* GraphQL */ `
   type Query
@@ -31,6 +34,9 @@ const typeDefs = [
   encounterTypeDefs,
   encounterQueryTypeDefs,
   encounterMutationTypeDefs,
+  playerMutationTypeDefs,
+  playerTypeDefs,
+  playerQueryTypeDefs,
 ];
 
 const resolvers = [
@@ -39,6 +45,8 @@ const resolvers = [
   userMutationResolver,
   encounterQueryResolver,
   encounterMutationResolver,
+  playerMutationResolver,
+  playerQueryResolver,
 ];
 
 const schema = makeExecutableSchema({

@@ -18,10 +18,10 @@ export class EncounterRepository implements EncounterRepositoryInterface {
       .collection(this.collectionName)
       .insertOne(docToInsert);
 
-    return {
+    return this.mapToEncounter({
       ...docToInsert,
       _id: result.insertedId,
-    } as Encounter;
+    });
   }
 
   public async getEncounterById(id: string): Promise<Encounter | null> {
@@ -30,7 +30,7 @@ export class EncounterRepository implements EncounterRepositoryInterface {
       .collection(this.collectionName)
       .findOne({ _id: new ObjectId(id) });
 
-    return doc ? (doc as Encounter) : null;
+    return doc ? this.mapToEncounter(doc) : null;
   }
 
   public async getAllEncounters(): Promise<Encounter[]> {
@@ -38,6 +38,23 @@ export class EncounterRepository implements EncounterRepositoryInterface {
     const docs = await db.collection(this.collectionName).find().toArray();
 
     console.log('getAllEncounters', docs);
-    return docs as Encounter[];
+    return docs.map(this.mapToEncounter);
+  }
+
+  private mapToEncounter(doc: any): Encounter {
+    return {
+      _id: doc._id.toHexString(),
+      name: doc.name,
+      createdAt: doc.createdAt,
+      currentRound: doc.currentRound ?? 1,
+      currentTurn: doc.currentTurn ?? 1,
+      enemies: doc.enemies??[],
+      initiativeOrder: doc.initiativeOrder ?? [],
+      npcs: doc.npcs ??[],
+      notes: doc.notes ?? [],
+      players: doc.players??[],
+      status: doc.status ?? 'inactive',
+      description: doc.description,
+    };
   }
 }
