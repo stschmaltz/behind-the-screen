@@ -9,7 +9,7 @@ const fetcher = (query: string, variables?: object) =>
     .then((res) => res.json())
     .then((json) => json.data);
 
-async function asyncFetch(query: string, variables?: object) {
+async function asyncFetch<T>(query: string, variables?: object) {
   const fetchUrl = process.env.AUTH0_BASE_URL
     ? `${process.env.AUTH0_BASE_URL}/api/graphql`
     : '/api/graphql';
@@ -30,7 +30,7 @@ async function asyncFetch(query: string, variables?: object) {
     if (json.errors) {
       throw new Error('API request failed');
     }
-    return json.data;
+    return json.data as T;
   } catch (error) {
     console.log(error);
     if (error instanceof Error) console.log(error.message);

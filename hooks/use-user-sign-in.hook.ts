@@ -21,7 +21,7 @@ function useUserSignIn(): readonly [
   useEffect(() => {
     if (user) {
       setIsLoadingPlaceholders(true);
-      asyncFetch(signInUserMutation, {
+      asyncFetch<SignInUserMutationResponse>(signInUserMutation, {
         input: { email: user.email },
       }).then((data: SignInUserMutationResponse) => {
         setCurrentUser && setCurrentUser(data.userSignIn.user);

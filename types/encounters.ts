@@ -46,6 +46,7 @@ export interface Encounter extends EncounterTemplate {
   }[];
   npcs: EncounterCharacter[];
   initiativeOrder: {
+    // TODO: rethink initiative order
     characterId: number;
     initiative: number;
   }[];

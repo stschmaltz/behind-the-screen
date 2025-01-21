@@ -2,33 +2,12 @@
 import Link from 'next/link';
 import { NextPage } from 'next';
 import PlayerManagementSection from './PlayerManagementSection';
-import { Encounter } from '../../types/encounters';
-import {
-  allEncountersQuery,
-  AllEncountersResponse,
-} from '../../data/graphql/snippets/encounter';
-import { allPlayersQuery } from '../../data/graphql/snippets/player';
-import { useQuery } from '../../hooks/use-async-query';
-import { Player } from '../../types/player';
+import { getAllPlayers } from '../../hooks/get-all-players.hook';
+import { getAllEncounters } from '../../hooks/get-all-encounters';
 
 const EncountersPage: NextPage = () => {
-  const { data: encounters, loading: encountersLoading } = useQuery<
-    Encounter[]
-  >({
-    query: allEncountersQuery,
-    transform: (data: AllEncountersResponse) =>
-      data.allEncounters
-        .map((encounter) => ({
-          ...encounter,
-          createdAt: new Date(encounter.createdAt),
-        }))
-        .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()),
-  });
-
-  const { data: players, loading: playersLoading } = useQuery<Player[]>({
-    query: allPlayersQuery,
-    transform: (data) => data.allPlayers,
-  });
+  const { encounters, loading: encountersLoading } = getAllEncounters();
+  const { players, loading: playersLoading } = getAllPlayers();
 
   const loadingState = (
     <div className="bg-base-100 flex items-center justify-center">

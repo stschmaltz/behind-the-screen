@@ -6,9 +6,10 @@ interface QueryConfig<T> {
   query: string;
   transform?: (data: any) => T;
   enabled?: boolean;
+  variables?: object;
 }
 
-export function useQuery<T>({ query, transform, enabled = true }: QueryConfig<T>) {
+export function useQuery<T>({ query, transform, enabled = true, variables}: QueryConfig<T>) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -21,7 +22,7 @@ export function useQuery<T>({ query, transform, enabled = true }: QueryConfig<T>
 
     (async () => {
       try {
-        const response = await asyncFetch(query);
+        const response = await asyncFetch<T>(query, variables);
         if (!isMounted) return;
 
         const transformedData = transform ? transform(response) : response;

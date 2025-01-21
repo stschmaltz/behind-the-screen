@@ -61,7 +61,7 @@ const NewEncounterPage: NextPage = () => {
         input: { ...newEncounter },
       });
       toast.success('Encounter saved!');
-      router.push('/encounters'); // redirect to encounters list
+      router.push('/encounters');   
     } catch (err) {
       console.error(err);
       showDaisyToast('error', 'Failed to save encounter');

@@ -52,7 +52,7 @@ export function Layout({ children }: LayoutProps) {
           )}
         </div>
       ) : (
-        <div className="flex h-full items-center justify-center w-full min-h-[80vh]">
+        <div className="flex h-full items-center justify-center w-full min-h-screen">
           <Link href="/api/auth/login">
             <button className="btn btn-primary">Login</button>
           </Link>
@@ -60,7 +60,10 @@ export function Layout({ children }: LayoutProps) {
       )}
 
       <footer className="bg-gray-200 p-4 text-center">
-        <p>Copyright Shane Schmaltz 2025.</p>
+        <p>
+          Copyright Shane Schmaltz 2025. for feedback, please email{' '}
+          <a href="mailto:stschmaltz@gmail.com" />
+        </p>
       </footer>
     </div>
   );
