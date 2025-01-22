@@ -2,15 +2,17 @@
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { asyncFetch } from '../../data/graphql/graphql-fetcher';
+import { asyncFetch } from '../../../data/graphql/graphql-fetcher';
 import {
   encounterByIdQuery,
   EncounterByIdResponse,
-} from '../../data/graphql/snippets/encounter';
-import { Encounter, EncounterCharacter } from '../../types/encounters';
-import { getEncounter } from '../../hooks/get-encounter.hook';
-import { getAllPlayers } from '../../hooks/get-all-players.hook';
-import { Player } from '../../types/player';
+} from '../../../data/graphql/snippets/encounter';
+import { Encounter, EncounterCharacter } from '../../../types/encounters';
+import { getEncounter } from '../../../hooks/get-encounter.hook';
+import { getAllPlayers } from '../../../hooks/get-all-players.hook';
+import { Player } from '../../../types/player';
+import { init } from 'next/dist/compiled/webpack/webpack';
+import InactiveEncounter from './InactiveEncounter';
 
 type FullEncounter = Encounter & {
   players: Player[];
@@ -48,7 +50,7 @@ const EncounterPage: NextPage = () => {
     }
   }, [encounter, allPlayers]);
 
-  if (loading) {
+  if (loading || playersLoading || !fullEncounter) {
     return (
       <div className="bg-base-100 min-h-screen flex items-center justify-center">
         <p>Loading...</p>
@@ -65,23 +67,34 @@ const EncounterPage: NextPage = () => {
     );
   }
 
+  console.log('fullEncounter', fullEncounter);
   return (
     <div className="bg-base-100 min-h-screen p-4">
       <h1 className="text-2xl font-bold mb-4">{encounter.name}</h1>
-
       <div className="overflow-x-auto">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Initiative</th>
-              <th>HP</th>
-              <th>AC</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+        {encounter.status === 'active' ? (
+          <></>
+        ) : (
+          <InactiveEncounter
+            encounter={{
+              _id: encounter._id,
+              characters: fullEncounter.characters.map((character) => {
+                if ('armorClass' in character) {
+                  return {
+                    name: character.name,
+                    armorClass: character.armorClass,
+                    maxHP: character.maxHP,
+                    currentHP: character.currentHP,
+                  };
+                }
+
+                return {
+                  name: character.name,
+                };
+              }),
+            }}
+          />
+        )}
         <div className="mt-8"></div>
       </div>
     </div>
