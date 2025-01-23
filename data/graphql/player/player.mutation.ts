@@ -22,7 +22,7 @@ const playerRepository = appContainer.get<PlayerRepositoryInterface>(
 const playerMutationResolver = {
   Mutation: {
     async savePlayer(_: unknown, { input }: SavePlayerArgs) {
-        console.log('savePlayer', input);
+      console.log('savePlayer', input);
       return playerRepository.savePlayer({
         name: input.name,
       });

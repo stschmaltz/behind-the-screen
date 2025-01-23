@@ -33,6 +33,14 @@ export interface EncounterTemplate {
   status: 'active' | 'inactive' | 'completed';
   createdAt: Date;
 }
+export interface InitiativeOrderCharacter {
+  name: string;
+  armorClass?: number;
+  maxHP?: number;
+  currentHP?: number;
+  initiative?: number;
+  conditions: string[];
+}
 
 export interface Encounter extends EncounterTemplate {
   _id: string;
@@ -45,11 +53,7 @@ export interface Encounter extends EncounterTemplate {
     _id: string;
   }[];
   npcs: EncounterCharacter[];
-  initiativeOrder: {
-    // TODO: rethink initiative order
-    characterId: number;
-    initiative: number;
-  }[];
+  initiativeOrder: InitiativeOrderCharacter[];
   currentRound: number;
   currentTurn: number;
 }

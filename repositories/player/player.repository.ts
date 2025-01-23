@@ -24,14 +24,14 @@ export class PlayerRepository implements PlayerRepositoryInterface {
     });
   }
 
-    public async deletePlayer(id: string): Promise<boolean> {
-        const { db } = await getDbClient();
-        const result = await db
-        .collection(this.collectionName)
-        .deleteOne({ _id: new ObjectId(id) });
-    
-        return result.deletedCount === 1;
-    }
+  public async deletePlayer(id: string): Promise<boolean> {
+    const { db } = await getDbClient();
+    const result = await db
+      .collection(this.collectionName)
+      .deleteOne({ _id: new ObjectId(id) });
+
+    return result.deletedCount === 1;
+  }
 
   public async getPlayersByIds(id: string[]): Promise<Player[]> {
     const { db } = await getDbClient();

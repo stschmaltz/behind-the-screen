@@ -9,7 +9,12 @@ interface QueryConfig<T> {
   variables?: object;
 }
 
-export function useQuery<T>({ query, transform, enabled = true, variables}: QueryConfig<T>) {
+export function useQuery<T>({
+  query,
+  transform,
+  enabled = true,
+  variables,
+}: QueryConfig<T>) {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);

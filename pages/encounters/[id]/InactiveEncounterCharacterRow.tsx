@@ -1,5 +1,6 @@
 import React from 'react';
 import FormInput from '../../../components/FormInput';
+import Button from '../../../components/Button';
 
 interface Props {
   character: {
@@ -33,19 +34,6 @@ const InactiveEncounterCharacterRow: React.FC<Props> = ({ character }) => {
       <td>
         <FormInput
           type="number"
-          value={characterState.currentHP}
-          className="w-16"
-          id="currentHP"
-          onChange={(character) => {
-            setCharacterState({
-              ...characterState,
-              currentHP: Number(character.target.value),
-            });
-          }}
-        />
-        /
-        <FormInput
-          type="number"
           value={characterState.maxHP}
           className="w-16"
           id="maxHP"
@@ -72,7 +60,9 @@ const InactiveEncounterCharacterRow: React.FC<Props> = ({ character }) => {
         />
       </td>
       <td>
-        <button className="btn">Remove</button>
+        <div className="flex justify-end">
+          <Button variant="error" label="Delete" />
+        </div>
       </td>
     </tr>
   );

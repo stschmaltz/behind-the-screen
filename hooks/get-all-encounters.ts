@@ -1,11 +1,12 @@
-import { allEncountersQuery, AllEncountersResponse } from "../data/graphql/snippets/encounter";
-import { Encounter } from "../types/encounters";
-import { useQuery } from "./use-async-query";
+import {
+  allEncountersQuery,
+  AllEncountersResponse,
+} from '../data/graphql/snippets/encounter';
+import { Encounter } from '../types/encounters';
+import { useQuery } from './use-async-query';
 
 function getAllEncounters(): { encounters: Encounter[]; loading: boolean } {
-    const { data, loading } = useQuery<
-    Encounter[]
-  >({
+  const { data, loading } = useQuery<Encounter[]>({
     query: allEncountersQuery,
     transform: (data: AllEncountersResponse) =>
       data.allEncounters
@@ -15,10 +16,10 @@ function getAllEncounters(): { encounters: Encounter[]; loading: boolean } {
         }))
         .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()),
   });
-  
+
   const encounters = data ?? [];
 
-  return{ encounters, loading};
+  return { encounters, loading };
 }
 
 export { getAllEncounters };

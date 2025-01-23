@@ -12,12 +12,7 @@ import { getEncounter } from '../../../hooks/get-encounter.hook';
 import { getAllPlayers } from '../../../hooks/get-all-players.hook';
 import { Player } from '../../../types/player';
 import { init } from 'next/dist/compiled/webpack/webpack';
-import InactiveEncounter from './InactiveEncounter';
-
-type FullEncounter = Encounter & {
-  players: Player[];
-  characters: (Player | EncounterCharacter)[];
-};
+import InactiveEncounterTable from './InactiveEncounterTable';
 
 const EncounterPage: NextPage = () => {
   const router = useRouter();
@@ -25,32 +20,8 @@ const EncounterPage: NextPage = () => {
 
   const { players: allPlayers, loading: playersLoading } = getAllPlayers();
   const { encounter, loading } = getEncounter(typeof id === 'string' ? id : '');
-  const [fullEncounter, setFullEncounter] = useState<FullEncounter | null>(
-    null,
-  );
 
-  useEffect(() => {
-    if (encounter && allPlayers.length) {
-      const playerIds = encounter.players.map((player) => player._id);
-      const players = allPlayers.filter((player) =>
-        playerIds.includes(player._id),
-      );
-
-      const encounterCharacters = [
-        ...players,
-        ...encounter.enemies,
-        ...encounter.npcs,
-      ];
-
-      setFullEncounter({
-        ...encounter,
-        players,
-        characters: encounterCharacters,
-      });
-    }
-  }, [encounter, allPlayers]);
-
-  if (loading || playersLoading || !fullEncounter) {
+  if (loading || playersLoading) {
     return (
       <div className="bg-base-100 min-h-screen flex items-center justify-center">
         <p>Loading...</p>
@@ -67,7 +38,6 @@ const EncounterPage: NextPage = () => {
     );
   }
 
-  console.log('fullEncounter', fullEncounter);
   return (
     <div className="bg-base-100 min-h-screen p-4">
       <h1 className="text-2xl font-bold mb-4">{encounter.name}</h1>
@@ -75,25 +45,7 @@ const EncounterPage: NextPage = () => {
         {encounter.status === 'active' ? (
           <></>
         ) : (
-          <InactiveEncounter
-            encounter={{
-              _id: encounter._id,
-              characters: fullEncounter.characters.map((character) => {
-                if ('armorClass' in character) {
-                  return {
-                    name: character.name,
-                    armorClass: character.armorClass,
-                    maxHP: character.maxHP,
-                    currentHP: character.currentHP,
-                  };
-                }
-
-                return {
-                  name: character.name,
-                };
-              }),
-            }}
-          />
+          <InactiveEncounterTable encounter={encounter} players={allPlayers} />
         )}
         <div className="mt-8"></div>
       </div>

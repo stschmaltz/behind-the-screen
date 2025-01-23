@@ -14,10 +14,10 @@ export const savePlayerMutation = /* GraphQL */ `
 `;
 
 export const deletePlayerMutation = /* GraphQL */ `
-    mutation deletePlayer($id: String!) {
-        deletePlayer(id: $id)
-    }
-    `
+  mutation deletePlayer($id: String!) {
+    deletePlayer(id: $id)
+  }
+`;
 
 export interface SavePlayerMutationResponse {
   savePlayer: Player;
