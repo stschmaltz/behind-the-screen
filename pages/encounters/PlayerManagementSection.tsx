@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import Button from '../../components/Button';
-import FormInput from '../../components/FormInput';
+import { Button } from '../../components/Button';
+import { FormInput } from '../../components/FormInput';
 import { asyncFetch } from '../../data/graphql/graphql-fetcher';
 import {
   deletePlayerMutation,
   savePlayerMutation,
 } from '../../data/graphql/snippets/player';
 import { Player } from '../../types/player';
+import { useModal } from '../../hooks/use-modal';
 
 interface Props {
   startingPlayers: Player[];
@@ -14,6 +15,7 @@ interface Props {
 
 const PlayerManagementSection: React.FC<Props> = ({ startingPlayers }) => {
   const [players, setPlayers] = useState<Player[]>([]);
+  const { closeModal, showModal } = useModal('player-management-modal');
   const [newPlayerName, setNewPlayerName] = useState('');
   useEffect(() => {
     setPlayers(startingPlayers);
@@ -46,16 +48,11 @@ const PlayerManagementSection: React.FC<Props> = ({ startingPlayers }) => {
 
   return (
     <>
-      <Button
-        label="Manage Players"
-        onClick={() => {
-          const modal = document.getElementById('my_modal_1');
-          if (modal) {
-            (modal as HTMLDialogElement).showModal();
-          }
-        }}
-      />
-      <dialog id="my_modal_1" className="modal modal-bottom sm:modal-middle">
+      <Button label="Manage Players" onClick={showModal} />
+      <dialog
+        id="player-management-modal"
+        className="modal modal-bottom sm:modal-middle"
+      >
         <form method="dialog" className="modal-box">
           <h3 className="font-bold text-lg mb-4">Players</h3>
           <div className="flex flex-col gap-2 mb-4">
@@ -97,16 +94,7 @@ const PlayerManagementSection: React.FC<Props> = ({ startingPlayers }) => {
             />
           </div>
           <div className="modal-action">
-            <Button
-              variant="secondary"
-              label="close"
-              onClick={() => {
-                const modal = document.getElementById('my_modal_1');
-                if (modal) {
-                  (modal as HTMLDialogElement).close();
-                }
-              }}
-            />
+            <Button variant="secondary" label="close" onClick={closeModal} />
           </div>
         </form>
         <form method="dialog" className="modal-backdrop">
@@ -117,4 +105,4 @@ const PlayerManagementSection: React.FC<Props> = ({ startingPlayers }) => {
   );
 };
 
-export default PlayerManagementSection;
+export { PlayerManagementSection };

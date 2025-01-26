@@ -1,56 +1,58 @@
-import React, { ChangeEvent, use, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { InactiveEncounterCharacterRow } from './InactiveEncounterCharacterRow';
+import { NewEnemyModal } from './NewEnemyModal';
+import { AddPlayersModal } from './AddPlayersModal';
 import {
   Encounter,
   EncounterCharacter,
   InitiativeOrderCharacter,
 } from '../../../types/encounters';
-import { Interface } from 'readline';
-import FormInput from '../../../components/FormInput';
-import InactiveEncounterCharacterRow from './InactiveEncounterCharacterRow';
-import Button from '../../../components/Button';
+import { Button } from '../../../components/Button';
 import { Player } from '../../../types/player';
 
 interface Props {
   encounter: Encounter;
   players: Player[];
 }
+const toInitiativeOrder = (
+  character: Player | EncounterCharacter,
+): InitiativeOrderCharacter => ({
+  name: character.name,
+  armorClass: character.armorClass,
+  maxHP: character.maxHP,
+  currentHP: character.currentHP,
+  conditions: [],
+});
 
 const InactiveEncounterTable: React.FC<Props> = ({ encounter, players }) => {
   const [draftEncounter, setDraftEncounter] = React.useState(encounter);
-  const handleAddEnemy = (enemy: EncounterCharacter) => {
+  const handleAddEnemy = (newEnemy: EncounterCharacter) => {
     setDraftEncounter((prev) => ({
       ...prev,
-      enemies: [...prev.enemies, enemy],
-      initiativeOrder: [
-        ...prev.initiativeOrder,
-        {
-          name: enemy.name,
-          armorClass: enemy.armorClass,
-          maxHP: enemy.maxHP,
-          currentHP: enemy.currentHP,
-          initiative: 0,
-          conditions: [],
-        },
-      ],
+      enemies: [...prev.enemies, newEnemy],
+      initiativeOrder: [...prev.initiativeOrder, toInitiativeOrder(newEnemy)],
     }));
   };
+
   useEffect(() => {
+    const encounterPlayers = encounter.players
+      .map(({ _id }) => {
+        return players.find((player) => player._id === _id);
+      })
+      .filter((player) => player !== undefined);
+
     const initiativeOrder =
       encounter.initiativeOrder.length > 0
         ? encounter.initiativeOrder
-        : encounter.enemies.map(
-            (enemy): InitiativeOrderCharacter => ({
-              name: enemy.name,
-              armorClass: enemy.armorClass,
-              maxHP: enemy.maxHP,
-              currentHP: enemy.currentHP,
-              conditions: [],
-            }),
-          );
+        : [
+            ...encounter.enemies.map(toInitiativeOrder),
+            ...encounterPlayers.map(toInitiativeOrder),
+          ];
+
     const newEncounter = { ...encounter, initiativeOrder };
 
     setDraftEncounter(newEncounter);
-  }, [encounter]);
+  }, [encounter, players]);
 
   return (
     <div className="overflow-x-auto">
@@ -75,7 +77,23 @@ const InactiveEncounterTable: React.FC<Props> = ({ encounter, players }) => {
       </table>
       <div className="flex mt-4 justify-end" style={{ gap: '1rem' }}>
         <NewEnemyModal onAddEnemy={handleAddEnemy} />
-
+        <AddPlayersModal
+          onAddPlayers={(players: Player[]) => {
+            console.log(players);
+            setDraftEncounter((prev) => ({
+              ...prev,
+              players: [
+                ...prev.players,
+                ...players.map((p) => ({ _id: p._id })),
+              ],
+              initiativeOrder: [
+                ...prev.initiativeOrder,
+                ...players.map(toInitiativeOrder),
+              ],
+            }));
+          }}
+          players={players}
+        />
         <Button variant="primary" label="Add Players" />
         <Button variant="primary" label="Add NPCs" />
         <Button variant="primary" label="Start Encounter" />
@@ -84,102 +102,4 @@ const InactiveEncounterTable: React.FC<Props> = ({ encounter, players }) => {
   );
 };
 
-interface ModalProps {
-  onAddEnemy: (enemy: EncounterCharacter) => void;
-}
-
-const NewEnemyModal: React.FC<ModalProps> = ({ onAddEnemy }) => {
-  const [newEnemy, setNewEnemy] = React.useState<EncounterCharacter>({
-    name: '',
-    maxHP: 0,
-    currentHP: 0,
-    armorClass: 0,
-    conditions: [],
-  });
-
-  return (
-    <>
-      <Button
-        variant="primary"
-        label="Add Enemy"
-        onClick={() =>
-          (
-            document.getElementById('new-enemy-modal') as HTMLDialogElement
-          ).showModal()
-        }
-      />
-      <dialog className="modal" id="new-enemy-modal">
-        <div className="modal-box">
-          <h2 className="text-2xl font-bold mb-4">Add New Enemy</h2>
-          <FormInput
-            label="Name"
-            id="name"
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              setNewEnemy({ ...newEnemy, name: e.target.value });
-            }}
-          />
-          <FormInput
-            label="HP"
-            id="health"
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              setNewEnemy({
-                ...newEnemy,
-                maxHP: Number.parseInt(e.target.value),
-                currentHP: Number.parseInt(e.target.value),
-              });
-            }}
-            type="number"
-          />
-          <FormInput
-            label="AC"
-            id="armorClass"
-            onChange={(e: ChangeEvent<HTMLInputElement>) => {
-              setNewEnemy({
-                ...newEnemy,
-                armorClass: Number.parseInt(e.target.value),
-              });
-            }}
-            type="number"
-          />
-          <div className="flex justify-end mt-4" style={{ gap: '1rem' }}>
-            <Button
-              variant="primary"
-              label="Add Enemy"
-              onClick={() => {
-                onAddEnemy(newEnemy);
-                setNewEnemy({
-                  name: '',
-                  maxHP: 0,
-                  currentHP: 0,
-                  armorClass: 0,
-                  conditions: [],
-                });
-                (
-                  document.getElementById(
-                    'new-enemy-modal',
-                  ) as HTMLDialogElement
-                ).close();
-              }}
-            />
-            <Button
-              variant="error"
-              label="Cancel"
-              onClick={() => {
-                (
-                  document.getElementById(
-                    'new-enemy-modal',
-                  ) as HTMLDialogElement
-                ).close();
-              }}
-            />
-          </div>
-        </div>
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
-    </>
-  );
-};
-
-export default InactiveEncounterTable;
+export { InactiveEncounterTable };
