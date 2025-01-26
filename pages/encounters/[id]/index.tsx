@@ -1,18 +1,9 @@
 // pages/encounters/[id].tsx
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
-import { asyncFetch } from '../../../data/graphql/graphql-fetcher';
-import {
-  encounterByIdQuery,
-  EncounterByIdResponse,
-} from '../../../data/graphql/snippets/encounter';
-import { Encounter, EncounterCharacter } from '../../../types/encounters';
+import { InactiveEncounterTable } from './InactiveEncounterTable';
 import { getEncounter } from '../../../hooks/get-encounter.hook';
 import { getAllPlayers } from '../../../hooks/get-all-players.hook';
-import { Player } from '../../../types/player';
-import { init } from 'next/dist/compiled/webpack/webpack';
-import InactiveEncounterTable from './InactiveEncounterTable';
 
 const EncounterPage: NextPage = () => {
   const router = useRouter();

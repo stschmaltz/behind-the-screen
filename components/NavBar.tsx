@@ -41,4 +41,4 @@ const NavBar: React.FC<Props> = ({ router }) => {
   );
 };
 
-export default NavBar;
+export { NavBar };

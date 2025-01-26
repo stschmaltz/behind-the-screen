@@ -1,7 +1,7 @@
 // pages/encounters/index.tsx
 import Link from 'next/link';
 import { NextPage } from 'next';
-import PlayerManagementSection from './PlayerManagementSection';
+import { PlayerManagementSection } from './PlayerManagementSection';
 import { getAllPlayers } from '../../hooks/get-all-players.hook';
 import { getAllEncounters } from '../../hooks/get-all-encounters';
 

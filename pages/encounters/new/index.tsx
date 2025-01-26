@@ -1,72 +1,37 @@
 // pages/encounters/new.tsx
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { ChangeEvent, useState } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
-import NewNotesSection from './NewNotesSection';
-import NewEnemiesSection from './NewEnemiesSection';
+import { NewNotesSection } from './NewNotesSection';
+import { NewEnemiesSection } from './NewEnemiesSection';
+import { useNewEncounter } from './hooks/use-new-encounter';
 import { NewEncounterTemplate } from '../../../types/encounters';
-import FormInput from '../../../components/FormInput';
-import Button from '../../../components/Button';
-import { asyncFetch } from '../../../data/graphql/graphql-fetcher';
-import { saveEncounterMutation } from '../../../data/graphql/snippets/encounter';
-import { showDaisyToast } from '../../../lib/daisy-toast';
+import { FormInput } from '../../../components/FormInput';
+import { Button } from '../../../components/Button';
 
+export const INITIAL_NEW_ENCOUNTER: NewEncounterTemplate = {
+  name: '',
+  description: '',
+  notes: [],
+  enemies: [],
+  status: 'inactive',
+};
 const NewEncounterPage: NextPage = () => {
   const router = useRouter(); // for redirecting
-  const [isSaving, setIsSaving] = useState(false);
 
-  const [newEncounter, setNewEncounter] = useState<NewEncounterTemplate>({
-    name: '',
-    description: '',
-    notes: [],
-    enemies: [],
-    status: 'inactive',
-  });
+  const {
+    newEncounter,
+    setNewEncounter,
+    isSaving,
+    handleFieldChange,
+    handleSave,
+  } = useNewEncounter();
 
-  const validateNewEncounter = () => {
-    if (!newEncounter.name) return 'Name is required';
-    if (!newEncounter.enemies.length) return 'At least one enemy is required';
-    if (!newEncounter.enemies.every((enemy) => enemy.name))
-      return 'All enemies must have a name';
-    if (!newEncounter.enemies.every((enemy) => enemy.maxHP))
-      return 'All enemies must have a max HP';
-    if (!newEncounter.enemies.every((enemy) => enemy.maxHP > 0))
-      return 'All enemies must have a max HP greater than 0';
-    if (!newEncounter.notes.every((note) => note))
-      return 'All notes must have a value';
-
-    return '';
-  };
-
-  const handleFieldChange =
-    (field: keyof NewEncounterTemplate) =>
-    (e: ChangeEvent<HTMLInputElement>) => {
-      setNewEncounter((prev) => ({ ...prev, [field]: e.target.value }));
-    };
-
-  const handleSave = async () => {
-    setIsSaving(true);
-    const validationError = validateNewEncounter();
-
-    if (validationError) {
-      showDaisyToast('error', validationError);
-      setIsSaving(false);
-
-      return;
-    }
-
-    try {
-      await asyncFetch(saveEncounterMutation, {
-        input: { ...newEncounter },
-      });
+  const onSave = async () => {
+    const success = await handleSave();
+    if (success) {
       toast.success('Encounter saved!');
       router.push('/encounters');
-    } catch (err) {
-      console.error(err);
-      showDaisyToast('error', 'Failed to save encounter');
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -107,7 +72,7 @@ const NewEncounterPage: NextPage = () => {
         <div className="mt-10">
           <Button
             className="w-full"
-            onClick={handleSave}
+            onClick={onSave}
             disabled={isSaving}
             label="Save"
           />

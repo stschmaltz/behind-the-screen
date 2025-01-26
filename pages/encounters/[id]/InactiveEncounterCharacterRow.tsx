@@ -1,6 +1,6 @@
 import React from 'react';
-import FormInput from '../../../components/FormInput';
-import Button from '../../../components/Button';
+import { FormInput } from '../../../components/FormInput';
+import { Button } from '../../../components/Button';
 
 interface Props {
   character: {
@@ -14,6 +14,7 @@ interface Props {
 
 const InactiveEncounterCharacterRow: React.FC<Props> = ({ character }) => {
   const [characterState, setCharacterState] = React.useState(character);
+
   return (
     <tr key={characterState.name}>
       <td>{characterState.name}</td>
@@ -68,4 +69,4 @@ const InactiveEncounterCharacterRow: React.FC<Props> = ({ character }) => {
   );
 };
 
-export default InactiveEncounterCharacterRow;
+export { InactiveEncounterCharacterRow };

@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from 'react';
 import { EncounterCharacter } from '../../../types/encounters';
-import FormInput from '../../../components/FormInput';
-import Button from '../../../components/Button';
+import { FormInput } from '../../../components/FormInput';
+import { Button } from '../../../components/Button';
 
 interface NewEnemiesSectionProps {
   enemies: EncounterCharacter[];
@@ -98,4 +98,4 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
   );
 };
 
-export default NewEnemiesSection;
+export { NewEnemiesSection };

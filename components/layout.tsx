@@ -1,16 +1,16 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import NavBar from './NavBar';
-import Button from './Button';
-import ThemeSwitcher from './ThemeSwitcher';
+import { NavBar } from './NavBar';
+import { Button } from './Button';
+import { ThemeSwitcher } from './ThemeSwitcher';
 import { useUserSignIn } from '../hooks/use-user-sign-in.hook';
 
 interface LayoutProps {
   children: React.ReactNode;
 }
 
-export function Layout({ children }: LayoutProps) {
+function Layout({ children }: LayoutProps) {
   const [isLoading, currentUser] = useUserSignIn();
   const router = useRouter();
 
@@ -42,13 +42,12 @@ export function Layout({ children }: LayoutProps) {
           <main className="p-4 overflow-y-auto flex-grow">{children}</main>
 
           {router.pathname !== '/' && (
-            <Link href="/" className=" w-full p-4">
-              <Button
-                variant="secondary"
-                label="Back to Home"
-                className="w-full"
-              />
-            </Link>
+            <Button
+              variant="secondary"
+              label="Back"
+              className="w-full"
+              onClick={() => router.back()}
+            />
           )}
         </div>
       ) : (
@@ -68,3 +67,5 @@ export function Layout({ children }: LayoutProps) {
     </div>
   );
 }
+
+export { Layout };
