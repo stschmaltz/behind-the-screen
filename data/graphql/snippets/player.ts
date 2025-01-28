@@ -4,6 +4,8 @@ const fullPlayer = /* GraphQL */ `
   {
     _id
     name
+    armorClass
+    maxHP
   }
 `;
 

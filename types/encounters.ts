@@ -17,10 +17,9 @@ export type Condition =
   | 'unconscious';
 
 export interface EncounterCharacter {
+  _id: string;
   name: string;
   maxHP: number;
-  currentHP: number;
-  conditions: Condition[];
   armorClass: number;
 }
 
@@ -34,12 +33,14 @@ export interface EncounterTemplate {
   createdAt: Date;
 }
 export interface InitiativeOrderCharacter {
+  _id: string;
   name: string;
   armorClass?: number;
   maxHP?: number;
   currentHP?: number;
   initiative?: number;
-  conditions: string[];
+  conditions: Condition[];
+  type: 'player' | 'npc'| 'enemy';
 }
 
 export interface Encounter extends EncounterTemplate {

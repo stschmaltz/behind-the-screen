@@ -3,6 +3,7 @@ import { Button } from '../../../components/Button';
 import { FormInput } from '../../../components/FormInput';
 import { EncounterCharacter } from '../../../types/encounters';
 import { useModal } from '../../../hooks/use-modal';
+import { generateMongoId } from '../../../lib/mongo';
 
 interface Props {
   onAddEnemy: (enemy: EncounterCharacter) => void;
@@ -11,9 +12,8 @@ interface Props {
 const INITIAL_ENEMY_STATE: EncounterCharacter = {
   name: '',
   maxHP: 0,
-  currentHP: 0,
   armorClass: 0,
-  conditions: [],
+  _id: generateMongoId(),
 };
 
 const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
@@ -58,7 +58,6 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
               setNewEnemy({
                 ...newEnemy,
                 maxHP: value,
-                currentHP: value,
               });
             }}
           />

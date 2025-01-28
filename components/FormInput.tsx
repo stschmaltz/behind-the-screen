@@ -12,6 +12,7 @@ interface FormInputProps {
   width?: string;
   placeholder?: string;
   className?: string;
+  required?: boolean;
 }
 
 const FormInput: React.FC<FormInputProps> = ({
@@ -26,6 +27,7 @@ const FormInput: React.FC<FormInputProps> = ({
   width,
   placeholder,
   className,
+  required = false,
 }) => {
   const widthClass = width ? width : type === 'number' ? 'w-2/12' : 'w-full';
 
@@ -45,6 +47,7 @@ const FormInput: React.FC<FormInputProps> = ({
         {...(type === 'number' && { min, max, step })}
         className={`input input-bordered ${className}`}
         placeholder={placeholder}
+        required={required}
       />
     </div>
   );

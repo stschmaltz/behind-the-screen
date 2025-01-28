@@ -1,9 +1,8 @@
 export const encounterTypeDefs = /* GraphQL */ `
   type EncounterCharacter {
+    _id: String!
     name: String!
     maxHP: Int!
-    currentHP: Int!
-    conditions: [String!]!
     armorClass: Int!
   }
 
@@ -33,12 +32,22 @@ export const encounterTypeDefs = /* GraphQL */ `
   }
 
   type EncounterPlayerId {
-    _id: String!
-  }
+    _id: ID!
+    name: String!
+    armorClass: Int
+    maxHP: Int
+    createdAt: Date!
+ }
 
   type InitiativeOrder {
-    characterId: Int!
-    initiative: Int!
+    _id: String!
+    name: String!
+    armorClass: Int
+    maxHP: Int
+    currentHP: Int
+    conditions: [String!]!
+    initiative: Int
+    type: String!
   }
 
   input NewEncounterTemplateInput {
@@ -63,10 +72,9 @@ export const encounterTypeDefs = /* GraphQL */ `
   }
 
   input NewEncounterCharacterInput {
+    _id: String!
     name: String!
     maxHP: Int!
-    currentHP: Int!
-    conditions: [String!]!
     armorClass: Int!
   }
 
@@ -75,7 +83,12 @@ export const encounterTypeDefs = /* GraphQL */ `
   }
 
   input InitiativeOrderInput {
-    characterId: Int!
-    initiative: Int!
+    _id: String!
+    name: String!
+    armorClass: Int
+    maxHP: Int
+    currentHP: Int
+    conditions: [String!]!
+    initiative: Int
   }
 `;

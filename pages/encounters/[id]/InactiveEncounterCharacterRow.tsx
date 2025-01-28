@@ -1,68 +1,85 @@
-import React from 'react';
+import { ChangeEvent, useState } from 'react';
 import { FormInput } from '../../../components/FormInput';
 import { Button } from '../../../components/Button';
 
-interface Props {
-  character: {
-    name: string;
-    armorClass?: number;
-    maxHP?: number;
-    currentHP?: number;
-    initiative?: number;
-  };
-}
+type Character = {
+  name: string;
+  armorClass?: number;
+  maxHP?: number;
+  currentHP?: number;
+  initiative?: number;
+};
 
-const InactiveEncounterCharacterRow: React.FC<Props> = ({ character }) => {
-  const [characterState, setCharacterState] = React.useState(character);
+type Props = {
+  character: Character;
+  onDelete: () => void;
+  onUpdate?: (character: Character) => void;
+};
+
+const InactiveEncounterCharacterRow = ({
+  character,
+  onDelete,
+  onUpdate,
+}: Props) => {
+  const [stats, setStats] = useState({
+    name: character.name,
+    armorClass: character.armorClass,
+    maxHP: character.maxHP,
+    initiative: character.initiative,
+  });
+
+  const handleNumberChange = (
+    field: keyof Omit<typeof stats, 'name'>,
+    event: ChangeEvent<HTMLInputElement>,
+  ) => {
+    const value =
+      event.target.value === '' ? undefined : Number(event.target.value);
+    const newStats = { ...stats, [field]: value };
+    setStats(newStats);
+    onUpdate?.({ ...newStats, currentHP: character.currentHP });
+  };
 
   return (
-    <tr key={characterState.name}>
-      <td>{characterState.name}</td>
-      <td>
+    <tr className="hover:bg-gray-50">
+      <td className="py-2 px-4">{stats.name}</td>
+      <td className="py-2 px-4">
         <FormInput
           type="number"
-          value={characterState.initiative}
+          value={stats.initiative}
           className="w-16"
-          id="initiative"
-          onChange={(character) => {
-            setCharacterState({
-              ...characterState,
-              initiative: Number(character.target.value),
-            });
-          }}
+          id={`initiative-${stats.name}`}
+          aria-label="Initiative"
+          onChange={(e) => handleNumberChange('initiative', e)}
         />
       </td>
-      <td>
+      <td className="py-2 px-4">
         <FormInput
           type="number"
-          value={characterState.maxHP}
+          value={stats.maxHP ?? ''}
           className="w-16"
-          id="maxHP"
-          onChange={(character) => {
-            setCharacterState({
-              ...characterState,
-              maxHP: Number(character.target.value),
-            });
-          }}
+          id={`maxHP-${stats.name}`}
+          aria-label="Maximum HP"
+          onChange={(e) => handleNumberChange('maxHP', e)}
         />
       </td>
-      <td>
+      <td className="py-2 px-4">
         <FormInput
           type="number"
-          value={characterState.armorClass}
+          value={stats.armorClass ?? ''}
           className="w-16"
-          id="armorClass"
-          onChange={(character) => {
-            setCharacterState({
-              ...characterState,
-              armorClass: Number(character.target.value),
-            });
-          }}
+          id={`armorClass-${stats.name}`}
+          aria-label="Armor Class"
+          onChange={(e) => handleNumberChange('armorClass', e)}
         />
       </td>
-      <td>
+      <td className="py-2 px-4">
         <div className="flex justify-end">
-          <Button variant="error" label="Delete" />
+          <Button
+            variant="error"
+            label="Delete"
+            onClick={onDelete}
+            aria-label={`Delete ${stats.name}`}
+          />
         </div>
       </td>
     </tr>

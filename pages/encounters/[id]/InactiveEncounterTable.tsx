@@ -14,14 +14,17 @@ interface Props {
   encounter: Encounter;
   players: Player[];
 }
+
 const toInitiativeOrder = (
   character: Player | EncounterCharacter,
+  type: 'player' | 'enemy' | 'npc',
 ): InitiativeOrderCharacter => ({
+  _id: character._id,
   name: character.name,
   armorClass: character.armorClass,
   maxHP: character.maxHP,
-  currentHP: character.currentHP,
   conditions: [],
+  type,
 });
 
 const InactiveEncounterTable: React.FC<Props> = ({ encounter, players }) => {
@@ -30,7 +33,10 @@ const InactiveEncounterTable: React.FC<Props> = ({ encounter, players }) => {
     setDraftEncounter((prev) => ({
       ...prev,
       enemies: [...prev.enemies, newEnemy],
-      initiativeOrder: [...prev.initiativeOrder, toInitiativeOrder(newEnemy)],
+      initiativeOrder: [
+        ...prev.initiativeOrder,
+        toInitiativeOrder(newEnemy, 'enemy'),
+      ],
     }));
   };
 
@@ -45,8 +51,12 @@ const InactiveEncounterTable: React.FC<Props> = ({ encounter, players }) => {
       encounter.initiativeOrder.length > 0
         ? encounter.initiativeOrder
         : [
-            ...encounter.enemies.map(toInitiativeOrder),
-            ...encounterPlayers.map(toInitiativeOrder),
+            ...encounter.enemies.map((enemy) =>
+              toInitiativeOrder(enemy, 'enemy'),
+            ),
+            ...encounterPlayers.map((player) =>
+              toInitiativeOrder(player, 'player'),
+            ),
           ];
 
     const newEncounter = { ...encounter, initiativeOrder };
@@ -71,6 +81,17 @@ const InactiveEncounterTable: React.FC<Props> = ({ encounter, players }) => {
             <InactiveEncounterCharacterRow
               key={character.name}
               character={character}
+              onDelete={() => {
+                setDraftEncounter((prev) => ({
+                  ...prev,
+                  initiativeOrder: prev.initiativeOrder.filter(
+                    (c) => c.name !== character.name,
+                  ),
+                  enemies: prev.enemies.filter(
+                    (e) => e.name !== character.name,
+                  ),
+                }));
+              }}
             />
           ))}
         </tbody>
@@ -88,14 +109,13 @@ const InactiveEncounterTable: React.FC<Props> = ({ encounter, players }) => {
               ],
               initiativeOrder: [
                 ...prev.initiativeOrder,
-                ...players.map(toInitiativeOrder),
+                ...players.map((player) => toInitiativeOrder(player, 'player')),
               ],
             }));
           }}
           players={players}
         />
-        <Button variant="primary" label="Add Players" />
-        <Button variant="primary" label="Add NPCs" />
+        {/* <Button variant="primary" label="Add NPCs" /> */}
         <Button variant="primary" label="Start Encounter" />
       </div>
     </div>

@@ -1,4 +1,3 @@
-import { ObjectId } from 'bson';
 import { Encounter } from '../../../types/encounters';
 
 export const fullEncounter = /* GraphQL */ `
@@ -8,26 +7,33 @@ export const fullEncounter = /* GraphQL */ `
     description
     notes
     enemies {
+      _id
       name
       maxHP
-      currentHP
-      conditions
       armorClass
     }
     status
     players {
       _id
-    }
-    npcs {
       name
       maxHP
-      currentHP
-      conditions
+      armorClass
+    }
+    npcs {
+      _id
+      name
+      maxHP
       armorClass
     }
     initiativeOrder {
-      characterId
+      _id
+      name
+      armorClass
+      maxHP
+      currentHP
+      conditions
       initiative
+      type
     }
     currentRound
     currentTurn

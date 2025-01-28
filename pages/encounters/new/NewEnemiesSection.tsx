@@ -2,6 +2,7 @@ import React, { ChangeEvent } from 'react';
 import { EncounterCharacter } from '../../../types/encounters';
 import { FormInput } from '../../../components/FormInput';
 import { Button } from '../../../components/Button';
+import { generateMongoId } from '../../../lib/mongo';
 
 interface NewEnemiesSectionProps {
   enemies: EncounterCharacter[];
@@ -25,7 +26,12 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
   const addEnemy = () => {
     onEnemiesChange([
       ...enemies,
-      { name: '', maxHP: 0, currentHP: 0, armorClass: 0, conditions: [] },
+      {
+        name: '',
+        maxHP: 0,
+        armorClass: 0,
+        _id: generateMongoId(),
+      },
     ]);
   };
 
@@ -40,7 +46,7 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
       {enemies.map((enemy, index) => (
         <div key={index} className="mb-4 flex gap-2 items-end flex-wrap">
           <FormInput
-            id={`enemy-name-${index}`}
+            id={`enemy-name-${enemy._id}`}
             label="Name"
             value={enemy.name}
             onChange={(e: ChangeEvent<HTMLInputElement>) =>
@@ -49,7 +55,7 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
             width="w-5/12"
           />
           <FormInput
-            id={`enemy-maxHP-${index}`}
+            id={`enemy-maxHP-${enemy._id}`}
             label="HP"
             type="number"
             value={enemy.maxHP}
@@ -58,7 +64,6 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
               const updatedEnemies = [...enemies];
               updatedEnemies[index] = {
                 ...updatedEnemies[index],
-                currentHP: val,
                 maxHP: val,
               };
               onEnemiesChange(updatedEnemies);
@@ -66,7 +71,7 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
           />
 
           <FormInput
-            id={`enemy-armorClass-${index}`}
+            id={`enemy-armorClass-${enemy._id}`}
             label="AC"
             type="number"
             value={enemy.armorClass}
