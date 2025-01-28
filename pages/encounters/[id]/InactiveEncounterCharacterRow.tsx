@@ -1,19 +1,12 @@
 import { ChangeEvent, useState } from 'react';
 import { FormInput } from '../../../components/FormInput';
 import { Button } from '../../../components/Button';
-
-type Character = {
-  name: string;
-  armorClass?: number;
-  maxHP?: number;
-  currentHP?: number;
-  initiative?: number;
-};
+import { InitiativeOrderCharacter } from '../../../types/encounters';
 
 type Props = {
-  character: Character;
+  character: InitiativeOrderCharacter;
   onDelete: () => void;
-  onUpdate?: (character: Character) => void;
+  onUpdate?: (character: InitiativeOrderCharacter) => void;
 };
 
 const InactiveEncounterCharacterRow = ({
@@ -21,33 +14,30 @@ const InactiveEncounterCharacterRow = ({
   onDelete,
   onUpdate,
 }: Props) => {
-  const [stats, setStats] = useState({
-    name: character.name,
-    armorClass: character.armorClass,
-    maxHP: character.maxHP,
-    initiative: character.initiative,
-  });
-
   const handleNumberChange = (
-    field: keyof Omit<typeof stats, 'name'>,
+    field: keyof Omit<
+      InitiativeOrderCharacter,
+      'name' | '_id' | 'conditions' | 'type'
+    >,
     event: ChangeEvent<HTMLInputElement>,
   ) => {
     const value =
       event.target.value === '' ? undefined : Number(event.target.value);
-    const newStats = { ...stats, [field]: value };
-    setStats(newStats);
-    onUpdate?.({ ...newStats, currentHP: character.currentHP });
+    onUpdate?.({
+      ...character,
+      [field]: value,
+    });
   };
 
   return (
     <tr className="hover:bg-gray-50">
-      <td className="py-2 px-4">{stats.name}</td>
+      <td className="py-2 px-4">{character.name}</td>
       <td className="py-2 px-4">
         <FormInput
           type="number"
-          value={stats.initiative}
+          value={character.initiative ?? ''}
           className="w-16"
-          id={`initiative-${stats.name}`}
+          id={`initiative-${character.name}`}
           aria-label="Initiative"
           onChange={(e) => handleNumberChange('initiative', e)}
         />
@@ -55,9 +45,9 @@ const InactiveEncounterCharacterRow = ({
       <td className="py-2 px-4">
         <FormInput
           type="number"
-          value={stats.maxHP ?? ''}
+          value={character.maxHP ?? ''}
           className="w-16"
-          id={`maxHP-${stats.name}`}
+          id={`maxHP-${character.name}`}
           aria-label="Maximum HP"
           onChange={(e) => handleNumberChange('maxHP', e)}
         />
@@ -65,9 +55,9 @@ const InactiveEncounterCharacterRow = ({
       <td className="py-2 px-4">
         <FormInput
           type="number"
-          value={stats.armorClass ?? ''}
+          value={character.armorClass ?? ''}
           className="w-16"
-          id={`armorClass-${stats.name}`}
+          id={`armorClass-${character.name}`}
           aria-label="Armor Class"
           onChange={(e) => handleNumberChange('armorClass', e)}
         />
@@ -78,7 +68,7 @@ const InactiveEncounterCharacterRow = ({
             variant="error"
             label="Delete"
             onClick={onDelete}
-            aria-label={`Delete ${stats.name}`}
+            aria-label={`Delete ${character.name}`}
           />
         </div>
       </td>

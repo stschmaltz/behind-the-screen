@@ -1,13 +1,14 @@
-import React, { useEffect } from 'react';
-import { InactiveEncounterCharacterRow } from './InactiveEncounterCharacterRow';
+import React, { useEffect, useState } from 'react';
+import { Button } from '../../../components/Button';
 import { NewEnemyModal } from './NewEnemyModal';
 import { AddPlayersModal } from './AddPlayersModal';
+import { InactiveEncounterCharacterRow } from './InactiveEncounterCharacterRow';
+import { useUnsavedChangesWarning } from '../../../hooks/use-unsaved-changes-warning';
 import {
   Encounter,
   EncounterCharacter,
   InitiativeOrderCharacter,
 } from '../../../types/encounters';
-import { Button } from '../../../components/Button';
 import { Player } from '../../../types/player';
 
 interface Props {
@@ -28,8 +29,13 @@ const toInitiativeOrder = (
 });
 
 const InactiveEncounterTable: React.FC<Props> = ({ encounter, players }) => {
-  const [draftEncounter, setDraftEncounter] = React.useState(encounter);
+  const [draftEncounter, setDraftEncounter] = useState(encounter);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  useUnsavedChangesWarning(hasUnsavedChanges);
+
   const handleAddEnemy = (newEnemy: EncounterCharacter) => {
+    setHasUnsavedChanges(true);
     setDraftEncounter((prev) => ({
       ...prev,
       enemies: [...prev.enemies, newEnemy],
@@ -40,12 +46,46 @@ const InactiveEncounterTable: React.FC<Props> = ({ encounter, players }) => {
     }));
   };
 
+  const handleAddPlayers = (selectedPlayers: Player[]) => {
+    setHasUnsavedChanges(true);
+    setDraftEncounter((prev) => ({
+      ...prev,
+      players: [
+        ...prev.players,
+        ...selectedPlayers.map((p) => ({ _id: p._id })),
+      ],
+      initiativeOrder: [
+        ...prev.initiativeOrder,
+        ...selectedPlayers.map((player) => toInitiativeOrder(player, 'player')),
+      ],
+    }));
+  };
+
+  const handleUpdateCharacter = (character: InitiativeOrderCharacter) => {
+    setHasUnsavedChanges(true);
+    setDraftEncounter((prev) => ({
+      ...prev,
+      initiativeOrder: prev.initiativeOrder.map((c) =>
+        c._id === character._id ? character : c,
+      ),
+    }));
+  };
+
+  const handleDeleteCharacter = (characterName: string) => {
+    setHasUnsavedChanges(true);
+    setDraftEncounter((prev) => ({
+      ...prev,
+      initiativeOrder: prev.initiativeOrder.filter(
+        (c) => c.name !== characterName,
+      ),
+      enemies: prev.enemies.filter((e) => e.name !== characterName),
+    }));
+  };
+
   useEffect(() => {
     const encounterPlayers = encounter.players
-      .map(({ _id }) => {
-        return players.find((player) => player._id === _id);
-      })
-      .filter((player) => player !== undefined);
+      .map(({ _id }) => players.find((player) => player._id === _id))
+      .filter((player): player is Player => player !== undefined);
 
     const initiativeOrder =
       encounter.initiativeOrder.length > 0
@@ -59,9 +99,7 @@ const InactiveEncounterTable: React.FC<Props> = ({ encounter, players }) => {
             ),
           ];
 
-    const newEncounter = { ...encounter, initiativeOrder };
-
-    setDraftEncounter(newEncounter);
+    setDraftEncounter({ ...encounter, initiativeOrder });
   }, [encounter, players]);
 
   return (
@@ -81,41 +119,15 @@ const InactiveEncounterTable: React.FC<Props> = ({ encounter, players }) => {
             <InactiveEncounterCharacterRow
               key={character.name}
               character={character}
-              onDelete={() => {
-                setDraftEncounter((prev) => ({
-                  ...prev,
-                  initiativeOrder: prev.initiativeOrder.filter(
-                    (c) => c.name !== character.name,
-                  ),
-                  enemies: prev.enemies.filter(
-                    (e) => e.name !== character.name,
-                  ),
-                }));
-              }}
+              onDelete={() => handleDeleteCharacter(character.name)}
+              onUpdate={handleUpdateCharacter}
             />
           ))}
         </tbody>
       </table>
-      <div className="flex mt-4 justify-end" style={{ gap: '1rem' }}>
+      <div className="flex mt-4 justify-end gap-4">
         <NewEnemyModal onAddEnemy={handleAddEnemy} />
-        <AddPlayersModal
-          onAddPlayers={(players: Player[]) => {
-            console.log(players);
-            setDraftEncounter((prev) => ({
-              ...prev,
-              players: [
-                ...prev.players,
-                ...players.map((p) => ({ _id: p._id })),
-              ],
-              initiativeOrder: [
-                ...prev.initiativeOrder,
-                ...players.map((player) => toInitiativeOrder(player, 'player')),
-              ],
-            }));
-          }}
-          players={players}
-        />
-        {/* <Button variant="primary" label="Add NPCs" /> */}
+        <AddPlayersModal onAddPlayers={handleAddPlayers} players={players} />
         <Button variant="primary" label="Start Encounter" />
       </div>
     </div>
