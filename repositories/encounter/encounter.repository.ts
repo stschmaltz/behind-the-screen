@@ -11,27 +11,24 @@ export class EncounterRepository implements EncounterRepositoryInterface {
   public async saveEncounter(input: Partial<Encounter>): Promise<Encounter> {
     const { db } = await getDbClient();
     const { _id, ...docToInsert } = input;
-    
-    const result = await db
-      .collection(this.collectionName)
-      .findOneAndUpdate(
-        { _id: new ObjectId(_id) },
-        { 
-          $set: {
-            createdAt: new Date(),
-            ...docToInsert,
-            updatedAt: new Date()
-          }
+
+    const result = await db.collection(this.collectionName).findOneAndUpdate(
+      { _id: new ObjectId(_id) },
+      {
+        $set: {
+          createdAt: new Date(),
+          ...docToInsert,
+          updatedAt: new Date(),
         },
-        { upsert: true, returnDocument: 'after' }
-      );
-    if (!result ) {
+      },
+      { upsert: true, returnDocument: 'after' },
+    );
+    if (!result) {
       throw new Error('Failed to save encounter');
     }
 
     return this.mapToEncounter(result);
   }
-
 
   public async getEncounterById(id: string): Promise<Encounter | null> {
     const { db } = await getDbClient();

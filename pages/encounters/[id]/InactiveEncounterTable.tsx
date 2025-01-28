@@ -1,18 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { Button } from '../../../components/Button';
+import React, { useState } from 'react';
 import { NewEnemyModal } from './NewEnemyModal';
 import { AddPlayersModal } from './AddPlayersModal';
 import { InactiveEncounterCharacterRow } from './InactiveEncounterCharacterRow';
-import { useUnsavedChangesWarning } from '../../../hooks/use-unsaved-changes-warning';
-import {
-  Encounter,
-  EncounterCharacter,
-  InitiativeOrderCharacter,
-} from '../../../types/encounters';
-import { Player } from '../../../types/player';
 import { useEncounterDraft } from './hooks/use-draft-encounter';
+import { Button } from '../../../components/Button';
+import { useUnsavedChangesWarning } from '../../../hooks/use-unsaved-changes-warning';
+import { Encounter } from '../../../types/encounters';
+import { Player } from '../../../types/player';
 import { showDaisyToast } from '../../../lib/daisy-toast';
-import { ToastContainer } from 'react-toastify';
 
 interface Props {
   encounter: Encounter;
@@ -50,8 +45,6 @@ const InactiveEncounterTable: React.FC<Props> = ({ encounter, players }) => {
 
   return (
     <div className="overflow-x-auto">
-      <ToastContainer />
-
       <table className="table">
         <thead>
           <tr>

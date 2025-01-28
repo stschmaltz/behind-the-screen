@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent } from 'react';
 import { FormInput } from '../../../components/FormInput';
 import { Button } from '../../../components/Button';
 import { InitiativeOrderCharacter } from '../../../types/encounters';

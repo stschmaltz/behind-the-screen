@@ -48,13 +48,9 @@ const AddPlayersModal: React.FC<Props> = ({ onAddPlayers, players }) => {
           <div className="flex justify-end">
             <Button
               variant="secondary"
-              label={
-                toggledPlayers.length === players.length
-                  ? 'Deselect All'
-                  : 'Select All'
-              }
+              label={areAllPlayersSelected ? 'Deselect All' : 'Select All'}
               onClick={() =>
-                toggledPlayers.length === players.length
+                areAllPlayersSelected
                   ? setToggledPlayers([])
                   : setToggledPlayers(players)
               }

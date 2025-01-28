@@ -14,7 +14,7 @@ export const useNewEncounter = () => {
       setNewEncounter((prev) => ({ ...prev, [field]: e.target.value }));
     };
 
-    const {isSaving, handleSave} = useSaveEncounter();
+  const { isSaving, handleSave } = useSaveEncounter();
 
   return {
     newEncounter,

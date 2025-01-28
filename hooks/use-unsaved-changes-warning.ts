@@ -5,7 +5,8 @@ export const useUnsavedChangesWarning = (hasUnsavedChanges: boolean) => {
   const router = useRouter();
 
   useEffect(() => {
-    const warningText = 'You have unsaved changes - are you sure you want to leave?';
+    const warningText =
+      'You have unsaved changes - are you sure you want to leave?';
 
     const handleWindowClose = (e: BeforeUnloadEvent) => {
       if (!hasUnsavedChanges) return;

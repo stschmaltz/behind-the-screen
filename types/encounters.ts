@@ -40,7 +40,7 @@ export interface InitiativeOrderCharacter {
   currentHP?: number;
   initiative?: number;
   conditions: Condition[];
-  type: 'player' | 'npc'| 'enemy';
+  type: 'player' | 'npc' | 'enemy';
 }
 
 export interface Encounter extends EncounterTemplate {

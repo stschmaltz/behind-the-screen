@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { ToastContainer } from 'react-toastify';
 import { NavBar } from './NavBar';
 import { Button } from './Button';
 import { ThemeSwitcher } from './ThemeSwitcher';
@@ -27,6 +28,7 @@ function Layout({ children }: LayoutProps) {
         <NavBar router={router} />
         <ThemeSwitcher />
       </header>
+      <ToastContainer />
 
       {currentUser ? (
         <div className="p-4 min-h-[85vh] overflow-auto flex flex-col bg-content-100">

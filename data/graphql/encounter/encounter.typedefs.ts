@@ -33,7 +33,7 @@ export const encounterTypeDefs = /* GraphQL */ `
 
   type EncounterPlayerId {
     _id: ID!
- }
+  }
 
   type InitiativeOrder {
     _id: String!
@@ -89,6 +89,5 @@ export const encounterTypeDefs = /* GraphQL */ `
     conditions: [String!]!
     initiative: Int
     type: String!
-
   }
 `;
