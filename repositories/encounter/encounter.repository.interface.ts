@@ -1,7 +1,7 @@
-import { Encounter, NewEncounter } from '../../types/encounters';
+import { Encounter } from '../../types/encounters';
 
 export interface EncounterRepositoryInterface {
-  saveEncounter(input: NewEncounter): Promise<Encounter>;
+  saveEncounter(input: Partial<Encounter>): Promise<Encounter>;
   getEncounterById(id: string): Promise<Encounter | null>;
   getAllEncounters(): Promise<Encounter[]>;
 }

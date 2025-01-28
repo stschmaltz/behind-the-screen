@@ -8,21 +8,29 @@ import { getDbClient } from '../../data/database/mongodb';
 export class EncounterRepository implements EncounterRepositoryInterface {
   private collectionName = 'encounters';
 
-  public async saveEncounter(input: NewEncounter): Promise<Encounter> {
+  public async saveEncounter(input: Partial<Encounter>): Promise<Encounter> {
     const { db } = await getDbClient();
-    const docToInsert = {
-      ...input,
-      createdAt: new Date(),
-    };
+    const { _id, ...docToInsert } = input;
+    
     const result = await db
       .collection(this.collectionName)
-      .insertOne(docToInsert);
+      .findOneAndUpdate(
+        { _id: new ObjectId(_id) },
+        { 
+          $set: {
+            ...docToInsert,
+            updatedAt: new Date()
+          }
+        },
+        { upsert: true, returnDocument: 'after' }
+      );
+    if (!result ) {
+      throw new Error('Failed to save encounter');
+    }
 
-    return this.mapToEncounter({
-      ...docToInsert,
-      _id: result.insertedId,
-    });
+    return this.mapToEncounter(result);
   }
+
 
   public async getEncounterById(id: string): Promise<Encounter | null> {
     const { db } = await getDbClient();

@@ -14,6 +14,8 @@ interface ButtonProps {
   type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
   className?: string;
+  tooltip?: string;
+  loading?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -23,6 +25,8 @@ const Button: React.FC<ButtonProps> = ({
   type = 'button',
   disabled = false,
   className = '',
+  tooltip,
+  loading,
 }) => {
   const variantClassesMap: Record<
     NonNullable<ButtonProps['variant']>,
@@ -40,14 +44,20 @@ const Button: React.FC<ButtonProps> = ({
   const variantClasses = `btn ${variantClassesMap[variant] || 'btn-primary'}`;
 
   return (
-    <button
-      type={type}
-      onClick={onClick}
-      disabled={disabled}
-      className={`${variantClasses} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
-    >
-      {label}
-    </button>
+    <div className={`${!!tooltip && tooltip}`} data-tip={tooltip}>
+      <button
+        type={type}
+        onClick={onClick}
+        disabled={disabled}
+        className={`${variantClasses} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
+      >
+        {loading ? (
+          <span className="loading loading-spinner loading-xs" />
+        ) : (
+          label
+        )}
+      </button>
+    </div>
   );
 };
 

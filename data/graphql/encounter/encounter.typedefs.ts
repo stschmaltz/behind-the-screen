@@ -33,10 +33,6 @@ export const encounterTypeDefs = /* GraphQL */ `
 
   type EncounterPlayerId {
     _id: ID!
-    name: String!
-    armorClass: Int
-    maxHP: Int
-    createdAt: Date!
  }
 
   type InitiativeOrder {
@@ -59,6 +55,7 @@ export const encounterTypeDefs = /* GraphQL */ `
   }
 
   input NewEncounterInput {
+    _id: String
     name: String!
     description: String
     notes: [String!] = []
@@ -69,6 +66,7 @@ export const encounterTypeDefs = /* GraphQL */ `
     initiativeOrder: [InitiativeOrderInput!] = []
     currentRound: Int = 0
     currentTurn: Int = 0
+    createdAt: Date
   }
 
   input NewEncounterCharacterInput {
@@ -90,5 +88,7 @@ export const encounterTypeDefs = /* GraphQL */ `
     currentHP: Int
     conditions: [String!]!
     initiative: Int
+    type: String!
+
   }
 `;

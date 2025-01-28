@@ -23,6 +23,7 @@ const encounterMutationResolver = {
       console.log('saveEncounter', input);
 
       return encounterRepository.saveEncounter({
+        _id: input._id,
         name: input.name,
         description: input.description,
         notes: input.notes,

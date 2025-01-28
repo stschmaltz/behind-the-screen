@@ -8,6 +8,7 @@ import { useNewEncounter } from './hooks/use-new-encounter';
 import { NewEncounterTemplate } from '../../../types/encounters';
 import { FormInput } from '../../../components/FormInput';
 import { Button } from '../../../components/Button';
+import { showDaisyToast } from '../../../lib/daisy-toast';
 
 export const INITIAL_NEW_ENCOUNTER: NewEncounterTemplate = {
   name: '',
@@ -28,10 +29,12 @@ const NewEncounterPage: NextPage = () => {
   } = useNewEncounter();
 
   const onSave = async () => {
-    const success = await handleSave();
+    const success = await handleSave(newEncounter);
     if (success) {
-      toast.success('Encounter saved!');
+      showDaisyToast('success', 'Encounter saved');
       router.push('/encounters');
+    } else {
+      showDaisyToast('error', 'Failed to save encounter');
     }
   };
 

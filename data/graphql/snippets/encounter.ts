@@ -15,9 +15,6 @@ export const fullEncounter = /* GraphQL */ `
     status
     players {
       _id
-      name
-      maxHP
-      armorClass
     }
     npcs {
       _id
