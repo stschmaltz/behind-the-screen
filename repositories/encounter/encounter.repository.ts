@@ -18,6 +18,7 @@ export class EncounterRepository implements EncounterRepositoryInterface {
         { _id: new ObjectId(_id) },
         { 
           $set: {
+            createdAt: new Date(),
             ...docToInsert,
             updatedAt: new Date()
           }
