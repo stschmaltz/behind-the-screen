@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from 'react';
-import { INITIAL_NEW_ENCOUNTER } from '..';
-import { NewEncounterTemplate } from '../../../../types/encounters';
-import { useSaveEncounter } from '../../hooks/use-save-encounter';
+import { INITIAL_NEW_ENCOUNTER } from '../../pages/encounters/new';
+import { NewEncounterTemplate } from '../../types/encounters';
+import { useSaveEncounter } from './use-save-encounter';
 
 export const useNewEncounter = () => {
   const [newEncounter, setNewEncounter] = useState<NewEncounterTemplate>(

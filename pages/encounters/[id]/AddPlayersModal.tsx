@@ -78,4 +78,4 @@ const AddPlayersModal: React.FC<Props> = ({ onAddPlayers, players }) => {
   );
 };
 
-export { AddPlayersModal };
+export default AddPlayersModal;

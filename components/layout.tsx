@@ -53,7 +53,7 @@ function Layout({ children }: LayoutProps) {
           )}
         </div>
       ) : (
-        <div className="flex h-full items-center justify-center w-full min-h-screen">
+        <div className="flex h-full items-center justify-center w-full min-h-[75vh]">
           <Link href="/api/auth/login">
             <button className="btn btn-primary">Login</button>
           </Link>
@@ -63,7 +63,7 @@ function Layout({ children }: LayoutProps) {
       <footer className="bg-gray-200 p-4 text-center">
         <p>
           Copyright Shane Schmaltz 2025. for feedback, please email{' '}
-          <a href="mailto:stschmaltz@gmail.com" />
+          <a href="mailto:stschmaltz@gmail.com">stschmaltz at gmail.com</a>
         </p>
       </footer>
     </div>

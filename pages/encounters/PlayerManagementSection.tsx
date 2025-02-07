@@ -105,4 +105,4 @@ const PlayerManagementSection: React.FC<Props> = ({ startingPlayers }) => {
   );
 };
 
-export { PlayerManagementSection };
+export default PlayerManagementSection;

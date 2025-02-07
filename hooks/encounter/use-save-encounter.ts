@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { asyncFetch } from '../../../data/graphql/graphql-fetcher';
-import { saveEncounterMutation } from '../../../data/graphql/snippets/encounter';
-import { Encounter, NewEncounterTemplate } from '../../../types/encounters';
+import { asyncFetch } from '../../data/graphql/graphql-fetcher';
+import { saveEncounterMutation } from '../../data/graphql/snippets/encounter';
+import { Encounter, NewEncounterTemplate } from '../../types/encounters';
 
 const useSaveEncounter = () => {
   const [isSaving, setIsSaving] = useState(false);

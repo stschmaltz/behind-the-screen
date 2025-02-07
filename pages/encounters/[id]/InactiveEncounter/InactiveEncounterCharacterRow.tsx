@@ -1,7 +1,7 @@
 import { ChangeEvent } from 'react';
-import { FormInput } from '../../../components/FormInput';
-import { Button } from '../../../components/Button';
-import { InitiativeOrderCharacter } from '../../../types/encounters';
+import { FormInput } from '../../../../components/FormInput';
+import { Button } from '../../../../components/Button';
+import { InitiativeOrderCharacter } from '../../../../types/encounters';
 
 type Props = {
   character: InitiativeOrderCharacter;
@@ -76,4 +76,4 @@ const InactiveEncounterCharacterRow = ({
   );
 };
 
-export { InactiveEncounterCharacterRow };
+export default InactiveEncounterCharacterRow;

@@ -1,9 +1,9 @@
 // pages/encounters/new.tsx
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { NewNotesSection } from './NewNotesSection';
-import { NewEnemiesSection } from './NewEnemiesSection';
-import { useNewEncounter } from './hooks/use-new-encounter';
+import NewNotesSection from './NewNotesSection';
+import NewEnemiesSection from './NewEnemiesSection';
+import { useNewEncounter } from '../../../hooks/encounter/use-new-encounter';
 import { NewEncounterTemplate } from '../../../types/encounters';
 import { FormInput } from '../../../components/FormInput';
 import { Button } from '../../../components/Button';

@@ -1,10 +1,9 @@
 import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { InactiveEncounterTable } from './InactiveEncounterTable';
+import EncounterContent from './EncounterContent';
 import { getAllPlayers } from '../../../hooks/get-all-players.hook';
-import { getEncounter } from '../../../hooks/get-encounter.hook';
-import { Encounter } from '../../../types/encounters';
-import { Player } from '../../../types/player';
+import { getEncounter } from '../../../hooks/encounter/get-encounter.hook';
+import { EncounterProvider } from '../../../context/EncounterContext';
 
 interface EncounterPageProps {
   initialEncounterId: string;
@@ -38,58 +37,6 @@ const ErrorState = ({ id }: { id: string | string[] | undefined }) => (
   </div>
 );
 
-const EncounterContent = ({
-  encounter,
-  players,
-}: {
-  encounter: Encounter;
-  players: Player[];
-}) => (
-  <div className="container mx-auto px-4 py-8">
-    <div className="card bg-base-100 shadow-xl">
-      <div className="card-body">
-        <h1 className="card-title text-3xl font-bold">{encounter.name}</h1>
-
-        <div className="my-4">
-          <div
-            className={`badge badge-lg ${
-              encounter.status === 'active'
-                ? 'badge-primary'
-                : 'badge-secondary'
-            }`}
-          >
-            {encounter.status.charAt(0).toUpperCase() +
-              encounter.status.slice(1)}
-          </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          {encounter.status === 'active' ? (
-            <div className="alert alert-info">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                className="stroke-current shrink-0 w-6 h-6"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span>Active encounter view coming soon...</span>
-            </div>
-          ) : (
-            <InactiveEncounterTable encounter={encounter} players={players} />
-          )}
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
 const EncounterPage: NextPage<EncounterPageProps> = ({
   initialEncounterId,
 }) => {
@@ -110,9 +57,11 @@ const EncounterPage: NextPage<EncounterPageProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-base-200">
-      <EncounterContent encounter={encounter} players={allPlayers} />
-    </div>
+    <EncounterProvider initialEncounter={encounter}>
+      <div className="min-h-screen bg-base-200">
+        <EncounterContent players={allPlayers} />
+      </div>
+    </EncounterProvider>
   );
 };
 

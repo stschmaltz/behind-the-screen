@@ -103,4 +103,4 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
   );
 };
 
-export { NewEnemiesSection };
+export default NewEnemiesSection;

@@ -3,9 +3,9 @@ import {
   Encounter,
   EncounterCharacter,
   InitiativeOrderCharacter,
-} from '../../../../types/encounters';
-import { Player } from '../../../../types/player';
-import { useSaveEncounter } from '../../hooks/use-save-encounter';
+} from '../../types/encounters';
+import { Player } from '../../types/player';
+import { useSaveEncounter } from './use-save-encounter';
 
 export const useEncounterDraft = (
   encounter: Encounter,

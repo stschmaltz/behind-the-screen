@@ -57,4 +57,4 @@ const NewNotesSection: React.FC<NewNotesSectionProps> = ({
   );
 };
 
-export { NewNotesSection };
+export default NewNotesSection;

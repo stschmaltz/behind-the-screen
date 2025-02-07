@@ -61,3 +61,23 @@ export interface Encounter extends EncounterTemplate {
 
 export type NewEncounterTemplate = OmitMongoFields<EncounterTemplate>;
 export type NewEncounter = OmitMongoFields<Encounter>;
+
+export interface ActiveInitiativeOrderCharacter
+  extends InitiativeOrderCharacter {
+  initiative: number;
+}
+
+interface ActiveEncounter extends Encounter {
+  status: 'active';
+  initiativeOrder: ActiveInitiativeOrderCharacter[];
+}
+
+const isActiveEncounter = (
+  encounter: Encounter,
+): encounter is ActiveEncounter =>
+  encounter.status === 'active' &&
+  encounter.initiativeOrder.every(
+    (character) => character.initiative !== undefined,
+  );
+
+export { isActiveEncounter };

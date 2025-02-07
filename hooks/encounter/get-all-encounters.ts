@@ -1,9 +1,9 @@
 import {
   allEncountersQuery,
   AllEncountersResponse,
-} from '../data/graphql/snippets/encounter';
-import { Encounter } from '../types/encounters';
-import { useQuery } from './use-async-query';
+} from '../../data/graphql/snippets/encounter';
+import { Encounter } from '../../types/encounters';
+import { useQuery } from '../use-async-query';
 
 function getAllEncounters(): { encounters: Encounter[]; loading: boolean } {
   const { data, loading } = useQuery<Encounter[]>({

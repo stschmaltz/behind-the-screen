@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
-import { NewEnemyModal } from './NewEnemyModal';
-import { AddPlayersModal } from './AddPlayersModal';
-import { InactiveEncounterCharacterRow } from './InactiveEncounterCharacterRow';
-import { useEncounterDraft } from './hooks/use-draft-encounter';
-import { Button } from '../../../components/Button';
-import { useUnsavedChangesWarning } from '../../../hooks/use-unsaved-changes-warning';
-import { Encounter } from '../../../types/encounters';
-import { Player } from '../../../types/player';
-import { showDaisyToast } from '../../../lib/daisy-toast';
+import InactiveEncounterCharacterRow from './InactiveEncounterCharacterRow';
+import { NewEnemyModal } from '../NewEnemyModal';
+import AddPlayersModal from '../AddPlayersModal';
+import { useEncounterDraft } from '../../../../hooks/encounter/use-draft-encounter';
+import { Button } from '../../../../components/Button';
+import { useUnsavedChangesWarning } from '../../../../hooks/use-unsaved-changes-warning';
+import { Encounter } from '../../../../types/encounters';
+import { Player } from '../../../../types/player';
+import { showDaisyToast } from '../../../../lib/daisy-toast';
+import { useEncounterContext } from '../../../../context/EncounterContext';
 
 interface Props {
   encounter: Encounter;
   players: Player[];
 }
 
-const InactiveEncounterTable: React.FC<Props> = ({ encounter, players }) => {
+const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const { encounter, setEncounter } = useEncounterContext();
 
   const {
     draftEncounter,
@@ -85,10 +87,15 @@ const InactiveEncounterTable: React.FC<Props> = ({ encounter, players }) => {
           variant="primary"
           label="Start Encounter"
           disabled={!isAllInitiativeSet}
+          onClick={() => {
+            handleSave({ ...draftEncounter, status: 'active' });
+            showDaisyToast('success', 'Encounter started');
+            setEncounter({ ...draftEncounter, status: 'active' });
+          }}
         />
       </div>
     </div>
   );
 };
 
-export { InactiveEncounterTable };
+export default InactiveEncounterTable;
