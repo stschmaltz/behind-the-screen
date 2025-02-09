@@ -45,7 +45,7 @@ const FormInput: React.FC<FormInputProps> = ({
         value={value}
         onChange={onChange}
         {...(type === 'number' && { min, max, step })}
-        className={`input input-bordered ${className}`}
+        className={`input ${className}`}
         placeholder={placeholder}
         required={required}
       />

@@ -40,9 +40,9 @@ const ThemeSwitcher: React.FC = ({}) => {
 
   return (
     <>
-      <details className="dropdown ">
+      <details className="dropdown z-50">
         <summary className="btn btn-secondary m-1 w-28">Theme</summary>
-        <ul className="dropdown-content shadow max-h-[70vh] overflow-y-auto">
+        <ul className="dropdown-content shadow max-h-[70vh] overflow-y-auto backdrop-blur-md">
           {themes?.map((theme) => (
             <li key={theme}>
               <button

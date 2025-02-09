@@ -49,7 +49,15 @@ const InactiveEncounterCharacterRow = ({
           className="w-16"
           id={`maxHP-${character.name}`}
           aria-label="Maximum HP"
-          onChange={(e) => handleNumberChange('maxHP', e)}
+          onChange={(e) => {
+            // update current and maxhp when maxhp changes
+            const maxHP = Number(e.target.value);
+            onUpdate?.({
+              ...character,
+              maxHP,
+              currentHP: Math.max(character.currentHP ?? maxHP, maxHP),
+            });
+          }}
         />
       </td>
       <td className="py-2 px-4">

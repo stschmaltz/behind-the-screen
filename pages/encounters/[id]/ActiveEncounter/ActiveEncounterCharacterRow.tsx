@@ -18,20 +18,31 @@ const HealthModifier: React.FC<{
         type="number"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        className="w-20"
+        className="w-20 m-0 input-sm"
         placeholder="HP"
       />
       <Button
         variant="secondary"
         label="Damage"
+        className="btn-sm"
         onClick={() => {
           onApply(-Number(value));
           setValue('');
         }}
       />
       <Button
+        className="btn-sm"
         variant="primary"
         label="Heal"
+        onClick={() => {
+          onApply(Number(value));
+          setValue('');
+        }}
+      />
+      <Button
+        variant="info"
+        className="btn-sm"
+        label="Temp HP"
         onClick={() => {
           onApply(Number(value));
           setValue('');
@@ -136,28 +147,49 @@ const ActiveEncounterCharacterRow: React.FC<{
               )}
             </h3>
             <div className="flex items-center gap-4 mt-2">
-              <span className="badge badge-ghost">
+              <span className="badge badge-neutral">
                 Initiative: {character.initiative}
-              </span>
-              <span className="badge badge-ghost">
-                AC: {character.armorClass}
-              </span>
-              <span
-                className={`badge ${(character.currentHP ?? 0) <= 0 ? 'badge-error' : 'badge-ghost'}`}
-              >
-                HP: {character.currentHP ?? 0}/{character.maxHP}
               </span>
             </div>
           </div>
-          <HealthModifier onApply={handleHealthChange} />
+          <div className="flex gap-4 items-center">
+            <FormInput
+              type="number"
+              value={character.armorClass ?? ''}
+              width="w-14"
+              id="armorClass"
+              onChange={(e) =>
+                onUpdateCharacter({
+                  ...character,
+                  armorClass: Number(e.target.value),
+                })
+              }
+              label="AC"
+              placeholder="n/a"
+              className="input-sm"
+            />
+            <div className="flex flex-col gap-2">
+              <div className="flex">
+                {character.maxHP && (
+                  <span
+                    className={`badge badge-lg ${(character.currentHP ?? 0) <= 0 ? 'badge-error' : 'badge-ghost'}`}
+                  >
+                    HP: {character.currentHP ?? 0}/{character.maxHP}
+                  </span>
+                )}
+                <HealthModifier onApply={handleHealthChange} />
+              </div>
+              <div className="justify-self-end">
+                <ConditionManager
+                  conditions={character.conditions ?? []}
+                  onAddCondition={handleAddCondition}
+                  onRemoveCondition={handleRemoveCondition}
+                />
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="mt-2">
-          <ConditionManager
-            conditions={character.conditions ?? []}
-            onAddCondition={handleAddCondition}
-            onRemoveCondition={handleRemoveCondition}
-          />
-        </div>
+        <div className="mt-2"></div>
       </div>
     </div>
   );

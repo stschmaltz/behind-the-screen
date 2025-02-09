@@ -9,6 +9,7 @@ import { Encounter } from '../../../../types/encounters';
 import { Player } from '../../../../types/player';
 import { showDaisyToast } from '../../../../lib/daisy-toast';
 import { useEncounterContext } from '../../../../context/EncounterContext';
+import { useSaveEncounter } from '../../../../hooks/encounter/use-save-encounter';
 
 interface Props {
   encounter: Encounter;
@@ -18,7 +19,6 @@ interface Props {
 const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const { encounter, setEncounter } = useEncounterContext();
-
   const {
     draftEncounter,
     handleAddEnemy,

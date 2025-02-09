@@ -1,68 +1,56 @@
-import React, { useState } from 'react';
+import React from 'react';
 import ActiveEncounterCharacterRow from './ActiveEncounterCharacterRow';
 import { Button } from '../../../../components/Button';
-import { showDaisyToast } from '../../../../lib/daisy-toast';
-import {
-  Encounter,
-  InitiativeOrderCharacter,
-} from '../../../../types/encounters';
 import { Player } from '../../../../types/player';
 import { useEncounterContext } from '../../../../context/EncounterContext';
+import { useSaveEncounter } from '../../../../hooks/encounter/use-save-encounter';
+import { showDaisyToast } from '../../../../lib/daisy-toast';
+import { useEncounterTurnManagement } from '../../../../hooks/encounter/use-encounter-turn-management';
+import { Encounter } from '../../../../types/encounters';
 
 const ActiveEncounterTable: React.FC<{
   players: Player[];
 }> = ({ players: _ }) => {
   const { encounter, setEncounter } = useEncounterContext();
-  const [currentTurnIndex, setCurrentTurnIndex] = useState(0);
-
-  const sortedCharacters = [...encounter.initiativeOrder].sort(
-    (a, b) => (b.initiative ?? 0) - (a.initiative ?? 0),
-  );
+  const { handleSave } = useSaveEncounter();
 
   const onSave = (newEncounter: Encounter) => {
+    handleSave(newEncounter);
     setEncounter(newEncounter);
-    // TODO: optimistic update, call mutation to update encounter
+    // Show toast when turn changes
+    if (newEncounter.currentTurn !== encounter.currentTurn) {
+      const currentCharacter = newEncounter.initiativeOrder.sort(
+        (a, b) => (b.initiative ?? 0) - (a.initiative ?? 0),
+      )[(newEncounter.currentTurn ?? 1) - 1];
+      showDaisyToast('info', `${currentCharacter.name}'s turn`);
+    }
   };
 
-  const handleNextTurn = () => {
-    setCurrentTurnIndex((prev) => (prev + 1) % sortedCharacters.length);
-    showDaisyToast(
-      'info',
-      `${sortedCharacters[(currentTurnIndex + 1) % sortedCharacters.length].name}'s turn`,
-    );
-  };
-
-  const handlePreviousTurn = () => {
-    setCurrentTurnIndex(
-      (prev) => (prev - 1 + sortedCharacters.length) % sortedCharacters.length,
-    );
-    showDaisyToast(
-      'info',
-      `${sortedCharacters[(currentTurnIndex - 1 + sortedCharacters.length) % sortedCharacters.length].name}'s turn`,
-    );
-  };
-
-  const handleUpdateCharacter = (
-    updatedCharacter: InitiativeOrderCharacter,
-  ) => {
-    const newEncounter = {
-      ...encounter,
-      initiativeOrder: encounter.initiativeOrder.map((char) =>
-        char.name === updatedCharacter.name ? updatedCharacter : char,
-      ),
-    };
-    onSave(newEncounter);
-  };
+  const {
+    currentCharacter,
+    sortedCharacters,
+    handleNextTurn,
+    handlePreviousTurn,
+    handleUpdateCharacter,
+  } = useEncounterTurnManagement(encounter, onSave);
 
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Combat Round</h2>
+        <div>
+          <span className="badge badge-info mr-2">
+            Round {encounter.currentRound ?? 1}
+          </span>
+          <span className="badge badge-info">Turn {encounter.currentTurn}</span>
+        </div>
         <div className="flex gap-2">
           <Button
             variant="secondary"
             label="Previous Turn"
             onClick={handlePreviousTurn}
+            disabled={
+              encounter.currentTurn === 1 && encounter.currentRound === 1
+            }
           />
           <Button
             variant="primary"
@@ -73,11 +61,11 @@ const ActiveEncounterTable: React.FC<{
       </div>
 
       <div className="space-y-4">
-        {sortedCharacters.map((character, index) => (
+        {sortedCharacters.map((character) => (
           <ActiveEncounterCharacterRow
             key={character.name}
             character={character}
-            isCurrentTurn={index === currentTurnIndex}
+            isCurrentTurn={character.name === currentCharacter.name}
             onUpdateCharacter={handleUpdateCharacter}
           />
         ))}
