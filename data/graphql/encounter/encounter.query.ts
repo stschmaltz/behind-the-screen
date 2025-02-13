@@ -1,6 +1,10 @@
 import { appContainer } from '../../../container/inversify.config';
 import { TYPES } from '../../../container/types';
-import { GraphQLContext } from '../../../lib/context';
+import {
+  GraphQLContext,
+  isAuthorized,
+  isAuthorizedOrThrow,
+} from '../../../lib/graphql-context';
 import { EncounterRepositoryInterface } from '../../../repositories/encounter/encounter.repository.interface';
 
 const encounterQueryTypeDefs = /* GraphQL */ `
@@ -16,16 +20,25 @@ const encounterRepository = appContainer.get<EncounterRepositoryInterface>(
 
 const encounterQueryResolver = {
   Query: {
-    async encounterById(_: never, { id }: { id: string }, context: GraphQLContext) {
-      
-      console.log('encounterById', {id,context});
+    async encounterById(
+      _: never,
+      { id }: { id: string },
+      context: GraphQLContext,
+    ) {
+      isAuthorizedOrThrow(context);
 
-      return encounterRepository.getEncounterById(id);
+      return encounterRepository.getEncounterById({
+        id,
+        userId: context.user._id,
+      });
     },
-    async allEncounters() {
+    async allEncounters(_: never, __: never, context: GraphQLContext) {
       console.log('allEncounters');
+      isAuthorizedOrThrow(context);
 
-      return encounterRepository.getAllEncounters();
+      return encounterRepository.getAllEncounters({
+        userId: context.user._id,
+      });
     },
   },
 };

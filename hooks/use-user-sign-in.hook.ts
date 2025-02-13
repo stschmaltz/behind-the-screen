@@ -22,7 +22,12 @@ function useUserSignIn(): readonly [
     if (user) {
       setIsLoadingPlaceholders(true);
       asyncFetch<SignInUserMutationResponse>(signInUserMutation, {
-        input: { email: user.email, auth0Id: user.sub, name: user.name, picture: user.picture },
+        input: {
+          email: user.email,
+          auth0Id: user.sub,
+          name: user.name,
+          picture: user.picture,
+        },
       }).then((data: SignInUserMutationResponse) => {
         setCurrentUser && setCurrentUser(data.userSignIn.user);
         setIsLoadingPlaceholders(false);

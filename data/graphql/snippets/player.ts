@@ -6,6 +6,7 @@ const fullPlayer = /* GraphQL */ `
     name
     armorClass
     maxHP
+    userId
   }
 `;
 

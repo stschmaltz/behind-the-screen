@@ -4,11 +4,11 @@ import { asyncFetch } from '../../data/graphql/graphql-fetcher';
 import { saveEncounterMutation } from '../../data/graphql/snippets/encounter';
 import { Encounter, NewEncounterTemplate } from '../../types/encounters';
 
-const DEBOUNCE_DELAY = 500; 
+const DEBOUNCE_DELAY = 500;
 
 const useSaveEncounter = () => {
   const [isSaving, setIsSaving] = useState(false);
-  
+
   const latestSavePromiseRef = useRef<Promise<boolean> | null>(null);
 
   const validateNewEncounter = (
@@ -47,28 +47,33 @@ const useSaveEncounter = () => {
   };
 
   const debouncedSave = useCallback(
-    debounce(async (encounter: Encounter | NewEncounterTemplate) => {
-      setIsSaving(true);
-      
-      try {
-        const promise = saveEncounter(encounter);
-        latestSavePromiseRef.current = promise;
-        
-        const result = await promise;
+    debounce(
+      async (encounter: Encounter | NewEncounterTemplate) => {
+        setIsSaving(true);
 
-        if (latestSavePromiseRef.current === promise) {
+        try {
+          const promise = saveEncounter(encounter);
+          latestSavePromiseRef.current = promise;
+
+          const result = await promise;
+
+          if (latestSavePromiseRef.current === promise) {
+            setIsSaving(false);
+            return result;
+          }
+        } catch (error) {
           setIsSaving(false);
-          return result;
+          throw error;
         }
-      } catch (error) {
-        setIsSaving(false);
-        throw error;
-      }
-    }, DEBOUNCE_DELAY, {
-      leading: false,
-      trailing: true, // Execute on the trailing edge
-    }),
-    [] );
+      },
+      DEBOUNCE_DELAY,
+      {
+        leading: false,
+        trailing: true, // Execute on the trailing edge
+      },
+    ),
+    [],
+  );
 
   useEffect(() => {
     return () => {
@@ -79,9 +84,11 @@ const useSaveEncounter = () => {
   const handleSave = useCallback(
     async (encounter: Encounter | NewEncounterTemplate): Promise<boolean> => {
       console.log('handleSave', { encounter });
-      return await Promise.resolve(debouncedSave(encounter)).then(result => result ?? false);
+      return await Promise.resolve(debouncedSave(encounter)).then(
+        (result) => result ?? false,
+      );
     },
-    [debouncedSave]
+    [debouncedSave],
   );
 
   return { isSaving, handleSave };

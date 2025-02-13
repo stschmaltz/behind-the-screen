@@ -1,12 +1,12 @@
 // lib/user-cache.ts
 
-import { UserObject } from "../types/user";
+import { UserObject } from '../types/user';
 
 interface CacheEntry {
   data: UserObject;
   timestamp: number;
 }
-// TODO: use redis 
+// TODO: use redis
 export class UserCache {
   private cache = new Map<string, CacheEntry>();
   private ttl: number;
@@ -31,7 +31,7 @@ export class UserCache {
   set(auth0Id: string, user: UserObject): void {
     this.cache.set(auth0Id, {
       data: user,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }
 

@@ -46,11 +46,4 @@ export interface UserRepositoryInterface {
    * @returns A promise resolving to the upserted user object.
    */
   handleUserSignIn(userData: UserSignInData): Promise<UserObject>;
-
-  /**
-   * Saves a user document.
-   * @param user The user object to be saved.
-   * @returns The saved user object.
-   */
-  saveUser(user: UserObject): Promise<UserObject>;
 }

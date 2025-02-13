@@ -10,7 +10,7 @@ import { UserObject } from '../../types/user';
 const collectionName = 'users';
 
 const mapUserDocumentToUserObject = (doc: UserDocument): UserObject => ({
-  _id: doc._id,
+  _id: doc._id.toHexString(),
   auth0Id: doc.auth0Id,
   email: doc.email,
   name: doc.name,
@@ -22,9 +22,9 @@ class UserRepository implements UserRepositoryInterface {
     try {
       const { db } = await getDbClient();
 
-      const user = (await db
+      const user = await db
         .collection<UserDocument>(collectionName)
-        .findOne({ _id: new ObjectId(id) }));
+        .findOne({ _id: new ObjectId(id) });
 
       if (!user) {
         throw new Error('User not found');
@@ -41,9 +41,9 @@ class UserRepository implements UserRepositoryInterface {
     try {
       const { db } = await getDbClient();
 
-      const user = (await db
+      const user = await db
         .collection<UserDocument>(collectionName)
-        .findOne({ auth0Id }));
+        .findOne({ auth0Id });
 
       if (!user) {
         return null;
@@ -61,17 +61,17 @@ class UserRepository implements UserRepositoryInterface {
 
     const { db } = await getDbClient();
 
-    const user= await db
+    const user = await db
       .collection<UserDocument>(collectionName)
       .findOneAndUpdate(
         { auth0Id: userData.auth0Id },
-        { 
-          $set: { 
+        {
+          $set: {
             auth0Id: userData.auth0Id,
             email: userData.email,
             name: userData.name,
             picture: userData.picture,
-          } 
+          },
         },
         { upsert: true, returnDocument: 'after' },
       );
@@ -83,26 +83,6 @@ class UserRepository implements UserRepositoryInterface {
     return mapUserDocumentToUserObject(user);
   }
 
-  public async saveUser(user: UserObject): Promise<UserObject> {
-    try {
-      const { db } = await getDbClient();
-
-      if (user._id) {
-        await db.collection(collectionName).updateOne(
-          { _id: new ObjectId(user._id) },
-          { $set: user }
-        );
-      } else {
-        const result = await db.collection(collectionName).insertOne(user);
-        user._id = result.insertedId;
-      }
-
-      return user;
-    } catch (error) {
-      console.log(error);
-      throw new Error('Failed to save user');
-    }
-  }
 }
 
 export { UserRepository };

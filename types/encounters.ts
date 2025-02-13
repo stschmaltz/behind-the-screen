@@ -25,6 +25,7 @@ export interface EncounterCharacter {
 
 export interface EncounterTemplate {
   _id: string;
+  userId: string;
   name: string;
   description?: string;
   notes: string[];

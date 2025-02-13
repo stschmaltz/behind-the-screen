@@ -30,6 +30,10 @@ function Layout({ children }: LayoutProps) {
       </header>
       <ToastContainer />
 
+      {/* this app is under development and not ready for use yet banner */}
+      <div className="bg-red-500 text-white text-center p-2">
+        This app is under development and not ready for use yet
+      </div>
       {currentUser ? (
         <div className="p-4 min-h-[85vh] overflow-auto flex flex-col bg-content-100">
           <div className="flex justify-between items-center">

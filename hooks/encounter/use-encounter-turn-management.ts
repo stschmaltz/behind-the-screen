@@ -1,6 +1,6 @@
 // useEncounterTurnManagement.ts
 
-import { InitiativeOrderCharacter, Encounter } from "../../types/encounters";
+import { InitiativeOrderCharacter, Encounter } from '../../types/encounters';
 
 interface UseTurnManagementResult {
   currentCharacter: InitiativeOrderCharacter;
@@ -12,20 +12,19 @@ interface UseTurnManagementResult {
 
 export const useEncounterTurnManagement = (
   encounter: Encounter,
-  onSave: (encounter: Encounter) => void
+  onSave: (encounter: Encounter) => void,
 ): UseTurnManagementResult => {
   const sortedCharacters = [...encounter.initiativeOrder].sort(
-    (a, b) => (b.initiative ?? 0) - (a.initiative ?? 0)
+    (a, b) => (b.initiative ?? 0) - (a.initiative ?? 0),
   );
 
   const updateEncounter = (turn: number, round: number) => {
     // Don't allow going before round 1, turn 1
- 
 
     onSave({
       ...encounter,
       currentTurn: turn,
-      currentRound: round
+      currentRound: round,
     });
   };
 
@@ -33,30 +32,32 @@ export const useEncounterTurnManagement = (
     const isLastTurn = encounter.currentTurn === sortedCharacters.length;
     updateEncounter(
       isLastTurn ? 1 : encounter.currentTurn + 1,
-      isLastTurn ? encounter.currentRound + 1 : encounter.currentRound
+      isLastTurn ? encounter.currentRound + 1 : encounter.currentRound,
     );
   };
 
   const handlePreviousTurn = () => {
-    const isFirstRound = encounter.currentRound === 1;  
+    const isFirstRound = encounter.currentRound === 1;
     const isFirstTurn = encounter.currentTurn === 1;
-    if(isFirstTurn && isFirstRound) return
+    if (isFirstTurn && isFirstRound) return;
 
-    const newTurn = isFirstTurn ? sortedCharacters.length : encounter.currentTurn - 1;
-    const newRound = isFirstTurn ? Math.max(1, encounter.currentRound - 1) : encounter.currentRound;
-    
+    const newTurn = isFirstTurn
+      ? sortedCharacters.length
+      : encounter.currentTurn - 1;
+    const newRound = isFirstTurn
+      ? Math.max(1, encounter.currentRound - 1)
+      : encounter.currentRound;
 
-    updateEncounter(
-        newTurn,
-        newRound
-    );
+    updateEncounter(newTurn, newRound);
   };
 
-  const handleUpdateCharacter = (updatedCharacter: InitiativeOrderCharacter) => {
+  const handleUpdateCharacter = (
+    updatedCharacter: InitiativeOrderCharacter,
+  ) => {
     onSave({
       ...encounter,
       initiativeOrder: encounter.initiativeOrder.map((char) =>
-        char.name === updatedCharacter.name ? updatedCharacter : char
+        char.name === updatedCharacter.name ? updatedCharacter : char,
       ),
     });
   };
@@ -68,6 +69,6 @@ export const useEncounterTurnManagement = (
     sortedCharacters,
     handleNextTurn,
     handlePreviousTurn,
-    handleUpdateCharacter
+    handleUpdateCharacter,
   };
 };

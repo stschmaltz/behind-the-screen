@@ -35,6 +35,7 @@ export const fullEncounter = /* GraphQL */ `
     currentRound
     currentTurn
     createdAt
+    userId
   }
 `;
 

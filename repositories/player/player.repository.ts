@@ -12,6 +12,7 @@ export class PlayerRepository implements PlayerRepositoryInterface {
     const { db } = await getDbClient();
     const docToInsert = {
       ...input,
+      userId: new ObjectId(input.userId),
       createdAt: new Date(),
     };
     const result = await db
@@ -24,28 +25,43 @@ export class PlayerRepository implements PlayerRepositoryInterface {
     });
   }
 
-  public async deletePlayer(id: string): Promise<boolean> {
+  public async deletePlayer(input: {
+    id: string;
+    userId: string;
+  }): Promise<boolean> {
+    const { id, userId } = input;
     const { db } = await getDbClient();
     const result = await db
       .collection(this.collectionName)
-      .deleteOne({ _id: new ObjectId(id) });
+      .deleteOne({ _id: new ObjectId(id), userId: new ObjectId(userId) });
 
     return result.deletedCount === 1;
   }
 
-  public async getPlayersByIds(id: string[]): Promise<Player[]> {
+  public async getPlayersByIds(input: {
+    ids: string[];
+    userId: string;
+  }): Promise<Player[]> {
+    const { ids, userId } = input;
     const { db } = await getDbClient();
     const docs = await db
       .collection(this.collectionName)
-      .find({ _id: { $in: id.map((i) => new ObjectId(i)) } })
+      .find({
+        _id: {
+          $in: ids.map((id) => new ObjectId(id)),
+          userId: new ObjectId(userId),
+        },
+      })
       .toArray();
 
     return docs.map(this.mapToPlayer);
   }
 
-  public async getAllPlayers(): Promise<Player[]> {
+  public async getAllPlayers(input: { userId: string }): Promise<Player[]> {
+    const { userId } = input;
+    console.log('getAllPlayers', userId);
     const { db } = await getDbClient();
-    const docs = await db.collection(this.collectionName).find().toArray();
+    const docs = await db.collection(this.collectionName).find({userId:new ObjectId(userId)}).toArray();
 
     console.log('getAllPlayers', docs);
     return docs.map(this.mapToPlayer);
@@ -55,6 +71,10 @@ export class PlayerRepository implements PlayerRepositoryInterface {
     return {
       _id: doc._id.toHexString(),
       name: doc.name,
+      userId: doc.userId,
+      armorClass: doc.armorClass,
+      currentHP: doc.currentHP,
+      maxHP: doc.maxHP,
     };
   }
 }

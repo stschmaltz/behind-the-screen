@@ -14,6 +14,7 @@ export const encounterTypeDefs = /* GraphQL */ `
     enemies: [EncounterCharacter!]!
     status: String!
     createdAt: Date!
+    userId: String!
   }
 
   type Encounter {
@@ -29,6 +30,7 @@ export const encounterTypeDefs = /* GraphQL */ `
     currentRound: Int!
     currentTurn: Int!
     createdAt: Date!
+    userId: String!
   }
 
   type EncounterPlayerId {
@@ -64,9 +66,10 @@ export const encounterTypeDefs = /* GraphQL */ `
     players: [EncounterPlayerIdInput!] = []
     npcs: [NewEncounterCharacterInput!] = []
     initiativeOrder: [InitiativeOrderInput!] = []
-    currentRound: Int = 0
-    currentTurn: Int = 0
+    currentRound: Int = 1
+    currentTurn: Int = 1
     createdAt: Date
+    userId: String
   }
 
   input NewEncounterCharacterInput {

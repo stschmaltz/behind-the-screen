@@ -1,5 +1,6 @@
 import { appContainer } from '../../../container/inversify.config';
 import { TYPES } from '../../../container/types';
+import { GraphQLContext, isAuthorized, isAuthorizedOrThrow } from '../../../lib/graphql-context';
 import { PlayerRepositoryInterface } from '../../../repositories/player/player.repository.interface';
 
 const playerQueryTypeDefs = /* GraphQL */ `
@@ -15,11 +16,16 @@ const playerRepository = appContainer.get<PlayerRepositoryInterface>(
 
 const playerQueryResolver = {
   Query: {
-    async playersByIds(_: unknown, { ids }: { ids: string[] }) {
-      return playerRepository.getPlayersByIds(ids);
+    async playersByIds(_: unknown, { ids }: { ids: string[] }, context: GraphQLContext) {
+      isAuthorizedOrThrow(context);
+      return playerRepository.getPlayersByIds({ ids, userId: context.user._id });
     },
-    async allPlayers() {
-      return playerRepository.getAllPlayers();
+    async allPlayers(_:never, __:never, context: GraphQLContext) {
+      isAuthorizedOrThrow(context);
+
+      return playerRepository.getAllPlayers({
+        userId: context.user._id,
+      });
     },
   },
 };

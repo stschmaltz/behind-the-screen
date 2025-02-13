@@ -5,6 +5,7 @@ export const playerTypeDefs = /* GraphQL */ `
     armorClass: Int
     maxHP: Int
     createdAt: Date!
+    userId: String!
   }
 
   input NewPlayerInput {

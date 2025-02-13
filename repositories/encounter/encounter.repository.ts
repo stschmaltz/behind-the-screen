@@ -8,9 +8,13 @@ import { getDbClient } from '../../data/database/mongodb';
 export class EncounterRepository implements EncounterRepositoryInterface {
   private collectionName = 'encounters';
 
-  public async saveEncounter(input: Partial<Encounter>): Promise<Encounter> {
+  public async saveEncounter(
+    input: Partial<Encounter> & {
+      userId: string;
+    },
+  ): Promise<Encounter> {
     const { db } = await getDbClient();
-    const { _id, ...docToInsert } = input;
+    const { _id, userId, ...docToInsert } = input;
 
     const result = await db.collection(this.collectionName).findOneAndUpdate(
       { _id: new ObjectId(_id) },
@@ -18,6 +22,7 @@ export class EncounterRepository implements EncounterRepositoryInterface {
         $set: {
           createdAt: new Date(),
           ...docToInsert,
+          userId: new ObjectId(userId),
           updatedAt: new Date(),
         },
       },
@@ -30,18 +35,29 @@ export class EncounterRepository implements EncounterRepositoryInterface {
     return this.mapToEncounter(result);
   }
 
-  public async getEncounterById(id: string): Promise<Encounter | null> {
+  public async getEncounterById(input: {
+    id: string;
+    userId: string;
+  }): Promise<Encounter | null> {
+    const { id, userId } = input;
     const { db } = await getDbClient();
     const doc = await db
       .collection(this.collectionName)
-      .findOne({ _id: new ObjectId(id) });
+      .findOne({ _id: new ObjectId(id), userId: new ObjectId(userId) });
 
     return doc ? this.mapToEncounter(doc) : null;
   }
 
-  public async getAllEncounters(): Promise<Encounter[]> {
+  public async getAllEncounters(input: {
+    userId: string;
+  }): Promise<Encounter[]> {
     const { db } = await getDbClient();
-    const docs = await db.collection(this.collectionName).find().toArray();
+    const docs = await db
+      .collection(this.collectionName)
+      .find({
+        userId: new ObjectId(input.userId),
+      })
+      .toArray();
 
     console.log('getAllEncounters', docs);
     return docs.map(this.mapToEncounter);
@@ -61,6 +77,7 @@ export class EncounterRepository implements EncounterRepositoryInterface {
       players: doc.players ?? [],
       status: doc.status ?? 'inactive',
       description: doc.description,
+      userId: doc.userId.toHexString(),
     };
   }
 }

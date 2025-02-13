@@ -5,7 +5,7 @@ import { getSession } from '@auth0/nextjs-auth0';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { appContainer } from '../../container/inversify.config';
 import { TYPES } from '../../container/types';
-import { ContextBuilder } from '../../lib/context';
+import { ContextBuilder } from '../../lib/graphql-context';
 import { UserRepository } from '../../repositories/user/user.repository';
 
 const userRepository = appContainer.get<UserRepository>(TYPES.UserRepository);
@@ -21,6 +21,5 @@ export default createYoga<{
   context: async ({ req, res }) => {
     const session = await getSession(req, res);
     return contextBuilder.buildContext(session);
-  }
+  },
 });
-
