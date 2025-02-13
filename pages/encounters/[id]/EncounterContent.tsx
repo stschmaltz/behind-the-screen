@@ -1,5 +1,5 @@
 import InactiveEncounterTable from './InactiveEncounter/InactiveEncounterTable';
-import { ActiveEncounterTable } from './ActiveEncounter/ActiveEncounterTable';
+import ActiveEncounterTable from './ActiveEncounter/ActiveEncounterTable';
 import { Player } from '../../../types/player';
 import { useEncounterContext } from '../../../context/EncounterContext';
 

@@ -74,4 +74,4 @@ const ActiveEncounterTable: React.FC<{
   );
 };
 
-export { ActiveEncounterTable };
+export default ActiveEncounterTable;

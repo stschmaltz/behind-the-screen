@@ -87,4 +87,4 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
   );
 };
 
-export { NewEnemyModal };
+export default NewEnemyModal;
