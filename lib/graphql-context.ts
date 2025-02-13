@@ -1,8 +1,8 @@
 // lib/context.ts
+import { Session } from '@auth0/nextjs-auth0';
+import { UserCache } from './user-cache';
 import { UserRepositoryInterface } from '../repositories/user/user.repository.interface';
 import { UserObject } from '../types/user';
-import { UserCache } from './user-cache';
-import { Session } from '@auth0/nextjs-auth0';
 
 export interface GraphQLContext {
   auth0Id?: string;

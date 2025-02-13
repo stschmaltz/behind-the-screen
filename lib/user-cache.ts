@@ -22,6 +22,7 @@ export class UserCache {
 
     if (Date.now() - entry.timestamp > this.ttl) {
       this.cache.delete(auth0Id);
+
       return null;
     }
 

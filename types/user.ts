@@ -1,4 +1,3 @@
-
 export interface UserObject {
   _id: string;
   email: string;

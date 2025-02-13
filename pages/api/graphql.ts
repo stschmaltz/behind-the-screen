@@ -1,8 +1,8 @@
 // pages/api/graphql.ts
 import { createYoga } from 'graphql-yoga';
-import { schema } from '../../data/graphql';
 import { getSession } from '@auth0/nextjs-auth0';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { schema } from '../../data/graphql';
 import { appContainer } from '../../container/inversify.config';
 import { TYPES } from '../../container/types';
 import { ContextBuilder } from '../../lib/graphql-context';
@@ -20,6 +20,7 @@ export default createYoga<{
   maskedErrors: true,
   context: async ({ req, res }) => {
     const session = await getSession(req, res);
+
     return contextBuilder.buildContext(session);
   },
 });

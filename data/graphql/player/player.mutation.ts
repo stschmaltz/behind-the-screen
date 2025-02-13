@@ -1,6 +1,9 @@
 import { appContainer } from '../../../container/inversify.config';
 import { TYPES } from '../../../container/types';
-import { GraphQLContext,  isAuthorizedOrThrow } from '../../../lib/graphql-context';
+import {
+  GraphQLContext,
+  isAuthorizedOrThrow,
+} from '../../../lib/graphql-context';
 import { PlayerRepositoryInterface } from '../../../repositories/player/player.repository.interface';
 
 const playerMutationTypeDefs = /* GraphQL */ `
@@ -22,18 +25,26 @@ const playerRepository = appContainer.get<PlayerRepositoryInterface>(
 
 const playerMutationResolver = {
   Mutation: {
-    async savePlayer(_: unknown, { input }: SavePlayerArgs, context:GraphQLContext) {
+    async savePlayer(
+      _: unknown,
+      { input }: SavePlayerArgs,
+      context: GraphQLContext,
+    ) {
       console.log('savePlayer', input);
-      isAuthorizedOrThrow(context)
+      isAuthorizedOrThrow(context);
       return playerRepository.savePlayer({
         name: input.name,
         userId: context.user._id,
       });
     },
 
-    async deletePlayer(_: unknown, { id }: { id: string }, context: GraphQLContext) {
+    async deletePlayer(
+      _: unknown,
+      { id }: { id: string },
+      context: GraphQLContext,
+    ) {
       console.log('deletePlayer', id);
-      isAuthorizedOrThrow(context)
+      isAuthorizedOrThrow(context);
 
       return playerRepository.deletePlayer({
         id,

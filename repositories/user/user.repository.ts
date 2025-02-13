@@ -82,7 +82,6 @@ class UserRepository implements UserRepositoryInterface {
 
     return mapUserDocumentToUserObject(user);
   }
-
 }
 
 export { UserRepository };

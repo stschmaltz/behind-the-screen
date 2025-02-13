@@ -61,7 +61,10 @@ export class PlayerRepository implements PlayerRepositoryInterface {
     const { userId } = input;
     console.log('getAllPlayers', userId);
     const { db } = await getDbClient();
-    const docs = await db.collection(this.collectionName).find({userId:new ObjectId(userId)}).toArray();
+    const docs = await db
+      .collection(this.collectionName)
+      .find({ userId: new ObjectId(userId) })
+      .toArray();
 
     console.log('getAllPlayers', docs);
     return docs.map(this.mapToPlayer);

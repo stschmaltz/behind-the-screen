@@ -34,7 +34,13 @@ const PlayerManagementSection: React.FC<Props> = ({ startingPlayers }) => {
 
     setPlayers([
       ...players,
-      { _id: response.savePlayer._id, name: response.savePlayer.name },
+      {
+        _id: response.savePlayer._id,
+        name: response.savePlayer.name,
+        userId: response.savePlayer.userId,
+        armorClass: response.savePlayer.armorClass,
+        maxHP: response.savePlayer.maxHP,
+      },
     ]);
     setNewPlayerName('');
   };
