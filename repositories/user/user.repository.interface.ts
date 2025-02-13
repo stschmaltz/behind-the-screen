@@ -6,7 +6,20 @@ import { UserObject } from '../../types/user';
  */
 export interface UserDocument {
   _id: ObjectId;
+  auth0Id: string;
   email: string;
+  name?: string;
+  picture?: string;
+}
+
+/**
+ * Data required for user sign-in
+ */
+export interface UserSignInData {
+  auth0Id: string;
+  email: string;
+  name?: string;
+  picture?: string;
 }
 
 /**
@@ -21,11 +34,18 @@ export interface UserRepositoryInterface {
   findUser(id: string): Promise<UserObject>;
 
   /**
+   * Finds a user by their Auth0 ID.
+   * @param auth0Id The Auth0 sub identifier.
+   * @returns A promise resolving to the user object, or null if not found.
+   */
+  findUserByAuth0Id(auth0Id: string): Promise<UserObject | null>;
+
+  /**
    * Creates or updates a user upon sign-in.
-   * @param email The user’s email.
+   * @param userData The user data from Auth0.
    * @returns A promise resolving to the upserted user object.
    */
-  handleUserSignIn(email: string): Promise<UserObject>;
+  handleUserSignIn(userData: UserSignInData): Promise<UserObject>;
 
   /**
    * Saves a user document.

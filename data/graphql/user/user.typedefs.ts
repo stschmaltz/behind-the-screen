@@ -1,7 +1,10 @@
 const userTypeDefs = /* GraphQL */ `
   type User {
     _id: String!
+    auth0Id: String!
     email: String!
+    name: String
+    picture: String
   }
 
   type UserSignInResponse {
@@ -10,6 +13,9 @@ const userTypeDefs = /* GraphQL */ `
 
   input UserSignInInput {
     email: String!
+    auth0Id: String!
+    name: String
+    picture: String
   }
 `;
 

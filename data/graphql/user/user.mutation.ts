@@ -2,6 +2,7 @@ import { appContainer } from '../../../container/inversify.config';
 import { TYPES } from '../../../container/types';
 import { UserRepositoryInterface } from '../../../repositories/user/user.repository.interface';
 import { UserObject } from '../../../types/user';
+import { GraphQLContext } from '../../../lib/context';
 
 const userRepository = appContainer.get<UserRepositoryInterface>(
   TYPES.UserRepository,
@@ -11,24 +12,47 @@ const userMutationTypeDefs = /* GraphQL */ `
   extend type Mutation {
     userSignIn(input: UserSignInInput!): UserSignInResponse
   }
+
+  input UserSignInInput {
+    email: String!
+    auth0Id: String!  # The sub from Auth0
+    name: String
+    picture: String
+  }
 `;
 
 interface UserSignInInput {
-  input: { email: string };
+  input: {
+    email: string;
+    auth0Id: string;
+    name?: string;
+    picture?: string;
+  };
 }
 
 const userMutationResolver = {
   Mutation: {
     async userSignIn(
       _: never,
-      { input: { email } }: UserSignInInput,
+      { input }: UserSignInInput,
+      context: GraphQLContext
     ): Promise<{ user: UserObject }> {
       try {
-        const user = await userRepository.handleUserSignIn(email);
+        if (context.auth0Id !== input.auth0Id) {
+          throw new Error('Unauthorized');
+        }
+
+        const user = await userRepository.handleUserSignIn({
+          email: input.email,
+          auth0Id: input.auth0Id,
+          name: input.name,
+          picture: input.picture
+        });
+        
         return { user };
       } catch (error) {
         console.error(error);
-        throw new Error('User not found');
+        throw new Error('Failed to sign in user');
       }
     },
   },

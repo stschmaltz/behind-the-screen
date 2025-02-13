@@ -1,15 +1,6 @@
 const queryTypeDefs = /* GraphQL */ `
-  type Query {
-    me: User!
-  }
+  type Query { }
 `;
 
-const queryResolver = {
-  Query: {
-    async me() {
-      return { name: 'Shane Schmaltz' };
-    },
-  },
-};
 
-export { queryResolver, queryTypeDefs };
+export { queryTypeDefs };
