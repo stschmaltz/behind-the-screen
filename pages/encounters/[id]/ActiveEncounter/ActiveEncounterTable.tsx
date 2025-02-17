@@ -3,7 +3,7 @@ import ActiveEncounterCharacterRow from './ActiveEncounterCharacterRow';
 import { Button } from '../../../../components/Button';
 import { Player } from '../../../../types/player';
 import { useEncounterContext } from '../../../../context/EncounterContext';
-import { useSaveEncounter } from '../../../../hooks/encounter/use-save-encounter';
+import { useManageEncounter } from '../../../../hooks/encounter/use-manage-encounter';
 import { showDaisyToast } from '../../../../lib/daisy-toast';
 import { useEncounterTurnManagement } from '../../../../hooks/encounter/use-encounter-turn-management';
 import { Encounter } from '../../../../types/encounters';
@@ -11,8 +11,8 @@ import { Encounter } from '../../../../types/encounters';
 const ActiveEncounterTable: React.FC<{
   players: Player[];
 }> = ({ players: _ }) => {
-  const { encounter, setEncounter } = useEncounterContext();
-  const { handleSave } = useSaveEncounter();
+  const { encounter, setEncounter, handleSave, isSaving } =
+    useEncounterContext();
 
   const onSave = (newEncounter: Encounter) => {
     handleSave(newEncounter);
@@ -42,6 +42,9 @@ const ActiveEncounterTable: React.FC<{
             Round {encounter.currentRound ?? 1}
           </span>
           <span className="badge badge-info">Turn {encounter.currentTurn}</span>
+          {isSaving && (
+            <span className="badge badge-warning ml-2">Saving...</span>
+          )}
         </div>
         <div className="flex gap-2">
           <Button

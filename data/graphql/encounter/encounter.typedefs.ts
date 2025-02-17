@@ -93,4 +93,8 @@ export const encounterTypeDefs = /* GraphQL */ `
     initiative: Int
     type: String!
   }
+
+  input DeleteEncounterInput {
+    id: String!
+  }
 `;

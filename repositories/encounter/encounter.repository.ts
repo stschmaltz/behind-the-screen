@@ -63,6 +63,21 @@ export class EncounterRepository implements EncounterRepositoryInterface {
     return docs.map(this.mapToEncounter);
   }
 
+  public async deleteEncounter(input: {
+    id: string;
+    userId: string;
+  }): Promise<boolean> {
+    console.log('deleteEncounter', input);
+    const { db } = await getDbClient();
+    const result = await db.collection(this.collectionName).deleteOne({
+      _id: new ObjectId(input.id),
+      userId: new ObjectId(input.userId),
+    });
+
+    console.log('deleteEncounter', result);
+    return result.deletedCount === 1;
+  }
+
   private mapToEncounter(doc: any): Encounter {
     return {
       _id: doc._id.toHexString(),

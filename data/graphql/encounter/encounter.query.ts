@@ -2,7 +2,6 @@ import { appContainer } from '../../../container/inversify.config';
 import { TYPES } from '../../../container/types';
 import {
   GraphQLContext,
-  isAuthorized,
   isAuthorizedOrThrow,
 } from '../../../lib/graphql-context';
 import { EncounterRepositoryInterface } from '../../../repositories/encounter/encounter.repository.interface';

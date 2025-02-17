@@ -1,4 +1,3 @@
-// pages/encounters/new.tsx
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import NewNotesSection from './NewNotesSection';
@@ -8,6 +7,7 @@ import { NewEncounterTemplate } from '../../../types/encounters';
 import { FormInput } from '../../../components/FormInput';
 import { Button } from '../../../components/Button';
 import { showDaisyToast } from '../../../lib/daisy-toast';
+import { useManageEncounter } from '../../../hooks/encounter/use-manage-encounter';
 
 export const INITIAL_NEW_ENCOUNTER: NewEncounterTemplate = {
   name: '',
@@ -17,16 +17,12 @@ export const INITIAL_NEW_ENCOUNTER: NewEncounterTemplate = {
   status: 'inactive',
   userId: '',
 };
-const NewEncounterPage: NextPage = () => {
-  const router = useRouter(); // for redirecting
 
-  const {
-    newEncounter,
-    setNewEncounter,
-    isSaving,
-    handleFieldChange,
-    handleSave,
-  } = useNewEncounter();
+const NewEncounterPage: NextPage = () => {
+  const router = useRouter();
+  const { handleSave, isSaving } = useManageEncounter();
+  const { newEncounter, setNewEncounter, handleFieldChange } =
+    useNewEncounter();
 
   const onSave = async () => {
     const success = await handleSave(newEncounter);

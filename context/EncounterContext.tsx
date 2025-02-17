@@ -1,10 +1,13 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
-import { Encounter } from '../types/encounters';
+import { Encounter, NewEncounterTemplate } from '../types/encounters';
+import { useManageEncounter } from '../hooks/encounter/use-manage-encounter';
 
 interface EncounterContextProps {
   encounter: Encounter;
   setEncounter: React.Dispatch<React.SetStateAction<Encounter>>;
-  // You can add more functions here for updating characters, saving, etc.
+  isSaving: boolean;
+  handleSave: (encounter: Encounter | NewEncounterTemplate) => Promise<boolean>;
+  deleteEncounter: (encounterId: string) => Promise<boolean>;
 }
 
 const EncounterContext = createContext<EncounterContextProps | undefined>(
@@ -21,9 +24,11 @@ export const EncounterProvider: React.FC<EncounterProviderProps> = ({
   children,
 }) => {
   const [encounter, setEncounter] = useState<Encounter>(initialEncounter);
-
+  const { handleSave, isSaving, deleteEncounter } = useManageEncounter();
   return (
-    <EncounterContext.Provider value={{ encounter, setEncounter }}>
+    <EncounterContext.Provider
+      value={{ handleSave, isSaving, encounter, setEncounter, deleteEncounter }}
+    >
       {children}
     </EncounterContext.Provider>
   );

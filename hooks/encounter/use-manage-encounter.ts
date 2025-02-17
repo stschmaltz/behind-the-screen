@@ -1,15 +1,14 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+// hooks/encounter/use-save-encounter.ts
+import { useState, useCallback, useEffect } from 'react';
 import debounce from 'lodash/debounce';
 import { asyncFetch } from '../../data/graphql/graphql-fetcher';
-import { saveEncounterMutation } from '../../data/graphql/snippets/encounter';
+import { deleteEncounterMutation, saveEncounterMutation } from '../../data/graphql/snippets/encounter';
 import { Encounter, NewEncounterTemplate } from '../../types/encounters';
 
 const DEBOUNCE_DELAY = 500;
 
-const useSaveEncounter = () => {
+const useManageEncounter = () => {
   const [isSaving, setIsSaving] = useState(false);
-
-  const latestSavePromiseRef = useRef<Promise<boolean> | null>(null);
 
   const validateNewEncounter = (
     encounter: Encounter | NewEncounterTemplate,
@@ -32,13 +31,16 @@ const useSaveEncounter = () => {
     encounter: Encounter | NewEncounterTemplate,
   ): Promise<boolean> => {
     const validationError = validateNewEncounter(encounter);
-
+    console.log('validationError', { validationError });
     if (validationError) {
+      console.log('validationErrorFALSE');
       return false;
     }
 
     try {
+      console.log("asyncFetch(saveEncounterMutation, { input: { ...encounter })");
       await asyncFetch(saveEncounterMutation, { input: { ...encounter } });
+      console.log('done')
       return true;
     } catch (err) {
       console.error(err);
@@ -48,32 +50,38 @@ const useSaveEncounter = () => {
 
   const debouncedSave = useCallback(
     debounce(
-      async (encounter: Encounter | NewEncounterTemplate) => {
+      (encounter: Encounter | NewEncounterTemplate, resolve: (result: boolean) => void) => {
         setIsSaving(true);
-
-        try {
-          const promise = saveEncounter(encounter);
-          latestSavePromiseRef.current = promise;
-
-          const result = await promise;
-
-          if (latestSavePromiseRef.current === promise) {
+        saveEncounter(encounter)
+          .then(result => {
             setIsSaving(false);
-            return result;
-          }
-        } catch (error) {
-          setIsSaving(false);
-          throw error;
-        }
+            resolve(result);
+          })
+          .catch(error => {
+            console.error(error);
+            setIsSaving(false);
+            resolve(false);
+          });
       },
       DEBOUNCE_DELAY,
       {
         leading: false,
-        trailing: true, // Execute on the trailing edge
-      },
+        trailing: true,
+      }
     ),
-    [],
+    []
   );
+
+  const handleSave = useCallback(
+    async (encounter: Encounter | NewEncounterTemplate): Promise<boolean> => {
+      console.log('handleSave', { encounter });
+      return new Promise((resolve) => {
+        debouncedSave(encounter, resolve);
+      });
+    },
+    [debouncedSave]
+  );
+
 
   useEffect(() => {
     return () => {
@@ -81,17 +89,19 @@ const useSaveEncounter = () => {
     };
   }, [debouncedSave]);
 
-  const handleSave = useCallback(
-    async (encounter: Encounter | NewEncounterTemplate): Promise<boolean> => {
-      console.log('handleSave', { encounter });
-      return await Promise.resolve(debouncedSave(encounter)).then(
-        (result) => result ?? false,
-      );
-    },
-    [debouncedSave],
-  );
 
-  return { isSaving, handleSave };
+  const deleteEncounter = async (encounterId: string): Promise<boolean> => {
+    console.log('deleteEncounter', encounterId);
+    try {
+      await asyncFetch(deleteEncounterMutation, { input: { id: encounterId.toString() } });
+      return true;
+    } catch (err) {
+      console.error(err);
+      return false;
+    }
+  }
+
+  return { isSaving, handleSave, deleteEncounter };
 };
 
-export { useSaveEncounter };
+export { useManageEncounter };

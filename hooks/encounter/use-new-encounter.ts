@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from 'react';
 import { INITIAL_NEW_ENCOUNTER } from '../../pages/encounters/new';
 import { NewEncounterTemplate } from '../../types/encounters';
-import { useSaveEncounter } from './use-save-encounter';
+import { useManageEncounter } from './use-manage-encounter';
 
 export const useNewEncounter = () => {
   const [newEncounter, setNewEncounter] = useState<NewEncounterTemplate>(
@@ -14,13 +14,10 @@ export const useNewEncounter = () => {
       setNewEncounter((prev) => ({ ...prev, [field]: e.target.value }));
     };
 
-  const { isSaving, handleSave } = useSaveEncounter();
 
   return {
     newEncounter,
     setNewEncounter,
-    isSaving,
     handleFieldChange,
-    handleSave,
   };
 };

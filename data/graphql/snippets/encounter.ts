@@ -68,3 +68,14 @@ export const encounterByIdQuery = /* GraphQL */ `
 export interface EncounterByIdResponse {
   encounterById: Encounter | null;
 }
+
+export const deleteEncounterMutation = /* GraphQL */ `
+  mutation deleteEncounter($input: DeleteEncounterInput!) {
+    deleteEncounter(input: $input)
+  }
+`;
+
+export interface DeleteEncounterMutationResponse {
+  deleteEncounter: boolean;
+}
+

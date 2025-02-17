@@ -5,7 +5,7 @@ import {
   InitiativeOrderCharacter,
 } from '../../types/encounters';
 import { Player } from '../../types/player';
-import { useSaveEncounter } from './use-save-encounter';
+import { useManageEncounter } from './use-manage-encounter';
 
 export const useEncounterDraft = (
   encounter: Encounter,
@@ -31,7 +31,6 @@ export const useEncounterDraft = (
       .map(({ _id }) => players.find((player) => player._id === _id))
       .filter((player): player is Player => player !== undefined);
 
-    console.log(encounter.initiativeOrder);
     const initiativeOrder =
       encounter.initiativeOrder.length > 0
         ? encounter.initiativeOrder
@@ -95,7 +94,6 @@ export const useEncounterDraft = (
     }));
   };
 
-  const { isSaving, handleSave } = useSaveEncounter();
 
   return {
     draftEncounter,
@@ -103,7 +101,5 @@ export const useEncounterDraft = (
     handleAddPlayers,
     handleUpdateCharacter,
     handleDeleteCharacter,
-    isSaving,
-    handleSave,
   };
 };

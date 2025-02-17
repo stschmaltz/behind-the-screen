@@ -156,7 +156,7 @@ const ActiveEncounterCharacterRow: React.FC<{
             <FormInput
               type="number"
               value={character.armorClass ?? ''}
-              width="w-14"
+              width="w-16"
               id="armorClass"
               onChange={(e) =>
                 onUpdateCharacter({

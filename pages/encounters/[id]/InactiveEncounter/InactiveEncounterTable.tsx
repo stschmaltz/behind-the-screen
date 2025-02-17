@@ -17,15 +17,14 @@ interface Props {
 
 const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
-  const { encounter, setEncounter } = useEncounterContext();
+  const { encounter, setEncounter, handleSave, isSaving } =
+    useEncounterContext();
   const {
     draftEncounter,
     handleAddEnemy,
     handleAddPlayers,
     handleUpdateCharacter,
     handleDeleteCharacter,
-    handleSave,
-    isSaving,
   } = useEncounterDraft(encounter, players, setHasUnsavedChanges);
 
   const onSave = async () => {

@@ -10,11 +10,18 @@ import { Encounter } from '../../../types/encounters';
 const encounterMutationTypeDefs = /* GraphQL */ `
   extend type Mutation {
     saveEncounter(input: NewEncounterInput!): Encounter
+    deleteEncounter(input: DeleteEncounterInput!): Boolean
   }
 `;
 
 interface SaveEncounterArgs {
   input: Encounter;
+}
+interface DeleteEncounterArgs {
+  input:{
+    id: string;
+
+  }
 }
 
 const encounterRepository = appContainer.get<EncounterRepositoryInterface>(
@@ -46,6 +53,19 @@ const encounterMutationResolver = {
         userId: context.user._id,
       });
     },
+    async deleteEncounter(
+      _: never,
+      { input:{id} }: DeleteEncounterArgs,
+      context: GraphQLContext,
+    ) {
+      console.log('deleteEncounter', id);
+      isAuthorizedOrThrow(context);
+
+      return encounterRepository.deleteEncounter({
+        id,
+        userId: context.user._id,
+      });
+    }
   },
 };
 
