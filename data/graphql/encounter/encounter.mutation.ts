@@ -18,10 +18,9 @@ interface SaveEncounterArgs {
   input: Encounter;
 }
 interface DeleteEncounterArgs {
-  input:{
+  input: {
     id: string;
-
-  }
+  };
 }
 
 const encounterRepository = appContainer.get<EncounterRepositoryInterface>(
@@ -55,7 +54,7 @@ const encounterMutationResolver = {
     },
     async deleteEncounter(
       _: never,
-      { input:{id} }: DeleteEncounterArgs,
+      { input: { id } }: DeleteEncounterArgs,
       context: GraphQLContext,
     ) {
       console.log('deleteEncounter', id);
@@ -65,7 +64,7 @@ const encounterMutationResolver = {
         id,
         userId: context.user._id,
       });
-    }
+    },
   },
 };
 
