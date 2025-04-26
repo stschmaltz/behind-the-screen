@@ -8,7 +8,7 @@
     "prettier": "prettier --write .",
     "fmt": "prettier --write .",
     "prepare": "husky install",
-    "lint-staged-hook": "lint-staged"
+    "lint-staged-hook": "lint-staged --debug"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^3.5.0",
