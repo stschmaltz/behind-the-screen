@@ -7,7 +7,7 @@
     "lint": "next lint --fix --ignore-path .gitignore .",
     "prettier": "prettier --write .",
     "fmt": "prettier --write .",
-    "prepare": "husky install",
+    "prepare": "husky",
     "lint-staged-hook": "lint-staged --debug"
   },
   "dependencies": {
@@ -63,6 +63,6 @@
     "typescript": "^5.7.2"
   },
   "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "npm run lint"
+    "*.{js,jsx,ts,tsx}": "npm run lint --fix --ignore-path .gitignore"
   }
 }
