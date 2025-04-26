@@ -94,7 +94,6 @@ export const useEncounterDraft = (
     }));
   };
 
-
   return {
     draftEncounter,
     handleAddEnemy,
