@@ -78,4 +78,3 @@ export const deleteEncounterMutation = /* GraphQL */ `
 export interface DeleteEncounterMutationResponse {
   deleteEncounter: boolean;
 }
-

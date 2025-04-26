@@ -5,7 +5,6 @@ import {
   InitiativeOrderCharacter,
 } from '../../types/encounters';
 import { Player } from '../../types/player';
-import { useManageEncounter } from './use-manage-encounter';
 
 export const useEncounterDraft = (
   encounter: Encounter,
@@ -93,7 +92,6 @@ export const useEncounterDraft = (
       enemies: prev.enemies.filter((e) => e.name !== characterName),
     }));
   };
-
 
   return {
     draftEncounter,

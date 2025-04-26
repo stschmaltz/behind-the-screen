@@ -2,7 +2,10 @@
 import { useState, useCallback, useEffect } from 'react';
 import debounce from 'lodash/debounce';
 import { asyncFetch } from '../../data/graphql/graphql-fetcher';
-import { deleteEncounterMutation, saveEncounterMutation } from '../../data/graphql/snippets/encounter';
+import {
+  deleteEncounterMutation,
+  saveEncounterMutation,
+} from '../../data/graphql/snippets/encounter';
 import { Encounter, NewEncounterTemplate } from '../../types/encounters';
 
 const DEBOUNCE_DELAY = 500;
@@ -38,9 +41,11 @@ const useManageEncounter = () => {
     }
 
     try {
-      console.log("asyncFetch(saveEncounterMutation, { input: { ...encounter })");
+      console.log(
+        'asyncFetch(saveEncounterMutation, { input: { ...encounter })',
+      );
       await asyncFetch(saveEncounterMutation, { input: { ...encounter } });
-      console.log('done')
+      console.log('done');
       return true;
     } catch (err) {
       console.error(err);
@@ -50,14 +55,17 @@ const useManageEncounter = () => {
 
   const debouncedSave = useCallback(
     debounce(
-      (encounter: Encounter | NewEncounterTemplate, resolve: (result: boolean) => void) => {
+      (
+        encounter: Encounter | NewEncounterTemplate,
+        resolve: (result: boolean) => void,
+      ) => {
         setIsSaving(true);
         saveEncounter(encounter)
-          .then(result => {
+          .then((result) => {
             setIsSaving(false);
             resolve(result);
           })
-          .catch(error => {
+          .catch((error) => {
             console.error(error);
             setIsSaving(false);
             resolve(false);
@@ -67,9 +75,9 @@ const useManageEncounter = () => {
       {
         leading: false,
         trailing: true,
-      }
+      },
     ),
-    []
+    [],
   );
 
   const handleSave = useCallback(
@@ -79,9 +87,8 @@ const useManageEncounter = () => {
         debouncedSave(encounter, resolve);
       });
     },
-    [debouncedSave]
+    [debouncedSave],
   );
-
 
   useEffect(() => {
     return () => {
@@ -89,17 +96,18 @@ const useManageEncounter = () => {
     };
   }, [debouncedSave]);
 
-
   const deleteEncounter = async (encounterId: string): Promise<boolean> => {
     console.log('deleteEncounter', encounterId);
     try {
-      await asyncFetch(deleteEncounterMutation, { input: { id: encounterId.toString() } });
+      await asyncFetch(deleteEncounterMutation, {
+        input: { id: encounterId.toString() },
+      });
       return true;
     } catch (err) {
       console.error(err);
       return false;
     }
-  }
+  };
 
   return { isSaving, handleSave, deleteEncounter };
 };
