@@ -5,7 +5,6 @@ import {
   InitiativeOrderCharacter,
 } from '../../types/encounters';
 import { Player } from '../../types/player';
-import { useManageEncounter } from './use-manage-encounter';
 
 export const useEncounterDraft = (
   encounter: Encounter,

@@ -3,7 +3,6 @@ import ActiveEncounterCharacterRow from './ActiveEncounterCharacterRow';
 import { Button } from '../../../../components/Button';
 import { Player } from '../../../../types/player';
 import { useEncounterContext } from '../../../../context/EncounterContext';
-import { useManageEncounter } from '../../../../hooks/encounter/use-manage-encounter';
 import { showDaisyToast } from '../../../../lib/daisy-toast';
 import { useEncounterTurnManagement } from '../../../../hooks/encounter/use-encounter-turn-management';
 import { Encounter } from '../../../../types/encounters';
