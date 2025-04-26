@@ -1,1 +1,1 @@
-nvm exec npm run lint-staged-hook --
+npx lint-staged
