@@ -1,3 +1,5 @@
+import { useManageEncounter } from '../hooks/encounter/use-manage-encounter';
+
 export const generateMongoId = () => {
   const timestamp = Math.floor(new Date().getTime() / 1000).toString(16);
   const machineId = Math.floor(Math.random() * 16777216)
