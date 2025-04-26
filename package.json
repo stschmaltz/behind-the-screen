@@ -7,7 +7,8 @@
     "lint": "next lint --fix --ignore-path .gitignore .",
     "prettier": "prettier --write .",
     "fmt": "prettier --write .",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "lint-staged-hook": "lint-staged"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^3.5.0",
