@@ -14,7 +14,6 @@ export const useNewEncounter = () => {
       setNewEncounter((prev) => ({ ...prev, [field]: e.target.value }));
     };
 
-
   return {
     newEncounter,
     setNewEncounter,

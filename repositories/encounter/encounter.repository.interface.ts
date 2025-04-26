@@ -8,9 +8,6 @@ export interface EncounterRepositoryInterface {
     id: string;
     userId: string;
   }): Promise<Encounter | null>;
-  deleteEncounter(input: {
-    id: string;
-    userId: string;
-  }): Promise<boolean>;
+  deleteEncounter(input: { id: string; userId: string }): Promise<boolean>;
   getAllEncounters(input: { userId: string }): Promise<Encounter[]>;
 }

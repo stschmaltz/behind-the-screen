@@ -1,10 +1,10 @@
+import { useRouter } from 'next/router';
 import InactiveEncounterTable from './InactiveEncounter/InactiveEncounterTable';
 import ActiveEncounterTable from './ActiveEncounter/ActiveEncounterTable';
 import { Player } from '../../../types/player';
 import { useEncounterContext } from '../../../context/EncounterContext';
 import { Button } from '../../../components/Button';
 import { useModal } from '../../../hooks/use-modal';
-import { useRouter } from 'next/router';
 import { showDaisyToast } from '../../../lib/daisy-toast';
 
 const EncounterContent = ({ players }: { players: Player[] }) => {
@@ -44,6 +44,7 @@ const EncounterContent = ({ players }: { players: Player[] }) => {
                       if (!result) {
                         console.error('Failed to delete encounter');
                         showDaisyToast('error', 'Failed to delete encounter');
+
                         return false;
                       } else {
                         showDaisyToast('success', 'Encounter deleted');
