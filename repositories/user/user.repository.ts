@@ -6,6 +6,7 @@ import {
 } from './user.repository.interface';
 import { getDbClient } from '../../data/database/mongodb';
 import { UserObject } from '../../types/user';
+import { logger } from '../../lib/logger';
 
 const collectionName = 'users';
 
@@ -32,7 +33,7 @@ class UserRepository implements UserRepositoryInterface {
 
       return mapUserDocumentToUserObject(user);
     } catch (error) {
-      console.log(error);
+      logger.error('Error finding user', error);
       throw error;
     }
   }
@@ -51,13 +52,13 @@ class UserRepository implements UserRepositoryInterface {
 
       return mapUserDocumentToUserObject(user);
     } catch (error) {
-      console.log(error);
+      logger.error('Error finding user by auth0Id', error);
       throw error;
     }
   }
 
   public async handleUserSignIn(userData: UserSignInData): Promise<UserObject> {
-    console.log('handleUserSignIn', userData);
+    logger.info('handleUserSignIn', userData);
 
     const { db } = await getDbClient();
 

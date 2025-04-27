@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { logger } from '../lib/logger';
 
 function usePWASetup() {
   useEffect(() => {
@@ -28,7 +29,7 @@ function usePWASetup() {
           // Send a message to the waiting service worker, instructing it to activate.
           wb.messageSkipWaiting();
         } else {
-          console.log(
+          logger.info(
             'User rejected to reload the web app, keep using old version. New version will be automatically load when user open the app next time.',
           );
         }

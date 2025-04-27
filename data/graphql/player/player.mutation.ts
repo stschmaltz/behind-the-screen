@@ -5,6 +5,7 @@ import {
   isAuthorizedOrThrow,
 } from '../../../lib/graphql-context';
 import { PlayerRepositoryInterface } from '../../../repositories/player/player.repository.interface';
+import { logger } from '../../../lib/logger';
 
 const playerMutationTypeDefs = /* GraphQL */ `
   extend type Mutation {
@@ -30,7 +31,7 @@ const playerMutationResolver = {
       { input }: SavePlayerArgs,
       context: GraphQLContext,
     ) {
-      console.log('savePlayer', input);
+      logger.info('savePlayer', input);
       isAuthorizedOrThrow(context);
       return playerRepository.savePlayer({
         name: input.name,
@@ -43,7 +44,7 @@ const playerMutationResolver = {
       { id }: { id: string },
       context: GraphQLContext,
     ) {
-      console.log('deletePlayer', id);
+      logger.info('deletePlayer', id);
       isAuthorizedOrThrow(context);
 
       return playerRepository.deletePlayer({

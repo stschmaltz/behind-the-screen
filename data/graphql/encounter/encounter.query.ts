@@ -5,6 +5,7 @@ import {
   isAuthorizedOrThrow,
 } from '../../../lib/graphql-context';
 import { EncounterRepositoryInterface } from '../../../repositories/encounter/encounter.repository.interface';
+import { logger } from '../../../lib/logger';
 
 const encounterQueryTypeDefs = /* GraphQL */ `
   extend type Query {
@@ -32,7 +33,7 @@ const encounterQueryResolver = {
       });
     },
     async allEncounters(_: never, __: never, context: GraphQLContext) {
-      console.log('allEncounters');
+      logger.info('allEncounters');
       isAuthorizedOrThrow(context);
 
       return encounterRepository.getAllEncounters({

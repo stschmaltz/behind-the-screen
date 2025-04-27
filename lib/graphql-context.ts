@@ -1,6 +1,6 @@
-// lib/context.ts
 import { Session } from '@auth0/nextjs-auth0';
 import { UserCache } from './user-cache';
+import { logger } from './logger';
 import { UserRepositoryInterface } from '../repositories/user/user.repository.interface';
 import { UserObject } from '../types/user';
 
@@ -30,9 +30,13 @@ export class ContextBuilder {
       user = this.userCache.get(auth0Id);
 
       if (!user) {
-        user = await this.userRepository.findUserByAuth0Id(auth0Id);
-        if (user) {
-          this.userCache.set(auth0Id, user);
+        try {
+          user = await this.userRepository.findUserByAuth0Id(auth0Id);
+          if (user) {
+            this.userCache.set(auth0Id, user);
+          }
+        } catch (error) {
+          logger.error('Error finding user by Auth0 ID', error);
         }
       }
     }

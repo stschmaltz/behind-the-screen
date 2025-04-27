@@ -3,6 +3,7 @@ import { injectable } from 'inversify';
 import { Encounter, NewEncounter } from '../../types/encounters';
 import { EncounterRepositoryInterface } from './encounter.repository.interface';
 import { getDbClient } from '../../data/database/mongodb';
+import { logger } from '../../lib/logger';
 
 @injectable()
 export class EncounterRepository implements EncounterRepositoryInterface {
@@ -59,7 +60,7 @@ export class EncounterRepository implements EncounterRepositoryInterface {
       })
       .toArray();
 
-    console.log('getAllEncounters', docs);
+    logger.info('getAllEncounters', docs);
     return docs.map(this.mapToEncounter);
   }
 
@@ -67,14 +68,14 @@ export class EncounterRepository implements EncounterRepositoryInterface {
     id: string;
     userId: string;
   }): Promise<boolean> {
-    console.log('deleteEncounter', input);
+    logger.info('deleteEncounter', input);
     const { db } = await getDbClient();
     const result = await db.collection(this.collectionName).deleteOne({
       _id: new ObjectId(input.id),
       userId: new ObjectId(input.userId),
     });
 
-    console.log('deleteEncounter', result);
+    logger.info('deleteEncounter', result);
     return result.deletedCount === 1;
   }
 

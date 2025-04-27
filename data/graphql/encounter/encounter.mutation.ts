@@ -6,6 +6,7 @@ import {
 } from '../../../lib/graphql-context';
 import { EncounterRepositoryInterface } from '../../../repositories/encounter/encounter.repository.interface';
 import { Encounter } from '../../../types/encounters';
+import { logger } from '../../../lib/logger';
 
 const encounterMutationTypeDefs = /* GraphQL */ `
   extend type Mutation {
@@ -34,7 +35,7 @@ const encounterMutationResolver = {
       { input }: SaveEncounterArgs,
       context: GraphQLContext,
     ) {
-      console.log('saveEncounter', input);
+      logger.info('saveEncounter', input);
       isAuthorizedOrThrow(context);
 
       return encounterRepository.saveEncounter({
@@ -57,7 +58,7 @@ const encounterMutationResolver = {
       { input: { id } }: DeleteEncounterArgs,
       context: GraphQLContext,
     ) {
-      console.log('deleteEncounter', id);
+      logger.info('deleteEncounter', id);
       isAuthorizedOrThrow(context);
 
       return encounterRepository.deleteEncounter({
