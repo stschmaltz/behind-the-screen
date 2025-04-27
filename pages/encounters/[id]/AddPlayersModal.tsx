@@ -6,9 +6,14 @@ import { Player } from '../../../types/player';
 interface Props {
   players: Player[];
   onAddPlayers: (players: Player[]) => void;
+  selectedCampaignId: string;
 }
 
-const AddPlayersModal: React.FC<Props> = ({ onAddPlayers, players }) => {
+const AddPlayersModal: React.FC<Props> = ({
+  onAddPlayers,
+  players,
+  selectedCampaignId,
+}) => {
   const { closeModal, showModal } = useModal('add-players-modal');
   const [toggledPlayers, setToggledPlayers] = React.useState<Player[]>([]);
   const handleSubmit = () => {
@@ -26,25 +31,27 @@ const AddPlayersModal: React.FC<Props> = ({ onAddPlayers, players }) => {
       <dialog className="modal" id="add-players-modal">
         <div className="modal-box">
           <h2 className="text-2xl font-bold mb-4">Add Players</h2>
-          {players.map((player, index) => (
-            <div key={index} className="mb-2 flex items-center gap-2">
-              <input
-                type="checkbox"
-                id={`player-${index}`}
-                checked={toggledPlayers.includes(player)}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    setToggledPlayers([...toggledPlayers, player]);
-                  } else {
-                    setToggledPlayers(
-                      toggledPlayers.filter((p) => p._id !== player._id),
-                    );
-                  }
-                }}
-              />
-              <label htmlFor={`player-${index}`}>{player.name}</label>
-            </div>
-          ))}
+          {players
+            .filter((player) => player.campaignId === selectedCampaignId)
+            .map((player, index) => (
+              <div key={index} className="mb-2 flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id={`player-${index}`}
+                  checked={toggledPlayers.includes(player)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setToggledPlayers([...toggledPlayers, player]);
+                    } else {
+                      setToggledPlayers(
+                        toggledPlayers.filter((p) => p._id !== player._id),
+                      );
+                    }
+                  }}
+                />
+                <label htmlFor={`player-${index}`}>{player.name}</label>
+              </div>
+            ))}
           <div className="flex justify-end">
             <Button
               variant="secondary"

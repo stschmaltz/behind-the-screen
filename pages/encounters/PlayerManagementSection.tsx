@@ -176,22 +176,26 @@ const PlayerManagementSection: React.FC<Props> = ({
                     </tr>
                   </thead>
                   <tbody>
-                    {players.map((player, _index) => (
-                      <tr key={player._id} className="hover:bg-base-200">
-                        <td className="font-medium">{player.name}</td>
-                        <td className="text-sm opacity-70">
-                          {getCampaignName(player.campaignId)}
-                        </td>
-                        <td className="text-right">
-                          <Button
-                            label="Delete"
-                            onClick={() => deletePlayer(player._id)}
-                            variant="error"
-                            className="btn-xs"
-                          />
-                        </td>
-                      </tr>
-                    ))}
+                    {players
+                      .filter(
+                        (player) => player.campaignId === selectedCampaignId,
+                      )
+                      .map((player, _index) => (
+                        <tr key={player._id} className="hover:bg-base-200">
+                          <td className="font-medium">{player.name}</td>
+                          <td className="text-sm opacity-70">
+                            {getCampaignName(player.campaignId)}
+                          </td>
+                          <td className="text-right">
+                            <Button
+                              label="Delete"
+                              onClick={() => deletePlayer(player._id)}
+                              variant="error"
+                              className="btn-xs"
+                            />
+                          </td>
+                        </tr>
+                      ))}
                   </tbody>
                 </table>
               </div>

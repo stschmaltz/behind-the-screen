@@ -84,7 +84,11 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
       )}
       <div className="flex mt-4 justify-end gap-4">
         <NewEnemyModal onAddEnemy={handleAddEnemy} />
-        <AddPlayersModal onAddPlayers={handleAddPlayers} players={players} />
+        <AddPlayersModal
+          onAddPlayers={handleAddPlayers}
+          players={players}
+          selectedCampaignId={encounter.campaignId.toString()}
+        />
         <Button
           variant="secondary"
           label="Save"
