@@ -31,6 +31,7 @@ const EncountersPage: NextPage = () => {
     } else if (activeCampaignId) {
       setSelectedCampaignId(activeCampaignId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeCampaignId, router.query.selectedCampaign]);
 
   const { loading: encountersLoading, encounters } = getAllEncounters({
