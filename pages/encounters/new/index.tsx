@@ -14,6 +14,13 @@ import { getAllCampaigns } from '../../../hooks/campaign/get-all-campaigns';
 import CampaignSelector from '../../../components/selectors/CampaignSelector';
 import AdventureSelector from '../../../components/selectors/AdventureSelector';
 
+// Define a type matching the GraphQL NewEncounterInput (excluding id)
+// Ideally, import this from generated types if available
+type EncounterInputData = Omit<NewEncounterTemplate, 'userId' | '_id'> & {
+  adventureId?: string;
+  campaignId: string; // Ensure campaignId is not optional
+};
+
 export const INITIAL_NEW_ENCOUNTER: NewEncounterTemplate = {
   name: '',
   description: '',
@@ -60,7 +67,8 @@ const NewEncounterPage: NextPage = () => {
       return;
     }
 
-    const encounterInput: NewEncounterTemplate = {
+    // Use the correctly defined type
+    const encounterInput: EncounterInputData = {
       name: newEncounter.name,
       description: newEncounter.description,
       notes: newEncounter.notes || [],
@@ -68,7 +76,6 @@ const NewEncounterPage: NextPage = () => {
       status: newEncounter.status,
       campaignId,
       adventureId,
-      userId: '',
     };
 
     const success = await handleSave(encounterInput);

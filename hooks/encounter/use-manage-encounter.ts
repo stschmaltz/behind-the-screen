@@ -49,12 +49,31 @@ const useManageEncounter = () => {
     }
 
     try {
-      const encounterId = 'id' in encounter ? encounter.id : 'new';
+      const encounterId =
+        '_id' in encounter && encounter._id ? encounter._id : 'new';
       logger.debug('Saving encounter', {
         id: encounterId,
         name: encounter.name,
       });
-      await asyncFetch(saveEncounterMutation, { input: { ...encounter } });
+
+      const mutationInput: any = {
+        name: encounter.name,
+        description: encounter.description,
+        notes: encounter.notes,
+        enemies: encounter.enemies,
+        status: encounter.status,
+        campaignId: encounter.campaignId,
+      };
+
+      if (encounterId !== 'new') {
+        mutationInput.id = encounterId;
+      }
+
+      if ('adventureId' in encounter && encounter.adventureId) {
+        mutationInput.adventureId = encounter.adventureId;
+      }
+
+      await asyncFetch(saveEncounterMutation, { input: mutationInput });
       logger.info('Encounter saved successfully', {
         id: encounterId,
         name: encounter.name,
@@ -97,7 +116,9 @@ const useManageEncounter = () => {
   );
 
   const handleSave = useCallback(
-    async (encounter: Encounter | NewEncounterTemplate): Promise<boolean> => {
+    async (
+      encounter: Encounter | Omit<NewEncounterTemplate, 'userId'>,
+    ): Promise<boolean> => {
       const encounterId = 'id' in encounter ? encounter.id : 'new';
       logger.debug('Handle save called', { id: encounterId });
       return new Promise((resolve) => {
