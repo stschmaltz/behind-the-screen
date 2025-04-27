@@ -109,19 +109,26 @@ const ActiveEncounterTable: React.FC<{
           <span className="badge badge-info">Turn {encounter.currentTurn}</span>
           {isSaving && <span className="badge badge-warning">Saving...</span>}
         </div>
-        <div className="flex gap-2 items-center">
-          <NewEnemyModal
-            onAddEnemy={(enemy, initiative) => {
-              if (initiative !== undefined) {
-                handleAddEnemyToActive(enemy, initiative);
-              }
-            }}
-            requireInitiative={true}
-          />
+        {/* Button controls container: stack vertically on mobile, row on sm+ */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+          {/* Make Add Enemy button full width on mobile */}
+          <div className="w-full sm:w-auto">
+            <NewEnemyModal
+              onAddEnemy={(enemy, initiative) => {
+                if (initiative !== undefined) {
+                  handleAddEnemyToActive(enemy, initiative);
+                }
+              }}
+              requireInitiative={true}
+              // Add className for potential full-width styling if needed
+              // className="w-full" // Example if the modal trigger needs width
+            />
+          </div>
+          {/* Previous/Next also full width on mobile */}
           <Button
             variant="secondary"
             label="Previous"
-            className="btn-sm w-24"
+            className="btn-sm w-full sm:w-24" // Full width on mobile, fixed on sm+
             onClick={handlePreviousTurn}
             disabled={
               encounter.currentTurn === 1 && encounter.currentRound === 1
@@ -130,7 +137,7 @@ const ActiveEncounterTable: React.FC<{
           <Button
             variant="primary"
             label="Next"
-            className="btn-sm w-24"
+            className="btn-sm w-full sm:w-24" // Full width on mobile, fixed on sm+
             onClick={handleNextTurn}
           />
         </div>

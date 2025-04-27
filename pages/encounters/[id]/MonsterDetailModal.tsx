@@ -32,7 +32,7 @@ const MonsterDetailModal: React.FC<Props> = ({ monster }) => {
     <>
       <button
         onClick={showModal}
-        className="btn btn-ghost btn-xs text-blue-600 hover:text-blue-800 p-0"
+        className="btn btn-ghost btn-sm text-blue-600 hover:text-blue-800 p-0"
       >
         View Stats
       </button>
