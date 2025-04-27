@@ -82,7 +82,6 @@ const ConditionManager: React.FC<{
     'unconscious',
   ];
 
-  // Condition colors for visual distinction
   const conditionColors: Record<Condition, string> = {
     blinded: 'bg-red-700',
     charmed: 'bg-pink-600',
@@ -100,7 +99,6 @@ const ConditionManager: React.FC<{
     unconscious: 'bg-gray-700',
   };
 
-  // Single function to handle toggling conditions
   const handleToggleCondition = (condition: Condition) => {
     const isActive = conditions.includes(condition);
     if (isActive) {
@@ -206,7 +204,6 @@ const ActiveEncounterCharacterRow: React.FC<{
     });
   };
 
-  // Check if this is an enemy with monster data
   const isMonster = character.type === 'enemy' && monsterData;
 
   return (

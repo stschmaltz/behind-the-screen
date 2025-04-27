@@ -46,7 +46,7 @@ const ActiveEncounterTable: React.FC<{
   const onSave = (newEncounter: Encounter) => {
     handleSave(newEncounter);
     setEncounter(newEncounter);
-    // Show toast when turn changes
+
     if (newEncounter.currentTurn !== encounter.currentTurn) {
       const currentCharacter = newEncounter.initiativeOrder
         .sort((a, b) => (b.initiative ?? 0) - (a.initiative ?? 0))
@@ -69,14 +69,12 @@ const ActiveEncounterTable: React.FC<{
     handleUpdateCharacter,
   } = useEncounterTurnManagement(encounter, onSave);
 
-  // Helper to find the monster data for a character by ID
   const getMonsterData = (
     characterId: string,
   ): EncounterCharacter | undefined => {
     return encounter.enemies.find((enemy) => enemy._id === characterId);
   };
 
-  // Revive a dead character
   const handleReviveCharacter = (characterId: string) => {
     const characterToRevive = encounter.initiativeOrder.find(
       (char) => char._id === characterId,
@@ -86,7 +84,6 @@ const ActiveEncounterTable: React.FC<{
       const monsterData = getMonsterData(characterId);
       const maxHP = monsterData?.maxHP || characterToRevive.maxHP || 1;
 
-      // Revive with 1 HP
       handleUpdateCharacter({
         ...characterToRevive,
         currentHP: 1,

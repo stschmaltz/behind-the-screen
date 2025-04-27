@@ -1,5 +1,3 @@
-// useEncounterTurnManagement.ts
-
 import { InitiativeOrderCharacter, Encounter } from '../../types/encounters';
 
 interface UseTurnManagementResult {

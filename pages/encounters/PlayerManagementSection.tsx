@@ -32,7 +32,6 @@ const PlayerManagementSection: React.FC<Props> = ({
     setPlayers(startingPlayers);
   }, [startingPlayers]);
 
-  // Set the initial campaign ID when it changes from parent
   useEffect(() => {
     setSelectedCampaignId(campaignId);
   }, [campaignId]);
@@ -76,7 +75,6 @@ const PlayerManagementSection: React.FC<Props> = ({
     setPlayers(players.filter((player) => player._id !== playerId));
   };
 
-  // Find campaign name by ID
   const getCampaignName = (id: string) => {
     const campaign = campaigns?.find((c) => c._id === id);
 

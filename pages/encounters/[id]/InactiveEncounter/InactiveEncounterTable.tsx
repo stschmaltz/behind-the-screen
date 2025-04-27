@@ -43,7 +43,6 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
     (character) => character.initiative !== undefined,
   );
 
-  // Helper to find the monster data for a character by ID
   const getMonsterData = (
     characterId: string,
   ): EncounterCharacter | undefined => {

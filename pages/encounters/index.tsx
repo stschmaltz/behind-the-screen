@@ -1,4 +1,3 @@
-// pages/encounters/index.tsx
 import Link from 'next/link';
 import { NextPage } from 'next';
 import { useCallback, useEffect, useState } from 'react';

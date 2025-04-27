@@ -7,7 +7,6 @@ const userQueryTypeDefs = /* GraphQL */ `
 const userQueryResolver = {
   Query: {
     async me() {
-      // example stub
       return { _id: '123', email: 'sample@example.com' };
     },
   },
