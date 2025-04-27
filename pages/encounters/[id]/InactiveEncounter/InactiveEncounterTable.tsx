@@ -5,7 +5,7 @@ import AddPlayersModal from '../AddPlayersModal';
 import { useEncounterDraft } from '../../../../hooks/encounter/use-draft-encounter';
 import { Button } from '../../../../components/Button';
 import { useUnsavedChangesWarning } from '../../../../hooks/use-unsaved-changes-warning';
-import { Encounter } from '../../../../types/encounters';
+import { Encounter, EncounterCharacter } from '../../../../types/encounters';
 import { Player } from '../../../../types/player';
 import { showDaisyToast } from '../../../../lib/daisy-toast';
 import { useEncounterContext } from '../../../../context/EncounterContext';
@@ -43,6 +43,13 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
     (character) => character.initiative !== undefined,
   );
 
+  // Helper to find the monster data for a character by ID
+  const getMonsterData = (
+    characterId: string,
+  ): EncounterCharacter | undefined => {
+    return draftEncounter.enemies.find((enemy) => enemy._id === characterId);
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="table">
@@ -58,10 +65,15 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
         <tbody>
           {draftEncounter.initiativeOrder.map((character) => (
             <InactiveEncounterCharacterRow
-              key={character.name}
+              key={character._id}
               character={character}
               onDelete={() => handleDeleteCharacter(character.name)}
               onUpdate={handleUpdateCharacter}
+              monsterData={
+                character.type === 'enemy'
+                  ? getMonsterData(character._id)
+                  : undefined
+              }
             />
           ))}
         </tbody>

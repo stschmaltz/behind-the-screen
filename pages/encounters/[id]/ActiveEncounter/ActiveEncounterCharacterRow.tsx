@@ -3,8 +3,10 @@ import { Button } from '../../../../components/Button';
 import { FormInput } from '../../../../components/FormInput';
 import {
   Condition,
+  EncounterCharacter,
   InitiativeOrderCharacter,
 } from '../../../../types/encounters';
+import MonsterDetailModal from '../MonsterDetailModal';
 
 const HealthModifier: React.FC<{
   onApply: (value: number) => void;
@@ -110,7 +112,8 @@ const ActiveEncounterCharacterRow: React.FC<{
   character: InitiativeOrderCharacter;
   isCurrentTurn: boolean;
   onUpdateCharacter: (character: InitiativeOrderCharacter) => void;
-}> = ({ character, isCurrentTurn, onUpdateCharacter }) => {
+  monsterData?: EncounterCharacter;
+}> = ({ character, isCurrentTurn, onUpdateCharacter, monsterData }) => {
   const handleHealthChange = (modifier: number) => {
     const newHP = Math.min(
       Math.max(0, (character.currentHP ?? 0) + modifier),
@@ -133,6 +136,9 @@ const ActiveEncounterCharacterRow: React.FC<{
     });
   };
 
+  // Check if this is an enemy with monster data
+  const isMonster = character.type === 'enemy' && monsterData;
+
   return (
     <div
       className={`card ${isCurrentTurn ? 'bg-primary bg-opacity-10' : 'bg-base-100'} shadow-sm mb-4`}
@@ -144,6 +150,11 @@ const ActiveEncounterCharacterRow: React.FC<{
               {character.name}
               {isCurrentTurn && (
                 <span className="badge badge-primary">Current Turn</span>
+              )}
+              {isMonster && (
+                <span className="inline-block ml-2">
+                  <MonsterDetailModal monster={monsterData} />
+                </span>
               )}
             </h3>
             <div className="flex items-center gap-4 mt-2">

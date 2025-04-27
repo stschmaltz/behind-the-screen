@@ -29,7 +29,7 @@ const FormInput: React.FC<FormInputProps> = ({
   className,
   required = false,
 }) => {
-  const widthClass = width ? width : type === 'number' ? 'w-2/12' : 'w-full';
+  const widthClass = width ? width : 'w-full';
 
   return (
     <div className={`form-control ${widthClass}`}>

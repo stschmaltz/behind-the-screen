@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+This project is a nextjs application using typescript. Follow typescript best practices where possible. Prefer using immutable and functional based solutions. This project also uses tailwind and daisyui, use daisyui versions where possible. Let's also keep components clean and follow best practices, they should be not too large and should break into sub components when it makes sense without hurting readability.

@@ -1,18 +1,25 @@
 import { ChangeEvent } from 'react';
 import { FormInput } from '../../../../components/FormInput';
 import { Button } from '../../../../components/Button';
-import { InitiativeOrderCharacter } from '../../../../types/encounters';
+import {
+  EncounterCharacter,
+  InitiativeOrderCharacter,
+} from '../../../../types/encounters';
+import MonsterDetailModal from '../MonsterDetailModal';
 
 type Props = {
   character: InitiativeOrderCharacter;
   onDelete: () => void;
   onUpdate?: (character: InitiativeOrderCharacter) => void;
+  // Add the original monster data for enemies
+  monsterData?: EncounterCharacter;
 };
 
 const InactiveEncounterCharacterRow = ({
   character,
   onDelete,
   onUpdate,
+  monsterData,
 }: Props) => {
   const handleNumberChange = (
     field: keyof Omit<
@@ -28,6 +35,9 @@ const InactiveEncounterCharacterRow = ({
       [field]: value,
     });
   };
+
+  // Check if this is an enemy with monster data
+  const isMonster = character.type === 'enemy' && monsterData;
 
   return (
     <tr className="hover:bg-gray-50">
@@ -71,12 +81,14 @@ const InactiveEncounterCharacterRow = ({
         />
       </td>
       <td className="py-2 px-4">
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-2">
+          {isMonster && <MonsterDetailModal monster={monsterData} />}
           <Button
             variant="error"
             label="Delete"
             onClick={onDelete}
             aria-label={`Delete ${character.name}`}
+            className="btn-sm"
           />
         </div>
       </td>

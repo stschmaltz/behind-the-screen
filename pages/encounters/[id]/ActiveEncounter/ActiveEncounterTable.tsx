@@ -5,7 +5,7 @@ import { Player } from '../../../../types/player';
 import { useEncounterContext } from '../../../../context/EncounterContext';
 import { showDaisyToast } from '../../../../lib/daisy-toast';
 import { useEncounterTurnManagement } from '../../../../hooks/encounter/use-encounter-turn-management';
-import { Encounter } from '../../../../types/encounters';
+import { Encounter, EncounterCharacter } from '../../../../types/encounters';
 
 const ActiveEncounterTable: React.FC<{
   players: Player[];
@@ -32,6 +32,13 @@ const ActiveEncounterTable: React.FC<{
     handlePreviousTurn,
     handleUpdateCharacter,
   } = useEncounterTurnManagement(encounter, onSave);
+
+  // Helper to find the monster data for a character by ID
+  const getMonsterData = (
+    characterId: string,
+  ): EncounterCharacter | undefined => {
+    return encounter.enemies.find((enemy) => enemy._id === characterId);
+  };
 
   return (
     <div>
@@ -65,10 +72,15 @@ const ActiveEncounterTable: React.FC<{
       <div className="space-y-4">
         {sortedCharacters.map((character) => (
           <ActiveEncounterCharacterRow
-            key={character.name}
+            key={character._id}
             character={character}
             isCurrentTurn={character.name === currentCharacter.name}
             onUpdateCharacter={handleUpdateCharacter}
+            monsterData={
+              character.type === 'enemy'
+                ? getMonsterData(character._id)
+                : undefined
+            }
           />
         ))}
       </div>
