@@ -1,4 +1,8 @@
-import { InitiativeOrderCharacter, Encounter } from '../../types/encounters';
+import {
+  InitiativeOrderCharacter,
+  Encounter,
+  EncounterCharacter,
+} from '../../types/encounters';
 
 interface UseTurnManagementResult {
   currentCharacter: InitiativeOrderCharacter;
@@ -7,6 +11,10 @@ interface UseTurnManagementResult {
   handleNextTurn: () => void;
   handlePreviousTurn: () => void;
   handleUpdateCharacter: (character: InitiativeOrderCharacter) => void;
+  handleAddEnemyToActive: (
+    enemy: EncounterCharacter,
+    initiative: number,
+  ) => void;
 }
 
 export const useEncounterTurnManagement = (
@@ -74,6 +82,28 @@ export const useEncounterTurnManagement = (
     });
   };
 
+  const handleAddEnemyToActive = (
+    newEnemy: EncounterCharacter,
+    initiative: number,
+  ) => {
+    const newInitiativeCharacter: InitiativeOrderCharacter = {
+      _id: newEnemy._id,
+      name: newEnemy.name,
+      armorClass: newEnemy.armorClass,
+      maxHP: newEnemy.maxHP,
+      currentHP: newEnemy.maxHP,
+      initiative: initiative,
+      conditions: [],
+      type: 'enemy',
+    };
+
+    onSave({
+      ...encounter,
+      enemies: [...encounter.enemies, newEnemy],
+      initiativeOrder: [...encounter.initiativeOrder, newInitiativeCharacter],
+    });
+  };
+
   let currentTurnIndex = (encounter.currentTurn ?? 1) - 1;
   if (currentTurnIndex >= sortedCharacters.length) {
     currentTurnIndex = 0;
@@ -96,5 +126,6 @@ export const useEncounterTurnManagement = (
     handleNextTurn,
     handlePreviousTurn,
     handleUpdateCharacter,
+    handleAddEnemyToActive,
   };
 };

@@ -28,7 +28,8 @@ interface MonsterData {
 }
 
 interface Props {
-  onAddEnemy: (enemy: EncounterCharacter) => void;
+  onAddEnemy: (enemy: EncounterCharacter, initiative?: number) => void;
+  requireInitiative?: boolean;
 }
 
 const INITIAL_ENEMY_STATE: EncounterCharacter = {
@@ -46,9 +47,10 @@ const INITIAL_ENEMY_STATE: EncounterCharacter = {
   },
 };
 
-const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
+const NewEnemyModal: React.FC<Props> = ({ onAddEnemy, requireInitiative }) => {
   const [newEnemy, setNewEnemy] =
     useState<EncounterCharacter>(INITIAL_ENEMY_STATE);
+  const [initiative, setInitiative] = useState<number | ''>('');
   const [monsters, setMonsters] = useState<MonsterData[]>([]);
   const [selectedMonsterName, setSelectedMonsterName] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -172,15 +174,28 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
   };
 
   const handleSubmit = () => {
-    if (!newEnemy.name || newEnemy.maxHP <= 0 || newEnemy.armorClass <= 0) {
-      alert('Please select a monster or fill in all fields with valid values.');
+    if (
+      !newEnemy.name ||
+      newEnemy.maxHP <= 0 ||
+      newEnemy.armorClass <= 0 ||
+      (requireInitiative && (initiative === '' || isNaN(Number(initiative))))
+    ) {
+      alert(
+        `Please select a monster or fill in all required fields (Name, HP > 0, AC > 0${requireInitiative ? ', Initiative' : ''}) with valid values.`,
+      );
 
       return;
     }
-    onAddEnemy(newEnemy);
+
+    if (requireInitiative) {
+      onAddEnemy(newEnemy, Number(initiative));
+    } else {
+      onAddEnemy(newEnemy);
+    }
 
     setSelectedMonsterName('');
     setNewEnemy(INITIAL_ENEMY_STATE);
+    setInitiative('');
     closeModal();
   };
 
@@ -247,6 +262,18 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
               width="w-32"
             />
           </div>
+
+          {requireInitiative && (
+            <FormInput
+              label="Initiative"
+              id="initiative"
+              type="number"
+              value={initiative}
+              onChange={(e) => setInitiative(Number(e.target.value))}
+              required
+              width="w-32"
+            />
+          )}
 
           <div className="collapse collapse-arrow bg-base-200 mt-4">
             <input type="checkbox" />
@@ -409,18 +436,20 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
             </div>
           </div>
 
-          <div className="flex justify-end mt-4 gap-4">
-            <Button
-              variant="primary"
-              label="Add Enemy"
-              onClick={handleSubmit}
-              disabled={
-                !newEnemy.name ||
-                newEnemy.maxHP <= 0 ||
-                newEnemy.armorClass <= 0
-              }
-            />
-            <Button variant="error" label="Cancel" onClick={closeModal} />
+          <div className="modal-action">
+            <form method="dialog">
+              <button
+                className="btn btn-ghost mr-2"
+                onClick={() => {
+                  setSelectedMonsterName('');
+                  setNewEnemy(INITIAL_ENEMY_STATE);
+                  setInitiative('');
+                }}
+              >
+                Cancel
+              </button>
+            </form>
+            <Button variant="primary" label="Add" onClick={handleSubmit} />
           </div>
         </div>
         <form method="dialog" className="modal-backdrop">
@@ -428,6 +457,7 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
             onClick={() => {
               setSelectedMonsterName('');
               setNewEnemy(INITIAL_ENEMY_STATE);
+              setInitiative('');
             }}
           >
             close

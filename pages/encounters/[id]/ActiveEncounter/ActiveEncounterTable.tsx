@@ -10,6 +10,7 @@ import {
   EncounterCharacter,
   InitiativeOrderCharacter,
 } from '../../../../types/encounters';
+import NewEnemyModal from '../NewEnemyModal';
 
 const DeadCharacterRow: React.FC<{
   character: InitiativeOrderCharacter;
@@ -67,6 +68,7 @@ const ActiveEncounterTable: React.FC<{
     handleNextTurn,
     handlePreviousTurn,
     handleUpdateCharacter,
+    handleAddEnemyToActive,
   } = useEncounterTurnManagement(encounter, onSave);
 
   const getMonsterData = (
@@ -107,7 +109,15 @@ const ActiveEncounterTable: React.FC<{
           <span className="badge badge-info">Turn {encounter.currentTurn}</span>
           {isSaving && <span className="badge badge-warning">Saving...</span>}
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          <NewEnemyModal
+            onAddEnemy={(enemy, initiative) => {
+              if (initiative !== undefined) {
+                handleAddEnemyToActive(enemy, initiative);
+              }
+            }}
+            requireInitiative={true}
+          />
           <Button
             variant="secondary"
             label="Previous"
