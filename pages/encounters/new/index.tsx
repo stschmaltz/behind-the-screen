@@ -13,6 +13,7 @@ import { useUserPreferences } from '../../../hooks/user-preferences/use-user-pre
 import { getAllCampaigns } from '../../../hooks/campaign/get-all-campaigns';
 import CampaignSelector from '../../../components/selectors/CampaignSelector';
 import AdventureSelector from '../../../components/selectors/AdventureSelector';
+import { useUnsavedChangesWarning } from '../../../hooks/use-unsaved-changes-warning';
 
 type EncounterInputData = Omit<NewEncounterTemplate, 'userId' | '_id'> & {
   adventureId?: string;
@@ -31,13 +32,19 @@ export const INITIAL_NEW_ENCOUNTER: NewEncounterTemplate = {
 const NewEncounterPage: NextPage = () => {
   const router = useRouter();
   const { handleSave, isSaving } = useManageEncounter();
-  const { newEncounter, setNewEncounter, handleFieldChange } =
-    useNewEncounter();
+  const {
+    newEncounter,
+    setNewEncounter,
+    handleFieldChange: originalHandleFieldChange,
+  } = useNewEncounter();
   const { activeCampaignId, setActiveCampaign } = useUserPreferences();
   const { campaigns, loading: campaignsLoading } = getAllCampaigns();
 
   const [campaignId, setCampaignId] = useState<string | undefined>(undefined);
   const [adventureId, setAdventureId] = useState<string | undefined>(undefined);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+
+  useUnsavedChangesWarning(hasUnsavedChanges);
 
   useEffect(() => {
     const queryCampaignId = router.query.campaignId as string | undefined;
@@ -55,6 +62,15 @@ const NewEncounterPage: NextPage = () => {
   }, [router.query, activeCampaignId]);
 
   const hasCampaigns = !campaignsLoading && campaigns && campaigns.length > 0;
+
+  const handleFieldChange = useCallback(
+    (field: keyof NewEncounterTemplate) =>
+      (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        originalHandleFieldChange(field)(event);
+        setHasUnsavedChanges(true);
+      },
+    [originalHandleFieldChange],
+  );
 
   const onSave = useCallback(async () => {
     if (!campaignId) {
@@ -75,6 +91,7 @@ const NewEncounterPage: NextPage = () => {
 
     const success = await handleSave(encounterInput);
     if (success) {
+      setHasUnsavedChanges(false);
       if (campaignId !== activeCampaignId) {
         await setActiveCampaign(campaignId);
       }
@@ -101,10 +118,12 @@ const NewEncounterPage: NextPage = () => {
   const handleCampaignChange = useCallback((id: string | undefined) => {
     setCampaignId(id);
     setAdventureId(undefined);
+    setHasUnsavedChanges(true);
   }, []);
 
   const handleAdventureChange = useCallback((id: string | undefined) => {
     setAdventureId(id);
+    setHasUnsavedChanges(true);
   }, []);
 
   return (
@@ -150,12 +169,13 @@ const NewEncounterPage: NextPage = () => {
 
             <NewEnemiesSection
               enemies={newEncounter.enemies}
-              onEnemiesChange={(updatedEnemies) =>
+              onEnemiesChange={(updatedEnemies) => {
                 setNewEncounter((prev) => ({
                   ...prev,
                   enemies: updatedEnemies,
-                }))
-              }
+                }));
+                setHasUnsavedChanges(true);
+              }}
             />
 
             <div className="mt-10">

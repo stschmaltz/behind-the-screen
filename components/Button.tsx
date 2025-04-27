@@ -10,7 +10,7 @@ interface ButtonProps {
     | 'success'
     | 'warning'
     | 'error';
-  onClick?: () => void;
+  onClick?: (event?: React.MouseEvent<HTMLButtonElement>) => void;
   type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
   className?: string;
@@ -43,11 +43,17 @@ const Button: React.FC<ButtonProps> = ({
 
   const variantClasses = `btn ${variantClassesMap[variant] || 'btn-primary'}`;
 
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (onClick) {
+      onClick(event);
+    }
+  };
+
   return (
     <div className={`${!!tooltip && tooltip}`} data-tip={tooltip}>
       <button
         type={type}
-        onClick={onClick}
+        onClick={handleClick}
         disabled={disabled}
         className={`${variantClasses} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
       >

@@ -55,6 +55,7 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy, requireInitiative }) => {
   const [selectedMonsterName, setSelectedMonsterName] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 
   const { showModal, closeModal } = useModal('new-enemy-modal');
 
@@ -196,7 +197,15 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy, requireInitiative }) => {
     setSelectedMonsterName('');
     setNewEnemy(INITIAL_ENEMY_STATE);
     setInitiative('');
+    setIsAdvancedOpen(false);
     closeModal();
+  };
+
+  const handleCloseActions = () => {
+    setSelectedMonsterName('');
+    setNewEnemy(INITIAL_ENEMY_STATE);
+    setInitiative('');
+    setIsAdvancedOpen(false);
   };
 
   return (
@@ -276,7 +285,11 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy, requireInitiative }) => {
           )}
 
           <div className="collapse collapse-arrow bg-base-200 mt-4">
-            <input type="checkbox" />
+            <input
+              type="checkbox"
+              checked={isAdvancedOpen}
+              onChange={(e) => setIsAdvancedOpen(e.target.checked)}
+            />
             <div className="collapse-title font-medium">
               Advanced Monster Fields
             </div>
@@ -440,11 +453,7 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy, requireInitiative }) => {
             <form method="dialog">
               <button
                 className="btn btn-ghost mr-2"
-                onClick={() => {
-                  setSelectedMonsterName('');
-                  setNewEnemy(INITIAL_ENEMY_STATE);
-                  setInitiative('');
-                }}
+                onClick={handleCloseActions}
               >
                 Cancel
               </button>
@@ -453,15 +462,7 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy, requireInitiative }) => {
           </div>
         </div>
         <form method="dialog" className="modal-backdrop">
-          <button
-            onClick={() => {
-              setSelectedMonsterName('');
-              setNewEnemy(INITIAL_ENEMY_STATE);
-              setInitiative('');
-            }}
-          >
-            close
-          </button>
+          <button onClick={handleCloseActions}>close</button>
         </form>
       </dialog>
     </>

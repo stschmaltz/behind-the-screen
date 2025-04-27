@@ -29,9 +29,9 @@ const HealthModifier: React.FC<{
 
   return (
     <div className="flex items-center">
-      <div className="join">
+      <div className="flex flex-col sm:flex-row sm:join gap-1 sm:gap-0 w-full sm:w-auto">
         <select
-          className="select select-bordered select-sm join-item"
+          className="select select-bordered select-sm w-full sm:join-item sm:w-auto"
           value={modifier}
           onChange={(e) =>
             setModifier(e.target.value as 'damage' | 'heal' | 'temp')
@@ -45,11 +45,11 @@ const HealthModifier: React.FC<{
           type="number"
           value={value}
           onChange={(e) => setValue(e.target.value)}
-          className="input input-bordered input-sm join-item w-16"
+          className="input input-bordered input-sm w-full sm:w-16 sm:join-item"
           placeholder="HP"
         />
         <button
-          className="btn btn-sm join-item"
+          className="btn btn-sm w-full sm:join-item sm:w-auto"
           onClick={handleApply}
           disabled={!value}
         >
@@ -115,7 +115,7 @@ const ConditionManager: React.FC<{
           {conditions.map((condition) => (
             <div
               key={condition}
-              className={`badge badge-sm ${conditionColors[condition]} text-white cursor-pointer`}
+              className={`badge badge-sm ${conditionColors[condition]} text-white cursor-pointer whitespace-nowrap`}
               onClick={() => onRemoveCondition(condition)}
               title={`Remove ${condition}`}
             >
@@ -216,7 +216,9 @@ const ActiveEncounterCharacterRow: React.FC<{
             <h3 className="text-lg font-bold flex items-center gap-2">
               {character.name}
               {isCurrentTurn && (
-                <span className="badge badge-primary">Current Turn</span>
+                <span className="badge badge-primary whitespace-nowrap">
+                  Current Turn
+                </span>
               )}
             </h3>
 
@@ -257,7 +259,7 @@ const ActiveEncounterCharacterRow: React.FC<{
                 {character.maxHP && (
                   <div className="flex items-center gap-2">
                     <span
-                      className={`badge badge-lg ${(character.currentHP ?? 0) <= 0 ? 'badge-error' : 'badge-ghost'}`}
+                      className={`badge badge-lg ${(character.currentHP ?? 0) <= 0 ? 'badge-error' : 'badge-success'} whitespace-nowrap font-bold`}
                     >
                       HP: {character.currentHP ?? 0}/{character.maxHP}
                     </span>

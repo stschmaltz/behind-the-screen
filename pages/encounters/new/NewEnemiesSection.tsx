@@ -38,9 +38,12 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
   const [monsters, setMonsters] = useState<MonsterData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  // Keep track of which monster is selected for each enemy row
   const [selectedMonsterNames, setSelectedMonsterNames] = useState<{
     [key: number]: string;
+  }>({});
+  // State to track open advanced sections for each enemy
+  const [advancedOpenState, setAdvancedOpenState] = useState<{
+    [key: number]: boolean;
   }>({});
 
   useEffect(() => {
@@ -200,32 +203,45 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
     onEnemiesChange(updated);
   };
 
+  // Helper to toggle advanced section for a specific enemy
+  const toggleAdvanced = (index: number) => {
+    setAdvancedOpenState((prev) => ({ ...prev, [index]: !prev[index] }));
+  };
+
   const addEnemy = () => {
+    const newId = generateMongoId();
     onEnemiesChange([
       ...enemies,
       {
         name: '',
         maxHP: 0,
         armorClass: 0,
-        _id: generateMongoId(),
+        _id: newId,
       },
     ]);
+    // Ensure new enemy's advanced section starts closed
+    setAdvancedOpenState((prev) => ({ ...prev, [enemies.length]: false }));
   };
 
   const removeEnemy = (index: number) => {
     onEnemiesChange(enemies.filter((_, i) => i !== index));
-    // Also remove the selected monster name for the removed row
+    // Clean up state for the removed enemy and shift subsequent indices
     setSelectedMonsterNames((prev) => {
       const { [index]: _, ...rest } = prev;
-      // Adjust keys for subsequent enemies
       const adjusted: { [key: number]: string } = {};
       Object.keys(rest).forEach((keyStr) => {
         const key = parseInt(keyStr, 10);
-        if (key > index) {
-          adjusted[key - 1] = rest[key];
-        } else {
-          adjusted[key] = rest[key];
-        }
+        adjusted[key > index ? key - 1 : key] = rest[key];
+      });
+
+      return adjusted;
+    });
+    setAdvancedOpenState((prev) => {
+      const { [index]: _, ...rest } = prev;
+      const adjusted: { [key: number]: boolean } = {};
+      Object.keys(rest).forEach((keyStr) => {
+        const key = parseInt(keyStr, 10);
+        adjusted[key > index ? key - 1 : key] = rest[key];
       });
 
       return adjusted;
@@ -239,250 +255,252 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
       {isLoading && <p>Loading monster list...</p>}
       {error && <p className="text-error">Error loading monsters: {error}</p>}
 
-      <div className="space-y-2">
+      <div className="space-y-4">
         {enemies.map((enemy, index) => (
-          <div
-            key={enemy._id}
-            className="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box"
-          >
-            <input type="checkbox" defaultChecked />{' '}
-            {/* Make open by default */}
-            <div className="collapse-title text-lg font-medium flex justify-between items-center pr-14">
-              {/* Title: Enemy Name */}
-              <span className="truncate">
-                {enemy.name || `Enemy ${index + 1} (Unnamed)`}
-              </span>
-
-              {/* Remove Button */}
-              <Button
-                variant="error"
-                className="btn-sm btn-circle absolute top-2 right-2 z-10 opacity-50 hover:opacity-100"
-                onClick={() => {
-                  removeEnemy(index);
-                }}
-                aria-label="Remove Enemy"
-                label="✕"
-              />
-            </div>
-            <div className="collapse-content bg-base-200 p-3">
-              {/* Monster Select Dropdown */}
-              {!isLoading && !error && monsters.length > 0 && (
-                <div
-                  className="form-control w-full mb-2"
-                  style={{ maxWidth: '400px' }}
-                >
-                  <label className="label">
-                    <span className="label-text">Select Monster</span>
-                  </label>
-                  <select
-                    className="select select-bordered w-full select-sm"
-                    value={selectedMonsterNames[index] || ''}
-                    onChange={(e) => handleMonsterSelectChange(index, e)}
-                    disabled={isLoading}
-                  >
-                    <option value="">Or enter manually below</option>
-                    {monsters.map((monster) => (
-                      <option key={monster._id} value={monster.name}>
-                        {monster.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              <div className="divider">OR</div>
-
-              {/* --- Manual Entry Fields --- */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
-                <FormInput
-                  id={`enemy-name-${index}`}
-                  label="Name"
-                  type="text"
-                  placeholder="Goblin"
-                  value={enemy.name}
-                  onChange={(e) =>
-                    handleEnemyFieldChange(index, 'name', e.target.value)
-                  }
-                />
-                <FormInput
-                  id={`enemy-hp-${index}`}
-                  label="HP"
-                  type="number"
-                  placeholder="7"
-                  value={enemy.maxHP || ''}
-                  onChange={(e) =>
-                    handleEnemyFieldChange(
-                      index,
-                      'maxHP',
-                      Number(e.target.value),
-                    )
-                  }
-                />
-                <FormInput
-                  id={`enemy-ac-${index}`}
-                  label="AC"
-                  type="number"
-                  placeholder="15"
-                  value={enemy.armorClass || ''}
-                  onChange={(e) =>
-                    handleEnemyFieldChange(
-                      index,
-                      'armorClass',
-                      Number(e.target.value),
-                    )
-                  }
-                />
+          <div key={enemy._id} className="relative">
+            <Button
+              variant="error"
+              label="Remove"
+              onClick={(e) => {
+                e?.stopPropagation();
+                removeEnemy(index);
+              }}
+              className="absolute top-4 right-14 z-10 btn-circle btn-ghost btn-sm text-error"
+              tooltip="Remove Enemy"
+            />
+            <div className="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box">
+              <input type="checkbox" defaultChecked className="peer" />
+              <div className="collapse-title text-lg font-medium flex justify-between items-center peer-checked:bg-base-200 peer-checked:text-base-content">
+                <span>{enemy.name || `New Enemy ${index + 1}`}</span>
               </div>
-
-              {/* --- Advanced Fields Collapse --- */}
-              <div className="collapse collapse-plus border border-base-300 bg-base-100 rounded-box">
-                <input type="checkbox" defaultChecked />{' '}
-                {/* Make open by default */}
-                <div className="collapse-title text-md font-medium">
-                  Advanced Monster Fields
-                </div>
-                <div className="collapse-content p-3">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {/* Meta */}
-                    <FormInput
-                      id={`enemy-meta-${index}`}
-                      label="Meta (Size, Type, Alignment)"
-                      type="text"
-                      placeholder="Small humanoid (goblinoid), neutral evil"
-                      value={enemy.meta || ''}
-                      onChange={(e) =>
-                        handleEnemyFieldChange(index, 'meta', e.target.value)
-                      }
-                    />
-                    {/* Speed */}
-                    <FormInput
-                      id={`enemy-speed-${index}`}
-                      label="Speed"
-                      type="text"
-                      placeholder="30 ft."
-                      value={enemy.speed || ''}
-                      onChange={(e) =>
-                        handleEnemyFieldChange(index, 'speed', e.target.value)
-                      }
-                    />
-                  </div>
-
-                  {/* Stats */}
-                  <div className="mt-2">
+              <div className="collapse-content peer-checked:bg-base-100 peer-checked:text-base-content">
+                {!isLoading && !error && monsters.length > 0 && (
+                  <div
+                    className="form-control w-full mb-2"
+                    style={{ maxWidth: '400px' }}
+                  >
                     <label className="label">
-                      <span className="label-text font-medium">Stats</span>
+                      <span className="label-text">Select Monster</span>
                     </label>
-                    <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
-                      {(
-                        ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'] as const
-                      ).map((stat) => (
-                        <FormInput
-                          key={stat}
-                          id={`enemy-${stat}-${index}`}
-                          label={stat}
-                          type="number"
-                          placeholder="10"
-                          value={enemy.stats?.[stat] || ''}
-                          onChange={(e) =>
-                            handleAbilityScoreChange(
-                              index,
-                              stat,
-                              Number(e.target.value),
-                            )
-                          }
-                          className="input-sm"
-                        />
+                    <select
+                      className="select select-bordered w-full select-sm"
+                      value={selectedMonsterNames[index] || ''}
+                      onChange={(e) => handleMonsterSelectChange(index, e)}
+                      disabled={isLoading}
+                    >
+                      <option value="">Or enter manually below</option>
+                      {monsters.map((monster) => (
+                        <option key={monster._id} value={monster.name}>
+                          {monster.name}
+                        </option>
                       ))}
+                    </select>
+                  </div>
+                )}
+
+                <div className="divider">OR</div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
+                  <FormInput
+                    id={`enemy-name-${index}`}
+                    label="Name"
+                    type="text"
+                    placeholder="Goblin"
+                    value={enemy.name}
+                    onChange={(e) =>
+                      handleEnemyFieldChange(index, 'name', e.target.value)
+                    }
+                  />
+                  <FormInput
+                    id={`enemy-hp-${index}`}
+                    label="HP"
+                    type="number"
+                    placeholder="7"
+                    value={enemy.maxHP || ''}
+                    onChange={(e) =>
+                      handleEnemyFieldChange(
+                        index,
+                        'maxHP',
+                        Number(e.target.value),
+                      )
+                    }
+                  />
+                  <FormInput
+                    id={`enemy-ac-${index}`}
+                    label="AC"
+                    type="number"
+                    placeholder="15"
+                    value={enemy.armorClass || ''}
+                    onChange={(e) =>
+                      handleEnemyFieldChange(
+                        index,
+                        'armorClass',
+                        Number(e.target.value),
+                      )
+                    }
+                  />
+                </div>
+
+                <div className="collapse collapse-arrow bg-base-200 mt-4">
+                  <input
+                    type="checkbox"
+                    checked={!!advancedOpenState[index]}
+                    onChange={() => toggleAdvanced(index)}
+                    className="peer"
+                  />
+                  <div className="collapse-title text-md font-medium peer-checked:bg-base-300 peer-checked:text-base-content">
+                    Advanced Monster Fields
+                  </div>
+                  <div className="collapse-content peer-checked:bg-base-200 peer-checked:text-base-content">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      <FormInput
+                        id={`enemy-meta-${index}`}
+                        label="Meta (Size, Type, Alignment)"
+                        type="text"
+                        placeholder="Small humanoid (goblinoid), neutral evil"
+                        value={enemy.meta || ''}
+                        onChange={(e) =>
+                          handleEnemyFieldChange(index, 'meta', e.target.value)
+                        }
+                      />
+                      <FormInput
+                        id={`enemy-speed-${index}`}
+                        label="Speed"
+                        type="text"
+                        placeholder="30 ft."
+                        value={enemy.speed || ''}
+                        onChange={(e) =>
+                          handleEnemyFieldChange(index, 'speed', e.target.value)
+                        }
+                      />
+                    </div>
+
+                    <div className="mt-2">
+                      <label className="label">
+                        <span className="label-text font-medium">Stats</span>
+                      </label>
+                      <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+                        {(
+                          ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA'] as const
+                        ).map((stat) => (
+                          <FormInput
+                            key={stat}
+                            id={`enemy-${stat}-${index}`}
+                            label={stat}
+                            type="number"
+                            placeholder="10"
+                            value={enemy.stats?.[stat] || ''}
+                            onChange={(e) =>
+                              handleAbilityScoreChange(
+                                index,
+                                stat,
+                                Number(e.target.value),
+                              )
+                            }
+                            className="input-sm"
+                          />
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mt-2">
+                      <FormInput
+                        id={`enemy-challenge-${index}`}
+                        label="Challenge"
+                        type="text"
+                        placeholder="1/4 (50 XP)"
+                        value={enemy.challenge || ''}
+                        onChange={(e) =>
+                          handleEnemyFieldChange(
+                            index,
+                            'challenge',
+                            e.target.value,
+                          )
+                        }
+                      />
+                    </div>
+
+                    <div className="mt-2">
+                      <label
+                        htmlFor={`enemy-traits-${index}`}
+                        className="label"
+                      >
+                        <span className="label-text font-medium">Traits</span>
+                      </label>
+                      <textarea
+                        id={`enemy-traits-${index}`}
+                        className="textarea textarea-bordered w-full h-24"
+                        placeholder="Nimble Escape. The goblin can take the Disengage or Hide action as a bonus action on each of its turns."
+                        value={enemy.traits || ''}
+                        onChange={(e) =>
+                          handleEnemyFieldChange(
+                            index,
+                            'traits',
+                            e.target.value,
+                          )
+                        }
+                      ></textarea>
+                    </div>
+
+                    <div className="mt-2">
+                      <label
+                        htmlFor={`enemy-actions-${index}`}
+                        className="label"
+                      >
+                        <span className="label-text font-medium">Actions</span>
+                      </label>
+                      <textarea
+                        id={`enemy-actions-${index}`}
+                        className="textarea textarea-bordered w-full h-24"
+                        placeholder="Scimitar. Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) slashing damage."
+                        value={enemy.actions || ''}
+                        onChange={(e) =>
+                          handleEnemyFieldChange(
+                            index,
+                            'actions',
+                            e.target.value,
+                          )
+                        }
+                      ></textarea>
+                    </div>
+
+                    <div className="mt-2">
+                      <label
+                        htmlFor={`enemy-legendary-${index}`}
+                        className="label"
+                      >
+                        <span className="label-text font-medium">
+                          Legendary Actions (Optional)
+                        </span>
+                      </label>
+                      <textarea
+                        id={`enemy-legendary-${index}`}
+                        className="textarea textarea-bordered w-full h-24"
+                        placeholder="The dragon can take 3 legendary actions..."
+                        value={enemy.legendaryActions || ''}
+                        onChange={(e) =>
+                          handleEnemyFieldChange(
+                            index,
+                            'legendaryActions',
+                            e.target.value,
+                          )
+                        }
+                      ></textarea>
                     </div>
                   </div>
-
-                  {/* Challenge */}
-                  <div className="mt-2">
-                    <FormInput
-                      id={`enemy-challenge-${index}`}
-                      label="Challenge"
-                      type="text"
-                      placeholder="1/4 (50 XP)"
-                      value={enemy.challenge || ''}
-                      onChange={(e) =>
-                        handleEnemyFieldChange(
-                          index,
-                          'challenge',
-                          e.target.value,
-                        )
-                      }
-                    />
-                  </div>
-
-                  {/* Traits Text Area */}
-                  <div className="mt-2">
-                    <label htmlFor={`enemy-traits-${index}`} className="label">
-                      <span className="label-text font-medium">Traits</span>
-                    </label>
-                    <textarea
-                      id={`enemy-traits-${index}`}
-                      className="textarea textarea-bordered w-full h-24"
-                      placeholder="Nimble Escape. The goblin can take the Disengage or Hide action as a bonus action on each of its turns."
-                      value={enemy.traits || ''}
-                      onChange={(e) =>
-                        handleEnemyFieldChange(index, 'traits', e.target.value)
-                      }
-                    ></textarea>
-                  </div>
-
-                  {/* Actions Text Area */}
-                  <div className="mt-2">
-                    <label htmlFor={`enemy-actions-${index}`} className="label">
-                      <span className="label-text font-medium">Actions</span>
-                    </label>
-                    <textarea
-                      id={`enemy-actions-${index}`}
-                      className="textarea textarea-bordered w-full h-24"
-                      placeholder="Scimitar. Melee Weapon Attack: +4 to hit, reach 5 ft., one target. Hit: 5 (1d6 + 2) slashing damage."
-                      value={enemy.actions || ''}
-                      onChange={(e) =>
-                        handleEnemyFieldChange(index, 'actions', e.target.value)
-                      }
-                    ></textarea>
-                  </div>
-
-                  {/* Legendary Actions Text Area */}
-                  <div className="mt-2">
-                    <label
-                      htmlFor={`enemy-legendary-${index}`}
-                      className="label"
-                    >
-                      <span className="label-text font-medium">
-                        Legendary Actions (Optional)
-                      </span>
-                    </label>
-                    <textarea
-                      id={`enemy-legendary-${index}`}
-                      className="textarea textarea-bordered w-full h-24"
-                      placeholder="The dragon can take 3 legendary actions..."
-                      value={enemy.legendaryActions || ''}
-                      onChange={(e) =>
-                        handleEnemyFieldChange(
-                          index,
-                          'legendaryActions',
-                          e.target.value,
-                        )
-                      }
-                    ></textarea>
-                  </div>
                 </div>
-                {/* End Advanced Fields Collapse Content */}
               </div>
-              {/* End Advanced Fields Collapse */}
             </div>
-            {/* End Main Collapse Content */}
           </div>
         ))}
       </div>
 
-      <div className="mt-4 flex justify-center">
-        <Button variant="secondary" label="Add Enemy" onClick={addEnemy} />
-      </div>
+      <Button
+        variant="secondary"
+        label={enemies.length > 0 ? 'Add Another Enemy' : 'Add Enemy'}
+        onClick={addEnemy}
+        className="mt-4 w-full"
+      />
     </div>
   );
 };
