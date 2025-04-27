@@ -49,6 +49,7 @@ const useManageEncounter = () => {
     }
 
     try {
+      console.log('encounter', encounter);
       const encounterId =
         '_id' in encounter && encounter._id ? encounter._id : 'new';
       logger.debug('Saving encounter', {
@@ -66,11 +67,31 @@ const useManageEncounter = () => {
       };
 
       if (encounterId !== 'new') {
-        mutationInput.id = encounterId;
+        mutationInput._id = encounterId;
       }
 
       if ('adventureId' in encounter && encounter.adventureId) {
         mutationInput.adventureId = encounter.adventureId;
+      }
+
+      if ('players' in encounter && encounter.players) {
+        mutationInput.players = encounter.players;
+      }
+
+      if ('npcs' in encounter && encounter.npcs) {
+        mutationInput.npcs = encounter.npcs;
+      }
+
+      if ('initiativeOrder' in encounter && encounter.initiativeOrder) {
+        mutationInput.initiativeOrder = encounter.initiativeOrder;
+      }
+
+      if ('currentRound' in encounter && encounter.currentRound) {
+        mutationInput.currentRound = encounter.currentRound;
+      }
+
+      if ('currentTurn' in encounter && encounter.currentTurn) {
+        mutationInput.currentTurn = encounter.currentTurn;
       }
 
       await asyncFetch(saveEncounterMutation, { input: mutationInput });
@@ -119,8 +140,6 @@ const useManageEncounter = () => {
     async (
       encounter: Encounter | Omit<NewEncounterTemplate, 'userId'>,
     ): Promise<boolean> => {
-      const encounterId = 'id' in encounter ? encounter.id : 'new';
-      logger.debug('Handle save called', { id: encounterId });
       return new Promise((resolve) => {
         debouncedSave(encounter, resolve);
       });

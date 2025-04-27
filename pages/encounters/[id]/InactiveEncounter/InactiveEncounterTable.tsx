@@ -96,10 +96,18 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
           variant="primary"
           label="Start Encounter"
           disabled={!isAllInitiativeSet}
-          onClick={() => {
-            handleSave({ ...draftEncounter, status: 'active' });
-            showDaisyToast('success', 'Encounter started');
-            setEncounter({ ...draftEncounter, status: 'active' });
+          onClick={async () => {
+            const updatedEncounter = {
+              ...draftEncounter,
+              status: 'active' as const,
+            };
+            const success = await handleSave(updatedEncounter);
+            if (success) {
+              showDaisyToast('success', 'Encounter started');
+              setEncounter(updatedEncounter);
+            } else {
+              showDaisyToast('error', 'Failed to start encounter');
+            }
           }}
         />
       </div>

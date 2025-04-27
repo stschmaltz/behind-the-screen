@@ -83,7 +83,7 @@ export const encounterTypeDefs = /* GraphQL */ `
   }
 
   input NewEncounterInput {
-    id: ID
+    _id: ID
     name: String!
     description: String
     enemies: [NewEncounterCharacterInput!]!
@@ -91,6 +91,11 @@ export const encounterTypeDefs = /* GraphQL */ `
     campaignId: ID!
     adventureId: ID
     status: EncounterStatus
+    players: [EncounterPlayerIdInput!]
+    npcs: [NewEncounterCharacterInput!]
+    initiativeOrder: [InitiativeOrderInput!]
+    currentRound: Int
+    currentTurn: Int
   }
 
   input NewEncounterCharacterInput {
