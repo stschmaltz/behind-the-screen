@@ -124,7 +124,7 @@ const ConditionManager: React.FC<{
           ))}
         </div>
       ) : (
-        <div className="text-xs text-gray-500 mb-1">No conditions</div>
+        <div className="text-xs text-info-content-500 mb-1">No conditions</div>
       )}
 
       <div className="flex justify-end">
@@ -227,7 +227,7 @@ const ActiveEncounterCharacterRow: React.FC<{
                 </div>
               )}
 
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-info-content-500">
                 Initiative: {character.initiative}
               </span>
             </div>
