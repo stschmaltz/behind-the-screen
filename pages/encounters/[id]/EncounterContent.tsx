@@ -14,7 +14,7 @@ const EncounterContent = ({ players }: { players: Player[] }) => {
   const router = useRouter();
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body">
           <div className="flex justify-between items-center">

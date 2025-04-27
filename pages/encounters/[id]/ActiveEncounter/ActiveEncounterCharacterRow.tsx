@@ -227,7 +227,7 @@ const ActiveEncounterCharacterRow: React.FC<{
                 </div>
               )}
 
-              <span className="text-xs text-gray-500">
+              <span className="text-sm text-gray-500">
                 Initiative: {character.initiative}
               </span>
             </div>
@@ -236,7 +236,7 @@ const ActiveEncounterCharacterRow: React.FC<{
           <div className="flex flex-col w-full sm:w-auto gap-2">
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold">AC:</span>
+                <span className="text-sm font-semibold">AC:</span>
                 <FormInput
                   type="number"
                   value={character.armorClass ?? ''}
