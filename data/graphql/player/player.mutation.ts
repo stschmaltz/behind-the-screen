@@ -49,7 +49,7 @@ const playerMutationResolver = {
 
       return playerRepository.deletePlayer({
         id,
-        userId: context.user.__id,
+        userId: context.user._id,
       });
     },
   },

@@ -30,7 +30,7 @@ if (isBrowser) {
 
 // Create a wrapper with the same API as the previous logger
 export const logger = {
-  debug: (message: string, data?: Record<string, unknown>): void => {
+  debug: (message: string, data?: unknown): void => {
     if (data) {
       baseLogger.debug(data, message);
     } else {
@@ -38,7 +38,7 @@ export const logger = {
     }
   },
 
-  info: (message: string, data?: Record<string, unknown>): void => {
+  info: (message: string, data?: unknown): void => {
     if (data) {
       baseLogger.info(data, message);
     } else {
@@ -46,7 +46,7 @@ export const logger = {
     }
   },
 
-  warn: (message: string, data?: Record<string, unknown>): void => {
+  warn: (message: string, data?: unknown): void => {
     if (data) {
       baseLogger.warn(data, message);
     } else {
@@ -54,7 +54,7 @@ export const logger = {
     }
   },
 
-  error: (message: string, data?: Record<string, unknown>): void => {
+  error: (message: string, data?: unknown): void => {
     if (data) {
       baseLogger.error(data, message);
     } else {

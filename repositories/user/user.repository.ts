@@ -33,7 +33,7 @@ class UserRepository implements UserRepositoryInterface {
 
       return mapUserDocumentToUserObject(user);
     } catch (error) {
-      logger.error(error);
+      logger.error('Error finding user', error);
       throw error;
     }
   }
@@ -52,7 +52,7 @@ class UserRepository implements UserRepositoryInterface {
 
       return mapUserDocumentToUserObject(user);
     } catch (error) {
-      logger.error(error);
+      logger.error('Error finding user by auth0Id', error);
       throw error;
     }
   }

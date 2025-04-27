@@ -34,7 +34,7 @@ async function asyncFetch<T>(query: string, variables?: object) {
     }
     return json.data as T;
   } catch (error) {
-    logger.error(error);
+    logger.error('Error fetching data', error);
     throw error;
   }
 }
