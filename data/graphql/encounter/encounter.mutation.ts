@@ -50,6 +50,8 @@ const encounterMutationResolver = {
         currentRound: input.currentRound,
         currentTurn: input.currentTurn,
         userId: context.user._id,
+        campaignId: input.campaignId,
+        adventureId: input.adventureId,
       });
     },
     async deleteEncounter(

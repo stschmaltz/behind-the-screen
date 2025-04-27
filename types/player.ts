@@ -4,6 +4,7 @@ export interface Player {
   name: string;
   _id: string;
   userId: string;
+  campaignId: string;
   armorClass?: number;
   maxHP?: number;
   currentHP?: number;

@@ -68,6 +68,8 @@ export const fullEncounter = /* GraphQL */ `
     currentTurn
     createdAt
     userId
+    campaignId
+    adventureId
   }
 `;
 

@@ -1,5 +1,5 @@
 // hooks/useQuery.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { asyncFetch } from '../data/graphql/graphql-fetcher';
 
 interface QueryConfig<T> {
@@ -18,9 +18,33 @@ export function useQuery<T>({
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  // Use a ref to track if we're currently in a manual refresh
+  const isManuallyRefreshing = useRef(false);
+
+  const fetchData = useCallback(async () => {
+    // Mark that we're manually refreshing
+    isManuallyRefreshing.current = true;
+    setLoading(true);
+    try {
+      const response = await asyncFetch<T>(query, variables);
+      const transformedData = transform ? transform(response) : response;
+      setData(transformedData);
+      setError(null);
+      return transformedData;
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error('An error occurred'));
+      console.error(err);
+      throw err;
+    } finally {
+      setLoading(false);
+      // Reset the manual refresh flag after completion
+      isManuallyRefreshing.current = false;
+    }
+  }, [query, variables, transform]);
 
   useEffect(() => {
-    if (!enabled) return;
+    // Skip the automatic fetch if we're currently doing a manual refresh
+    if (!enabled || isManuallyRefreshing.current) return;
 
     let isMounted = true;
     setLoading(true);
@@ -47,7 +71,14 @@ export function useQuery<T>({
     return () => {
       isMounted = false;
     };
-  }, [query, enabled]);
+  }, [query, enabled, variables, transform]);
 
-  return { data, loading, error };
+  useEffect(() => {
+    // Skip the automatic fetch if we're currently doing a manual refresh
+    if (!enabled || isManuallyRefreshing.current) return;
+
+    fetchData();
+  }, [enabled, fetchData]); // Depend on enabled and the stable fetchData callback
+
+  return { data, loading, error, refresh: fetchData };
 }

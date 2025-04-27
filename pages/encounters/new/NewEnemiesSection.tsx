@@ -504,7 +504,7 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
 
       <Button
         variant="secondary"
-        label="Add Another Enemy"
+        label="+ Add Enemy"
         onClick={addEnemy}
         className="btn-sm mt-2"
         disabled={isLoading}

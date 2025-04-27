@@ -10,7 +10,7 @@ interface Props {
 
 const AddPlayersModal: React.FC<Props> = ({ onAddPlayers, players }) => {
   const { closeModal, showModal } = useModal('add-players-modal');
-  const [toggledPlayers, setToggledPlayers] = React.useState<Player[]>(players);
+  const [toggledPlayers, setToggledPlayers] = React.useState<Player[]>([]);
   const handleSubmit = () => {
     onAddPlayers(toggledPlayers);
 

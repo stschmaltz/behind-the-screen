@@ -1,19 +1,31 @@
 import { Player } from '../../../types/player';
 
-const fullPlayer = /* GraphQL */ `
-  {
+// ----------------------------------------------------------------------------
+// Fragments
+// ----------------------------------------------------------------------------
+
+export const fullPlayer = /* GraphQL */ `
+  fragment FullPlayer on Player {
     _id
     name
     armorClass
     maxHP
     userId
+    campaignId
   }
 `;
 
+// ----------------------------------------------------------------------------
+// Mutations
+// ----------------------------------------------------------------------------
+
 export const savePlayerMutation = /* GraphQL */ `
-    mutation savePlayer($input: NewPlayerInput!) {
-        savePlayer(input: $input) ${fullPlayer}
+  mutation SavePlayer($input: NewPlayerInput!) {
+    savePlayer(input: $input) {
+      ...FullPlayer
     }
+  }
+  ${fullPlayer}
 `;
 
 export const deletePlayerMutation = /* GraphQL */ `
@@ -29,13 +41,17 @@ export interface SavePlayerMutationResponse {
 export interface SavePlayerMutationVariables {
   input: {
     name: string;
+    campaignId: string;
   };
 }
 
 export const allPlayersQuery = /* GraphQL */ `
-    {
-        allPlayers ${fullPlayer}
+  query AllPlayers {
+    allPlayers {
+      ...FullPlayer
     }
+  }
+  ${fullPlayer}
 `;
 
 export interface AllPlayersQueryResponse {

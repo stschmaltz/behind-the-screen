@@ -62,7 +62,7 @@ function Layout({ children }: LayoutProps) {
               <Button
                 variant="secondary"
                 label="Back"
-                className="w-full sm:w-auto"
+                className="w-full"
                 onClick={() => router.back()}
               />
             </div>
@@ -84,7 +84,7 @@ function Layout({ children }: LayoutProps) {
               href="mailto:stschmaltz@gmail.com"
               className="text-primary hover:underline"
             >
-              stschmaltz@gmail.com
+              stschmaltz at gmail.com
             </a>
           </p>
         </div>

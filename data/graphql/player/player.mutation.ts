@@ -16,6 +16,7 @@ const playerMutationTypeDefs = /* GraphQL */ `
 interface SavePlayerArgs {
   input: {
     name: string;
+    campaignId: string;
   };
 }
 
@@ -35,6 +36,7 @@ const playerMutationResolver = {
       return playerRepository.savePlayer({
         name: input.name,
         userId: context.user._id,
+        campaignId: input.campaignId,
       });
     },
 

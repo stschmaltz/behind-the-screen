@@ -9,10 +9,15 @@ export class PlayerRepository implements PlayerRepositoryInterface {
   private collectionName = 'players';
 
   public async savePlayer(input: NewPlayer): Promise<Player> {
+    if (!input.campaignId) {
+      throw new Error('Campaign ID is required when saving a player');
+    }
+
     const { db } = await getDbClient();
     const docToInsert = {
       ...input,
       userId: new ObjectId(input.userId),
+      campaignId: new ObjectId(input.campaignId),
       createdAt: new Date(),
     };
     const result = await db
@@ -49,8 +54,8 @@ export class PlayerRepository implements PlayerRepositoryInterface {
       .find({
         _id: {
           $in: ids.map((id) => new ObjectId(id)),
-          userId: new ObjectId(userId),
         },
+        userId: new ObjectId(userId),
       })
       .toArray();
 
@@ -74,7 +79,8 @@ export class PlayerRepository implements PlayerRepositoryInterface {
     return {
       _id: doc._id.toHexString(),
       name: doc.name,
-      userId: doc.userId,
+      userId: doc.userId.toHexString(),
+      campaignId: doc.campaignId.toHexString(),
       armorClass: doc.armorClass,
       currentHP: doc.currentHP,
       maxHP: doc.maxHP,

@@ -31,8 +31,9 @@ const useManageEncounter = () => {
   };
 
   const saveEncounter = async (
-    encounter: Encounter | NewEncounterTemplate,
+    encounterData: Encounter | NewEncounterTemplate | any,
   ): Promise<boolean> => {
+    const encounter = encounterData as Encounter | NewEncounterTemplate;
     const validationError = validateNewEncounter(encounter);
     console.log('validationError', { validationError });
     if (validationError) {
@@ -56,7 +57,7 @@ const useManageEncounter = () => {
   const debouncedSave = useCallback(
     debounce(
       (
-        encounter: Encounter | NewEncounterTemplate,
+        encounter: Encounter | NewEncounterTemplate | any,
         resolve: (result: boolean) => void,
       ) => {
         setIsSaving(true);

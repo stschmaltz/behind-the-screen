@@ -23,6 +23,10 @@ export class EncounterRepository implements EncounterRepositoryInterface {
           createdAt: new Date(),
           ...docToInsert,
           userId: new ObjectId(userId),
+          campaignId: new ObjectId(docToInsert.campaignId),
+          adventureId: docToInsert.adventureId
+            ? new ObjectId(docToInsert.adventureId)
+            : undefined,
           updatedAt: new Date(),
         },
       },
@@ -93,6 +97,8 @@ export class EncounterRepository implements EncounterRepositoryInterface {
       status: doc.status ?? 'inactive',
       description: doc.description,
       userId: doc.userId.toHexString(),
+      campaignId: doc.campaignId.toHexString(),
+      adventureId: doc.adventureId?.toHexString(),
     };
   }
 }

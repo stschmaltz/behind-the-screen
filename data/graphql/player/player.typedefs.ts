@@ -6,9 +6,11 @@ export const playerTypeDefs = /* GraphQL */ `
     maxHP: Int
     createdAt: Date!
     userId: String!
+    campaignId: ID!
   }
 
   input NewPlayerInput {
     name: String!
+    campaignId: ID!
   }
 `;

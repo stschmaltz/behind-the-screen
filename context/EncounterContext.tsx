@@ -1,4 +1,11 @@
-import React, { createContext, ReactNode, useContext, useState } from 'react';
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react';
 import { Encounter, NewEncounterTemplate } from '../types/encounters';
 import { useManageEncounter } from '../hooks/encounter/use-manage-encounter';
 
@@ -10,9 +17,7 @@ interface EncounterContextProps {
   deleteEncounter: (encounterId: string) => Promise<boolean>;
 }
 
-const EncounterContext = createContext<EncounterContextProps | undefined>(
-  undefined,
-);
+const EncounterContext = createContext<EncounterContextProps | null>(null);
 
 interface EncounterProviderProps {
   initialEncounter: Encounter;
@@ -24,11 +29,33 @@ export const EncounterProvider: React.FC<EncounterProviderProps> = ({
   children,
 }) => {
   const [encounter, setEncounter] = useState<Encounter>(initialEncounter);
-  const { handleSave, isSaving, deleteEncounter } = useManageEncounter();
+  const {
+    handleSave: originalHandleSave,
+    isSaving,
+    deleteEncounter,
+  } = useManageEncounter();
+
+  // Memoize the save handler to prevent recreation on each render
+  const handleSave = useCallback(
+    (encounterToSave: Encounter | NewEncounterTemplate) =>
+      originalHandleSave(encounterToSave),
+    [originalHandleSave],
+  );
+
+  // Memoize the context value to prevent unnecessary re-renders
+  const contextValue = useMemo(
+    () => ({
+      encounter,
+      setEncounter,
+      isSaving,
+      handleSave,
+      deleteEncounter,
+    }),
+    [encounter, setEncounter, isSaving, handleSave, deleteEncounter],
+  );
+
   return (
-    <EncounterContext.Provider
-      value={{ handleSave, isSaving, encounter, setEncounter, deleteEncounter }}
-    >
+    <EncounterContext.Provider value={contextValue}>
       {children}
     </EncounterContext.Provider>
   );
