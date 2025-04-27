@@ -34,21 +34,36 @@ const useManageEncounter = () => {
     encounter: Encounter | NewEncounterTemplate,
   ): Promise<boolean> => {
     const validationError = validateNewEncounter(encounter);
-    logger.info('validationError', { validationError });
+    logger.debug('Validating encounter', {
+      validationError,
+      name: encounter.name,
+    });
+
     if (validationError) {
-      logger.info('validationErrorFALSE');
+      logger.info(`Validation failed: ${validationError}`, {
+        name: encounter.name,
+        error: validationError,
+      });
       return false;
     }
 
     try {
-      logger.info(
-        'asyncFetch(saveEncounterMutation, { input: { ...encounter })',
-      );
+      const encounterId = 'id' in encounter ? encounter.id : 'new';
+      logger.debug('Saving encounter', {
+        id: encounterId,
+        name: encounter.name,
+      });
       await asyncFetch(saveEncounterMutation, { input: { ...encounter } });
-      logger.info('done');
+      logger.info('Encounter saved successfully', {
+        id: encounterId,
+        name: encounter.name,
+      });
       return true;
     } catch (err) {
-      logger.error(err);
+      logger.error('Failed to save encounter', {
+        error: err instanceof Error ? err.message : String(err),
+        name: encounter.name,
+      });
       return false;
     }
   };
@@ -66,7 +81,7 @@ const useManageEncounter = () => {
             resolve(result);
           })
           .catch((error) => {
-            logger.error(error);
+            logger.error('Error in debounced save', error);
             setIsSaving(false);
             resolve(false);
           });
@@ -82,7 +97,8 @@ const useManageEncounter = () => {
 
   const handleSave = useCallback(
     async (encounter: Encounter | NewEncounterTemplate): Promise<boolean> => {
-      logger.info('handleSave', { encounter });
+      const encounterId = 'id' in encounter ? encounter.id : 'new';
+      logger.debug('Handle save called', { id: encounterId });
       return new Promise((resolve) => {
         debouncedSave(encounter, resolve);
       });
@@ -97,14 +113,15 @@ const useManageEncounter = () => {
   }, [debouncedSave]);
 
   const deleteEncounter = async (encounterId: string): Promise<boolean> => {
-    logger.info('deleteEncounter', encounterId);
+    logger.debug('Deleting encounter', { id: encounterId });
     try {
       await asyncFetch(deleteEncounterMutation, {
         input: { id: encounterId.toString() },
       });
+      logger.info('Encounter deleted successfully', { id: encounterId });
       return true;
     } catch (err) {
-      logger.error(err);
+      logger.error('Failed to delete encounter', err);
       return false;
     }
   };

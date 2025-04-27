@@ -1,8 +1,8 @@
 import { Session } from '@auth0/nextjs-auth0';
 import { UserCache } from './user-cache';
+import { logger } from './logger';
 import { UserRepositoryInterface } from '../repositories/user/user.repository.interface';
 import { UserObject } from '../types/user';
-import { logger } from './logger';
 
 export interface GraphQLContext {
   auth0Id?: string;
