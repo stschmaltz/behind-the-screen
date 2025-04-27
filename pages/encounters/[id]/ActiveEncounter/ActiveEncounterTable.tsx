@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ActiveEncounterCharacterRow from './ActiveEncounterCharacterRow';
 import { Button } from '../../../../components/Button';
 import { Player } from '../../../../types/player';
@@ -11,6 +11,10 @@ import {
   InitiativeOrderCharacter,
 } from '../../../../types/encounters';
 import NewEnemyModal from '../NewEnemyModal';
+import {
+  PopoverProvider,
+  usePopoverContext,
+} from '../../../../context/PopoverContext';
 
 const DeadCharacterRow: React.FC<{
   character: InitiativeOrderCharacter;
@@ -37,12 +41,37 @@ const DeadCharacterRow: React.FC<{
   );
 };
 
-const ActiveEncounterTable: React.FC<{
+const ActiveEncounterTableContent: React.FC<{
   players: Player[];
 }> = ({ players: _ }) => {
   const { encounter, setEncounter, handleSave, isSaving } =
     useEncounterContext();
-  const [showDeadPool, setShowDeadPool] = useState(true);
+  const { isScrollLockActive } = usePopoverContext();
+  const [showDeadPool, setShowDeadPool] = useState(false);
+  const scrollableListRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const listElement = scrollableListRef.current;
+    const preventDefault = (e: WheelEvent | TouchEvent) => e.preventDefault();
+
+    if (isScrollLockActive) {
+      window.addEventListener('wheel', preventDefault, { passive: false });
+      window.addEventListener('touchmove', preventDefault, { passive: false });
+      listElement?.addEventListener('wheel', preventDefault, {
+        passive: false,
+      });
+      listElement?.addEventListener('touchmove', preventDefault, {
+        passive: false,
+      });
+    }
+
+    return () => {
+      window.removeEventListener('wheel', preventDefault);
+      window.removeEventListener('touchmove', preventDefault);
+      listElement?.removeEventListener('wheel', preventDefault);
+      listElement?.removeEventListener('touchmove', preventDefault);
+    };
+  }, [isScrollLockActive]);
 
   const onSave = (newEncounter: Encounter) => {
     handleSave(newEncounter);
@@ -138,7 +167,10 @@ const ActiveEncounterTable: React.FC<{
         </div>
       </div>
 
-      <div className="overflow-y-auto h-[50vh] mb-4">
+      <div
+        ref={scrollableListRef}
+        className={`relative h-[50vh] mb-4 overflow-y-auto`}
+      >
         <div className="space-y-2 w-full">
           {sortedCharacters.map((character) => (
             <ActiveEncounterCharacterRow
@@ -157,12 +189,12 @@ const ActiveEncounterTable: React.FC<{
       </div>
 
       {deadCharacters.length > 0 && (
-        <div className="mt-4">
+        <div className="mt-6 p-4 bg-base-200 rounded-lg border border-base-300">
           <div className="flex justify-between items-center mb-2">
-            <h3 className="text-lg font-semibold flex items-center">
+            <h3 className="text-xl font-semibold flex items-center">
               <span className="mr-2">☠️</span>
               Dead Pool
-              <span className="ml-2 badge badge-sm">
+              <span className="ml-2 badge badge-sm badge-error">
                 {deadCharacters.length}
               </span>
             </h3>
@@ -173,8 +205,9 @@ const ActiveEncounterTable: React.FC<{
               {showDeadPool ? 'Hide' : 'Show'}
             </button>
           </div>
-          {showDeadPool && (
-            <div className="bg-base-200 rounded-lg p-3 space-y-2">
+
+          {showDeadPool ? (
+            <div className="space-y-2 mt-3">
               {deadCharacters.map((character) => (
                 <DeadCharacterRow
                   key={character._id}
@@ -188,10 +221,22 @@ const ActiveEncounterTable: React.FC<{
                 />
               ))}
             </div>
+          ) : (
+            <div className="text-sm text-gray-500 italic mt-1">
+              {deadCharacters.length} characters are in the dead pool
+            </div>
           )}
         </div>
       )}
     </div>
+  );
+};
+
+const ActiveEncounterTable: React.FC<{ players: Player[] }> = ({ players }) => {
+  return (
+    <PopoverProvider>
+      <ActiveEncounterTableContent players={players} />
+    </PopoverProvider>
   );
 };
 

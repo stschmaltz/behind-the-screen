@@ -127,10 +127,10 @@ const NewEncounterPage: NextPage = () => {
   }, []);
 
   return (
-    <div className="flex h-full flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center">
       <h1 className="text-xl font-bold mb-4">New Encounter</h1>
 
-      <form className="w-full max-w-xl bg-base-300 shadow-md rounded px-8 pt-6 pb-8 mb-4 max-h-[70vh] overflow-y-auto">
+      <div className="w-full max-w-xl bg-base-300 shadow-md rounded px-8 pt-6 pb-8 mb-4 h-[72vh] sm:h-auto max-h-[72vh] overflow-y-auto relative">
         {!hasCampaigns && !campaignsLoading ? (
           <div className="flex flex-col items-center justify-center py-8">
             <p className="text-center mb-4">
@@ -177,18 +177,20 @@ const NewEncounterPage: NextPage = () => {
                 setHasUnsavedChanges(true);
               }}
             />
-
-            <div className="mt-10">
-              <Button
-                className="w-full"
-                onClick={onSave}
-                disabled={isSaving || !campaignId}
-                label="Save"
-              />
-            </div>
           </>
         )}
-      </form>
+      </div>
+
+      {hasCampaigns && !campaignsLoading && (
+        <div className="sticky bottom-6 w-full max-w-xl px-8 z-10">
+          <Button
+            className="w-full"
+            onClick={onSave}
+            disabled={isSaving || !campaignId}
+            label="Save"
+          />
+        </div>
+      )}
     </div>
   );
 };

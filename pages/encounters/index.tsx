@@ -11,6 +11,7 @@ import { getAllCampaigns } from '../../hooks/campaign/get-all-campaigns';
 import { getAllAdventures } from '../../hooks/adventure/get-all-adventures';
 import { useUserPreferences } from '../../hooks/user-preferences/use-user-preferences';
 import DescriptionDisplay from '../../components/DescriptionDisplay';
+import { Encounter } from '../../types/encounters';
 
 const EncountersPage: NextPage = () => {
   const router = useRouter();
@@ -21,6 +22,9 @@ const EncountersPage: NextPage = () => {
   const [selectedAdventureId, setSelectedAdventureId] = useState<
     string | undefined
   >(undefined);
+  const [showActive, setShowActive] = useState(true);
+  const [showInactive, setShowInactive] = useState(true);
+  const [showCompleted, setShowCompleted] = useState(false);
 
   useEffect(() => {
     if (selectedCampaignId) return;
@@ -104,6 +108,82 @@ const EncountersPage: NextPage = () => {
     setSelectedAdventureId(id);
   }, []);
 
+  const getStatusBadgeClass = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'badge-accent';
+      case 'completed':
+        return 'badge-ghost';
+      default:
+        return 'badge-secondary';
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'active':
+        return 'Active';
+      case 'completed':
+        return 'Completed';
+      default:
+        return 'Inactive';
+    }
+  };
+
+  const renderEncounterCard = (encounter: Encounter) => {
+    const campaign = encounter.campaignId
+      ? campaigns?.find((c) => c._id === encounter.campaignId.toString())
+      : null;
+
+    const adventure = encounter.adventureId
+      ? adventures?.find((a) => a._id === encounter.adventureId?.toString())
+      : null;
+
+    return (
+      <Link
+        key={encounter._id.toString()}
+        href={`/encounters/${encounter._id.toString()}`}
+        className="block w-full"
+      >
+        <div className="p-4 bg-base-200 border border-base-300 rounded shadow-sm hover:bg-base-300 transition-colors">
+          <div className="flex justify-between items-center">
+            <div className="text-lg font-semibold flex items-center gap-2">
+              <span>{encounter.name}</span>
+              <DescriptionDisplay
+                encounterId={encounter._id.toString()}
+                description={encounter.description}
+                className="mt-1"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="text-sm opacity-80">
+                {encounter.createdAt.toLocaleString()}
+              </div>
+              <div className={`badge ${getStatusBadgeClass(encounter.status)}`}>
+                {getStatusLabel(encounter.status)}
+              </div>
+            </div>
+          </div>
+
+          {(encounter.campaignId || encounter.adventureId) && (
+            <div className="mt-2 flex gap-2">
+              {encounter.campaignId && (
+                <div className="badge badge-outline">
+                  {campaign?.name || 'Campaign'}
+                </div>
+              )}
+              {encounter.adventureId && (
+                <div className="badge badge-outline">
+                  {adventure?.name || 'Adventure'}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </Link>
+    );
+  };
+
   return (
     <div className="bg-base-100 h-full p-4 flex flex-col items-center w-full max-w-2xl space-y-4 m-auto min-w-72">
       <h1 className="text-2xl font-bold mb-2">Encounters</h1>
@@ -143,70 +223,102 @@ const EncountersPage: NextPage = () => {
       ) : !encounters?.length ? (
         emptyState
       ) : (
-        <div className="flex w-full flex-col gap-2">
-          {encounters.map((encounter) => {
-            const campaign = encounter.campaignId
-              ? campaigns?.find(
-                  (c) => c._id === encounter.campaignId.toString(),
-                )
-              : null;
-
-            const adventure = encounter.adventureId
-              ? adventures?.find(
-                  (a) => a._id === encounter.adventureId?.toString(),
-                )
-              : null;
-
-            return (
-              <Link
-                key={encounter._id.toString()}
-                href={`/encounters/${encounter._id.toString()}`}
-                className="block w-full"
-              >
-                <div className="p-4 bg-base-200 border border-base-300 rounded shadow-sm hover:bg-base-300 transition-colors">
-                  <div className="flex justify-between items-center">
-                    <div className="text-lg font-semibold flex items-center gap-2">
-                      <span>{encounter.name}</span>
-                      <DescriptionDisplay
-                        encounterId={encounter._id.toString()}
-                        description={encounter.description}
-                        className="mt-1"
-                      />
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="text-sm opacity-80">
-                        {encounter.createdAt.toLocaleString()}
-                      </div>
-                      <div
-                        className={`badge ${
-                          encounter.status === 'active'
-                            ? 'badge-accent'
-                            : 'badge-ghost'
-                        }`}
-                      >
-                        {encounter.status === 'active' ? 'Active' : 'Inactive'}
-                      </div>
-                    </div>
-                  </div>
-
-                  {(encounter.campaignId || encounter.adventureId) && (
-                    <div className="mt-2 flex gap-2">
-                      {encounter.campaignId && (
-                        <div className="badge badge-outline">
-                          {campaign?.name || 'Campaign'}
-                        </div>
-                      )}
-                      {encounter.adventureId && (
-                        <div className="badge badge-outline">
-                          {adventure?.name || 'Adventure'}
-                        </div>
-                      )}
-                    </div>
-                  )}
+        <div className="flex w-full flex-col gap-6">
+          {/* Active Encounters */}
+          {encounters.some((e) => e.status === 'active') && (
+            <div className="w-full">
+              <div className="flex justify-between items-center mb-2 border-b pb-2">
+                <h2 className="text-xl font-semibold">
+                  Active Encounters
+                  <span className="ml-2 badge badge-accent">
+                    {encounters.filter((e) => e.status === 'active').length}
+                  </span>
+                </h2>
+                <button
+                  className="btn btn-xs btn-ghost"
+                  onClick={() => setShowActive(!showActive)}
+                >
+                  {showActive ? 'Hide' : 'Show'}
+                </button>
+              </div>
+              {showActive ? (
+                <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-1">
+                  {encounters
+                    .filter((encounter) => encounter.status === 'active')
+                    .map(renderEncounterCard)}
                 </div>
-              </Link>
-            );
-          })}
+              ) : (
+                <div className="text-sm text-gray-500 italic mt-1 mb-2">
+                  {encounters.filter((e) => e.status === 'active').length}{' '}
+                  active encounters
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Inactive Encounters */}
+          {encounters.some((e) => e.status === 'inactive') && (
+            <div className="w-full">
+              <div className="flex justify-between items-center mb-2 border-b pb-2">
+                <h2 className="text-xl font-semibold">
+                  Ready Encounters
+                  <span className="ml-2 badge badge-secondary">
+                    {encounters.filter((e) => e.status === 'inactive').length}
+                  </span>
+                </h2>
+                <button
+                  className="btn btn-xs btn-ghost"
+                  onClick={() => setShowInactive(!showInactive)}
+                >
+                  {showInactive ? 'Hide' : 'Show'}
+                </button>
+              </div>
+              {showInactive ? (
+                <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-1">
+                  {encounters
+                    .filter((encounter) => encounter.status === 'inactive')
+                    .map(renderEncounterCard)}
+                </div>
+              ) : (
+                <div className="text-sm text-gray-500 italic mt-1 mb-2">
+                  {encounters.filter((e) => e.status === 'inactive').length}{' '}
+                  ready encounters
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Completed Encounters */}
+          {encounters.some((e) => e.status === 'completed') && (
+            <div className="w-full">
+              <div className="flex justify-between items-center mb-2 border-b pb-2">
+                <h2 className="text-xl font-semibold">
+                  Completed Encounters
+                  <span className="ml-2 badge badge-ghost">
+                    {encounters.filter((e) => e.status === 'completed').length}
+                  </span>
+                </h2>
+                <button
+                  className="btn btn-xs btn-ghost"
+                  onClick={() => setShowCompleted(!showCompleted)}
+                >
+                  {showCompleted ? 'Hide' : 'Show'}
+                </button>
+              </div>
+              {showCompleted ? (
+                <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-1">
+                  {encounters
+                    .filter((encounter) => encounter.status === 'completed')
+                    .map(renderEncounterCard)}
+                </div>
+              ) : (
+                <div className="text-sm text-gray-500 italic mt-1 mb-2">
+                  {encounters.filter((e) => e.status === 'completed').length}{' '}
+                  completed encounters
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

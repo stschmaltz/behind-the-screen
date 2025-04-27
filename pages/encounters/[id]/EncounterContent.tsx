@@ -1,4 +1,5 @@
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 import InactiveEncounterTable from './InactiveEncounter/InactiveEncounterTable';
 import ActiveEncounterTable from './ActiveEncounter/ActiveEncounterTable';
 import { Player } from '../../../types/player';
@@ -10,10 +11,31 @@ import { logger } from '../../../lib/logger';
 import DescriptionDisplay from '../../../components/DescriptionDisplay';
 
 const EncounterContent = ({ players }: { players: Player[] }) => {
-  const { encounter, deleteEncounter, updateEncounterDescription } =
+  const { encounter, deleteEncounter, updateEncounterDescription, handleSave } =
     useEncounterContext();
   const { closeModal, showModal } = useModal('delete-encounter-modal');
+  const [isFinishingEncounter, setIsFinishingEncounter] = useState(false);
   const router = useRouter();
+
+  const handleFinishEncounter = async () => {
+    setIsFinishingEncounter(true);
+
+    try {
+      const finishedEncounter = {
+        ...encounter,
+        status: 'completed' as const,
+        completedAt: new Date().toISOString(),
+      };
+
+      await handleSave(finishedEncounter);
+      showDaisyToast('success', 'Encounter completed successfully!');
+      router.push('/encounters');
+    } catch (error) {
+      logger.error('Failed to complete encounter', error);
+      showDaisyToast('error', 'Failed to complete encounter');
+      setIsFinishingEncounter(false);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -46,7 +68,7 @@ const EncounterContent = ({ players }: { players: Player[] }) => {
                 className="mt-1"
               />
             </div>
-            <div className="flex-shrink-0">
+            <div className="flex-shrink-0 flex gap-2">
               <Button
                 label="Delete Encounter"
                 variant="error"
@@ -54,6 +76,16 @@ const EncounterContent = ({ players }: { players: Player[] }) => {
                 onClick={() => showModal()}
                 className="btn btn-error"
               />
+              {encounter.status === 'active' && (
+                <Button
+                  label="Finish Encounter"
+                  variant="accent"
+                  tooltip="Complete this encounter"
+                  onClick={handleFinishEncounter}
+                  disabled={isFinishingEncounter}
+                  loading={isFinishingEncounter}
+                />
+              )}
             </div>
             <dialog id="delete-encounter-modal" className="modal modal-center">
               <div className="modal-box">
