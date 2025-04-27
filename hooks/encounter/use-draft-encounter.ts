@@ -21,6 +21,7 @@ export const useEncounterDraft = (
     name: character.name,
     armorClass: character.armorClass,
     maxHP: character.maxHP,
+    currentHP: character.maxHP,
     conditions: [],
     type,
   });

@@ -16,7 +16,15 @@ module.exports = withPWA({
       },
     ],
   },
-  webpack(config) {
+
+  webpack(config, { dev, isServer }) {
+    if (dev && !isServer) {
+      config.watchOptions = {
+        poll: 500,
+        aggregateTimeout: 200,
+      };
+    }
+
     config.module.rules.push({
       test: /\.svg$/,
       use: ['@svgr/webpack'],

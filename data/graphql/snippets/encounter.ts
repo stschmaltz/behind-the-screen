@@ -11,6 +11,22 @@ export const fullEncounter = /* GraphQL */ `
       name
       maxHP
       armorClass
+      meta
+      speed
+      stats {
+        STR
+        DEX
+        CON
+        INT
+        WIS
+        CHA
+      }
+      challenge
+      traits
+      actions
+      legendaryActions
+      img_url
+      monsterSource
     }
     status
     players {
@@ -21,6 +37,22 @@ export const fullEncounter = /* GraphQL */ `
       name
       maxHP
       armorClass
+      meta
+      speed
+      stats {
+        STR
+        DEX
+        CON
+        INT
+        WIS
+        CHA
+      }
+      challenge
+      traits
+      actions
+      legendaryActions
+      img_url
+      monsterSource
     }
     initiativeOrder {
       _id
