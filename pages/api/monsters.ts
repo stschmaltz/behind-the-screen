@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import path from 'path';
 import { promises as fs } from 'fs';
-
+import { logger } from '../../lib/logger';
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -20,7 +20,7 @@ export default async function handler(
     // Send the data as response
     res.status(200).json(monsters);
   } catch (error) {
-    console.error('Error reading monster data:', error);
+    logger.error('Error reading monster data:', error);
     res.status(500).json({ message: 'Error loading monster data' });
   }
 }
