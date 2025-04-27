@@ -232,28 +232,31 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
             onChange={(e) => handleManualChange('name', e.target.value)}
             placeholder="Or enter manually"
           />
-          <FormInput
-            label="HP"
-            id="health"
-            type="number"
-            value={newEnemy.maxHP}
-            onChange={(e) =>
-              handleManualChange('maxHP', Number(e.target.value))
-            }
-            min={1}
-            width="w-32"
-          />
-          <FormInput
-            label="AC"
-            id="armorClass"
-            type="number"
-            value={newEnemy.armorClass}
-            onChange={(e) =>
-              handleManualChange('armorClass', Number(e.target.value))
-            }
-            min={1}
-            width="w-32"
-          />
+
+          <div className="flex gap-4">
+            <FormInput
+              label="HP"
+              id="health"
+              type="number"
+              value={newEnemy.maxHP}
+              onChange={(e) =>
+                handleManualChange('maxHP', Number(e.target.value))
+              }
+              min={1}
+              width="w-32"
+            />
+            <FormInput
+              label="AC"
+              id="armorClass"
+              type="number"
+              value={newEnemy.armorClass}
+              onChange={(e) =>
+                handleManualChange('armorClass', Number(e.target.value))
+              }
+              min={1}
+              width="w-32"
+            />
+          </div>
 
           {/* Advanced Fields Section - Collapsible */}
           <div className="collapse collapse-arrow bg-base-200 mt-4">

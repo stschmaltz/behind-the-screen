@@ -227,6 +227,15 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
                 className="form-control flex-grow"
                 style={{ minWidth: '200px' }}
               >
+                {' '}
+                <div className="flex justify-end w-full mb-4">
+                  <Button
+                    variant="error"
+                    label="Remove Enemy"
+                    onClick={() => removeEnemy(index)}
+                    className="btn-sm self-end"
+                  />
+                </div>
                 <label className="label">
                   <span className="label-text">Select Monster</span>
                 </label>
@@ -257,38 +266,38 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
               placeholder="Name"
               className="flex-grow min-w-[150px]"
             />
-            <FormInput
-              id={`enemy-maxHP-${enemy._id}`}
-              label="HP"
-              type="number"
-              value={enemy.maxHP}
-              min={1}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => {
-                handleEnemyFieldChange(index, 'maxHP', Number(e.target.value));
-              }}
-              className="w-20"
-            />
-            <FormInput
-              id={`enemy-armorClass-${enemy._id}`}
-              label="AC"
-              type="number"
-              value={enemy.armorClass}
-              min={1}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                handleEnemyFieldChange(
-                  index,
-                  'armorClass',
-                  Number(e.target.value),
-                )
-              }
-              className="w-20"
-            />
-            <Button
-              variant="error"
-              label="Remove"
-              onClick={() => removeEnemy(index)}
-              className="btn-sm self-end"
-            />
+            <div className="flex gap-2 justify-between w-full">
+              <FormInput
+                id={`enemy-maxHP-${enemy._id}`}
+                label="HP"
+                type="number"
+                value={enemy.maxHP}
+                min={1}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                  handleEnemyFieldChange(
+                    index,
+                    'maxHP',
+                    Number(e.target.value),
+                  );
+                }}
+                className="w-20"
+              />
+              <FormInput
+                id={`enemy-armorClass-${enemy._id}`}
+                label="AC"
+                type="number"
+                value={enemy.armorClass}
+                min={1}
+                onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                  handleEnemyFieldChange(
+                    index,
+                    'armorClass',
+                    Number(e.target.value),
+                  )
+                }
+                className="w-20"
+              />
+            </div>
           </div>
 
           {/* Advanced Fields Section - Collapsible */}
