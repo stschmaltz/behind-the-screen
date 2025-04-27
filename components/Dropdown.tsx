@@ -7,13 +7,22 @@ interface DropdownProps {
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ label, options, value, onChange }) => {
+const Dropdown: React.FC<DropdownProps> = ({
+  label,
+  options,
+  value,
+  onChange,
+}) => {
   return (
     <div className="form-control w-full">
       <label className="label">
         <span className="label-text">{label}</span>
       </label>
-      <select className="select select-bordered" value={value} onChange={onChange}>
+      <select
+        className="select select-bordered"
+        value={value}
+        onChange={onChange}
+      >
         {options.map((option) => (
           <option key={option} value={option}>
             {option}

@@ -143,17 +143,39 @@ const NpcGeneratorPage: NextPage = () => {
       </div>
       <div className="mt-8 w-full max-w-md p-4 border rounded-md shadow-sm bg-base-200">
         <h2 className="text-xl font-semibold mb-4">NPC Preview</h2>
-        <p><strong>Name:</strong> {npcName}</p>
-        <p><strong>Age:</strong> {npcAge}</p>
-        <p><strong>Description:</strong> {npcDescription}</p>
-        <p><strong>Height:</strong> {npcHeight}</p>
-        <p><strong>Weight:</strong> {npcWeight}</p>
-        <p><strong>Distinguishing Features:</strong> {npcFeatures}</p>
-        <p><strong>Alignment:</strong> {alignment}</p>
-        <p><strong>Race:</strong> {race}</p>
-        <p><strong>Class:</strong> {npcClass}</p>
-        <p><strong>Gender:</strong> {gender}</p>
-        <p><strong>Background:</strong> {background}</p>
+        <p>
+          <strong>Name:</strong> {npcName}
+        </p>
+        <p>
+          <strong>Age:</strong> {npcAge}
+        </p>
+        <p>
+          <strong>Description:</strong> {npcDescription}
+        </p>
+        <p>
+          <strong>Height:</strong> {npcHeight}
+        </p>
+        <p>
+          <strong>Weight:</strong> {npcWeight}
+        </p>
+        <p>
+          <strong>Distinguishing Features:</strong> {npcFeatures}
+        </p>
+        <p>
+          <strong>Alignment:</strong> {alignment}
+        </p>
+        <p>
+          <strong>Race:</strong> {race}
+        </p>
+        <p>
+          <strong>Class:</strong> {npcClass}
+        </p>
+        <p>
+          <strong>Gender:</strong> {gender}
+        </p>
+        <p>
+          <strong>Background:</strong> {background}
+        </p>
       </div>
     </div>
   );
