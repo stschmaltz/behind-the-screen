@@ -7,7 +7,6 @@ function getEncounter(id: string): {
   encounter: Encounter | null;
   loading: boolean;
 } {
-  // Memoize variables and transform to prevent unnecessary re-renders/fetches
   const variables = useMemo(() => ({ id }), [id]);
   const transform = useMemo(() => (data: any) => data.encounterById, []);
 
@@ -15,7 +14,7 @@ function getEncounter(id: string): {
     query: encounterByIdQuery,
     variables,
     transform,
-    enabled: !!id, // Ensure fetching is enabled only when id is present
+    enabled: !!id,
   });
 
   return { encounter, loading };

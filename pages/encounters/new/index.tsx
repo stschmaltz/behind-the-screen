@@ -27,7 +27,6 @@ export const INITIAL_NEW_ENCOUNTER: NewEncounterTemplate = {
   notes: [],
   enemies: [],
   status: 'inactive',
-  userId: '',
   campaignId: '',
 };
 

@@ -22,10 +22,7 @@ const EncountersPage: NextPage = () => {
     string | undefined
   >(undefined);
 
-  // Set the selected campaign from query params or user preferences
   useEffect(() => {
-    // Check if a campaign is already selected (e.g., by user interaction)
-    // This prevents the effect from overwriting a user's selection after initial load
     if (selectedCampaignId) return;
 
     const queryCampaignId = router.query.selectedCampaign as string | undefined;
@@ -33,15 +30,10 @@ const EncountersPage: NextPage = () => {
     if (queryCampaignId) {
       setSelectedCampaignId(queryCampaignId);
     } else if (activeCampaignId) {
-      // Only set from activeCampaignId if no query param and nothing is selected yet
       setSelectedCampaignId(activeCampaignId);
     }
-    // We only want this to run when activeCampaignId might initialize the state.
-    // Subsequent changes to activeCampaignId (from user selection) shouldn't trigger this.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeCampaignId, router.query.selectedCampaign]); // Depend on the specific query param and activeId
+  }, [activeCampaignId, router.query.selectedCampaign]);
 
-  // Get all data
   const { loading: encountersLoading, encounters } = getAllEncounters({
     campaignId: selectedCampaignId,
     adventureId: selectedAdventureId,
@@ -93,7 +85,6 @@ const EncountersPage: NextPage = () => {
     campaignsLoading ||
     adventuresLoading;
 
-  // Calculate query params for New Encounter button
   const newEncounterParams = new URLSearchParams();
   if (selectedCampaignId) {
     newEncounterParams.append('campaignId', selectedCampaignId);
@@ -103,33 +94,24 @@ const EncountersPage: NextPage = () => {
   }
   const newEncounterUrl = `/encounters/new?${newEncounterParams.toString()}`;
 
-  // Memoize the state setter functions passed as props
-  const handleCampaignChange = useCallback(
-    (id: string | undefined) => {
-      setSelectedCampaignId(id);
-      setSelectedAdventureId(undefined); // Reset adventure when campaign changes
-    },
-    [], // No dependencies, setters from useState are stable
-  );
+  const handleCampaignChange = useCallback((id: string | undefined) => {
+    setSelectedCampaignId(id);
+    setSelectedAdventureId(undefined);
+  }, []);
 
-  const handleAdventureChange = useCallback(
-    (id: string | undefined) => {
-      setSelectedAdventureId(id);
-    },
-    [], // No dependencies, setters from useState are stable
-  );
+  const handleAdventureChange = useCallback((id: string | undefined) => {
+    setSelectedAdventureId(id);
+  }, []);
 
   return (
     <div className="bg-base-100 min-h-screen p-4 flex flex-col items-center w-full max-w-2xl space-y-4 m-auto min-w-72">
       <h1 className="text-2xl font-bold mb-2">Encounters</h1>
 
-      {/* Campaign Selector */}
       <CampaignSelector
         onCampaignChange={handleCampaignChange}
         selectedCampaignId={selectedCampaignId}
       />
 
-      {/* Adventure Selector */}
       {selectedCampaignId && (
         <AdventureSelector
           campaignId={selectedCampaignId}
@@ -153,7 +135,6 @@ const EncountersPage: NextPage = () => {
         </div>
       )}
 
-      {/* Encounters List or No Campaign Selected Message */}
       {!selectedCampaignId ? (
         noCampaignSelectedState
       ) : loading ? (
@@ -202,7 +183,6 @@ const EncountersPage: NextPage = () => {
                     </div>
                   </div>
 
-                  {/* Campaign and Adventure tags */}
                   {(encounter.campaignId || encounter.adventureId) && (
                     <div className="mt-2 flex gap-2">
                       {encounter.campaignId && (

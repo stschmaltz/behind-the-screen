@@ -1,4 +1,3 @@
-// hooks/useQuery.ts
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { asyncFetch } from '../data/graphql/graphql-fetcher';
 
@@ -18,11 +17,10 @@ export function useQuery<T>({
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  // Use a ref to track if we're currently in a manual refresh
+
   const isManuallyRefreshing = useRef(false);
 
   const fetchData = useCallback(async () => {
-    // Mark that we're manually refreshing
     isManuallyRefreshing.current = true;
     setLoading(true);
     try {
@@ -37,13 +35,11 @@ export function useQuery<T>({
       throw err;
     } finally {
       setLoading(false);
-      // Reset the manual refresh flag after completion
       isManuallyRefreshing.current = false;
     }
   }, [query, variables, transform]);
 
   useEffect(() => {
-    // Skip the automatic fetch if we're currently doing a manual refresh
     if (!enabled || isManuallyRefreshing.current) return;
 
     let isMounted = true;
@@ -74,11 +70,10 @@ export function useQuery<T>({
   }, [query, enabled, variables, transform]);
 
   useEffect(() => {
-    // Skip the automatic fetch if we're currently doing a manual refresh
     if (!enabled || isManuallyRefreshing.current) return;
 
     fetchData();
-  }, [enabled, fetchData]); // Depend on enabled and the stable fetchData callback
+  }, [enabled, fetchData]);
 
   return { data, loading, error, refresh: fetchData };
 }
