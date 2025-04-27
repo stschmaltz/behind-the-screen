@@ -60,8 +60,7 @@ const NewEncounterPage: NextPage = () => {
       return;
     }
 
-    // Create input object with only the fields expected by the GraphQL mutation
-    const encounterInput = {
+    const encounterInput: NewEncounterTemplate = {
       name: newEncounter.name,
       description: newEncounter.description,
       notes: newEncounter.notes || [],
@@ -69,6 +68,7 @@ const NewEncounterPage: NextPage = () => {
       status: newEncounter.status,
       campaignId,
       adventureId,
+      userId: '',
     };
 
     const success = await handleSave(encounterInput);
