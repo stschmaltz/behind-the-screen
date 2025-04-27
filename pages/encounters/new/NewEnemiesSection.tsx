@@ -4,6 +4,13 @@ import { FormInput } from '../../../components/FormInput';
 import { Button } from '../../../components/Button';
 import { generateMongoId } from '../../../lib/mongo';
 import { logger } from '../../../lib/logger';
+import MonsterCombobox from '../../../components/MonsterCombobox';
+
+interface MonsterOption {
+  _id: string;
+  name: string;
+  [key: string]: unknown;
+}
 
 interface MonsterData {
   _id: string;
@@ -17,7 +24,6 @@ interface MonsterData {
   Actions: string;
   'Legendary Actions'?: string;
   img_url?: string;
-  // Ability scores
   STR: string;
   DEX: string;
   CON: string;
@@ -36,12 +42,12 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
   onEnemiesChange,
 }) => {
   const [monsters, setMonsters] = useState<MonsterData[]>([]);
+  const [monsterOptions, setMonsterOptions] = useState<MonsterOption[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedMonsterNames, setSelectedMonsterNames] = useState<{
     [key: number]: string;
   }>({});
-  // State to track open advanced sections for each enemy
   const [advancedOpenState, setAdvancedOpenState] = useState<{
     [key: number]: boolean;
   }>({});
@@ -57,6 +63,14 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
         }
         const data: MonsterData[] = await response.json();
         setMonsters(data);
+
+        // Map monster data to the format expected by MonsterCombobox
+        const options: MonsterOption[] = data.map((monster) => ({
+          _id: monster._id,
+          name: monster.name,
+          original: monster,
+        }));
+        setMonsterOptions(options);
       } catch (err: unknown) {
         if (err instanceof Error) {
           setError(err.message);
@@ -78,7 +92,6 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
     return match ? parseInt(match[0], 10) : 0;
   };
 
-  // Parse ability score from string (e.g., "18" from "18 (+4)")
   const parseAbilityScore = (abilityString: string): number => {
     return parseInt(abilityString, 10) || 0;
   };
@@ -89,7 +102,6 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
     value: string | number,
   ) => {
     const updated = [...enemies];
-    // Ensure stats object exists if we are modifying it
     if (
       field === 'stats' &&
       value &&
@@ -101,7 +113,6 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
         stats: { STR: 10, DEX: 10, CON: 10, INT: 10, WIS: 10, CHA: 10 },
       };
     } else if (typeof value === 'object') {
-      // Prevent direct object assignment if not stats
       logger.warn('Attempted to assign object to non-stats field', {
         field,
         value,
@@ -113,17 +124,12 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
     updated[index] = { ...updated[index], [field]: value };
     onEnemiesChange(updated);
 
-    // If name is manually changed, clear the dropdown selection for that row
     if (field === 'name') {
       setSelectedMonsterNames((prev) => ({ ...prev, [index]: '' }));
     }
   };
 
-  const handleMonsterSelectChange = (
-    index: number,
-    event: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    const monsterName = event.target.value;
+  const handleMonsterSelectChange = (index: number, monsterName: string) => {
     setSelectedMonsterNames((prev) => ({ ...prev, [index]: monsterName }));
 
     const updated = [...enemies];
@@ -131,11 +137,10 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
       const selectedMonster = monsters.find((m) => m.name === monsterName);
       if (selectedMonster) {
         updated[index] = {
-          ...updated[index], // Keep existing _id
+          ...updated[index],
           name: selectedMonster.name,
           maxHP: parseStat(selectedMonster['Hit Points']),
           armorClass: parseStat(selectedMonster['Armor Class']),
-          // Add new fields
           meta: selectedMonster.meta,
           speed: selectedMonster.Speed,
           stats: {
@@ -151,17 +156,15 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
           actions: selectedMonster.Actions,
           legendaryActions: selectedMonster['Legendary Actions'],
           img_url: selectedMonster.img_url,
-          monsterSource: selectedMonster.name, // Track the source monster
+          monsterSource: selectedMonster.name,
         };
       }
     } else {
-      // Reset if "Select a monster" is chosen, keep the ID
       updated[index] = {
         ...updated[index],
         name: '',
         maxHP: 0,
         armorClass: 0,
-        // Clear the additional fields
         meta: undefined,
         speed: undefined,
         stats: undefined,
@@ -176,7 +179,6 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
     onEnemiesChange(updated);
   };
 
-  // Helper for updating ability scores
   const handleAbilityScoreChange = (
     index: number,
     ability: 'STR' | 'DEX' | 'CON' | 'INT' | 'WIS' | 'CHA',
@@ -195,7 +197,7 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
           INT: 10,
           WIS: 10,
           CHA: 10,
-        }), // Ensure stats object exists
+        }),
         [ability]: value,
       },
     };
@@ -203,7 +205,6 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
     onEnemiesChange(updated);
   };
 
-  // Helper to toggle advanced section for a specific enemy
   const toggleAdvanced = (index: number) => {
     setAdvancedOpenState((prev) => ({ ...prev, [index]: !prev[index] }));
   };
@@ -219,13 +220,13 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
         _id: newId,
       },
     ]);
-    // Ensure new enemy's advanced section starts closed
+
     setAdvancedOpenState((prev) => ({ ...prev, [enemies.length]: false }));
   };
 
   const removeEnemy = (index: number) => {
     onEnemiesChange(enemies.filter((_, i) => i !== index));
-    // Clean up state for the removed enemy and shift subsequent indices
+
     setSelectedMonsterNames((prev) => {
       const { [index]: _, ...rest } = prev;
       const adjusted: { [key: number]: string } = {};
@@ -236,6 +237,7 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
 
       return adjusted;
     });
+
     setAdvancedOpenState((prev) => {
       const { [index]: _, ...rest } = prev;
       const adjusted: { [key: number]: boolean } = {};
@@ -280,21 +282,19 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
                     style={{ maxWidth: '400px' }}
                   >
                     <label className="label">
-                      <span className="label-text">Select Monster</span>
+                      <span className="label-text">
+                        Select or Search Monster
+                      </span>
                     </label>
-                    <select
-                      className="select select-bordered w-full select-sm"
+                    <MonsterCombobox
+                      options={monsterOptions}
                       value={selectedMonsterNames[index] || ''}
-                      onChange={(e) => handleMonsterSelectChange(index, e)}
+                      onChange={(value) =>
+                        handleMonsterSelectChange(index, value)
+                      }
+                      placeholder="Type to search or select a monster"
                       disabled={isLoading}
-                    >
-                      <option value="">Or enter manually below</option>
-                      {monsters.map((monster) => (
-                        <option key={monster._id} value={monster.name}>
-                          {monster.name}
-                        </option>
-                      ))}
-                    </select>
+                    />
                   </div>
                 )}
 

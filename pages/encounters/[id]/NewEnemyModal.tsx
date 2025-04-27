@@ -1,10 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from '../../../components/Button';
 import { FormInput } from '../../../components/FormInput';
 import { EncounterCharacter } from '../../../types/encounters';
 import { useModal } from '../../../hooks/use-modal';
 import { generateMongoId } from '../../../lib/mongo';
 import { logger } from '../../../lib/logger';
+import MonsterCombobox from '../../../components/MonsterCombobox';
+
+interface MonsterOption {
+  _id: string;
+  name: string;
+  [key: string]: unknown;
+}
 
 interface MonsterData {
   _id: string;
@@ -57,12 +64,32 @@ const NewEnemyModal: React.FC<Props> = ({
     useState<EncounterCharacter>(INITIAL_ENEMY_STATE);
   const [initiative, setInitiative] = useState<number | ''>('');
   const [monsters, setMonsters] = useState<MonsterData[]>([]);
+  const [monsterOptions, setMonsterOptions] = useState<MonsterOption[]>([]);
   const [selectedMonsterName, setSelectedMonsterName] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
 
-  const { showModal, closeModal } = useModal('new-enemy-modal');
+  // Create a custom showModal function that prevents auto-focus
+  const modalRef = useRef<HTMLDialogElement>(null);
+  const defaultModal = useModal('new-enemy-modal');
+
+  const showModal = () => {
+    // Use the built-in showModal method but capture the active element first
+    const activeElement = document.activeElement;
+    modalRef.current?.showModal();
+
+    // Return focus to the previous element (usually the "Add Enemy" button)
+    if (activeElement instanceof HTMLElement) {
+      setTimeout(() => {
+        activeElement.focus();
+      }, 50);
+    }
+  };
+
+  const closeModal = () => {
+    defaultModal.closeModal();
+  };
 
   useEffect(() => {
     const fetchMonsters = async () => {
@@ -75,6 +102,14 @@ const NewEnemyModal: React.FC<Props> = ({
         }
         const data: MonsterData[] = await response.json();
         setMonsters(data);
+
+        // Map monster data to the format expected by MonsterCombobox
+        const options: MonsterOption[] = data.map((monster) => ({
+          _id: monster._id,
+          name: monster.name,
+          original: monster,
+        }));
+        setMonsterOptions(options);
       } catch (err: unknown) {
         if (err instanceof Error) {
           setError(err.message);
@@ -100,10 +135,7 @@ const NewEnemyModal: React.FC<Props> = ({
     return parseInt(abilityString, 10) || 0;
   };
 
-  const handleMonsterSelectChange = (
-    event: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    const monsterName = event.target.value;
+  const handleMonsterSelectChange = (monsterName: string) => {
     setSelectedMonsterName(monsterName);
 
     if (monsterName) {
@@ -221,7 +253,7 @@ const NewEnemyModal: React.FC<Props> = ({
         onClick={showModal}
         className={className}
       />
-      <dialog className="modal" id="new-enemy-modal">
+      <dialog ref={modalRef} className="modal" id="new-enemy-modal">
         <div className="modal-box">
           <h2 className="text-2xl font-bold mb-4">Add New Enemy</h2>
 
@@ -231,21 +263,15 @@ const NewEnemyModal: React.FC<Props> = ({
           {!isLoading && !error && (
             <div className="form-control w-full mb-4">
               <label className="label">
-                <span className="label-text">Select Monster</span>
+                <span className="label-text">Select or Search Monster</span>
               </label>
-              <select
-                className="select select-bordered w-full"
+              <MonsterCombobox
+                options={monsterOptions}
                 value={selectedMonsterName}
                 onChange={handleMonsterSelectChange}
+                placeholder="Type to search or select a monster"
                 disabled={isLoading}
-              >
-                <option value="">Select a monster</option>
-                {monsters.map((monster) => (
-                  <option key={monster._id} value={monster.name}>
-                    {monster.name}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
           )}
 
