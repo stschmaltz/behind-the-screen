@@ -1,6 +1,5 @@
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import NewNotesSection from './NewNotesSection';
 import NewEnemiesSection from './NewEnemiesSection';
 import { useNewEncounter } from '../../../hooks/encounter/use-new-encounter';
 import { NewEncounterTemplate } from '../../../types/encounters';
@@ -52,12 +51,12 @@ const NewEncounterPage: NextPage = () => {
           onChange={handleFieldChange('description')}
         />
 
-        <NewNotesSection
+        {/* <NewNotesSection
           notes={newEncounter.notes}
           onNotesChange={(updatedNotes) =>
             setNewEncounter((prev) => ({ ...prev, notes: updatedNotes }))
           }
-        />
+        /> */}
 
         <NewEnemiesSection
           enemies={newEncounter.enemies}

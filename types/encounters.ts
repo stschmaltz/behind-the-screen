@@ -21,6 +21,22 @@ export interface EncounterCharacter {
   name: string;
   maxHP: number;
   armorClass: number;
+  meta?: string;
+  speed?: string;
+  stats?: {
+    STR: number;
+    DEX: number;
+    CON: number;
+    INT: number;
+    WIS: number;
+    CHA: number;
+  };
+  challenge?: string;
+  traits?: string;
+  actions?: string;
+  legendaryActions?: string;
+  img_url?: string;
+  monsterSource?: string;
 }
 
 export interface EncounterTemplate {

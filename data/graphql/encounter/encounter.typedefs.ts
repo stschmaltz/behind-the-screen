@@ -4,6 +4,24 @@ export const encounterTypeDefs = /* GraphQL */ `
     name: String!
     maxHP: Int!
     armorClass: Int!
+    meta: String
+    speed: String
+    stats: MonsterStats
+    challenge: String
+    traits: String
+    actions: String
+    legendaryActions: String
+    img_url: String
+    monsterSource: String
+  }
+
+  type MonsterStats {
+    STR: Int
+    DEX: Int
+    CON: Int
+    INT: Int
+    WIS: Int
+    CHA: Int
   }
 
   type EncounterTemplate {
@@ -77,6 +95,24 @@ export const encounterTypeDefs = /* GraphQL */ `
     name: String!
     maxHP: Int!
     armorClass: Int!
+    meta: String
+    speed: String
+    stats: MonsterStatsInput
+    challenge: String
+    traits: String
+    actions: String
+    legendaryActions: String
+    img_url: String
+    monsterSource: String
+  }
+
+  input MonsterStatsInput {
+    STR: Int
+    DEX: Int
+    CON: Int
+    INT: Int
+    WIS: Int
+    CHA: Int
   }
 
   input EncounterPlayerIdInput {
