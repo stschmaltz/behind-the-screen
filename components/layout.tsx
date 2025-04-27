@@ -16,59 +16,78 @@ function Layout({ children }: LayoutProps) {
   const router = useRouter();
 
   if (isLoading && !currentUser) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="loading loading-spinner loading-lg text-primary"></div>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen flex flex-col w-full ">
-      <header className="navbar bg-primary text-white flex items-center justify-between p-4">
-        <Link href="/">
-          <h1 className="text-2xl">DM Essentials</h1>
-        </Link>
-        <NavBar router={router} />
-        <ThemeSwitcher />
+    <div className="min-h-screen flex flex-col w-full">
+      <header className="navbar bg-primary text-white p-4">
+        <div className="container mx-auto flex flex-wrap items-center justify-between">
+          <Link href="/" className="flex items-center">
+            <h1 className="text-xl md:text-2xl font-bold">DM Essentials</h1>
+          </Link>
+          <div className="flex items-center gap-2 md:gap-4">
+            <NavBar router={router} />
+            <ThemeSwitcher />
+          </div>
+        </div>
       </header>
+
       <ToastContainer />
 
-      {/* this app is under development and not ready for use yet banner */}
-      <div className="bg-red-500 text-white text-center p-2">
+      {/* Development banner */}
+      <div className="bg-red-500 text-white text-center p-2 text-sm">
         This app is under development and not ready for use yet
       </div>
+
       {currentUser ? (
-        <div className="p-4 min-h-[85vh] overflow-auto flex flex-col bg-content-100">
-          <div className="flex justify-between items-center">
+        <div className="flex-1 flex flex-col bg-content-100">
+          <div className="container mx-auto px-4 py-2 flex justify-end">
             <Link
               href="/api/auth/logout?returnTo=http%3A%2F%2Flocalhost%3A3000"
-              className="text-blue-600 hover:underline"
+              className="text-sm text-blue-600 hover:underline"
             >
               Logout
             </Link>
           </div>
 
-          <main className="p-4 overflow-y-auto flex-grow">{children}</main>
+          <main className="container mx-auto p-4 flex-grow">{children}</main>
 
           {router.pathname !== '/' && (
-            <Button
-              variant="secondary"
-              label="Back"
-              className="w-full"
-              onClick={() => router.back()}
-            />
+            <div className="container mx-auto px-4 pb-4">
+              <Button
+                variant="secondary"
+                label="Back"
+                className="w-full sm:w-auto"
+                onClick={() => router.back()}
+              />
+            </div>
           )}
         </div>
       ) : (
-        <div className="flex h-full items-center justify-center w-full min-h-[75vh]">
+        <div className="flex-1 flex items-center justify-center w-full">
           <Link href="/api/auth/login">
             <button className="btn btn-primary">Login</button>
           </Link>
         </div>
       )}
 
-      <footer className="bg-gray-200 p-4 text-center">
-        <p>
-          Copyright Shane Schmaltz 2025. for feedback, please email{' '}
-          <a href="mailto:stschmaltz@gmail.com">stschmaltz at gmail.com</a>
-        </p>
+      <footer className="bg-base-300 p-4 text-center text-sm">
+        <div className="container mx-auto">
+          <p>
+            Copyright Shane Schmaltz 2025. For feedback, please email{' '}
+            <a
+              href="mailto:stschmaltz@gmail.com"
+              className="text-primary hover:underline"
+            >
+              stschmaltz@gmail.com
+            </a>
+          </p>
+        </div>
       </footer>
     </div>
   );
