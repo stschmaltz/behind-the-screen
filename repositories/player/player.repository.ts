@@ -3,6 +3,7 @@ import { injectable } from 'inversify';
 import { PlayerRepositoryInterface } from './player.repository.interface';
 import { getDbClient } from '../../data/database/mongodb';
 import { NewPlayer, Player } from '../../types/player';
+import { logger } from '../../lib/logger';
 
 @injectable()
 export class PlayerRepository implements PlayerRepositoryInterface {
@@ -64,14 +65,14 @@ export class PlayerRepository implements PlayerRepositoryInterface {
 
   public async getAllPlayers(input: { userId: string }): Promise<Player[]> {
     const { userId } = input;
-    console.log('getAllPlayers', userId);
+    logger.info('getAllPlayers', userId);
     const { db } = await getDbClient();
     const docs = await db
       .collection(this.collectionName)
       .find({ userId: new ObjectId(userId) })
       .toArray();
 
-    console.log('getAllPlayers', docs);
+    logger.info('getAllPlayers', docs);
     return docs.map(this.mapToPlayer);
   }
 

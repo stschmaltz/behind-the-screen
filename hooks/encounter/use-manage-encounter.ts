@@ -1,4 +1,3 @@
-// hooks/encounter/use-save-encounter.ts
 import { useState, useCallback, useEffect } from 'react';
 import debounce from 'lodash/debounce';
 import { asyncFetch } from '../../data/graphql/graphql-fetcher';
@@ -7,6 +6,7 @@ import {
   saveEncounterMutation,
 } from '../../data/graphql/snippets/encounter';
 import { Encounter, NewEncounterTemplate } from '../../types/encounters';
+import { logger } from '../../lib/logger';
 
 const DEBOUNCE_DELAY = 500;
 
@@ -35,21 +35,36 @@ const useManageEncounter = () => {
   ): Promise<boolean> => {
     const encounter = encounterData as Encounter | NewEncounterTemplate;
     const validationError = validateNewEncounter(encounter);
-    console.log('validationError', { validationError });
+    logger.debug('Validating encounter', {
+      validationError,
+      name: encounter.name,
+    });
+
     if (validationError) {
-      console.log('validationErrorFALSE');
+      logger.info(`Validation failed: ${validationError}`, {
+        name: encounter.name,
+        error: validationError,
+      });
       return false;
     }
 
     try {
-      console.log(
-        'asyncFetch(saveEncounterMutation, { input: { ...encounter })',
-      );
+      const encounterId = 'id' in encounter ? encounter.id : 'new';
+      logger.debug('Saving encounter', {
+        id: encounterId,
+        name: encounter.name,
+      });
       await asyncFetch(saveEncounterMutation, { input: { ...encounter } });
-      console.log('done');
+      logger.info('Encounter saved successfully', {
+        id: encounterId,
+        name: encounter.name,
+      });
       return true;
     } catch (err) {
-      console.error(err);
+      logger.error('Failed to save encounter', {
+        error: err instanceof Error ? err.message : String(err),
+        name: encounter.name,
+      });
       return false;
     }
   };
@@ -67,7 +82,7 @@ const useManageEncounter = () => {
             resolve(result);
           })
           .catch((error) => {
-            console.error(error);
+            logger.error('Error in debounced save', error);
             setIsSaving(false);
             resolve(false);
           });
@@ -83,7 +98,8 @@ const useManageEncounter = () => {
 
   const handleSave = useCallback(
     async (encounter: Encounter | NewEncounterTemplate): Promise<boolean> => {
-      console.log('handleSave', { encounter });
+      const encounterId = 'id' in encounter ? encounter.id : 'new';
+      logger.debug('Handle save called', { id: encounterId });
       return new Promise((resolve) => {
         debouncedSave(encounter, resolve);
       });
@@ -98,14 +114,15 @@ const useManageEncounter = () => {
   }, [debouncedSave]);
 
   const deleteEncounter = async (encounterId: string): Promise<boolean> => {
-    console.log('deleteEncounter', encounterId);
+    logger.debug('Deleting encounter', { id: encounterId });
     try {
       await asyncFetch(deleteEncounterMutation, {
         input: { id: encounterId.toString() },
       });
+      logger.info('Encounter deleted successfully', { id: encounterId });
       return true;
     } catch (err) {
-      console.error(err);
+      logger.error('Failed to delete encounter', err);
       return false;
     }
   };

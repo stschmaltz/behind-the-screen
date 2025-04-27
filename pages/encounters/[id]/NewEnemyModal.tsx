@@ -4,7 +4,7 @@ import { FormInput } from '../../../components/FormInput';
 import { EncounterCharacter } from '../../../types/encounters';
 import { useModal } from '../../../hooks/use-modal';
 import { generateMongoId } from '../../../lib/mongo';
-
+import { logger } from '../../../lib/logger';
 // Define a type for the monster data structure based on the JSON
 // We only need the fields relevant for the form for now
 interface MonsterData {
@@ -75,7 +75,7 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
         } else {
           setError('An unknown error occurred');
         }
-        console.error('Error fetching monsters:', err);
+        logger.error('Error fetching monsters:', err);
       } finally {
         setIsLoading(false);
       }

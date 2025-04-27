@@ -3,7 +3,7 @@ import { EncounterCharacter } from '../../../types/encounters';
 import { FormInput } from '../../../components/FormInput';
 import { Button } from '../../../components/Button';
 import { generateMongoId } from '../../../lib/mongo';
-
+import { logger } from '../../../lib/logger';
 // Define a type for the monster data structure from the API
 interface MonsterData {
   _id: string;
@@ -60,7 +60,7 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
         } else {
           setError('An unknown error occurred');
         }
-        console.error('Error fetching monsters:', err);
+        logger.error('Error fetching monsters:', err);
       } finally {
         setIsLoading(false);
       }
