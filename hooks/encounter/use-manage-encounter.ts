@@ -4,6 +4,7 @@ import { asyncFetch } from '../../data/graphql/graphql-fetcher';
 import {
   deleteEncounterMutation,
   saveEncounterMutation,
+  updateEncounterDescriptionMutation,
 } from '../../data/graphql/snippets/encounter';
 import { Encounter, NewEncounterTemplate } from '../../types/encounters';
 import { logger } from '../../lib/logger';
@@ -167,7 +168,28 @@ const useManageEncounter = () => {
     }
   };
 
-  return { isSaving, handleSave, deleteEncounter };
+  const updateDescription = useCallback(
+    async (encounterId: string, newDescription: string): Promise<void> => {
+      logger.debug('Updating encounter description', {
+        id: encounterId,
+        descriptionLength: newDescription.length,
+      });
+      try {
+        await asyncFetch(updateEncounterDescriptionMutation, {
+          input: { _id: encounterId, description: newDescription },
+        });
+        logger.info('Encounter description updated successfully', {
+          id: encounterId,
+        });
+      } catch (err) {
+        logger.error('Failed to update encounter description', err);
+        throw err;
+      }
+    },
+    [],
+  );
+
+  return { isSaving, handleSave, deleteEncounter, updateDescription };
 };
 
 export { useManageEncounter };

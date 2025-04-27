@@ -112,3 +112,21 @@ export const deleteEncounterMutation = /* GraphQL */ `
 export interface DeleteEncounterMutationResponse {
   deleteEncounter: boolean;
 }
+
+export const updateEncounterDescriptionMutation = /* GraphQL */ `
+  mutation updateEncounterDescription(
+    $input: UpdateEncounterDescriptionInput!
+  ) {
+    updateEncounterDescription(input: $input) {
+      _id
+      description
+    }
+  }
+`;
+
+export interface UpdateEncounterDescriptionResponse {
+  updateEncounterDescription: {
+    _id: string;
+    description: string;
+  };
+}

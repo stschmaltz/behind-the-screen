@@ -141,4 +141,9 @@ export const encounterTypeDefs = /* GraphQL */ `
   input DeleteEncounterInput {
     id: String!
   }
+
+  input UpdateEncounterDescriptionInput {
+    _id: ID!
+    description: String!
+  }
 `;

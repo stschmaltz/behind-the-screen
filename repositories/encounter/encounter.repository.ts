@@ -83,6 +83,41 @@ export class EncounterRepository implements EncounterRepositoryInterface {
     return result.deletedCount === 1;
   }
 
+  public async updateEncounterDescription(input: {
+    _id: string;
+    description: string;
+    userId: string;
+  }): Promise<Encounter | null> {
+    const { _id, description, userId } = input;
+    const { db } = await getDbClient();
+
+    const result = await db.collection(this.collectionName).findOneAndUpdate(
+      {
+        _id: new ObjectId(_id),
+        userId: new ObjectId(userId),
+      },
+      {
+        $set: {
+          description: description,
+          updatedAt: new Date(),
+        },
+      },
+      {
+        returnDocument: 'after',
+      },
+    );
+
+    if (!result) {
+      logger.warn(
+        'Attempted to update description for non-existent or unauthorized encounter',
+        input,
+      );
+      return null;
+    }
+
+    return this.mapToEncounter(result);
+  }
+
   private mapToEncounter(doc: any): Encounter {
     return {
       _id: doc._id.toHexString(),

@@ -100,7 +100,7 @@ const ActiveEncounterTable: React.FC<{
   };
 
   return (
-    <div className="w-full max-w-full overflow-x-hidden">
+    <div className="w-full max-w-full flex flex-col">
       <div className="flex flex-col sm:flex-row justify-between items-center gap-2 mb-4">
         <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
           <span className="badge badge-info">
@@ -109,9 +109,7 @@ const ActiveEncounterTable: React.FC<{
           <span className="badge badge-info">Turn {encounter.currentTurn}</span>
           {isSaving && <span className="badge badge-warning">Saving...</span>}
         </div>
-        {/* Button controls container: stack vertically on mobile, row on sm+ */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-          {/* Make Add Enemy button full width on mobile */}
           <div className="w-full sm:w-auto">
             <NewEnemyModal
               onAddEnemy={(enemy, initiative) => {
@@ -120,15 +118,12 @@ const ActiveEncounterTable: React.FC<{
                 }
               }}
               requireInitiative={true}
-              // Add className for potential full-width styling if needed
-              // className="w-full" // Example if the modal trigger needs width
             />
           </div>
-          {/* Previous/Next also full width on mobile */}
           <Button
             variant="secondary"
             label="Previous"
-            className="btn-sm w-full sm:w-24" // Full width on mobile, fixed on sm+
+            className="btn-sm w-full sm:w-24"
             onClick={handlePreviousTurn}
             disabled={
               encounter.currentTurn === 1 && encounter.currentRound === 1
@@ -137,30 +132,32 @@ const ActiveEncounterTable: React.FC<{
           <Button
             variant="primary"
             label="Next"
-            className="btn-sm w-full sm:w-24" // Full width on mobile, fixed on sm+
+            className="btn-sm w-full sm:w-24"
             onClick={handleNextTurn}
           />
         </div>
       </div>
 
-      <div className="space-y-2 w-full">
-        {sortedCharacters.map((character) => (
-          <ActiveEncounterCharacterRow
-            key={character._id}
-            character={character}
-            isCurrentTurn={character._id === currentCharacter._id}
-            onUpdateCharacter={handleUpdateCharacter}
-            monsterData={
-              character.type === 'enemy'
-                ? getMonsterData(character._id)
-                : undefined
-            }
-          />
-        ))}
+      <div className="overflow-y-auto h-[50vh] mb-4">
+        <div className="space-y-2 w-full">
+          {sortedCharacters.map((character) => (
+            <ActiveEncounterCharacterRow
+              key={character._id}
+              character={character}
+              isCurrentTurn={character._id === currentCharacter._id}
+              onUpdateCharacter={handleUpdateCharacter}
+              monsterData={
+                character.type === 'enemy'
+                  ? getMonsterData(character._id)
+                  : undefined
+              }
+            />
+          ))}
+        </div>
       </div>
 
       {deadCharacters.length > 0 && (
-        <div className="mt-8">
+        <div className="mt-4">
           <div className="flex justify-between items-center mb-2">
             <h3 className="text-lg font-semibold flex items-center">
               <span className="mr-2">☠️</span>
@@ -176,7 +173,6 @@ const ActiveEncounterTable: React.FC<{
               {showDeadPool ? 'Hide' : 'Show'}
             </button>
           </div>
-
           {showDeadPool && (
             <div className="bg-base-200 rounded-lg p-3 space-y-2">
               {deadCharacters.map((character) => (

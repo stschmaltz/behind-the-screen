@@ -15,6 +15,10 @@ interface EncounterContextProps {
   isSaving: boolean;
   handleSave: (encounter: Encounter | NewEncounterTemplate) => Promise<boolean>;
   deleteEncounter: (encounterId: string) => Promise<boolean>;
+  updateEncounterDescription: (
+    encounterId: string,
+    newDescription: string,
+  ) => Promise<void>;
 }
 
 const EncounterContext = createContext<EncounterContextProps | null>(null);
@@ -33,12 +37,27 @@ export const EncounterProvider: React.FC<EncounterProviderProps> = ({
     handleSave: originalHandleSave,
     isSaving,
     deleteEncounter,
+    updateDescription: originalUpdateDescription,
   } = useManageEncounter();
 
   const handleSave = useCallback(
     (encounterToSave: Encounter | NewEncounterTemplate) =>
       originalHandleSave(encounterToSave),
     [originalHandleSave],
+  );
+
+  const updateEncounterDescription = useCallback(
+    async (encounterId: string, newDescription: string) => {
+      setEncounter((prev) => ({ ...prev, description: newDescription }));
+      try {
+        await originalUpdateDescription(encounterId, newDescription);
+      } catch (error) {
+        setEncounter(initialEncounter);
+        console.error('Failed to update description:', error);
+        throw error;
+      }
+    },
+    [originalUpdateDescription, initialEncounter],
   );
 
   const contextValue = useMemo(
@@ -48,8 +67,16 @@ export const EncounterProvider: React.FC<EncounterProviderProps> = ({
       isSaving,
       handleSave,
       deleteEncounter,
+      updateEncounterDescription,
     }),
-    [encounter, setEncounter, isSaving, handleSave, deleteEncounter],
+    [
+      encounter,
+      setEncounter,
+      isSaving,
+      handleSave,
+      deleteEncounter,
+      updateEncounterDescription,
+    ],
   );
 
   return (

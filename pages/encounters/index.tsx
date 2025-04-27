@@ -10,6 +10,7 @@ import { getAllEncounters } from '../../hooks/encounter/get-all-encounters';
 import { getAllCampaigns } from '../../hooks/campaign/get-all-campaigns';
 import { getAllAdventures } from '../../hooks/adventure/get-all-adventures';
 import { useUserPreferences } from '../../hooks/user-preferences/use-user-preferences';
+import DescriptionDisplay from '../../components/DescriptionDisplay';
 
 const EncountersPage: NextPage = () => {
   const router = useRouter();
@@ -104,7 +105,7 @@ const EncountersPage: NextPage = () => {
   }, []);
 
   return (
-    <div className="bg-base-100 min-h-screen p-4 flex flex-col items-center w-full max-w-2xl space-y-4 m-auto min-w-72">
+    <div className="bg-base-100 h-full p-4 flex flex-col items-center w-full max-w-2xl space-y-4 m-auto min-w-72">
       <h1 className="text-2xl font-bold mb-2">Encounters</h1>
 
       <CampaignSelector
@@ -164,8 +165,13 @@ const EncountersPage: NextPage = () => {
               >
                 <div className="p-4 bg-base-200 border border-base-300 rounded shadow-sm hover:bg-base-300 transition-colors">
                   <div className="flex justify-between items-center">
-                    <div className="text-lg font-semibold">
-                      {encounter.name}
+                    <div className="text-lg font-semibold flex items-center gap-2">
+                      <span>{encounter.name}</span>
+                      <DescriptionDisplay
+                        encounterId={encounter._id.toString()}
+                        description={encounter.description}
+                        className="mt-1"
+                      />
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="text-sm opacity-80">

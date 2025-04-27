@@ -72,9 +72,7 @@ const ConditionManager: React.FC<{
           ))}
         </div>
       ) : (
-        <div className="text-xs text-info-content-500 mb-1 text-right">
-          {/* No conditions */}
-        </div>
+        <div className="text-xs text-info-content-500 mb-1 text-right"></div>
       )}
 
       <div className="flex justify-end">
@@ -144,14 +142,12 @@ const ActiveEncounterCharacterRow: React.FC<{
     if (modifierType === 'damage') {
       newHP = Math.max(0, newHP - numValue);
     } else if (modifierType === 'heal') {
-      // Only cap healing by maxHP if character has a maxHP defined
       if (character.maxHP !== undefined) {
         newHP = Math.min(character.maxHP, newHP + numValue);
       } else {
         newHP = newHP + numValue;
       }
     } else if (modifierType === 'temp') {
-      // Temp HP just overrides if higher
       newHP = Math.max(newHP, numValue);
     }
 
@@ -163,7 +159,7 @@ const ActiveEncounterCharacterRow: React.FC<{
   const isMonster = character.type === 'enemy' && monsterData;
 
   const currentHP = character.currentHP ?? 0;
-  const maxHP = character.maxHP ?? 1; // Avoid division by zero
+  const maxHP = character.maxHP ?? 1;
   const healthPercentage = maxHP > 0 ? (currentHP / maxHP) * 100 : 0;
 
   const getProgressColor = () => {
@@ -184,7 +180,6 @@ const ActiveEncounterCharacterRow: React.FC<{
       <div className="card-body p-4">
         {/* --- Mobile Layout (hidden on sm+) --- */}
         <div className="flex flex-wrap justify-between items-start gap-x-4 gap-y-1 sm:hidden">
-          {/* Name Header: Full width */}
           <h3 className="text-lg font-bold flex items-center gap-2 flex-wrap w-full">
             <span>{character.name}</span>
             {isCurrentTurn && (
@@ -194,9 +189,7 @@ const ActiveEncounterCharacterRow: React.FC<{
             )}
           </h3>
 
-          {/* Row 2 container: Initiative vs Stats */}
           <div className="flex justify-between items-start w-full">
-            {/* Initiative (Left) */}
             <div className="mt-1">
               <span className="text-sm text-base-content text-opacity-70">
                 Initiative: {character.initiative}
@@ -208,16 +201,14 @@ const ActiveEncounterCharacterRow: React.FC<{
               )}
             </div>
 
-            {/* Stats & Actions Block (Right, stacked internally) */}
             <div className="flex flex-col items-end gap-2">
-              {/* AC */}
               <div className="flex items-center justify-end gap-1">
                 <span className="text-sm font-semibold">AC:</span>
                 <FormInput
                   type="number"
                   value={character.armorClass ?? ''}
                   width="w-14"
-                  id={`mobile-armorClass-${character._id}`} // Unique ID for mobile
+                  id={`mobile-armorClass-${character._id}`}
                   onChange={(e) =>
                     onUpdateCharacter({
                       ...character,
@@ -228,10 +219,8 @@ const ActiveEncounterCharacterRow: React.FC<{
                   className="input-sm"
                 />
               </div>
-              {/* Health (Conditional) */}
               {character.maxHP && character.maxHP > 0 && (
                 <div className="relative flex items-center justify-end gap-1">
-                  {/* Mobile Popover Instance 1 */}
                   {popoverOpen && (
                     <div className="absolute bottom-full right-0 mb-2 z-20 p-3 card bg-base-200 shadow-xl w-56">
                       <h4 className="text-sm font-semibold mb-2 capitalize">
@@ -318,7 +307,6 @@ const ActiveEncounterCharacterRow: React.FC<{
               )}
               {(character.maxHP === undefined || character.maxHP === 0) && (
                 <div className="relative flex items-center justify-end gap-1">
-                  {/* Mobile Popover Instance 2 */}
                   {popoverOpen && (
                     <div className="absolute bottom-full right-0 mb-2 z-20 p-3 card bg-base-200 shadow-xl w-56">
                       <h4 className="text-sm font-semibold mb-2 capitalize">
@@ -393,10 +381,9 @@ const ActiveEncounterCharacterRow: React.FC<{
                   </button>
                 </div>
               )}
-              {/* Condition Manager */}
               <div>
                 <ConditionManager
-                  characterId={`mobile-${character._id}`} // Unique ID for mobile
+                  characterId={`mobile-${character._id}`}
                   conditions={character.conditions ?? []}
                   onAddCondition={(condition) =>
                     onUpdateCharacter({
@@ -420,9 +407,7 @@ const ActiveEncounterCharacterRow: React.FC<{
 
         {/* --- Desktop Layout (hidden below sm) --- */}
         <div className="hidden sm:flex sm:flex-row sm:justify-between sm:items-start sm:gap-4">
-          {/* Left Block: Name + Initiative/Stats */}
           <div className="flex flex-col min-w-0 sm:flex-1">
-            {/* Name Header */}
             <h3 className="text-lg font-bold flex items-center gap-2 flex-wrap">
               <span>{character.name}</span>
               {isCurrentTurn && (
@@ -431,7 +416,6 @@ const ActiveEncounterCharacterRow: React.FC<{
                 </span>
               )}
             </h3>
-            {/* Initiative / View Stats */}
             <div className="mt-1">
               <span className="text-sm text-base-content text-opacity-70">
                 Initiative: {character.initiative}
@@ -444,16 +428,14 @@ const ActiveEncounterCharacterRow: React.FC<{
             </div>
           </div>
 
-          {/* Right Block: Stats & Actions */}
           <div className="flex flex-col items-end gap-2 flex-shrink-0 sm:w-auto">
-            {/* AC */}
             <div className="flex items-center justify-end gap-1">
               <span className="text-sm font-semibold">AC:</span>
               <FormInput
                 type="number"
                 value={character.armorClass ?? ''}
                 width="w-14"
-                id={`desktop-armorClass-${character._id}`} // Unique ID for desktop
+                id={`desktop-armorClass-${character._id}`}
                 onChange={(e) =>
                   onUpdateCharacter({
                     ...character,
@@ -461,13 +443,11 @@ const ActiveEncounterCharacterRow: React.FC<{
                   })
                 }
                 placeholder="n/a"
-                className="input-sm"
+                className="input-sm w-[65px]"
               />
             </div>
-            {/* Health (Conditional) */}
             {character.maxHP && character.maxHP > 0 && (
               <div className="relative flex items-center justify-end gap-1">
-                {/* Desktop Popover Instance 1 */}
                 {popoverOpen && (
                   <div className="absolute bottom-full right-0 mb-2 z-20 p-3 card bg-base-200 shadow-xl w-56">
                     <h4 className="text-sm font-semibold mb-2 capitalize">
@@ -552,7 +532,6 @@ const ActiveEncounterCharacterRow: React.FC<{
             )}
             {(character.maxHP === undefined || character.maxHP === 0) && (
               <div className="relative flex items-center justify-end gap-1">
-                {/* Desktop Popover Instance 2 */}
                 {popoverOpen && (
                   <div className="absolute bottom-full right-0 mb-2 z-20 p-3 card bg-base-200 shadow-xl w-56">
                     <h4 className="text-sm font-semibold mb-2 capitalize">
@@ -625,10 +604,9 @@ const ActiveEncounterCharacterRow: React.FC<{
                 </button>
               </div>
             )}
-            {/* Condition Manager */}
             <div>
               <ConditionManager
-                characterId={`desktop-${character._id}`} // Unique ID for desktop
+                characterId={`desktop-${character._id}`}
                 conditions={character.conditions ?? []}
                 onAddCondition={(condition) =>
                   onUpdateCharacter({

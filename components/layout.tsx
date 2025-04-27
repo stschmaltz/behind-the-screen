@@ -39,9 +39,11 @@ function Layout({ children }: LayoutProps) {
 
       <ToastContainer />
 
-      <div className="bg-red-500 text-white text-center p-2 text-sm">
-        This app is under development and not ready for use yet
-      </div>
+      {currentUser?.email !== 'stschmaltz@gmail.com' && (
+        <div className="bg-red-500 text-white text-center p-2 text-sm">
+          This app is under development and not ready for use yet
+        </div>
+      )}
 
       {currentUser ? (
         <div className="flex-1 flex flex-col bg-content-100">
