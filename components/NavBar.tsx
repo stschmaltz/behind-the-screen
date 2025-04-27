@@ -22,7 +22,6 @@ const NavBar: React.FC<Props> = ({ router }) => {
 
   return (
     <nav className="relative">
-      {/* Mobile hamburger menu button */}
       <button
         className="md:hidden flex flex-col justify-center items-center"
         onClick={toggleMenu}
@@ -39,7 +38,6 @@ const NavBar: React.FC<Props> = ({ router }) => {
         ></span>
       </button>
 
-      {/* Desktop menu */}
       <ul className="hidden md:flex space-x-4">
         {navItems.map((item) => (
           <li key={item.path}>
@@ -53,7 +51,6 @@ const NavBar: React.FC<Props> = ({ router }) => {
         ))}
       </ul>
 
-      {/* Mobile dropdown menu */}
       {isMenuOpen && (
         <ul className="md:hidden absolute top-10 right-0 bg-primary p-4 rounded-md shadow-lg z-50 min-w-[200px]">
           {navItems.map((item) => (

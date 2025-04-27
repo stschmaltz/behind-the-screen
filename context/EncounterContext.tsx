@@ -35,14 +35,12 @@ export const EncounterProvider: React.FC<EncounterProviderProps> = ({
     deleteEncounter,
   } = useManageEncounter();
 
-  // Memoize the save handler to prevent recreation on each render
   const handleSave = useCallback(
     (encounterToSave: Encounter | NewEncounterTemplate) =>
       originalHandleSave(encounterToSave),
     [originalHandleSave],
   );
 
-  // Memoize the context value to prevent unnecessary re-renders
   const contextValue = useMemo(
     () => ({
       encounter,

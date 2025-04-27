@@ -83,7 +83,10 @@ export interface Encounter
   currentTurn: number;
 }
 
-export type NewEncounterTemplate = OmitMongoFields<EncounterTemplate>;
+export type NewEncounterTemplate = Omit<
+  OmitMongoFields<EncounterTemplate>,
+  'userId'
+>;
 export type NewEncounter = OmitMongoFields<Encounter>;
 
 export interface ActiveInitiativeOrderCharacter

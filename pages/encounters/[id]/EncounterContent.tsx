@@ -40,7 +40,7 @@ const EncounterContent = ({ players }: { players: Player[] }) => {
                     variant="error"
                     onClick={async () => {
                       const result = await deleteEncounter(encounter._id);
-                      // TODO: better error handling?
+
                       closeModal();
                       if (!result) {
                         logger.error('Failed to delete encounter');

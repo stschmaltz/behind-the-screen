@@ -63,9 +63,7 @@ const ThemeSwitcher: React.FC = () => {
         className="mt-3 z-[1] dropdown-content shadow-lg bg-base-100 rounded-box w-52 max-h-96 overflow-y-auto"
       >
         <div className="grid grid-cols-1 gap-1 p-2">
-          {/* Common themes */}
           <div className="mb-2 p-2 border-b">
-            <p className="text-xs text-gray-500 mb-1">Common Themes</p>
             <div className="grid grid-cols-2 gap-1">
               {commonThemes.map((t) => (
                 <button
@@ -79,8 +77,6 @@ const ThemeSwitcher: React.FC = () => {
             </div>
           </div>
 
-          {/* All themes */}
-          <p className="text-xs text-gray-500 mb-1 px-2">All Themes</p>
           <div className="grid grid-cols-2 gap-1 p-1">
             {themes.map((t) => (
               <button

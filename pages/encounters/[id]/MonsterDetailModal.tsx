@@ -9,18 +9,15 @@ interface Props {
 }
 
 const MonsterDetailModal: React.FC<Props> = ({ monster }) => {
-  // Create a unique modal ID for each monster using its _id
   const modalId = `monster-detail-modal-${monster?._id}`;
   const { showModal, closeModal } = useModal(modalId);
 
-  // Helper to render HTML content from the monster data
   const renderHTML = (html?: string) => {
     if (!html) return null;
 
     return <div dangerouslySetInnerHTML={{ __html: html }} />;
   };
 
-  // Format ability score with modifier
   const formatAbilityScore = (score?: number) => {
     if (!score) return '--';
     const modifier = Math.floor((score - 10) / 2);
@@ -43,7 +40,6 @@ const MonsterDetailModal: React.FC<Props> = ({ monster }) => {
       <dialog className="modal" id={modalId}>
         <div className="modal-box max-w-4xl">
           <div className="flex flex-col md:flex-row gap-4">
-            {/* Monster header */}
             <div className="flex-1">
               <h2 className="text-2xl font-bold">{monster.name}</h2>
               {monster.meta && (
@@ -74,7 +70,6 @@ const MonsterDetailModal: React.FC<Props> = ({ monster }) => {
               </div>
             </div>
 
-            {/* Monster image if available */}
             {monster.img_url && (
               <div className="w-full md:w-1/3">
                 <Image
@@ -89,7 +84,6 @@ const MonsterDetailModal: React.FC<Props> = ({ monster }) => {
             )}
           </div>
 
-          {/* Ability scores */}
           {monster.stats && (
             <div className="mt-4">
               <h3 className="text-lg font-semibold border-b pb-1 mb-2">
@@ -124,7 +118,6 @@ const MonsterDetailModal: React.FC<Props> = ({ monster }) => {
             </div>
           )}
 
-          {/* Traits */}
           {monster.traits && (
             <div className="mt-4">
               <h3 className="text-lg font-semibold border-b pb-1 mb-2">
@@ -134,7 +127,6 @@ const MonsterDetailModal: React.FC<Props> = ({ monster }) => {
             </div>
           )}
 
-          {/* Actions */}
           {monster.actions && (
             <div className="mt-4">
               <h3 className="text-lg font-semibold border-b pb-1 mb-2">
@@ -144,7 +136,6 @@ const MonsterDetailModal: React.FC<Props> = ({ monster }) => {
             </div>
           )}
 
-          {/* Legendary Actions */}
           {monster.legendaryActions && (
             <div className="mt-4">
               <h3 className="text-lg font-semibold border-b pb-1 mb-2">

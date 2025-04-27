@@ -1,15 +1,10 @@
-// Simple console-based logger using pino
 import pino from 'pino';
 
-// Determine if we're in a browser environment
 const isBrowser = typeof window !== 'undefined';
 
-// Create base Pino logger based on environment
 let baseLogger: pino.Logger;
 
-// In the browser, we need a different approach
 if (isBrowser) {
-  // Simple browser setup with basic options
   baseLogger = pino({
     level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
     browser: {
@@ -17,7 +12,6 @@ if (isBrowser) {
     },
   });
 } else {
-  // Server-side logger with pretty printing in development
   baseLogger = pino({
     level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
     transport:
@@ -27,7 +21,6 @@ if (isBrowser) {
   });
 }
 
-// Create a wrapper with the same API as the previous logger
 export const logger = {
   debug: (message: string, data?: unknown): void => {
     if (data) {
@@ -62,5 +55,4 @@ export const logger = {
   },
 };
 
-// For compatibility with existing code
 export { logger as enhancedLogger };

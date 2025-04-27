@@ -19,19 +19,16 @@ export function useUserPreferences(): UseUserPreferencesResult {
     string | undefined
   >(undefined);
 
-  // Fetch user preferences
   const { data, loading, error } = useQuery<GetUserPreferencesResponse>({
     query: getUserPreferencesQuery,
   });
 
-  // Set the active campaign ID from preferences
   useEffect(() => {
     if (data?.getUserPreferences?.activeCampaignId) {
       setActiveCampaignIdState(data.getUserPreferences.activeCampaignId);
     }
   }, [data]);
 
-  // Function to update the active campaign
   const setActiveCampaign = async (
     campaignId: string | null,
   ): Promise<void> => {
@@ -42,10 +39,7 @@ export function useUserPreferences(): UseUserPreferencesResult {
         input: { campaignId },
       });
 
-      // Update local state
       setActiveCampaignIdState(campaignId || undefined);
-
-      // No need to refetch - we know the state
     } catch (error) {
       logger.error('Failed to set active campaign', error);
     }

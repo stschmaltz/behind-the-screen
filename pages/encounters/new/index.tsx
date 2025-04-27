@@ -14,11 +14,9 @@ import { getAllCampaigns } from '../../../hooks/campaign/get-all-campaigns';
 import CampaignSelector from '../../../components/selectors/CampaignSelector';
 import AdventureSelector from '../../../components/selectors/AdventureSelector';
 
-// Define a type matching the GraphQL NewEncounterInput (excluding id)
-// Ideally, import this from generated types if available
 type EncounterInputData = Omit<NewEncounterTemplate, 'userId' | '_id'> & {
   adventureId?: string;
-  campaignId: string; // Ensure campaignId is not optional
+  campaignId: string;
 };
 
 export const INITIAL_NEW_ENCOUNTER: NewEncounterTemplate = {
@@ -41,7 +39,6 @@ const NewEncounterPage: NextPage = () => {
   const [campaignId, setCampaignId] = useState<string | undefined>(undefined);
   const [adventureId, setAdventureId] = useState<string | undefined>(undefined);
 
-  // Load query parameters
   useEffect(() => {
     const queryCampaignId = router.query.campaignId as string | undefined;
     const queryAdventureId = router.query.adventureId as string | undefined;
@@ -66,7 +63,6 @@ const NewEncounterPage: NextPage = () => {
       return;
     }
 
-    // Use the correctly defined type
     const encounterInput: EncounterInputData = {
       name: newEncounter.name,
       description: newEncounter.description,
@@ -79,14 +75,12 @@ const NewEncounterPage: NextPage = () => {
 
     const success = await handleSave(encounterInput);
     if (success) {
-      // Update the active campaign ID in user preferences to ensure it's selected on the index page
       if (campaignId !== activeCampaignId) {
         await setActiveCampaign(campaignId);
       }
 
       showDaisyToast('success', 'Encounter saved');
 
-      // Add campaign ID to query params to ensure it's selected when redirected
       router.push({
         pathname: '/encounters',
         query: { selectedCampaign: campaignId },
@@ -104,10 +98,9 @@ const NewEncounterPage: NextPage = () => {
     setActiveCampaign,
   ]);
 
-  // Memoize state setters
   const handleCampaignChange = useCallback((id: string | undefined) => {
     setCampaignId(id);
-    setAdventureId(undefined); // Reset adventure when campaign changes
+    setAdventureId(undefined);
   }, []);
 
   const handleAdventureChange = useCallback((id: string | undefined) => {
@@ -143,7 +136,6 @@ const NewEncounterPage: NextPage = () => {
               onChange={handleFieldChange('description')}
             />
 
-            {/* Campaign & Adventure Selection using shared components */}
             <div className="mb-6 grid grid-cols-1 gap-4">
               <CampaignSelector
                 selectedCampaignId={campaignId}

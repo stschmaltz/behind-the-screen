@@ -39,7 +39,6 @@ function Layout({ children }: LayoutProps) {
 
       <ToastContainer />
 
-      {/* Development banner */}
       <div className="bg-red-500 text-white text-center p-2 text-sm">
         This app is under development and not ready for use yet
       </div>

@@ -5,13 +5,12 @@ import { EncounterCharacter } from '../../../types/encounters';
 import { useModal } from '../../../hooks/use-modal';
 import { generateMongoId } from '../../../lib/mongo';
 import { logger } from '../../../lib/logger';
-// Define a type for the monster data structure based on the JSON
-// We only need the fields relevant for the form for now
+
 interface MonsterData {
   _id: string;
   name: string;
-  'Hit Points': string; // Format: "135 (18d10 + 36)"
-  'Armor Class': string; // Format: "17 (Natural Armor)"
+  'Hit Points': string;
+  'Armor Class': string;
   meta: string;
   Speed: string;
   Challenge: string;
@@ -19,7 +18,7 @@ interface MonsterData {
   Actions: string;
   'Legendary Actions'?: string;
   img_url?: string;
-  // Ability scores
+
   STR: string;
   DEX: string;
   CON: string;
@@ -36,7 +35,7 @@ const INITIAL_ENEMY_STATE: EncounterCharacter = {
   name: '',
   maxHP: 0,
   armorClass: 0,
-  _id: '', // Will be generated when adding
+  _id: '',
   stats: {
     STR: 10,
     DEX: 10,
@@ -57,7 +56,6 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
 
   const { showModal, closeModal } = useModal('new-enemy-modal');
 
-  // Fetch monsters on component mount
   useEffect(() => {
     const fetchMonsters = async () => {
       setIsLoading(true);
@@ -84,14 +82,12 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
     fetchMonsters();
   }, []);
 
-  // Helper function to parse HP and AC from strings
   const parseStat = (statString: string): number => {
-    const match = statString.match(/^\d+/); // Get the first sequence of digits
+    const match = statString.match(/^\d+/);
 
     return match ? parseInt(match[0], 10) : 0;
   };
 
-  // Parse ability score from string (e.g., "18" from "18 (+4)")
   const parseAbilityScore = (abilityString: string): number => {
     return parseInt(abilityString, 10) || 0;
   };
@@ -106,11 +102,11 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
       const selectedMonster = monsters.find((m) => m.name === monsterName);
       if (selectedMonster) {
         setNewEnemy({
-          _id: generateMongoId(), // Generate a unique ID for this instance
+          _id: generateMongoId(),
           name: selectedMonster.name,
           maxHP: parseStat(selectedMonster['Hit Points']),
           armorClass: parseStat(selectedMonster['Armor Class']),
-          // Add new fields
+
           meta: selectedMonster.meta,
           speed: selectedMonster.Speed,
           stats: {
@@ -126,11 +122,10 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
           actions: selectedMonster.Actions,
           legendaryActions: selectedMonster['Legendary Actions'],
           img_url: selectedMonster.img_url,
-          monsterSource: selectedMonster.name, // Track the source monster
+          monsterSource: selectedMonster.name,
         });
       }
     } else {
-      // Reset if "Select a monster" is chosen
       setNewEnemy({ ...INITIAL_ENEMY_STATE, _id: generateMongoId() });
     }
   };
@@ -139,24 +134,21 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
     field: keyof EncounterCharacter,
     value: string | number,
   ) => {
-    // Allow manual override even after selecting a monster
     setNewEnemy((prev) => ({
       ...prev,
-      [field]: field === 'name' ? value : Number(value), // Ensure HP/AC are numbers
+      [field]: field === 'name' ? value : Number(value),
     }));
-    // If name is changed manually, deselect the monster dropdown
+
     if (field === 'name') {
       setSelectedMonsterName('');
     }
   };
 
-  // Helper for updating ability scores
   const handleAbilityScoreChange = (
     ability: 'STR' | 'DEX' | 'CON' | 'INT' | 'WIS' | 'CHA',
     value: number,
   ) => {
     if (!newEnemy.stats) {
-      // Initialize stats object if it doesn't exist
       setNewEnemy((prev) => ({
         ...prev,
         stats: {
@@ -169,7 +161,6 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
         },
       }));
     } else {
-      // Update existing stats object
       setNewEnemy((prev) => ({
         ...prev,
         stats: {
@@ -182,13 +173,12 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
 
   const handleSubmit = () => {
     if (!newEnemy.name || newEnemy.maxHP <= 0 || newEnemy.armorClass <= 0) {
-      // Basic validation
       alert('Please select a monster or fill in all fields with valid values.');
 
       return;
     }
     onAddEnemy(newEnemy);
-    // Reset state after adding
+
     setSelectedMonsterName('');
     setNewEnemy(INITIAL_ENEMY_STATE);
     closeModal();
@@ -258,14 +248,12 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
             />
           </div>
 
-          {/* Advanced Fields Section - Collapsible */}
           <div className="collapse collapse-arrow bg-base-200 mt-4">
             <input type="checkbox" />
             <div className="collapse-title font-medium">
               Advanced Monster Fields
             </div>
             <div className="collapse-content">
-              {/* Monster type and alignment */}
               <FormInput
                 label="Type & Alignment"
                 id="meta"
@@ -275,7 +263,6 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
                 className="mb-2"
               />
 
-              {/* Speed */}
               <FormInput
                 label="Speed"
                 id="speed"
@@ -285,7 +272,6 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
                 className="mb-2"
               />
 
-              {/* Challenge Rating */}
               <FormInput
                 label="Challenge Rating"
                 id="challenge"
@@ -297,7 +283,6 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
                 className="mb-2"
               />
 
-              {/* Ability Scores */}
               <label className="label">Ability Scores</label>
               <div className="grid grid-cols-3 gap-2 mb-2">
                 <FormInput
@@ -368,7 +353,6 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
                 />
               </div>
 
-              {/* Image URL */}
               <FormInput
                 label="Image URL"
                 id="img_url"
@@ -378,7 +362,6 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
                 className="mb-2"
               />
 
-              {/* Traits */}
               <div className="form-control w-full">
                 <label className="label">
                   <span className="label-text">Traits (HTML supported)</span>
@@ -392,7 +375,6 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
                 />
               </div>
 
-              {/* Actions */}
               <div className="form-control w-full mt-2">
                 <label className="label">
                   <span className="label-text">Actions (HTML supported)</span>
@@ -408,7 +390,6 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy }) => {
                 />
               </div>
 
-              {/* Legendary Actions */}
               <div className="form-control w-full mt-2">
                 <label className="label">
                   <span className="label-text">

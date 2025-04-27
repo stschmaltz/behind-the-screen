@@ -75,11 +75,9 @@ export class UserPreferencesRepository
     const { db } = await getDbClient();
     const now = new Date();
 
-    // Find existing preferences or create new one
     const existingPrefs = await this.getUserPreferences(userId);
 
     if (existingPrefs) {
-      // Update existing
       const result = await db.collection(this.collectionName).findOneAndUpdate(
         { _id: new ObjectId(existingPrefs._id), userId: new ObjectId(userId) },
         {
@@ -97,7 +95,6 @@ export class UserPreferencesRepository
 
       return this.mapToUserPreferences(result);
     } else {
-      // Create new preferences
       const newPrefs = {
         userId: new ObjectId(userId),
         activeCampaignId: campaignId ? new ObjectId(campaignId) : null,

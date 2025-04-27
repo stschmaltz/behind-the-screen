@@ -10,7 +10,6 @@ interface CampaignSelectorProps {
   selectedCampaignId?: string;
 }
 
-// Interface matching the actual shape in getAllCampaigns
 interface SaveCampaignResponse {
   saveCampaign: {
     _id: string;
@@ -34,13 +33,11 @@ const CampaignSelector = ({
   const [newCampaignName, setNewCampaignName] = useState('');
   const newCampaignInputRef = useRef<HTMLInputElement>(null);
 
-  // Handle campaign change
   const handleCampaignChange = useCallback(
     async (e: React.ChangeEvent<HTMLSelectElement>) => {
       const value = e.target.value;
 
       if (value === 'new') {
-        // Start creating a new campaign
         setIsCreatingCampaign(true);
         setTimeout(() => {
           newCampaignInputRef.current?.focus();
@@ -49,19 +46,16 @@ const CampaignSelector = ({
         return;
       }
 
-      // Set the active campaign
       await setActiveCampaign(value || null);
       onCampaignChange(value || undefined);
     },
     [setActiveCampaign, onCampaignChange],
   );
 
-  // Create a new campaign
   const handleCreateCampaign = useCallback(async () => {
     if (!newCampaignName.trim()) return;
 
     try {
-      // Create the campaign
       const result = await asyncFetch<SaveCampaignResponse>(
         saveCampaignMutation,
         {
@@ -72,19 +66,15 @@ const CampaignSelector = ({
         },
       );
 
-      // Get the new campaign ID
       const newCampaignId = result?.saveCampaign?._id;
 
       if (newCampaignId) {
-        // Set it as active
         await setActiveCampaign(newCampaignId);
         onCampaignChange(newCampaignId);
 
-        // Reset state
         setNewCampaignName('');
         setIsCreatingCampaign(false);
 
-        // Refresh the campaigns list
         await refreshCampaigns();
       }
     } catch (error) {
@@ -92,7 +82,6 @@ const CampaignSelector = ({
     }
   }, [newCampaignName, setActiveCampaign, onCampaignChange, refreshCampaigns]);
 
-  // Cancel campaign creation
   const handleCancelCreate = useCallback(() => {
     setIsCreatingCampaign(false);
     setNewCampaignName('');
@@ -111,7 +100,6 @@ const CampaignSelector = ({
             onChange={handleCampaignChange}
             disabled={campaignsLoading}
           >
-            {/* Only show 'Select a campaign' if loading or no campaigns exist */}
             {!campaignsLoading && campaigns && campaigns.length === 0 && (
               <option value="">No campaigns found</option>
             )}

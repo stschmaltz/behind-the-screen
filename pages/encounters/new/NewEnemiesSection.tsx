@@ -4,7 +4,7 @@ import { FormInput } from '../../../components/FormInput';
 import { Button } from '../../../components/Button';
 import { generateMongoId } from '../../../lib/mongo';
 import { logger } from '../../../lib/logger';
-// Define a type for the monster data structure from the API
+
 interface MonsterData {
   _id: string;
   name: string;

@@ -10,7 +10,6 @@ interface AdventureSelectorProps {
   onAdventureChange: (adventureId: string | undefined) => void;
 }
 
-// Interface matching the actual shape in getAllAdventures
 interface SaveAdventureResponse {
   saveAdventure: {
     _id: string;
@@ -36,20 +35,17 @@ const AdventureSelector = ({
   const [newAdventureName, setNewAdventureName] = useState('');
   const newAdventureInputRef = useRef<HTMLInputElement>(null);
 
-  // Filter adventures to only show those matching the current campaign
   const adventures = useMemo(() => {
     if (!campaignId || !allAdventures) return [];
 
     return allAdventures.filter((adv) => adv.campaignId === campaignId);
   }, [allAdventures, campaignId]);
 
-  // Handle adventure change
   const handleAdventureChange = useCallback(
     async (e: React.ChangeEvent<HTMLSelectElement>) => {
       const value = e.target.value;
 
       if (value === 'new') {
-        // Start creating a new adventure
         setIsCreatingAdventure(true);
         setTimeout(() => {
           newAdventureInputRef.current?.focus();
@@ -58,18 +54,15 @@ const AdventureSelector = ({
         return;
       }
 
-      // Set the selected adventure (undefined for "All")
       onAdventureChange(value === 'all' ? undefined : value);
     },
     [onAdventureChange],
   );
 
-  // Create a new adventure
   const handleCreateAdventure = useCallback(async () => {
     if (!newAdventureName.trim() || !campaignId) return;
 
     try {
-      // Create the adventure
       const result = await asyncFetch<SaveAdventureResponse>(
         saveAdventureMutation,
         {
@@ -81,18 +74,14 @@ const AdventureSelector = ({
         },
       );
 
-      // Get the new adventure ID
       const newAdventureId = result?.saveAdventure?._id;
 
       if (newAdventureId) {
-        // Select it
         onAdventureChange(newAdventureId);
 
-        // Reset state
         setNewAdventureName('');
         setIsCreatingAdventure(false);
 
-        // Refresh the adventures list
         await refreshAdventures();
       }
     } catch (error) {
@@ -100,7 +89,6 @@ const AdventureSelector = ({
     }
   }, [newAdventureName, campaignId, onAdventureChange, refreshAdventures]);
 
-  // Cancel adventure creation
   const handleCancelCreate = useCallback(() => {
     setIsCreatingAdventure(false);
     setNewAdventureName('');

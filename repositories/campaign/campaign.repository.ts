@@ -18,7 +18,6 @@ export class CampaignRepository implements CampaignRepositoryInterface {
     const { _id, userId, ...docToInsert } = input;
     const now = new Date();
 
-    // Add default values for status if not provided
     const defaultValues = {
       status: 'active',
     };

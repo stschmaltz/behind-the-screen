@@ -11,7 +11,6 @@ interface GetAllAdventuresOptions {
   campaignId?: string;
 }
 
-// Define a type for transformed adventure
 interface TransformedAdventure {
   _id: string;
   campaignId: string;
@@ -22,7 +21,6 @@ interface TransformedAdventure {
   updatedAt: Date;
 }
 
-// Define transform functions outside for stability
 const transformAdventuresByCampaign = (
   data: AdventuresByCampaignResponse,
 ): TransformedAdventure[] =>
@@ -48,13 +46,11 @@ const transformAllAdventures = (
 function getAllAdventures(options?: GetAllAdventuresOptions) {
   const campaignId = options?.campaignId;
 
-  // Memoize the variables object
   const variables = useMemo(
     () => (campaignId ? { campaignId } : undefined),
     [campaignId],
   );
 
-  // Use stable transform and memoized variables
   const queryConfig = useMemo(() => {
     if (campaignId) {
       return {

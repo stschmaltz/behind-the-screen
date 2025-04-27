@@ -4,7 +4,6 @@ import {
 } from '../../data/graphql/snippets/campaign';
 import { useQuery } from '../use-async-query';
 
-// Define a type that matches what the transform returns
 interface TransformedCampaign {
   _id: string;
   name: string;
@@ -13,7 +12,6 @@ interface TransformedCampaign {
   updatedAt: Date;
 }
 
-// Define the transform function outside the hook for stability
 const transformCampaigns = (
   data: AllCampaignsResponse,
 ): TransformedCampaign[] =>
@@ -28,7 +26,7 @@ const transformCampaigns = (
 function getAllCampaigns() {
   const { data, loading, refresh } = useQuery<TransformedCampaign[]>({
     query: allCampaignsQuery,
-    transform: transformCampaigns, // Use the stable transform function
+    transform: transformCampaigns,
   });
 
   const campaigns = data ?? [];

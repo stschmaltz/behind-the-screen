@@ -93,13 +93,11 @@ const PlayerManagementSection: React.FC<Props> = ({
         <div className="modal-box">
           <h3 className="font-bold text-lg mb-4">Players</h3>
 
-          {/* Add New Player Section */}
           <div className="bg-base-200 rounded-lg p-4 mb-6">
             <h4 className="font-medium text-sm opacity-70 mb-3">
               Add New Player
             </h4>
 
-            {/* Campaign Selector */}
             <div className="form-control mb-3">
               <label className="label py-1">
                 <span className="label-text text-sm font-medium">Campaign</span>
@@ -130,7 +128,6 @@ const PlayerManagementSection: React.FC<Props> = ({
               )}
             </div>
 
-            {/* Player Name Input with inline save button */}
             <div className="form-control">
               <label className="label py-1">
                 <span className="label-text text-sm font-medium">
@@ -161,7 +158,6 @@ const PlayerManagementSection: React.FC<Props> = ({
             </div>
           </div>
 
-          {/* Player List Section */}
           <div>
             <h4 className="font-medium text-sm opacity-70 mb-2">
               Current Players

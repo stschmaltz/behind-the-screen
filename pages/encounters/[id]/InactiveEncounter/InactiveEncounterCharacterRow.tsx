@@ -11,7 +11,6 @@ type Props = {
   character: InitiativeOrderCharacter;
   onDelete: () => void;
   onUpdate?: (character: InitiativeOrderCharacter) => void;
-  // Add the original monster data for enemies
   monsterData?: EncounterCharacter;
 };
 
@@ -36,7 +35,6 @@ const InactiveEncounterCharacterRow = ({
     });
   };
 
-  // Check if this is an enemy with monster data
   const isMonster = character.type === 'enemy' && monsterData;
 
   return (
@@ -60,7 +58,6 @@ const InactiveEncounterCharacterRow = ({
           id={`maxHP-${character.name}`}
           aria-label="Maximum HP"
           onChange={(e) => {
-            // update current and maxhp when maxhp changes
             const maxHP = Number(e.target.value);
             onUpdate?.({
               ...character,

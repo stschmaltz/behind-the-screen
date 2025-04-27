@@ -43,7 +43,6 @@ const CampaignAdventureSection = ({
         </button>
       </div>
 
-      {/* Campaigns Modal */}
       <dialog id="campaigns-modal" className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg mb-4">Campaigns</h3>
@@ -93,7 +92,6 @@ const CampaignAdventureSection = ({
         </div>
       </dialog>
 
-      {/* Adventures Modal */}
       <dialog id="adventures-modal" className="modal">
         <div className="modal-box">
           <h3 className="font-bold text-lg mb-4">Adventures</h3>
