@@ -33,12 +33,12 @@ const MonsterDetailModal: React.FC<Props> = ({ monster }) => {
 
   return (
     <>
-      <Button
-        variant="secondary"
-        label="View Details"
+      <button
         onClick={showModal}
-        className="btn-sm"
-      />
+        className="btn btn-ghost btn-xs text-blue-600 hover:text-blue-800 p-0"
+      >
+        View Stats
+      </button>
 
       <dialog className="modal" id={modalId}>
         <div className="modal-box max-w-4xl">
