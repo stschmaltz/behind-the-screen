@@ -1,3 +1,5 @@
+import { logger } from '../../lib/logger';
+
 const fetcher = (query: string, variables?: object) =>
   fetch('/api/graphql', {
     method: 'POST',
@@ -32,8 +34,8 @@ async function asyncFetch<T>(query: string, variables?: object) {
     }
     return json.data as T;
   } catch (error) {
-    console.log(error);
-    if (error instanceof Error) console.log(error.message);
+    logger.error(error);
+    if (error instanceof Error) logger.error(error.message);
     throw error;
   }
 }

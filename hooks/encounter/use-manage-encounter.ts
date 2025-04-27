@@ -1,4 +1,3 @@
-// hooks/encounter/use-save-encounter.ts
 import { useState, useCallback, useEffect } from 'react';
 import debounce from 'lodash/debounce';
 import { asyncFetch } from '../../data/graphql/graphql-fetcher';
@@ -7,6 +6,7 @@ import {
   saveEncounterMutation,
 } from '../../data/graphql/snippets/encounter';
 import { Encounter, NewEncounterTemplate } from '../../types/encounters';
+import { logger } from '../../lib/logger';
 
 const DEBOUNCE_DELAY = 500;
 
@@ -34,21 +34,21 @@ const useManageEncounter = () => {
     encounter: Encounter | NewEncounterTemplate,
   ): Promise<boolean> => {
     const validationError = validateNewEncounter(encounter);
-    console.log('validationError', { validationError });
+    logger.info('validationError', { validationError });
     if (validationError) {
-      console.log('validationErrorFALSE');
+      logger.info('validationErrorFALSE');
       return false;
     }
 
     try {
-      console.log(
+      logger.info(
         'asyncFetch(saveEncounterMutation, { input: { ...encounter })',
       );
       await asyncFetch(saveEncounterMutation, { input: { ...encounter } });
-      console.log('done');
+      logger.info('done');
       return true;
     } catch (err) {
-      console.error(err);
+      logger.error(err);
       return false;
     }
   };
@@ -66,7 +66,7 @@ const useManageEncounter = () => {
             resolve(result);
           })
           .catch((error) => {
-            console.error(error);
+            logger.error(error);
             setIsSaving(false);
             resolve(false);
           });
@@ -82,7 +82,7 @@ const useManageEncounter = () => {
 
   const handleSave = useCallback(
     async (encounter: Encounter | NewEncounterTemplate): Promise<boolean> => {
-      console.log('handleSave', { encounter });
+      logger.info('handleSave', { encounter });
       return new Promise((resolve) => {
         debouncedSave(encounter, resolve);
       });
@@ -97,14 +97,14 @@ const useManageEncounter = () => {
   }, [debouncedSave]);
 
   const deleteEncounter = async (encounterId: string): Promise<boolean> => {
-    console.log('deleteEncounter', encounterId);
+    logger.info('deleteEncounter', encounterId);
     try {
       await asyncFetch(deleteEncounterMutation, {
         input: { id: encounterId.toString() },
       });
       return true;
     } catch (err) {
-      console.error(err);
+      logger.error(err);
       return false;
     }
   };
