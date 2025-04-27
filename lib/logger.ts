@@ -1,5 +1,4 @@
-// Simple console-based logger to replace Winston
-
+// Simple console-based logger using pino
 import pino from 'pino';
 
 // Determine if we're in a browser environment
