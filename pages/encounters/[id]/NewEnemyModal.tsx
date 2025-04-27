@@ -30,6 +30,7 @@ interface MonsterData {
 interface Props {
   onAddEnemy: (enemy: EncounterCharacter, initiative?: number) => void;
   requireInitiative?: boolean;
+  className?: string;
 }
 
 const INITIAL_ENEMY_STATE: EncounterCharacter = {
@@ -47,7 +48,11 @@ const INITIAL_ENEMY_STATE: EncounterCharacter = {
   },
 };
 
-const NewEnemyModal: React.FC<Props> = ({ onAddEnemy, requireInitiative }) => {
+const NewEnemyModal: React.FC<Props> = ({
+  onAddEnemy,
+  requireInitiative,
+  className,
+}) => {
   const [newEnemy, setNewEnemy] =
     useState<EncounterCharacter>(INITIAL_ENEMY_STATE);
   const [initiative, setInitiative] = useState<number | ''>('');
@@ -210,7 +215,12 @@ const NewEnemyModal: React.FC<Props> = ({ onAddEnemy, requireInitiative }) => {
 
   return (
     <>
-      <Button variant="primary" label="Add Enemy" onClick={showModal} />
+      <Button
+        variant="primary"
+        label="Add Enemy"
+        onClick={showModal}
+        className={className}
+      />
       <dialog className="modal" id="new-enemy-modal">
         <div className="modal-box">
           <h2 className="text-2xl font-bold mb-4">Add New Enemy</h2>

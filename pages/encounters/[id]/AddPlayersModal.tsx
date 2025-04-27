@@ -7,12 +7,14 @@ interface Props {
   players: Player[];
   onAddPlayers: (players: Player[]) => void;
   selectedCampaignId: string;
+  className?: string;
 }
 
 const AddPlayersModal: React.FC<Props> = ({
   onAddPlayers,
   players,
   selectedCampaignId,
+  className,
 }) => {
   const { closeModal, showModal } = useModal('add-players-modal');
   const [toggledPlayers, setToggledPlayers] = React.useState<Player[]>([]);
@@ -27,7 +29,12 @@ const AddPlayersModal: React.FC<Props> = ({
 
   return (
     <>
-      <Button variant="primary" label="Add Players" onClick={showModal} />
+      <Button
+        variant="primary"
+        label="Add Players"
+        onClick={showModal}
+        className={className}
+      />
       <dialog className="modal" id="add-players-modal">
         <div className="modal-box">
           <h2 className="text-2xl font-bold mb-4">Add Players</h2>

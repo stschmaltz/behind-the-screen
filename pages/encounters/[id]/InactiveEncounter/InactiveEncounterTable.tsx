@@ -50,70 +50,78 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
   };
 
   return (
-    <div className="overflow-x-auto">
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Initiative</th>
-            <th>HP</th>
-            <th>AC</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {draftEncounter.initiativeOrder.map((character) => (
-            <InactiveEncounterCharacterRow
-              key={character._id}
-              character={character}
-              onDelete={() => handleDeleteCharacter(character.name)}
-              onUpdate={handleUpdateCharacter}
-              monsterData={
-                character.type === 'enemy'
-                  ? getMonsterData(character._id)
-                  : undefined
+    <div>
+      <div className="overflow-x-auto">
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Initiative</th>
+              <th>HP</th>
+              <th>AC</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {draftEncounter.initiativeOrder.map((character) => (
+              <InactiveEncounterCharacterRow
+                key={character._id}
+                character={character}
+                onDelete={() => handleDeleteCharacter(character.name)}
+                onUpdate={handleUpdateCharacter}
+                monsterData={
+                  character.type === 'enemy'
+                    ? getMonsterData(character._id)
+                    : undefined
+                }
+              />
+            ))}
+          </tbody>
+        </table>
+        {!isAllInitiativeSet && (
+          <p className="text-red-500 text-sm mt-2 text-right">
+            Not all characters have initiative set
+          </p>
+        )}
+      </div>
+
+      <div className="mt-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
+          <NewEnemyModal onAddEnemy={handleAddEnemy} className="w-full" />
+          <AddPlayersModal
+            onAddPlayers={handleAddPlayers}
+            players={players}
+            selectedCampaignId={encounter.campaignId.toString()}
+            className="w-full"
+          />
+          <Button
+            variant="secondary"
+            label="Save"
+            onClick={onSave}
+            disabled={isSaving || !hasUnsavedChanges}
+            loading={isSaving}
+            className="w-full"
+          />
+          <Button
+            variant="primary"
+            label="Start Encounter"
+            disabled={!isAllInitiativeSet}
+            className="w-full"
+            onClick={async () => {
+              const updatedEncounter = {
+                ...draftEncounter,
+                status: 'active' as const,
+              };
+              const success = await handleSave(updatedEncounter);
+              if (success) {
+                showDaisyToast('success', 'Encounter started');
+                setEncounter(updatedEncounter);
+              } else {
+                showDaisyToast('error', 'Failed to start encounter');
               }
-            />
-          ))}
-        </tbody>
-      </table>
-      {!isAllInitiativeSet && (
-        <p className="text-red-500 text-sm mt-2 align-right">
-          Not all characters have initiative set
-        </p>
-      )}
-      <div className="flex mt-4 justify-end gap-4">
-        <NewEnemyModal onAddEnemy={handleAddEnemy} />
-        <AddPlayersModal
-          onAddPlayers={handleAddPlayers}
-          players={players}
-          selectedCampaignId={encounter.campaignId.toString()}
-        />
-        <Button
-          variant="secondary"
-          label="Save"
-          onClick={onSave}
-          disabled={isSaving || !hasUnsavedChanges}
-          loading={isSaving}
-        />
-        <Button
-          variant="primary"
-          label="Start Encounter"
-          disabled={!isAllInitiativeSet}
-          onClick={async () => {
-            const updatedEncounter = {
-              ...draftEncounter,
-              status: 'active' as const,
-            };
-            const success = await handleSave(updatedEncounter);
-            if (success) {
-              showDaisyToast('success', 'Encounter started');
-              setEncounter(updatedEncounter);
-            } else {
-              showDaisyToast('error', 'Failed to start encounter');
-            }
-          }}
-        />
+            }}
+          />
+        </div>
       </div>
     </div>
   );
