@@ -248,7 +248,7 @@ const AdventuresPage: NextPage = () => {
                   <div className="flex justify-between items-center text-sm">
                     <div className="flex items-center gap-2">
                       <div className="text-sm opacity-80">
-                        {new Date(adventure.createdAt).toLocaleDateString()}
+                        {new Date().toLocaleDateString()}
                       </div>
                       <div
                         className={`badge ${adventure.status === 'active' ? 'badge-accent' : 'badge-ghost'}`}
@@ -279,7 +279,9 @@ const AdventuresPage: NextPage = () => {
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
         title="Delete Adventure?"
-        message={`Are you sure you want to delete the adventure${adventures.find((a) => a._id === adventureToDelete)?.name ? ` "${adventures.find((a) => a._id === adventureToDelete)?.name}"` : ''}? This action cannot be undone.`}
+        message={`Are you sure you want to delete the adventure${adventures.find((a) => a._id === adventureToDelete)?.name ? ` "${adventures.find((a) => a._id === adventureToDelete)?.name}"` : ''}? This action cannot be undone.
+        
+⚠️ WARNING: Deleting an adventure will also permanently delete any encounters, NPCs, and player records linked to it. This data cannot be recovered.`}
       />
     </div>
   );

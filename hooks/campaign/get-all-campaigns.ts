@@ -18,8 +18,8 @@ const transformCampaigns = (
   data.getCampaigns
     .map((campaign) => ({
       ...campaign,
-      createdAt: new Date(campaign.createdAt),
-      updatedAt: new Date(campaign.updatedAt),
+      createdAt: campaign.createdAt ? new Date(campaign.createdAt) : new Date(),
+      updatedAt: campaign.updatedAt ? new Date(campaign.updatedAt) : new Date(),
     }))
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 

@@ -6,6 +6,7 @@ import {
 } from '../../data/graphql/snippets/adventure';
 import { Adventure, NewAdventure } from '../../types/adventures';
 import { logger } from '../../lib/logger';
+import { TransformedAdventure } from './get-all-adventures';
 
 // Define the expected shape of the saveAdventure mutation result
 interface SaveAdventureMutationResult {
@@ -32,7 +33,11 @@ const useManageAdventure = () => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const saveAdventure = async (
-    adventureData: Adventure | NewAdventure | AdventureUpdatePayload | any,
+    adventureData:
+      | Adventure
+      | NewAdventure
+      | AdventureUpdatePayload
+      | TransformedAdventure,
   ): Promise<string | null> => {
     const adventure = adventureData as
       | Adventure

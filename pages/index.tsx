@@ -65,6 +65,13 @@ const HomePage: NextPage = () => {
         <span className="text-center opacity-80">
           {primaryFeature.description}
         </span>
+        <span className="text-sm mt-2 text-center opacity-70">
+          Use the{' '}
+          <Link href="/campaigns" className="text-primary hover:underline">
+            Campaigns page
+          </Link>{' '}
+          to organize your game world
+        </span>
       </Link>
 
       <div className="mt-10 w-full max-w-3xl">

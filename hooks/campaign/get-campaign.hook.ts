@@ -25,8 +25,12 @@ const transformCampaignData = (
     ...data.getCampaign,
     // Cast status to the expected literal type
     status: data.getCampaign.status as 'active' | 'completed' | 'archived',
-    createdAt: new Date(data.getCampaign.createdAt),
-    updatedAt: new Date(data.getCampaign.updatedAt),
+    createdAt: data.getCampaign.createdAt
+      ? new Date(data.getCampaign.createdAt)
+      : new Date(),
+    updatedAt: data.getCampaign.updatedAt
+      ? new Date(data.getCampaign.updatedAt)
+      : new Date(),
   };
 };
 

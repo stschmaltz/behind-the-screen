@@ -4,6 +4,8 @@ import { ChangeEvent, FormEvent, useState } from 'react';
 import { getAllCampaigns } from '../../hooks/campaign/get-all-campaigns';
 import { useManageCampaign } from '../../hooks/campaign/use-manage-campaign';
 import { logger } from '../../lib/logger';
+import PlayerManagementSection from '../encounters/PlayerManagementSection';
+import { getAllPlayers } from '../../hooks/get-all-players.hook';
 
 const ConfirmationModal = ({
   isOpen,
@@ -42,6 +44,7 @@ const CampaignsPage: NextPage = () => {
   const { campaigns, loading, refresh: refreshCampaigns } = getAllCampaigns();
   const { handleSave, deleteCampaign, isSaving, isDeleting } =
     useManageCampaign();
+  const { players, loading: _playersLoading } = getAllPlayers();
 
   const [renamingCampaignId, setRenamingCampaignId] = useState<string | null>(
     null,
@@ -205,7 +208,7 @@ const CampaignsPage: NextPage = () => {
                   <div className="flex justify-between items-center text-sm">
                     <div className="flex items-center gap-2">
                       <div className="text-sm opacity-80">
-                        {campaign.createdAt.toLocaleDateString()}
+                        {new Date().toLocaleDateString()}
                       </div>
                       <div
                         className={`badge ${campaign.status === 'active' ? 'badge-accent' : 'badge-ghost'}`}
@@ -213,12 +216,19 @@ const CampaignsPage: NextPage = () => {
                         {campaign.status === 'active' ? 'Active' : 'Completed'}
                       </div>
                     </div>
-                    <Link
-                      href={`/campaigns/${campaign._id}`}
-                      className="btn btn-xs btn-outline"
-                    >
-                      View
-                    </Link>
+                    <div className="flex gap-2 items-center">
+                      <PlayerManagementSection
+                        startingPlayers={players ?? []}
+                        campaignId={campaign._id}
+                        buttonClassName="btn-xs btn-ghost"
+                      />
+                      <Link
+                        href={`/campaigns/${campaign._id}`}
+                        className="btn btn-xs btn-outline btn-info"
+                      >
+                        View
+                      </Link>
+                    </div>
                   </div>
                 </div>
               );
@@ -230,7 +240,9 @@ const CampaignsPage: NextPage = () => {
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
         title="Delete Campaign?"
-        message={`Are you sure you want to delete the campaign${campaigns?.find((c) => c._id === campaignToDelete)?.name ? ` "${campaigns.find((c) => c._id === campaignToDelete)?.name}"` : ''}? This action cannot be undone. Associated adventures may also be affected.`}
+        message={`Are you sure you want to delete the campaign${campaigns?.find((c) => c._id === campaignToDelete)?.name ? ` "${campaigns.find((c) => c._id === campaignToDelete)?.name}"` : ''}? This action cannot be undone. 
+        
+⚠️ WARNING: Deleting a campaign will also permanently delete any adventures, characters, and encounters linked to it. This data cannot be recovered.`}
       />
     </div>
   );

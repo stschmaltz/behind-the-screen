@@ -11,7 +11,7 @@ interface GetAllAdventuresOptions {
   campaignId?: string;
 }
 
-interface TransformedAdventure {
+export interface TransformedAdventure {
   _id: string;
   campaignId: string;
   name: string;

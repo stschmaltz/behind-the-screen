@@ -14,11 +14,13 @@ import { logger } from '../../lib/logger';
 interface Props {
   startingPlayers: Player[];
   campaignId?: string;
+  buttonClassName?: string;
 }
 
 const PlayerManagementSection: React.FC<Props> = ({
   startingPlayers,
   campaignId,
+  buttonClassName,
 }) => {
   const [players, setPlayers] = useState<Player[]>([]);
   const { closeModal, showModal } = useModal('player-management-modal');
@@ -83,7 +85,15 @@ const PlayerManagementSection: React.FC<Props> = ({
 
   return (
     <>
-      <Button label="Manage Players" onClick={showModal} />
+      <Button
+        label="Manage Players"
+        onClick={showModal}
+        className={
+          buttonClassName
+            ? `btn-accent ${buttonClassName}`
+            : 'btn-accent btn-sm'
+        }
+      />
       <dialog
         id="player-management-modal"
         className="modal modal-bottom sm:modal-middle"
