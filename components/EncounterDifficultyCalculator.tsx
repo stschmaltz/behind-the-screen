@@ -24,16 +24,12 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
 
   // Calculate difficulty whenever enemies, player count, or level changes
   useEffect(() => {
-    if (enemies.length > 0) {
-      // Create an array of player levels (all the same level for now)
-      const partyLevels = Array(playerCount).fill(playerLevel);
+    // Create an array of player levels (all the same level for now)
+    const partyLevels = Array(playerCount).fill(playerLevel);
 
-      // Calculate encounter difficulty
-      const result = getEncounterDifficulty(enemies, partyLevels);
-      setDifficultyResult(result);
-    } else {
-      setDifficultyResult(null);
-    }
+    // Calculate encounter difficulty
+    const result = getEncounterDifficulty(enemies, partyLevels);
+    setDifficultyResult(result);
   }, [enemies, playerCount, playerLevel]);
 
   // Get class for difficulty color
@@ -53,10 +49,6 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
         return '';
     }
   };
-
-  if (enemies.length === 0) {
-    return null;
-  }
 
   return (
     <div className="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box mb-4">

@@ -166,6 +166,17 @@ export const getEncounterDifficulty = (
   adjustedXp: number;
   thresholds: DifficultyThresholds;
 } => {
+  // If no enemies, return trivial difficulty with 0 XP
+  if (!enemies || enemies.length === 0) {
+    const thresholds = calculatePartyThresholds(partyLevels);
+
+    return {
+      difficulty: 'trivial',
+      adjustedXp: 0,
+      thresholds,
+    };
+  }
+
   const adjustedXp = calculateAdjustedXp(enemies);
   const thresholds = calculatePartyThresholds(partyLevels);
 
