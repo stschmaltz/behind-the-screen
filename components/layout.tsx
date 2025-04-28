@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ToastContainer } from 'react-toastify';
 import { NavBar } from './NavBar';
-import { Button } from './Button';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { useUserSignIn } from '../hooks/use-user-sign-in.hook';
 
@@ -59,13 +58,27 @@ function Layout({ children }: LayoutProps) {
           <main className="container mx-auto p-4 flex-grow">{children}</main>
 
           {router.pathname !== '/' && (
-            <div className="container mx-auto px-4 pb-4">
-              <Button
-                variant="secondary"
-                label="Back"
-                className="w-full"
+            <div className="container mx-auto px-4 pb-4 hidden md:block">
+              <button
                 onClick={() => router.back()}
-              />
+                className="text-sm text-base-content/70 hover:text-base-content hover:underline flex items-center gap-1 transition-colors"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-4 h-4"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+                  />
+                </svg>
+                Return to previous page
+              </button>
             </div>
           )}
         </div>
@@ -80,13 +93,10 @@ function Layout({ children }: LayoutProps) {
       <footer className="bg-base-300 p-4 text-center text-sm">
         <div className="container mx-auto">
           <p>
-            Copyright Shane Schmaltz 2025. For feedback, please email{' '}
-            <a
-              href="mailto:stschmaltz@gmail.com"
-              className="text-primary hover:underline"
-            >
-              stschmaltz at gmail.com
-            </a>
+            Copyright Shane Schmaltz 2025.
+            <Link href="/feedback" className="text-primary hover:underline">
+              Have feedback or need support?
+            </Link>
           </p>
         </div>
       </footer>

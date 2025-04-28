@@ -47,7 +47,10 @@ const HomePage: NextPage = () => {
       <p className="text-center max-w-xl text-base-content opacity-70">
         Dungeon&nbsp;Master&nbsp;Essentials is in active development, and your
         feedback will directly shape its direction. Please share your ideas,
-        pain points, or feature requests—I&apos;d love to hear from you!
+        pain points, or feature requests—
+        <Link href="/feedback" className="text-primary hover:underline">
+          I&apos;d love to hear from you!
+        </Link>
       </p>
 
       <Link
