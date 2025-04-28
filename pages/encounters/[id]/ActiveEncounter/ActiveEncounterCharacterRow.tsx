@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-// Import the extracted components
-import { DesktopLayout, MobileLayout } from './components/CharacterLayouts';
+import MobileListLayout from './_components/MobileListLayout';
+import DesktopListLayout from './_components/DesktopListLayout';
 import {
   Condition,
   EncounterCharacter,
   InitiativeOrderCharacter,
 } from '../../../../types/encounters';
 
-// Main component
 const ActiveEncounterCharacterRow: React.FC<{
   character: InitiativeOrderCharacter;
   isCurrentTurn: boolean;
@@ -77,7 +76,7 @@ const ActiveEncounterCharacterRow: React.FC<{
       className={`card relative ${isCurrentTurn ? 'bg-primary bg-opacity-10 z-20' : 'bg-base-100 z-10'} shadow-sm mb-4`}
     >
       <div className="card-body p-4">
-        <MobileLayout
+        <MobileListLayout
           character={character}
           isCurrentTurn={isCurrentTurn}
           isMonster={isMonster}
@@ -92,7 +91,7 @@ const ActiveEncounterCharacterRow: React.FC<{
           onRemoveCondition={handleRemoveCondition}
         />
 
-        <DesktopLayout
+        <DesktopListLayout
           character={character}
           isCurrentTurn={isCurrentTurn}
           isMonster={isMonster}

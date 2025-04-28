@@ -2,7 +2,6 @@ import React, { WheelEvent } from 'react';
 import { FloatingContext } from '@floating-ui/react';
 import { usePopoverContext } from '../../../../../context/PopoverContext';
 
-// HP modification popover component - Refactored for Floating UI
 export const HPModifierPopover = React.forwardRef<
   HTMLDivElement,
   {
@@ -129,3 +128,5 @@ export const HPModifierPopover = React.forwardRef<
 );
 
 HPModifierPopover.displayName = 'HPModifierPopover';
+
+export default HPModifierPopover;

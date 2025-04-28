@@ -1,7 +1,6 @@
 import React from 'react';
 import { Condition } from '../../../../../types/encounters';
 
-// Condition manager component
 export const ConditionManager: React.FC<{
   characterId: string;
   conditions: Condition[];
@@ -115,3 +114,5 @@ export const ConditionManager: React.FC<{
     </div>
   );
 };
+
+export default ConditionManager;

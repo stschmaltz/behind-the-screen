@@ -1,7 +1,6 @@
 import React from 'react';
 import { FormInput } from '../../../../../components/FormInput'; // Adjusted path
 
-// AC input component
 export const ArmorClassInput: React.FC<{
   id: string;
   armorClass?: number;
@@ -21,3 +20,5 @@ export const ArmorClassInput: React.FC<{
     />
   </div>
 );
+
+export default ArmorClassInput;

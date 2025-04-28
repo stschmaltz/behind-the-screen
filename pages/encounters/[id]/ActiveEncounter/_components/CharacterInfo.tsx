@@ -2,7 +2,6 @@ import React from 'react';
 import { EncounterCharacter } from '../../../../../types/encounters';
 import MonsterDetailModal from '../../MonsterDetailModal';
 
-// Character name and initiative component
 export const CharacterInfo: React.FC<{
   name: string;
   initiative?: number;
@@ -31,3 +30,5 @@ export const CharacterInfo: React.FC<{
     </div>
   </>
 );
+
+export default CharacterInfo;

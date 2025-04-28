@@ -13,7 +13,6 @@ import {
 } from '@floating-ui/react';
 import { HPModifierPopover } from './HPModifierPopover';
 
-// Character health display component
 export const CharacterHP: React.FC<{
   currentHP: number;
   maxHP?: number;
@@ -135,3 +134,5 @@ export const CharacterHP: React.FC<{
     </>
   );
 };
+
+export default CharacterHP;
