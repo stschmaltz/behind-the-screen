@@ -15,9 +15,9 @@ const NavBar: React.FC<Props> = ({ router }) => {
   };
 
   const navItems = [
-    { path: '/encounters', label: 'Encounter Manager' },
-    { path: '/npc-generator', label: 'NPC Generator' },
-    { path: '/loot-generator', label: 'Loot' },
+    { path: '/encounters', label: 'Encounter Manager', enabled: true },
+    { path: '/npc-generator', label: 'NPC Generator', enabled: false },
+    { path: '/loot-generator', label: 'Loot', enabled: false },
   ];
 
   return (
@@ -40,13 +40,19 @@ const NavBar: React.FC<Props> = ({ router }) => {
 
       <ul className="hidden md:flex space-x-4">
         {navItems.map((item) => (
-          <li key={item.path}>
-            <Link
-              href={item.path}
-              className={`${isActive(item.path) ? 'underline font-bold' : 'hover:text-primary-content/80'}`}
-            >
-              {item.label}
-            </Link>
+          <li key={item.label}>
+            {item.enabled ? (
+              <Link
+                href={item.path}
+                className={`${isActive(item.path) ? 'underline font-bold' : 'hover:text-primary-content/80'}`}
+              >
+                {item.label}
+              </Link>
+            ) : (
+              <span className="opacity-50 cursor-not-allowed">
+                {item.label}
+              </span>
+            )}
           </li>
         ))}
       </ul>
@@ -54,18 +60,24 @@ const NavBar: React.FC<Props> = ({ router }) => {
       {isMenuOpen && (
         <ul className="md:hidden absolute top-10 right-0 bg-primary p-4 rounded-md shadow-lg z-50 min-w-[200px]">
           {navItems.map((item) => (
-            <li key={item.path} className="mb-2 last:mb-0">
-              <Link
-                href={item.path}
-                className={`block py-2 px-4 rounded-md ${
-                  isActive(item.path)
-                    ? 'bg-primary-focus font-bold'
-                    : 'hover:bg-primary-focus'
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {item.label}
-              </Link>
+            <li key={item.label} className="mb-2 last:mb-0">
+              {item.enabled ? (
+                <Link
+                  href={item.path}
+                  className={`block py-2 px-4 rounded-md ${
+                    isActive(item.path)
+                      ? 'bg-primary-focus font-bold'
+                      : 'hover:bg-primary-focus'
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <span className="block py-2 px-4 rounded-md opacity-50 cursor-not-allowed">
+                  {item.label}
+                </span>
+              )}
             </li>
           ))}
         </ul>
