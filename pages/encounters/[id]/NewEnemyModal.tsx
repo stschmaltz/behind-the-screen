@@ -6,6 +6,7 @@ import { useModal } from '../../../hooks/use-modal';
 import { generateMongoId } from '../../../lib/mongo';
 import { logger } from '../../../lib/logger';
 import MonsterCombobox from '../../../components/MonsterCombobox';
+import { getAbilityModifier, rollInitiative } from '../../../lib/random';
 
 interface MonsterOption {
   _id: string;
@@ -309,15 +310,67 @@ const NewEnemyModal: React.FC<Props> = ({
           </div>
 
           {requireInitiative && (
-            <FormInput
-              label="Initiative"
-              id="initiative"
-              type="number"
-              value={initiative}
-              onChange={(e) => setInitiative(Number(e.target.value))}
-              required
-              width="w-32"
-            />
+            <div className="flex flex-col gap-2 mb-2">
+              <div className="flex items-end gap-2">
+                <FormInput
+                  label="Initiative"
+                  id="initiative"
+                  type="number"
+                  value={initiative}
+                  onChange={(e) => setInitiative(Number(e.target.value))}
+                  required
+                  width="w-full sm:w-32"
+                />
+                <button
+                  type="button"
+                  className="btn btn-sm btn-ghost flex items-center gap-1 mb-1"
+                  title="Roll initiative using DEX modifier"
+                  onClick={() => {
+                    // Calculate DEX modifier if available
+                    const dexModifier = newEnemy.stats
+                      ? getAbilityModifier(newEnemy.stats.DEX)
+                      : 0;
+
+                    // Roll initiative with DEX modifier
+                    const initiativeRoll = rollInitiative(dexModifier);
+                    setInitiative(initiativeRoll);
+                  }}
+                >
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-4 h-4"
+                  >
+                    <rect
+                      x="2"
+                      y="2"
+                      width="20"
+                      height="20"
+                      rx="2"
+                      ry="2"
+                    ></rect>
+                    <circle cx="8" cy="8" r="1"></circle>
+                    <circle cx="16" cy="8" r="1"></circle>
+                    <circle cx="8" cy="16" r="1"></circle>
+                    <circle cx="16" cy="16" r="1"></circle>
+                    <circle cx="12" cy="12" r="1"></circle>
+                  </svg>
+                  Roll
+                </button>
+              </div>
+              <div className="text-xs text-base-content/70">
+                DEX modifier:{' '}
+                {newEnemy.stats?.DEX
+                  ? getAbilityModifier(newEnemy.stats.DEX)
+                  : 0}
+              </div>
+            </div>
           )}
 
           <div className="collapse collapse-arrow bg-base-200 mt-4">
