@@ -28,20 +28,157 @@ const DowntimePage: CustomNextPage = () => {
             background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png');
           }
 
+          /* --- Desktop First Styles --- */
+          .content-section {
+            display: flex; /* Default: Flexbox for side-by-side */
+            align-items: stretch;
+            margin-bottom: 3rem;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+          }
+
+          .flex-row {
+            flex-direction: row;
+          }
+
+          .flex-row-reverse {
+            flex-direction: row-reverse;
+          }
+
+          .flex-content {
+            flex: 1 1 60%;
+            padding: 10px;
+          }
+
+          .flex-image {
+            flex: 1 1 40%;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .flex-image img {
+            width: 100%;
+            height: auto;
+            border: 3px solid #5a2c0c;
+            border-radius: 10px;
+            background: #fff;
+            padding: 0.75rem;
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+            object-fit: cover;
+            max-width: 100%;
+          }
+
+          /* --- Mobile Overrides --- */
           @media (max-width: 768px) {
-            .flex-row,
-            .flex-row-reverse {
-              flex-direction: column !important;
+            .content-section {
+              display: block; /* Override to block for stacking */
+              padding: 0.75rem;
+              margin-bottom: 2rem;
             }
+
+            /* Reset flex properties for children on mobile */
             .flex-content,
             .flex-image {
-              flex: 0 0 100% !important;
+              flex: none; /* Remove flex behavior */
+              width: 100%; /* Take full width */
+              padding: 0; /* Adjust padding for stacked layout */
+              margin: 0;
+              /* Keep display as default (block-like for divs) */
+              display: block;
+            }
+
+            .flex-image {
+              margin-top: 1.5rem; /* Space between stacked items */
+              /* No longer need display: flex for centering on mobile */
+              align-items: initial;
+              justify-content: initial;
+            }
+
+            .flex-image img {
+              padding: 0.4rem;
+              border-width: 2px;
+              margin: 0 auto; /* Center image within its block */
+            }
+
+            /* Other mobile styles (fonts, containers, etc.) */
+            h1 {
+              font-size: 1.8rem;
+              padding: 0.5rem;
+              margin-bottom: 1rem;
+            }
+
+            h2 {
+              font-size: 1.5rem;
+            }
+
+            body p,
+            body li {
+              font-size: 1rem;
+            }
+
+            .main-container {
+              padding: 1rem;
+              border-width: 5px;
+            }
+
+            li {
+              margin-bottom: 1rem;
+              padding-left: 0;
+            }
+
+            ul {
+              padding-left: 1.2rem;
+              margin-left: 0;
+            }
+          }
+
+          /* Smaller mobile adjustments */
+          @media (max-width: 480px) {
+            h1 {
+              font-size: 1.5rem;
+              border-bottom-width: 2px;
+            }
+
+            h2 {
+              font-size: 1.3rem;
+              border-bottom-width: 1px;
+              margin-top: 0.5rem;
+              padding-bottom: 0.2rem;
+            }
+
+            .main-container {
+              padding: 0.75rem;
+              border-width: 3px;
+            }
+
+            .content-section {
+              padding: 0.5rem;
+              margin-bottom: 1rem;
+            }
+
+            p {
+              margin-top: 0.5rem;
+              line-height: 1.4;
+            }
+
+            .flex-image {
+              margin-top: 1rem;
+            }
+
+            .footer-text {
+              margin-top: 1rem;
             }
           }
         `}</style>
       </Head>
       <body>
         <div
+          className="main-container"
           style={{
             fontFamily: 'Georgia, serif',
             backgroundColor: '#f5f0e6',
@@ -72,26 +209,8 @@ const DowntimePage: CustomNextPage = () => {
             Ghosts of Saltmarsh: Downtime Activities
           </h1>
 
-          <div
-            style={{
-              marginBottom: '3rem',
-              backgroundColor: 'rgba(255, 255, 255, 0.8)',
-              padding: '1rem',
-              borderRadius: '10px',
-              position: 'relative',
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'stretch',
-            }}
-          >
-            <div
-              className="flex-content"
-              style={{
-                flex: '0 0 60%',
-                padding: '10px',
-              }}
-            >
+          <div className="content-section flex-row">
+            <div className="flex-content">
               <h2
                 style={{
                   marginTop: 0,
@@ -143,16 +262,7 @@ const DowntimePage: CustomNextPage = () => {
                 </li>
               </ul>
             </div>
-            <div
-              className="flex-image"
-              style={{
-                flex: '0 0 40%',
-                padding: '10px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
+            <div className="flex-image">
               <img
                 src="/images/downtime/image2.png"
                 alt="Tavern Carousing"
@@ -170,26 +280,8 @@ const DowntimePage: CustomNextPage = () => {
             </div>
           </div>
 
-          <div
-            style={{
-              marginBottom: '3rem',
-              backgroundColor: 'rgba(255, 255, 255, 0.8)',
-              padding: '1rem',
-              borderRadius: '10px',
-              position: 'relative',
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'row-reverse',
-              alignItems: 'stretch',
-            }}
-          >
-            <div
-              className="flex-content"
-              style={{
-                flex: '0 0 60%',
-                padding: '10px',
-              }}
-            >
+          <div className="content-section flex-row-reverse">
+            <div className="flex-content">
               <h2
                 style={{
                   marginTop: 0,
@@ -259,16 +351,7 @@ const DowntimePage: CustomNextPage = () => {
                 </li>
               </ul>
             </div>
-            <div
-              className="flex-image"
-              style={{
-                flex: '0 0 40%',
-                padding: '10px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
+            <div className="flex-image">
               <img
                 src="/images/downtime/image1.png"
                 alt="Guard Duty at Docks"
@@ -286,26 +369,8 @@ const DowntimePage: CustomNextPage = () => {
             </div>
           </div>
 
-          <div
-            style={{
-              marginBottom: '3rem',
-              backgroundColor: 'rgba(255, 255, 255, 0.8)',
-              padding: '1rem',
-              borderRadius: '10px',
-              position: 'relative',
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'stretch',
-            }}
-          >
-            <div
-              className="flex-content"
-              style={{
-                flex: '0 0 60%',
-                padding: '10px',
-              }}
-            >
+          <div className="content-section flex-row">
+            <div className="flex-content">
               <h2
                 style={{
                   marginTop: 0,
@@ -354,16 +419,7 @@ const DowntimePage: CustomNextPage = () => {
                 to uncover them.
               </p>
             </div>
-            <div
-              className="flex-image"
-              style={{
-                flex: '0 0 40%',
-                padding: '10px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
+            <div className="flex-image">
               <img
                 src="/images/downtime/image3.png"
                 alt="Crafting and Research"
@@ -389,6 +445,7 @@ const DowntimePage: CustomNextPage = () => {
               fontSize: '0.9rem',
               color: '#5a2c0c',
             }}
+            className="footer-text"
           >
             ❖ For the adventurers of Saltmarsh ❖
           </div>
