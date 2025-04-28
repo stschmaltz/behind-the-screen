@@ -12,7 +12,6 @@ import { logger } from '../../lib/logger';
 import PlayerManagementSection from '../encounters/PlayerManagementSection';
 import { getAllPlayers } from '../../hooks/get-all-players.hook';
 
-// Reuse the same confirmation modal as in other pages
 const ConfirmationModal = ({
   isOpen,
   onClose,
@@ -50,7 +49,6 @@ const CampaignDetailPage: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  // Ensure id is a string before passing to the hook
   const campaignId = typeof id === 'string' ? id : undefined;
 
   const { campaign, loading } = useGetCampaign(campaignId || '');
@@ -65,7 +63,6 @@ const CampaignDetailPage: NextPage = () => {
     useManageAdventure();
   const { players, loading: _playersLoading } = getAllPlayers();
 
-  // State for adventure management
   const [newAdventureName, setNewAdventureName] = useState('');
   const [renamingAdventureId, setRenamingAdventureId] = useState<string | null>(
     null,
@@ -75,7 +72,6 @@ const CampaignDetailPage: NextPage = () => {
   );
   const [adventureRenameValue, setAdventureRenameValue] = useState('');
 
-  // Adventure handlers
   const handleCreateAdventure = async (e: FormEvent) => {
     e.preventDefault();
     if (!newAdventureName.trim() || !campaignId) return;
@@ -173,7 +169,6 @@ const CampaignDetailPage: NextPage = () => {
     );
   }
 
-  // Basic display for now
   return (
     <div className="container mx-auto p-4 max-w-3xl">
       <div className="mb-6">
@@ -182,7 +177,6 @@ const CampaignDetailPage: NextPage = () => {
         </Link>
       </div>
 
-      {/* Campaign Header */}
       <div className="bg-base-200 rounded-lg p-6 mb-8 shadow-sm">
         <h1 className="text-3xl font-bold mb-2">{campaign.name}</h1>
         <div className="flex items-center gap-3 mb-2">
@@ -203,11 +197,9 @@ const CampaignDetailPage: NextPage = () => {
         </div>
       </div>
 
-      {/* Adventures Section */}
       <div className="mb-8">
         <h2 className="text-2xl font-bold mb-4">Adventures</h2>
 
-        {/* New Adventure Form */}
         <form onSubmit={handleCreateAdventure} className="mb-6 flex gap-2">
           <input
             type="text"
@@ -230,7 +222,6 @@ const CampaignDetailPage: NextPage = () => {
           </button>
         </form>
 
-        {/* Adventures List */}
         {adventures && adventures.length > 0 ? (
           <div className="space-y-4">
             {adventures.map((adventure) => (
@@ -275,12 +266,9 @@ const CampaignDetailPage: NextPage = () => {
                 ) : (
                   <div className="flex flex-col gap-2">
                     <div className="flex justify-between items-center">
-                      <Link
-                        href={`/adventures/${adventure._id}`}
-                        className="text-lg font-semibold hover:underline"
-                      >
+                      <span className="text-lg font-semibold hover:underline">
                         {adventure.name}
-                      </Link>
+                      </span>
                       <div className="flex items-center gap-2">
                         <button
                           className="btn btn-xs btn-ghost"
@@ -317,12 +305,6 @@ const CampaignDetailPage: NextPage = () => {
                             : 'Completed'}
                         </div>
                       </div>
-                      <Link
-                        href={`/adventures/${adventure._id}`}
-                        className="btn btn-xs btn-outline"
-                      >
-                        View
-                      </Link>
                     </div>
                   </div>
                 )}
@@ -338,7 +320,6 @@ const CampaignDetailPage: NextPage = () => {
         )}
       </div>
 
-      {/* Confirmation modal for adventure deletion */}
       <ConfirmationModal
         isOpen={!!adventureToDelete}
         onClose={handleDeleteCancel}
