@@ -29,7 +29,7 @@ const EncounterContent = ({ players }: { players: Player[] }) => {
 
       await handleSave(finishedEncounter);
       showDaisyToast('success', 'Encounter completed successfully!');
-      router.push('/encounters');
+      router.replace('/encounters');
     } catch (error) {
       logger.error('Failed to complete encounter', error);
       showDaisyToast('error', 'Failed to complete encounter');
@@ -111,7 +111,7 @@ const EncounterContent = ({ players }: { players: Player[] }) => {
                       } else {
                         showDaisyToast('success', 'Encounter deleted');
 
-                        router.push('/encounters');
+                        router.replace('/encounters');
                       }
                     }}
                   />
