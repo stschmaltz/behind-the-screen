@@ -63,7 +63,7 @@ const DescriptionDisplay: React.FC<DescriptionDisplayProps> = ({
   }
 
   return (
-    <div className={`inline-block ${className}`}>
+    <div className={`inline-block flex items-center ${className}`}>
       <button
         type="button"
         data-tooltip-id={tooltipId}
