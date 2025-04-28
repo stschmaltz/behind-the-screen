@@ -8,6 +8,7 @@ export interface Player {
   armorClass?: number;
   maxHP?: number;
   currentHP?: number;
+  level?: number;
 }
 
 export type NewPlayer = OmitMongoFields<Player>;

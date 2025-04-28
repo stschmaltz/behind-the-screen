@@ -10,6 +10,7 @@ export const fullPlayer = /* GraphQL */ `
     name
     armorClass
     maxHP
+    level
     userId
     campaignId
   }
@@ -34,6 +35,12 @@ export const deletePlayerMutation = /* GraphQL */ `
   }
 `;
 
+export const updatePlayersMutation = /* GraphQL */ `
+  mutation updatePlayers($input: UpdatePlayersInput!) {
+    updatePlayers(input: $input)
+  }
+`;
+
 export interface SavePlayerMutationResponse {
   savePlayer: Player;
 }
@@ -42,6 +49,19 @@ export interface SavePlayerMutationVariables {
   input: {
     name: string;
     campaignId: string;
+    armorClass?: number;
+    maxHP?: number;
+    level?: number;
+  };
+}
+
+export interface UpdatePlayersMutationVariables {
+  input: {
+    campaignId: string;
+    armorClass?: number;
+    maxHP?: number;
+    level?: number;
+    levelUp?: boolean;
   };
 }
 

@@ -5,6 +5,7 @@ import { asyncFetch } from '../../data/graphql/graphql-fetcher';
 import {
   deletePlayerMutation,
   savePlayerMutation,
+  updatePlayersMutation,
 } from '../../data/graphql/snippets/player';
 import { Player } from '../../types/player';
 import { useModal } from '../../hooks/use-modal';
@@ -25,6 +26,15 @@ const PlayerManagementSection: React.FC<Props> = ({
   const [players, setPlayers] = useState<Player[]>([]);
   const { closeModal, showModal } = useModal('player-management-modal');
   const [newPlayerName, setNewPlayerName] = useState('');
+  const [newPlayerLevel, setNewPlayerLevel] = useState<number>(1);
+  const [newPlayerAC, setNewPlayerAC] = useState<number | undefined>(undefined);
+  const [newPlayerHP, setNewPlayerHP] = useState<number | undefined>(undefined);
+  const [bulkLevel, setBulkLevel] = useState<number | undefined>(undefined);
+  const [editingPlayer, setEditingPlayer] = useState<{
+    id: string;
+    field: 'armorClass' | 'maxHP';
+    value: number;
+  } | null>(null);
   const [selectedCampaignId, setSelectedCampaignId] = useState<
     string | undefined
   >(campaignId);
@@ -38,7 +48,13 @@ const PlayerManagementSection: React.FC<Props> = ({
     setSelectedCampaignId(campaignId);
   }, [campaignId]);
 
-  const savePlayer = async (playerName: string, playerCampaignId: string) => {
+  const savePlayer = async (
+    playerName: string,
+    playerCampaignId: string,
+    level: number = 1,
+    armorClass?: number,
+    maxHP?: number,
+  ) => {
     if (!playerCampaignId) {
       logger.error('Campaign ID is required to create a player');
 
@@ -51,6 +67,9 @@ const PlayerManagementSection: React.FC<Props> = ({
       input: {
         name: playerName,
         campaignId: playerCampaignId,
+        level,
+        armorClass,
+        maxHP,
       },
     });
 
@@ -65,9 +84,13 @@ const PlayerManagementSection: React.FC<Props> = ({
         campaignId: response.savePlayer.campaignId,
         armorClass: response.savePlayer.armorClass,
         maxHP: response.savePlayer.maxHP,
+        level: response.savePlayer.level,
       },
     ]);
     setNewPlayerName('');
+    setNewPlayerLevel(1);
+    setNewPlayerAC(undefined);
+    setNewPlayerHP(undefined);
   };
 
   const deletePlayer = async (playerId: string) => {
@@ -77,10 +100,100 @@ const PlayerManagementSection: React.FC<Props> = ({
     setPlayers(players.filter((player) => player._id !== playerId));
   };
 
-  const getCampaignName = (id: string) => {
-    const campaign = campaigns?.find((c) => c._id === id);
+  const bulkUpdatePlayers = async (
+    campaignId: string,
+    levelUp: boolean = false,
+  ) => {
+    if (!campaignId) return;
 
-    return campaign?.name || 'Unknown Campaign';
+    await asyncFetch(updatePlayersMutation, {
+      input: {
+        campaignId,
+        level: levelUp ? undefined : bulkLevel,
+        levelUp,
+      },
+    });
+
+    // Optimistically update the UI
+    if (levelUp) {
+      setPlayers(
+        players.map((player) => {
+          if (player.campaignId === campaignId) {
+            return {
+              ...player,
+              level: (player.level || 1) + 1,
+            };
+          }
+
+          return player;
+        }),
+      );
+    } else {
+      setPlayers(
+        players.map((player) => {
+          if (player.campaignId === campaignId) {
+            const updated = { ...player };
+            if (bulkLevel !== undefined) updated.level = bulkLevel;
+
+            return updated;
+          }
+
+          return player;
+        }),
+      );
+    }
+
+    // Reset bulk fields
+    setBulkLevel(undefined);
+  };
+
+  const updatePlayerField = async (
+    playerId: string,
+    field: 'armorClass' | 'maxHP',
+    value: number,
+  ) => {
+    // Find the player
+    const player = players.find((p) => p._id === playerId);
+    if (!player) return;
+
+    // Save to database
+    await asyncFetch(savePlayerMutation, {
+      input: {
+        name: player.name,
+        campaignId: player.campaignId,
+        level: player.level,
+        armorClass: field === 'armorClass' ? value : player.armorClass,
+        maxHP: field === 'maxHP' ? value : player.maxHP,
+      },
+    });
+
+    // Update locally
+    setPlayers(
+      players.map((p) => {
+        if (p._id === playerId) {
+          return {
+            ...p,
+            [field]: value,
+          };
+        }
+
+        return p;
+      }),
+    );
+
+    // Exit editing mode
+    setEditingPlayer(null);
+  };
+
+  const startEditing = (playerId: string, field: 'armorClass' | 'maxHP') => {
+    const player = players.find((p) => p._id === playerId);
+    if (!player) return;
+
+    setEditingPlayer({
+      id: playerId,
+      field,
+      value: (player[field] as number) || 0,
+    });
   };
 
   return (
@@ -136,13 +249,13 @@ const PlayerManagementSection: React.FC<Props> = ({
               )}
             </div>
 
-            <div className="form-control">
-              <label className="label py-1">
-                <span className="label-text text-sm font-medium">
-                  Player Name
-                </span>
-              </label>
-              <div className="flex items-center gap-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+              <div className="form-control">
+                <label className="label py-1">
+                  <span className="label-text text-sm font-medium">
+                    Player Name
+                  </span>
+                </label>
                 <FormInput
                   id="newPlayer"
                   type="text"
@@ -153,18 +266,137 @@ const PlayerManagementSection: React.FC<Props> = ({
                   value={newPlayerName}
                   className="input input-bordered input-sm w-full"
                 />
-                <Button
-                  label="Add"
-                  variant="primary"
-                  disabled={!newPlayerName || !selectedCampaignId}
-                  onClick={() => {
-                    if (!newPlayerName || !selectedCampaignId) return;
-                    savePlayer(newPlayerName, selectedCampaignId);
-                  }}
+              </div>
+
+              <div className="form-control">
+                <label className="label py-1">
+                  <span className="label-text text-sm font-medium">Level</span>
+                </label>
+                <FormInput
+                  id="newPlayerLevel"
+                  type="number"
+                  placeholder="1"
+                  min={1}
+                  max={20}
+                  value={
+                    newPlayerLevel !== undefined
+                      ? newPlayerLevel.toString()
+                      : ''
+                  }
+                  onChange={(e) => setNewPlayerLevel(Number(e.target.value))}
+                  className="input input-bordered input-sm w-full"
                 />
               </div>
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+              <div className="form-control">
+                <label className="label py-1">
+                  <span className="label-text text-sm font-medium">
+                    Armor Class
+                  </span>
+                </label>
+                <FormInput
+                  id="newPlayerAC"
+                  type="number"
+                  placeholder="Armor Class"
+                  min={1}
+                  value={
+                    newPlayerAC !== undefined ? newPlayerAC.toString() : ''
+                  }
+                  onChange={(e) => setNewPlayerAC(Number(e.target.value))}
+                  className="input input-bordered input-sm w-full"
+                />
+              </div>
+
+              <div className="form-control">
+                <label className="label py-1">
+                  <span className="label-text text-sm font-medium">
+                    Hit Points
+                  </span>
+                </label>
+                <FormInput
+                  id="newPlayerHP"
+                  type="number"
+                  placeholder="Max HP"
+                  min={1}
+                  value={
+                    newPlayerHP !== undefined ? newPlayerHP.toString() : ''
+                  }
+                  onChange={(e) => setNewPlayerHP(Number(e.target.value))}
+                  className="input input-bordered input-sm w-full"
+                />
+              </div>
+            </div>
+
+            <Button
+              label="Add Player"
+              variant="primary"
+              disabled={!newPlayerName || !selectedCampaignId}
+              onClick={() => {
+                if (!newPlayerName || !selectedCampaignId) return;
+                savePlayer(
+                  newPlayerName,
+                  selectedCampaignId,
+                  newPlayerLevel,
+                  newPlayerAC !== undefined ? newPlayerAC : undefined,
+                  newPlayerHP !== undefined ? newPlayerHP : undefined,
+                );
+              }}
+              className="w-full mt-3"
+            />
           </div>
+
+          {selectedCampaignId &&
+            players.filter((p) => p.campaignId === selectedCampaignId).length >
+              0 && (
+              <div className="bg-base-200 rounded-lg p-4 mb-6">
+                <h4 className="font-medium text-sm opacity-70 mb-3">
+                  Bulk Update Levels
+                </h4>
+
+                <div className="flex flex-col md:flex-row md:items-end gap-3">
+                  <div className="form-control flex-1">
+                    <label className="label py-1"></label>
+                    <FormInput
+                      id="bulkLevel"
+                      type="number"
+                      placeholder="Set Level"
+                      min={1}
+                      max={20}
+                      value={
+                        bulkLevel !== undefined ? bulkLevel.toString() : ''
+                      }
+                      onChange={(e) => setBulkLevel(Number(e.target.value))}
+                      className="input input-bordered input-sm w-full"
+                    />
+                  </div>
+
+                  <div className="flex gap-2 flex-wrap">
+                    <Button
+                      label="Set Level For All"
+                      variant="secondary"
+                      disabled={!selectedCampaignId || bulkLevel === undefined}
+                      onClick={() => {
+                        if (!selectedCampaignId) return;
+                        bulkUpdatePlayers(selectedCampaignId);
+                      }}
+                      className="btn-sm flex-1 md:flex-auto"
+                    />
+                    <Button
+                      label="Level Up All"
+                      variant="secondary"
+                      disabled={!selectedCampaignId}
+                      onClick={() => {
+                        if (!selectedCampaignId) return;
+                        bulkUpdatePlayers(selectedCampaignId, true);
+                      }}
+                      className="btn-sm flex-1 md:flex-auto"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
           <div>
             <h4 className="font-medium text-sm opacity-70 mb-2">
@@ -181,7 +413,9 @@ const PlayerManagementSection: React.FC<Props> = ({
                   <thead>
                     <tr className="bg-base-200">
                       <th className="text-left">Name</th>
-                      <th className="text-left">Campaign</th>
+                      <th className="text-left">Level</th>
+                      <th className="text-left">AC</th>
+                      <th className="text-left">HP</th>
                       <th></th>
                     </tr>
                   </thead>
@@ -193,8 +427,96 @@ const PlayerManagementSection: React.FC<Props> = ({
                       .map((player, _index) => (
                         <tr key={player._id} className="hover:bg-base-200">
                           <td className="font-medium">{player.name}</td>
-                          <td className="text-sm opacity-70">
-                            {getCampaignName(player.campaignId)}
+                          <td>{player.level || 1}</td>
+                          <td>
+                            {editingPlayer?.id === player._id &&
+                            editingPlayer.field === 'armorClass' ? (
+                              <div className="flex items-center gap-1">
+                                <FormInput
+                                  id={`edit-ac-${player._id}`}
+                                  type="number"
+                                  value={editingPlayer.value.toString()}
+                                  onChange={(e) =>
+                                    setEditingPlayer({
+                                      ...editingPlayer,
+                                      value: Number(e.target.value),
+                                    })
+                                  }
+                                  className="input input-bordered input-xs w-14"
+                                  min={1}
+                                />
+                                <Button
+                                  label="✓"
+                                  onClick={() =>
+                                    updatePlayerField(
+                                      player._id,
+                                      'armorClass',
+                                      editingPlayer.value,
+                                    )
+                                  }
+                                  className="btn-xs btn-success"
+                                />
+                                <Button
+                                  label="✕"
+                                  onClick={() => setEditingPlayer(null)}
+                                  className="btn-xs btn-error"
+                                />
+                              </div>
+                            ) : (
+                              <div
+                                onClick={() =>
+                                  startEditing(player._id, 'armorClass')
+                                }
+                                className="cursor-pointer hover:underline"
+                              >
+                                {player.armorClass || '-'}
+                              </div>
+                            )}
+                          </td>
+                          <td>
+                            {editingPlayer?.id === player._id &&
+                            editingPlayer.field === 'maxHP' ? (
+                              <div className="flex items-center gap-1">
+                                <FormInput
+                                  id={`edit-hp-${player._id}`}
+                                  type="number"
+                                  value={editingPlayer.value.toString()}
+                                  onChange={(e) =>
+                                    setEditingPlayer({
+                                      ...editingPlayer,
+                                      value: Number(e.target.value),
+                                    })
+                                  }
+                                  className="input input-bordered input-xs w-14"
+                                  min={1}
+                                />
+                                <Button
+                                  label="✓"
+                                  onClick={() =>
+                                    updatePlayerField(
+                                      player._id,
+                                      'maxHP',
+                                      editingPlayer.value,
+                                    )
+                                  }
+                                  className="btn-xs btn-success"
+                                />
+                                <Button
+                                  label="✕"
+                                  onClick={() => setEditingPlayer(null)}
+                                  className="btn-xs btn-error"
+                                />
+                              </div>
+                            ) : (
+                              <div
+                                onClick={() =>
+                                  startEditing(player._id, 'maxHP')
+                                }
+                                className="cursor-pointer hover:underline"
+                              >
+                                {player.maxHP || '-'}
+                              </div>
+                            )}
                           </td>
                           <td className="text-right">
                             <Button

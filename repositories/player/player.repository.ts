@@ -1,6 +1,9 @@
 import { ObjectId } from 'bson';
 import { injectable } from 'inversify';
-import { PlayerRepositoryInterface } from './player.repository.interface';
+import {
+  PlayerRepositoryInterface,
+  BulkUpdatePlayersInput,
+} from './player.repository.interface';
 import { getDbClient } from '../../data/database/mongodb';
 import { NewPlayer, Player } from '../../types/player';
 import { logger } from '../../lib/logger';
@@ -76,6 +79,49 @@ export class PlayerRepository implements PlayerRepositoryInterface {
     return docs.map(this.mapToPlayer);
   }
 
+  public async bulkUpdatePlayers(
+    input: BulkUpdatePlayersInput,
+  ): Promise<boolean> {
+    const { userId, campaignId, armorClass, maxHP, level, levelUp } = input;
+    const { db } = await getDbClient();
+
+    const filter = {
+      userId: new ObjectId(userId),
+      campaignId: new ObjectId(campaignId),
+    };
+
+    const updateObj: Record<string, any> = {};
+
+    if (armorClass !== undefined) {
+      updateObj.armorClass = armorClass;
+    }
+
+    if (maxHP !== undefined) {
+      updateObj.maxHP = maxHP;
+    }
+
+    if (level !== undefined) {
+      updateObj.level = level;
+    } else if (levelUp) {
+      // If levelUp is true, increment the level
+      const result = await db
+        .collection(this.collectionName)
+        .updateMany(filter, { $inc: { level: 1 } });
+
+      return result.modifiedCount > 0;
+    }
+
+    if (Object.keys(updateObj).length === 0) {
+      return false; // Nothing to update
+    }
+
+    const result = await db
+      .collection(this.collectionName)
+      .updateMany(filter, { $set: updateObj });
+
+    return result.modifiedCount > 0;
+  }
+
   private mapToPlayer(doc: any): Player {
     return {
       _id: doc._id.toHexString(),
@@ -85,6 +131,7 @@ export class PlayerRepository implements PlayerRepositoryInterface {
       armorClass: doc.armorClass,
       currentHP: doc.currentHP,
       maxHP: doc.maxHP,
+      level: doc.level || 1, // Default to level 1
     };
   }
 }

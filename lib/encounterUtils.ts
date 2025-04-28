@@ -194,11 +194,3 @@ export const getEncounterDifficulty = (
 
   return { difficulty, adjustedXp, thresholds };
 };
-
-export default {
-  getChallengeRatingXp,
-  getEncounterMultiplier,
-  calculateAdjustedXp,
-  calculatePartyThresholds,
-  getEncounterDifficulty,
-};

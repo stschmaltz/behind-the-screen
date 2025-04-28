@@ -11,6 +11,7 @@ const playerMutationTypeDefs = /* GraphQL */ `
   extend type Mutation {
     savePlayer(input: NewPlayerInput!): Player
     deletePlayer(id: String!): Boolean
+    updatePlayers(input: UpdatePlayersInput!): Boolean
   }
 `;
 
@@ -18,6 +19,19 @@ interface SavePlayerArgs {
   input: {
     name: string;
     campaignId: string;
+    armorClass?: number;
+    maxHP?: number;
+    level?: number;
+  };
+}
+
+interface UpdatePlayersArgs {
+  input: {
+    campaignId: string;
+    armorClass?: number;
+    maxHP?: number;
+    level?: number;
+    levelUp?: boolean;
   };
 }
 
@@ -38,6 +52,9 @@ const playerMutationResolver = {
         name: input.name,
         userId: context.user._id,
         campaignId: input.campaignId,
+        armorClass: input.armorClass,
+        maxHP: input.maxHP,
+        level: input.level || 1, // Default to level 1
       });
     },
 
@@ -52,6 +69,24 @@ const playerMutationResolver = {
       return playerRepository.deletePlayer({
         id,
         userId: context.user._id,
+      });
+    },
+
+    async updatePlayers(
+      _: unknown,
+      { input }: UpdatePlayersArgs,
+      context: GraphQLContext,
+    ) {
+      logger.info('updatePlayers', input);
+      isAuthorizedOrThrow(context);
+
+      return playerRepository.bulkUpdatePlayers({
+        userId: context.user._id,
+        campaignId: input.campaignId,
+        armorClass: input.armorClass,
+        maxHP: input.maxHP,
+        level: input.level,
+        levelUp: input.levelUp,
       });
     },
   },
