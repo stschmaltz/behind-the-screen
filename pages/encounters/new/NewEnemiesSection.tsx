@@ -36,11 +36,13 @@ interface MonsterData {
 interface NewEnemiesSectionProps {
   enemies: EncounterCharacter[];
   onEnemiesChange: (updatedEnemies: EncounterCharacter[]) => void;
+  campaignId?: string;
 }
 
 const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
   enemies,
   onEnemiesChange,
+  campaignId,
 }) => {
   const [monsters, setMonsters] = useState<MonsterData[]>([]);
   const [monsterOptions, setMonsterOptions] = useState<MonsterOption[]>([]);
@@ -265,7 +267,10 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
     <div className="mb-6">
       <h2 className="text-lg font-semibold mb-2">Enemies</h2>
 
-      <EncounterDifficultyCalculator enemies={enemies} />
+      <EncounterDifficultyCalculator
+        enemies={enemies}
+        campaignId={campaignId}
+      />
 
       <div className="mb-4">
         <label className="label text-lg font-semibold">Enemies</label>

@@ -1,16 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { EncounterCharacter } from '../types/encounters';
 import { getEncounterDifficulty } from '../lib/encounterUtils';
+import { getAllPlayers } from '../hooks/get-all-players.hook';
 
 interface EncounterDifficultyProps {
   enemies: EncounterCharacter[];
+  campaignId?: string;
 }
 
 const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
   enemies,
+  campaignId,
 }) => {
   const [playerCount, setPlayerCount] = useState<number>(4);
   const [playerLevel, setPlayerLevel] = useState<number>(1);
+  const [playerLevels, setPlayerLevels] = useState<number[]>([1, 1, 1, 1]);
+  const { players, loading: playersLoading } = getAllPlayers();
   const [difficultyResult, setDifficultyResult] = useState<{
     difficulty: 'trivial' | 'easy' | 'medium' | 'hard' | 'deadly';
     adjustedXp: number;
@@ -21,16 +26,65 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
       deadly: number;
     };
   } | null>(null);
+  const [useUniformLevels, setUseUniformLevels] = useState<boolean>(true);
+  const [useCampaignPlayers, setUseCampaignPlayers] =
+    useState<boolean>(!!campaignId);
 
-  // Calculate difficulty whenever enemies, player count, or level changes
+  // Filter players by campaign
+  const campaignPlayers = useMemo(() => {
+    if (!campaignId) return [];
+
+    return players.filter((player) => player.campaignId === campaignId);
+  }, [campaignId, players]);
+
+  // Set default player count based on campaign players
   useEffect(() => {
-    // Create an array of player levels (all the same level for now)
-    const partyLevels = Array(playerCount).fill(playerLevel);
+    if (!campaignId || playersLoading || !useCampaignPlayers) return;
 
+    if (campaignPlayers.length > 0) {
+      setPlayerCount(campaignPlayers.length);
+      setPlayerLevels(Array(campaignPlayers.length).fill(playerLevel));
+    }
+  }, [
+    campaignId,
+    campaignPlayers,
+    playersLoading,
+    playerLevel,
+    useCampaignPlayers,
+  ]);
+
+  // Update player levels array when count changes in uniform mode
+  useEffect(() => {
+    if (useUniformLevels) {
+      setPlayerLevels(Array(playerCount).fill(playerLevel));
+    } else if (playerLevels.length !== playerCount) {
+      // Adjust array size when playerCount changes in custom mode
+      if (playerCount > playerLevels.length) {
+        // Add new players with default level
+        setPlayerLevels([
+          ...playerLevels,
+          ...Array(playerCount - playerLevels.length).fill(1),
+        ]);
+      } else {
+        // Remove excess players
+        setPlayerLevels(playerLevels.slice(0, playerCount));
+      }
+    }
+  }, [playerCount, playerLevel, useUniformLevels]);
+
+  // Calculate difficulty whenever enemies, player count, or levels change
+  useEffect(() => {
     // Calculate encounter difficulty
-    const result = getEncounterDifficulty(enemies, partyLevels);
+    const result = getEncounterDifficulty(enemies, playerLevels);
     setDifficultyResult(result);
-  }, [enemies, playerCount, playerLevel]);
+  }, [enemies, playerLevels]);
+
+  // Handle individual player level change
+  const handlePlayerLevelChange = (index: number, level: number) => {
+    const newLevels = [...playerLevels];
+    newLevels[index] = level;
+    setPlayerLevels(newLevels);
+  };
 
   // Get class for difficulty color
   const getDifficultyClass = (difficulty: string): string => {
@@ -68,8 +122,34 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
       </div>
       <div className="collapse-content peer-checked:bg-base-100 peer-checked:text-base-content">
         <div className="p-2">
-          <div className="flex flex-wrap gap-4 mb-4">
-            <div className="form-control">
+          {campaignId && (
+            <div className="mb-4">
+              <label className="label cursor-pointer inline-flex items-center">
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-primary mr-2"
+                  checked={useCampaignPlayers}
+                  onChange={(e) => setUseCampaignPlayers(e.target.checked)}
+                />
+                <span className="label-text">Use campaign players</span>
+              </label>
+              {useCampaignPlayers &&
+                campaignPlayers.length === 0 &&
+                !playersLoading && (
+                  <div className="text-sm text-warning mt-1">
+                    No players found for this campaign
+                  </div>
+                )}
+              {playersLoading && (
+                <div className="text-sm text-info mt-1">
+                  Loading campaign players...
+                </div>
+              )}
+            </div>
+          )}
+
+          {(!useCampaignPlayers || !campaignId) && (
+            <div className="form-control mb-4">
               <label className="label">
                 <span className="label-text">Number of Players</span>
               </label>
@@ -85,22 +165,83 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
                 ))}
               </select>
             </div>
+          )}
 
+          <div className="flex flex-wrap gap-4 mb-4">
             <div className="form-control">
-              <label className="label">
-                <span className="label-text">Player Level</span>
-              </label>
-              <select
-                className="select select-bordered w-full max-w-xs"
-                value={playerLevel}
-                onChange={(e) => setPlayerLevel(Number(e.target.value))}
-              >
-                {Array.from({ length: 20 }, (_, i) => i + 1).map((level) => (
-                  <option key={level} value={level}>
-                    {level}
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center mb-2">
+                <label className="label cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="checkbox checkbox-primary mr-2"
+                    checked={useUniformLevels}
+                    onChange={(e) => setUseUniformLevels(e.target.checked)}
+                  />
+                  <span className="label-text">Same level for all players</span>
+                </label>
+              </div>
+
+              {useUniformLevels ? (
+                <div>
+                  <label className="label">
+                    <span className="label-text">Player Level</span>
+                  </label>
+                  <select
+                    className="select select-bordered w-full max-w-xs"
+                    value={playerLevel}
+                    onChange={(e) => setPlayerLevel(Number(e.target.value))}
+                  >
+                    {Array.from({ length: 20 }, (_, i) => i + 1).map(
+                      (level) => (
+                        <option key={level} value={level}>
+                          {level}
+                        </option>
+                      ),
+                    )}
+                  </select>
+                </div>
+              ) : (
+                <div>
+                  <label className="label">
+                    <span className="label-text">Individual Player Levels</span>
+                  </label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {playerLevels.map((level, index) => {
+                      const player =
+                        useCampaignPlayers && campaignPlayers[index];
+
+                      return (
+                        <div key={index} className="flex items-center gap-2">
+                          <span
+                            className="text-sm whitespace-nowrap overflow-hidden text-ellipsis"
+                            style={{ maxWidth: '120px' }}
+                          >
+                            {player ? player.name : `Player ${index + 1}`}:
+                          </span>
+                          <select
+                            className="select select-bordered select-sm w-20"
+                            value={level}
+                            onChange={(e) =>
+                              handlePlayerLevelChange(
+                                index,
+                                Number(e.target.value),
+                              )
+                            }
+                          >
+                            {Array.from({ length: 20 }, (_, i) => i + 1).map(
+                              (lvl) => (
+                                <option key={lvl} value={lvl}>
+                                  {lvl}
+                                </option>
+                              ),
+                            )}
+                          </select>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
