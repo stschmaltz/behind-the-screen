@@ -266,7 +266,7 @@ const CampaignDetailPage: NextPage = () => {
                 ) : (
                   <div className="flex flex-col gap-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-lg font-semibold hover:underline">
+                      <span className="text-lg font-semibold">
                         {adventure.name}
                       </span>
                       <div className="flex items-center gap-2">
