@@ -87,7 +87,7 @@ function Layout({ children }: LayoutProps) {
       <footer className="bg-base-300 p-4 text-center text-sm">
         <div className="container mx-auto">
           <p>
-            Copyright Shane Schmaltz 2025.
+            Copyright Shane Schmaltz 2025.{' '}
             <Link href="/feedback" className="text-primary hover:underline">
               Have feedback or need support?
             </Link>
