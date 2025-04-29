@@ -24,7 +24,7 @@ function Layout({ children }: LayoutProps) {
 
   return (
     <div className="min-h-screen flex flex-col w-full">
-      <header className="navbar bg-primary text-white p-4">
+      <header className="sticky top-0 z-50 bg-primary text-white p-2">
         <div className="container mx-auto flex flex-wrap items-center justify-between">
           <Link href="/" className="flex items-center">
             <h1 className="text-xl md:text-2xl font-bold">DM Essentials</h1>
