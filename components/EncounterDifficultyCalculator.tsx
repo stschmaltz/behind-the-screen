@@ -13,15 +13,12 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
   enemies,
   campaignId,
 }) => {
-  // Force useCampaignPlayers to true by default if a campaignId is provided
   const [useCampaignPlayers, setUseCampaignPlayers] =
     useState<boolean>(!!campaignId);
   const { players, loading: playersLoading } = getAllPlayers();
 
-  // Filter players by campaign
   const campaignPlayers = useMemo(() => {
     if (!campaignId) return [];
-
     const filtered = players.filter(
       (player) => player.campaignId === campaignId,
     );
@@ -34,16 +31,13 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
     return filtered;
   }, [campaignId, players]);
 
-  // Determine if campaign has varying levels
   const campaignHasVaryingLevels = useMemo(() => {
     if (campaignPlayers.length <= 1) return false;
-
     const firstLevel = campaignPlayers[0]?.level || 1;
 
     return campaignPlayers.some((player) => (player.level || 1) !== firstLevel);
   }, [campaignPlayers]);
 
-  // Set initial values based on campaign
   const initialPlayerCount = useMemo(() => {
     return campaignId && useCampaignPlayers && campaignPlayers.length > 0
       ? campaignPlayers.length
@@ -82,7 +76,6 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
     initialPlayerLevel,
   ]);
 
-  // Initialize state with the calculated values
   const [playerCount, setPlayerCount] = useState<number>(initialPlayerCount);
   const [playerLevel, setPlayerLevel] = useState<number>(initialPlayerLevel);
   const [playerLevels, setPlayerLevels] =
@@ -102,7 +95,6 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
     };
   } | null>(null);
 
-  // Force update values when campaign players change
   useEffect(() => {
     if (campaignId && useCampaignPlayers && campaignPlayers.length > 0) {
       logger.info('Force updating from campaign players', {
@@ -110,20 +102,12 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
         playerCount: campaignPlayers.length,
         levels: campaignPlayers.map((p) => p.level || 1),
       });
-
-      // Update player count
       setPlayerCount(campaignPlayers.length);
-
-      // Update player levels
       const levels = campaignPlayers.map((player) => player.level || 1);
       setPlayerLevels(levels);
-
-      // Update uniform level if appropriate
       if (!campaignHasVaryingLevels) {
         setPlayerLevel(levels[0]);
       }
-
-      // Update useUniformLevels based on campaign players
       setUseUniformLevels(!campaignHasVaryingLevels);
     }
   }, [
@@ -133,7 +117,6 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
     campaignHasVaryingLevels,
   ]);
 
-  // Update player levels array when count or level changes in uniform mode
   useEffect(() => {
     if (useUniformLevels) {
       setPlayerLevels(Array(playerCount).fill(playerLevel));
@@ -141,16 +124,12 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
       playerLevels.length !== playerCount &&
       (!useCampaignPlayers || !campaignPlayers.length)
     ) {
-      // Adjust array size when playerCount changes in custom mode
-      // Only if we're not using campaign players or no campaign players exist
       if (playerCount > playerLevels.length) {
-        // Add new players with default level
         setPlayerLevels([
           ...playerLevels,
           ...Array(playerCount - playerLevels.length).fill(1),
         ]);
       } else {
-        // Remove excess players
         setPlayerLevels(playerLevels.slice(0, playerCount));
       }
     }
@@ -162,21 +141,17 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
     campaignPlayers.length,
   ]);
 
-  // Calculate difficulty whenever enemies, player count, or levels change
   useEffect(() => {
-    // Calculate encounter difficulty
     const result = getEncounterDifficulty(enemies, playerLevels);
     setDifficultyResult(result);
   }, [enemies, playerLevels]);
 
-  // Handle individual player level change
   const handlePlayerLevelChange = (index: number, level: number) => {
     const newLevels = [...playerLevels];
     newLevels[index] = level;
     setPlayerLevels(newLevels);
   };
 
-  // Get class for difficulty color
   const getDifficultyClass = (difficulty: string): string => {
     switch (difficulty) {
       case 'trivial':

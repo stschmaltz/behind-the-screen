@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormInput } from '../../../../../components/FormInput'; // Adjusted path
+import { FormInput } from '../../../../../components/FormInput';
 
 export const ArmorClassInput: React.FC<{
   id: string;
