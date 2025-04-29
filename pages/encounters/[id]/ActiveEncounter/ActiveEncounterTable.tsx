@@ -15,6 +15,7 @@ import {
   PopoverProvider,
   usePopoverContext,
 } from '../../../../context/PopoverContext';
+import EncounterDifficultyBadge from '../../../../components/EncounterDifficultyBadge';
 
 const DeadCharacterRow: React.FC<{
   character: InitiativeOrderCharacter;
@@ -131,13 +132,6 @@ const ActiveEncounterTableContent: React.FC<{
   return (
     <div className="w-full max-w-full flex flex-col">
       <div className="flex flex-col sm:flex-row justify-between items-center gap-2 mb-4">
-        <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
-          <span className="badge badge-info">
-            Round {encounter.currentRound ?? 1}
-          </span>
-          <span className="badge badge-info">Turn {encounter.currentTurn}</span>
-          {isSaving && <span className="badge badge-warning">Saving...</span>}
-        </div>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
           <div className="w-full sm:w-auto">
             <NewEnemyModal
@@ -163,6 +157,21 @@ const ActiveEncounterTableContent: React.FC<{
             label="Next"
             className="btn-sm w-full sm:w-24"
             onClick={handleNextTurn}
+          />
+        </div>
+        <div className="flex flex-wrap gap-2 justify-center sm:justify-start items-center">
+          <span className="badge badge-info">
+            Round {encounter.currentRound ?? 1}
+          </span>
+          <span className="badge badge-info">Turn {encounter.currentTurn}</span>
+          {isSaving && <span className="badge badge-warning">Saving...</span>}
+          <EncounterDifficultyBadge
+            enemies={encounter.enemies}
+            playerLevels={
+              encounter.initiativeOrder
+                .filter((char) => char.type === 'player')
+                .map(() => 1) // Default to level 1 since initiativeOrder doesn't contain levels
+            }
           />
         </div>
       </div>

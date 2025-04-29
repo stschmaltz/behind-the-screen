@@ -55,7 +55,6 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
     [key: number]: boolean;
   }>({});
 
-  // Add refs object for collapse checkboxes
   const collapseRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
 
   useEffect(() => {
@@ -70,7 +69,6 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
         const data: MonsterData[] = await response.json();
         setMonsters(data);
 
-        // Map monster data to the format expected by MonsterCombobox
         const options: MonsterOption[] = data.map((monster) => ({
           _id: monster._id,
           name: monster.name,
@@ -165,7 +163,6 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
           monsterSource: selectedMonster.name,
         };
 
-        // Auto-collapse the section after selecting a monster
         setTimeout(() => {
           if (collapseRefs.current[index]) {
             collapseRefs.current[index]!.checked = false;
@@ -270,6 +267,7 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
       <EncounterDifficultyCalculator
         enemies={enemies}
         campaignId={campaignId}
+        initiativeOrder={[]}
       />
 
       <div className="mb-4">

@@ -27,7 +27,6 @@ export const useEncounterDraft = (
   });
 
   useEffect(() => {
-    // Only initialize initiative order if it's empty
     if (encounter.initiativeOrder.length > 0) {
       setDraftEncounter(encounter);
       return;
@@ -59,17 +58,27 @@ export const useEncounterDraft = (
 
   const handleAddPlayers = (selectedPlayers: Player[]) => {
     setHasUnsavedChanges?.(true);
-    setDraftEncounter((prev) => ({
-      ...prev,
-      players: [
-        ...prev.players,
-        ...selectedPlayers.map((p) => ({ _id: p._id })),
-      ],
-      initiativeOrder: [
-        ...prev.initiativeOrder,
-        ...selectedPlayers.map((player) => toInitiativeOrder(player, 'player')),
-      ],
-    }));
+    setDraftEncounter((prev) => {
+      // Filter out players that are already in the encounter
+      const newPlayers = selectedPlayers.filter(
+        (selectedPlayer) =>
+          !prev.players.some((p) => p._id === selectedPlayer._id),
+      );
+
+      // If no new players to add, return the current state
+      if (newPlayers.length === 0) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        players: [...prev.players, ...newPlayers.map((p) => ({ _id: p._id }))],
+        initiativeOrder: [
+          ...prev.initiativeOrder,
+          ...newPlayers.map((player) => toInitiativeOrder(player, 'player')),
+        ],
+      };
+    });
   };
 
   const handleUpdateCharacter = (character: InitiativeOrderCharacter) => {
@@ -84,13 +93,38 @@ export const useEncounterDraft = (
 
   const handleDeleteCharacter = (characterName: string) => {
     setHasUnsavedChanges?.(true);
-    setDraftEncounter((prev) => ({
-      ...prev,
-      initiativeOrder: prev.initiativeOrder.filter(
-        (c) => c.name !== characterName,
-      ),
-      enemies: prev.enemies.filter((e) => e.name !== characterName),
-    }));
+    setDraftEncounter((prev) => {
+      // Find the character to be deleted
+      const characterToDelete = prev.initiativeOrder.find(
+        (c) => c.name === characterName,
+      );
+
+      if (!characterToDelete) {
+        return prev;
+      }
+
+      // Create new state object
+      const newState = {
+        ...prev,
+        initiativeOrder: prev.initiativeOrder.filter(
+          (c) => c.name !== characterName,
+        ),
+      };
+
+      // If it's an enemy, remove from enemies array too
+      if (characterToDelete.type === 'enemy') {
+        newState.enemies = prev.enemies.filter((e) => e.name !== characterName);
+      }
+
+      // If it's a player, remove from players array too
+      if (characterToDelete.type === 'player') {
+        newState.players = prev.players.filter(
+          (p) => p._id !== characterToDelete._id,
+        );
+      }
+
+      return newState;
+    });
   };
 
   return {

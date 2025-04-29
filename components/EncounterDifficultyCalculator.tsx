@@ -1,171 +1,177 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { EncounterCharacter } from '../types/encounters';
+import {
+  capitalizeFirstLetter,
+  DifficultyResult,
+  getDifficultyClass,
+  getDifficultyTooltip,
+} from './DifficultyCalculatorCore';
+import {
+  EncounterCharacter,
+  InitiativeOrderCharacter,
+} from '../types/encounters';
 import { getEncounterDifficulty } from '../lib/encounterUtils';
 import { getAllPlayers } from '../hooks/get-all-players.hook';
-import { logger } from '../lib/logger';
+import { Player } from '../types/player';
 
 interface EncounterDifficultyProps {
   enemies: EncounterCharacter[];
   campaignId?: string;
+  initiativeOrder?: InitiativeOrderCharacter[];
+  players?: Player[];
 }
 
 const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
   enemies,
   campaignId,
+  initiativeOrder = [],
+  players = [],
 }) => {
-  const [useCampaignPlayers, setUseCampaignPlayers] =
-    useState<boolean>(!!campaignId);
-  const { players, loading: playersLoading } = getAllPlayers();
+  const [useCampaignPlayers, setUseCampaignPlayers] = useState<boolean>(false);
+  const [useCustomLevels, setUseCustomLevels] = useState<boolean>(false);
+  const [playerCount, setPlayerCount] = useState<number>(4);
+  const [uniformLevel, setUniformLevel] = useState<number>(1);
+  const [customLevels, setCustomLevels] = useState<number[]>([]);
+  const [difficultyResult, setDifficultyResult] =
+    useState<DifficultyResult | null>(null);
+
+  const { players: allPlayers, loading: playersLoading } = getAllPlayers();
+
+  const encounterPlayers = useMemo(() => {
+    if (initiativeOrder && initiativeOrder.length > 0) {
+      return initiativeOrder.filter((char) => char.type === 'player');
+    }
+
+    return [];
+  }, [initiativeOrder]);
+
+  const encounterPlayerLevels = useMemo(() => {
+    if (encounterPlayers.length > 0) {
+      const playerLevels: number[] = [];
+
+      for (const player of encounterPlayers) {
+        const fullPlayer = players.find((p) => p._id === player._id);
+
+        if (fullPlayer && fullPlayer.level) {
+          playerLevels.push(fullPlayer.level);
+        } else {
+          playerLevels.push(1);
+        }
+      }
+
+      return playerLevels;
+    }
+
+    return [];
+  }, [encounterPlayers, players]);
 
   const campaignPlayers = useMemo(() => {
     if (!campaignId) return [];
-    const filtered = players.filter(
-      (player) => player.campaignId === campaignId,
-    );
-    logger.info('Filtered campaign players:', {
-      campaignId,
-      filteredCount: filtered.length,
-      totalPlayers: players.length,
-    });
 
-    return filtered;
-  }, [campaignId, players]);
+    return allPlayers.filter((player) => player.campaignId === campaignId);
+  }, [campaignId, allPlayers]);
 
-  const campaignHasVaryingLevels = useMemo(() => {
-    if (campaignPlayers.length <= 1) return false;
-    const firstLevel = campaignPlayers[0]?.level || 1;
+  const hasCampaignPlayers = campaignPlayers.length > 0;
 
-    return campaignPlayers.some((player) => (player.level || 1) !== firstLevel);
+  const campaignPlayerLevels = useMemo(() => {
+    return campaignPlayers.map((player) => player.level || 1);
   }, [campaignPlayers]);
 
-  const initialPlayerCount = useMemo(() => {
-    return campaignId && useCampaignPlayers && campaignPlayers.length > 0
-      ? campaignPlayers.length
-      : 4;
-  }, [campaignId, useCampaignPlayers, campaignPlayers]);
+  const hasVaryingLevels = useMemo(() => {
+    if (campaignPlayerLevels.length <= 1) return false;
+    const firstLevel = campaignPlayerLevels[0];
 
-  const initialPlayerLevel = useMemo(() => {
-    if (
-      campaignId &&
-      useCampaignPlayers &&
-      campaignPlayers.length > 0 &&
-      !campaignHasVaryingLevels
-    ) {
-      return campaignPlayers[0]?.level || 1;
+    return campaignPlayerLevels.some((level) => level !== firstLevel);
+  }, [campaignPlayerLevels]);
+
+  useEffect(() => {
+    if (encounterPlayerLevels.length > 0) {
+      setCustomLevels(encounterPlayerLevels);
+      setPlayerCount(encounterPlayerLevels.length);
+      setUseCustomLevels(
+        encounterPlayerLevels.some(
+          (level) => level !== encounterPlayerLevels[0],
+        ),
+      );
+      if (
+        encounterPlayerLevels.every(
+          (level) => level === encounterPlayerLevels[0],
+        )
+      ) {
+        setUniformLevel(encounterPlayerLevels[0]);
+      }
+    } else if (hasCampaignPlayers && useCampaignPlayers) {
+      setCustomLevels(campaignPlayerLevels);
+      setPlayerCount(campaignPlayerLevels.length);
+      setUseCustomLevels(hasVaryingLevels);
+      if (!hasVaryingLevels && campaignPlayerLevels[0]) {
+        setUniformLevel(campaignPlayerLevels[0]);
+      }
     }
-
-    return 1;
   }, [
-    campaignId,
+    encounterPlayerLevels,
+    campaignPlayerLevels,
+    hasCampaignPlayers,
     useCampaignPlayers,
-    campaignPlayers,
-    campaignHasVaryingLevels,
+    hasVaryingLevels,
   ]);
 
-  const initialPlayerLevels = useMemo(() => {
-    if (campaignId && useCampaignPlayers && campaignPlayers.length > 0) {
+  const defaultCustomLevels = useMemo(() => {
+    return Array(playerCount).fill(uniformLevel);
+  }, [playerCount, uniformLevel]);
+
+  const allPlayerLevels = useMemo(() => {
+    if (encounterPlayerLevels.length > 0) {
+      return encounterPlayerLevels;
+    }
+
+    if (campaignPlayers.length > 0) {
       return campaignPlayers.map((player) => player.level || 1);
     }
 
-    return Array(initialPlayerCount).fill(initialPlayerLevel);
-  }, [
-    campaignId,
-    useCampaignPlayers,
-    campaignPlayers,
-    initialPlayerCount,
-    initialPlayerLevel,
-  ]);
-
-  const [playerCount, setPlayerCount] = useState<number>(initialPlayerCount);
-  const [playerLevel, setPlayerLevel] = useState<number>(initialPlayerLevel);
-  const [playerLevels, setPlayerLevels] =
-    useState<number[]>(initialPlayerLevels);
-  const [useUniformLevels, setUseUniformLevels] = useState<boolean>(
-    !campaignHasVaryingLevels,
-  );
-
-  const [difficultyResult, setDifficultyResult] = useState<{
-    difficulty: 'trivial' | 'easy' | 'medium' | 'hard' | 'deadly';
-    adjustedXp: number;
-    thresholds: {
-      easy: number;
-      medium: number;
-      hard: number;
-      deadly: number;
-    };
-  } | null>(null);
-
-  useEffect(() => {
-    if (campaignId && useCampaignPlayers && campaignPlayers.length > 0) {
-      logger.info('Force updating from campaign players', {
-        campaignId,
-        playerCount: campaignPlayers.length,
-        levels: campaignPlayers.map((p) => p.level || 1),
-      });
-      setPlayerCount(campaignPlayers.length);
-      const levels = campaignPlayers.map((player) => player.level || 1);
-      setPlayerLevels(levels);
-      if (!campaignHasVaryingLevels) {
-        setPlayerLevel(levels[0]);
-      }
-      setUseUniformLevels(!campaignHasVaryingLevels);
+    if (players.length > 0) {
+      return players.map((player) => player.level || 1);
     }
+
+    return Array(playerCount).fill(uniformLevel);
   }, [
-    campaignId,
-    useCampaignPlayers,
+    encounterPlayerLevels,
     campaignPlayers,
-    campaignHasVaryingLevels,
+    playerCount,
+    uniformLevel,
+    players,
   ]);
 
   useEffect(() => {
-    if (useUniformLevels) {
-      setPlayerLevels(Array(playerCount).fill(playerLevel));
-    } else if (
-      playerLevels.length !== playerCount &&
-      (!useCampaignPlayers || !campaignPlayers.length)
-    ) {
-      if (playerCount > playerLevels.length) {
-        setPlayerLevels([
-          ...playerLevels,
-          ...Array(playerCount - playerLevels.length).fill(1),
+    if (customLevels.length !== playerCount) {
+      if (playerCount > customLevels.length) {
+        setCustomLevels([
+          ...customLevels,
+          ...Array(playerCount - customLevels.length).fill(uniformLevel),
         ]);
       } else {
-        setPlayerLevels(playerLevels.slice(0, playerCount));
+        setCustomLevels(customLevels.slice(0, playerCount));
       }
     }
-  }, [
-    playerCount,
-    playerLevel,
-    useUniformLevels,
-    useCampaignPlayers,
-    campaignPlayers.length,
-  ]);
+  }, [playerCount, customLevels, uniformLevel]);
 
   useEffect(() => {
-    const result = getEncounterDifficulty(enemies, playerLevels);
+    const result = getEncounterDifficulty(enemies, allPlayerLevels);
     setDifficultyResult(result);
-  }, [enemies, playerLevels]);
+  }, [enemies, allPlayerLevels]);
 
-  const handlePlayerLevelChange = (index: number, level: number) => {
-    const newLevels = [...playerLevels];
+  const handleLevelChange = (index: number, level: number) => {
+    const newLevels = [...customLevels];
     newLevels[index] = level;
-    setPlayerLevels(newLevels);
+    setCustomLevels(newLevels);
   };
 
-  const getDifficultyClass = (difficulty: string): string => {
-    switch (difficulty) {
-      case 'trivial':
-        return 'text-info';
-      case 'easy':
-        return 'text-success';
-      case 'medium':
-        return 'text-warning';
-      case 'hard':
-        return 'text-error';
-      case 'deadly':
-        return 'text-error font-bold';
-      default:
-        return '';
+  const resetToDefaultLevels = () => {
+    if (encounterPlayerLevels.length > 0) {
+      setCustomLevels(encounterPlayerLevels);
+    } else if (useCampaignPlayers && hasCampaignPlayers) {
+      setCustomLevels(campaignPlayerLevels);
+    } else {
+      setCustomLevels(defaultCustomLevels);
     }
   };
 
@@ -175,14 +181,21 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
       <div className="collapse-title text-lg font-medium flex items-center peer-checked:bg-base-200 peer-checked:text-base-content">
         <span>Encounter Difficulty</span>
         {difficultyResult && (
-          <span
-            className={`ml-2 ${getDifficultyClass(difficultyResult.difficulty)}`}
+          <div
+            className="tooltip tooltip-right ml-2"
+            data-tip={getDifficultyTooltip(
+              difficultyResult.difficulty,
+              difficultyResult.adjustedXp,
+              difficultyResult.thresholds,
+            )}
+            data-tip-class="max-w-md whitespace-pre-line p-2"
           >
-            (
-            {difficultyResult.difficulty.charAt(0).toUpperCase() +
-              difficultyResult.difficulty.slice(1)}
-            )
-          </span>
+            <span
+              className={`${getDifficultyClass(difficultyResult.difficulty)} cursor-help`}
+            >
+              ({capitalizeFirstLetter(difficultyResult.difficulty)})
+            </span>
+          </div>
         )}
       </div>
       <div className="collapse-content peer-checked:bg-base-100 peer-checked:text-base-content">
@@ -194,27 +207,39 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
                   type="checkbox"
                   className="checkbox checkbox-primary mr-2"
                   checked={useCampaignPlayers}
-                  onChange={(e) => setUseCampaignPlayers(e.target.checked)}
+                  onChange={(e) => {
+                    setUseCampaignPlayers(e.target.checked);
+                    if (e.target.checked && hasCampaignPlayers) {
+                      setPlayerCount(campaignPlayers.length);
+                      if (hasVaryingLevels) {
+                        setUseCustomLevels(true);
+                        setCustomLevels(campaignPlayerLevels);
+                      } else if (campaignPlayerLevels[0]) {
+                        setUniformLevel(campaignPlayerLevels[0]);
+                      }
+                    }
+                  }}
+                  disabled={!hasCampaignPlayers}
                 />
                 <span className="label-text">Use campaign players</span>
               </label>
-              {useCampaignPlayers &&
-                campaignPlayers.length === 0 &&
-                !playersLoading && (
-                  <div className="text-sm text-warning mt-1">
-                    No players found for this campaign
-                  </div>
-                )}
-              {playersLoading && (
+
+              {useCampaignPlayers && !hasCampaignPlayers && playersLoading && (
                 <div className="text-sm text-info mt-1">
                   Loading campaign players...
                 </div>
               )}
-              {useCampaignPlayers && campaignPlayers.length > 0 && (
+
+              {useCampaignPlayers && !hasCampaignPlayers && !playersLoading && (
+                <div className="text-sm text-warning mt-1">
+                  No players found for this campaign
+                </div>
+              )}
+
+              {useCampaignPlayers && hasCampaignPlayers && (
                 <div className="text-sm text-success mt-1">
                   Using {campaignPlayers.length} players from this campaign
-                  (levels: {campaignPlayers.map((p) => p.level || 1).join(', ')}
-                  )
+                  (levels: {campaignPlayerLevels.join(', ')})
                 </div>
               )}
             </div>
@@ -222,34 +247,42 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
 
           <div className="mb-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-2">
-              {(!useCampaignPlayers || !campaignId) && (
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text">Number of Players</span>
-                  </label>
-                  <select
-                    className="select select-bordered w-full max-w-xs"
-                    value={playerCount}
-                    onChange={(e) => setPlayerCount(Number(e.target.value))}
-                  >
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map((count) => (
-                      <option key={count} value={count}>
-                        {count}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
               <div className="form-control">
                 <label className="label">
-                  <span className="label-text">Player Level</span>
+                  <span className="label-text">Number of Players</span>
                 </label>
                 <select
                   className="select select-bordered w-full max-w-xs"
-                  value={playerLevel}
-                  onChange={(e) => setPlayerLevel(Number(e.target.value))}
-                  disabled={!useUniformLevels}
+                  value={playerCount}
+                  onChange={(e) => setPlayerCount(Number(e.target.value))}
+                  disabled={useCampaignPlayers && hasCampaignPlayers}
+                >
+                  {Array.from({ length: 20 }, (_, i) => i + 1).map((count) => (
+                    <option key={count} value={count}>
+                      {count}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Level</span>
+                </label>
+                <select
+                  className="select select-bordered w-full max-w-xs"
+                  value={uniformLevel}
+                  onChange={(e) => {
+                    const level = Number(e.target.value);
+                    setUniformLevel(level);
+                    if (!useCustomLevels) {
+                      setCustomLevels(Array(playerCount).fill(level));
+                    }
+                  }}
+                  disabled={
+                    (useCampaignPlayers && hasCampaignPlayers) ||
+                    useCustomLevels
+                  }
                 >
                   {Array.from({ length: 20 }, (_, i) => i + 1).map((level) => (
                     <option key={level} value={level}>
@@ -265,29 +298,45 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
                 <input
                   type="checkbox"
                   className="checkbox checkbox-primary mr-2"
-                  checked={useUniformLevels}
-                  onChange={(e) => setUseUniformLevels(e.target.checked)}
-                  disabled={useCampaignPlayers && campaignHasVaryingLevels}
+                  checked={useCustomLevels}
+                  onChange={(e) => {
+                    setUseCustomLevels(e.target.checked);
+                    if (e.target.checked) {
+                      resetToDefaultLevels();
+                    }
+                  }}
+                  disabled={
+                    useCampaignPlayers && hasCampaignPlayers && hasVaryingLevels
+                  }
                 />
-                <span className="label-text">Same level for all players</span>
-                {useCampaignPlayers &&
-                  campaignHasVaryingLevels &&
-                  useUniformLevels && (
-                    <span className="text-sm text-warning ml-2">
-                      Campaign players have different levels
-                    </span>
-                  )}
+                <span className="label-text">Use custom player levels</span>
               </label>
+
+              {useCampaignPlayers && hasCampaignPlayers && hasVaryingLevels && (
+                <div className="text-sm text-info mt-1">
+                  Campaign players have different levels, using individual
+                  levels by default
+                </div>
+              )}
             </div>
 
-            {!useUniformLevels && (
+            {useCustomLevels && (
               <div className="mt-4">
-                <label className="label">
-                  <span className="label-text">Individual Player Levels</span>
-                </label>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="label-text">Individual Player Levels</label>
+                  <button
+                    className="btn btn-xs btn-ghost"
+                    onClick={resetToDefaultLevels}
+                  >
+                    Reset
+                  </button>
+                </div>
                 <div className="grid grid-cols-2 gap-2">
-                  {playerLevels.map((level, index) => {
-                    const player = useCampaignPlayers && campaignPlayers[index];
+                  {customLevels.map((level, index) => {
+                    const player =
+                      useCampaignPlayers && hasCampaignPlayers
+                        ? campaignPlayers[index]
+                        : null;
 
                     return (
                       <div key={index} className="flex items-center gap-2">
@@ -301,10 +350,7 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
                           className="select select-bordered select-sm w-20"
                           value={level}
                           onChange={(e) =>
-                            handlePlayerLevelChange(
-                              index,
-                              Number(e.target.value),
-                            )
+                            handleLevelChange(index, Number(e.target.value))
                           }
                         >
                           {Array.from({ length: 20 }, (_, i) => i + 1).map(
@@ -330,8 +376,7 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
                 <span
                   className={getDifficultyClass(difficultyResult.difficulty)}
                 >
-                  {difficultyResult.difficulty.charAt(0).toUpperCase() +
-                    difficultyResult.difficulty.slice(1)}
+                  {capitalizeFirstLetter(difficultyResult.difficulty)}
                 </span>
               </div>
 

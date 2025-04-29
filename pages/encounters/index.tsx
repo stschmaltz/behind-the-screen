@@ -12,6 +12,7 @@ import { getAllAdventures } from '../../hooks/adventure/get-all-adventures';
 import { useUserPreferences } from '../../hooks/user-preferences/use-user-preferences';
 import DescriptionDisplay from '../../components/DescriptionDisplay';
 import { Encounter } from '../../types/encounters';
+import EncounterDifficultyBadge from '../../components/EncounterDifficultyBadge';
 
 const EncountersPage: NextPage = () => {
   const router = useRouter();
@@ -139,6 +140,12 @@ const EncountersPage: NextPage = () => {
       ? adventures?.find((a) => a._id === encounter.adventureId?.toString())
       : null;
 
+    // Get player levels for the campaign
+    const campaignPlayerLevels =
+      players
+        ?.filter((p) => p.campaignId === encounter.campaignId?.toString())
+        .map((p) => p.level || 1) || [];
+
     return (
       <Link
         key={encounter._id.toString()}
@@ -165,20 +172,25 @@ const EncountersPage: NextPage = () => {
             </div>
           </div>
 
-          {(encounter.campaignId || encounter.adventureId) && (
-            <div className="mt-2 flex gap-2">
-              {encounter.campaignId && (
-                <div className="badge badge-outline">
-                  {campaign?.name || 'Campaign'}
-                </div>
+          <div className="mt-2 flex gap-2">
+            {encounter.campaignId && (
+              <div className="badge badge-outline">
+                {campaign?.name || 'Campaign'}
+              </div>
+            )}
+            {encounter.adventureId && (
+              <div className="badge badge-outline">
+                {adventure?.name || 'Adventure'}
+              </div>
+            )}
+            {encounter.enemies?.length > 0 &&
+              campaignPlayerLevels.length > 0 && (
+                <EncounterDifficultyBadge
+                  enemies={encounter.enemies}
+                  playerLevels={campaignPlayerLevels}
+                />
               )}
-              {encounter.adventureId && (
-                <div className="badge badge-outline">
-                  {adventure?.name || 'Adventure'}
-                </div>
-              )}
-            </div>
-          )}
+          </div>
         </div>
       </Link>
     );
@@ -186,8 +198,6 @@ const EncountersPage: NextPage = () => {
 
   return (
     <div className="bg-base-100 h-full p-4 flex flex-col items-center w-full max-w-2xl space-y-4 m-auto min-w-72">
-      <h1 className="text-2xl font-bold mb-6 text-center">Encounters</h1>
-
       <div className="flex flex-col items-center max-w-[400px] w-full">
         <div className="w-full flex justify-between items-center mb-6 gap-4">
           <div className="flex flex-col w-96 max-w-[70%]">

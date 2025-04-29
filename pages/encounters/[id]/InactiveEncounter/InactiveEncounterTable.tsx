@@ -14,6 +14,7 @@ import { Player } from '../../../../types/player';
 import { showDaisyToast } from '../../../../lib/daisy-toast';
 import { useEncounterContext } from '../../../../context/EncounterContext';
 import { getAbilityModifier, rollInitiative } from '../../../../lib/random';
+import CondensedDifficultyCalculator from '../../../../components/CondensedDifficultyCalculator';
 
 interface Props {
   encounter: Encounter;
@@ -44,7 +45,6 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
 
   useUnsavedChangesWarning(hasUnsavedChanges);
 
-  // Roll initiative for enemies and update them in the encounter
   const rollEnemyInitiatives = () => {
     const rolledInitiatives: {
       name: string;
@@ -53,28 +53,22 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
     }[] = [];
     const isReroll = enemiesWithoutInitiative === 0;
 
-    // Create a new initiative order with rolled values for enemies
     const updatedInitiativeOrder = draftEncounter.initiativeOrder.map(
       (character) => {
-        // Only roll for enemies (either without initiative or re-rolling all)
         if (
           character.type === 'enemy' &&
           (character.initiative === undefined || isReroll)
         ) {
-          // Find the monster data to get DEX modifier
           const monsterData = draftEncounter.enemies.find(
             (enemy) => enemy._id === character._id,
           );
 
-          // Calculate DEX modifier if stats are available
           const dexModifier = monsterData?.stats
             ? getAbilityModifier(monsterData.stats.DEX)
             : 0;
 
-          // Roll initiative with DEX modifier
           const initiativeRoll = rollInitiative(dexModifier);
 
-          // Track rolls for display
           rolledInitiatives.push({
             name: character.name,
             roll: initiativeRoll,
@@ -91,10 +85,8 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
       },
     );
 
-    // Update the draft encounter with the new initiative order
     handleUpdateInitiativeOrder(updatedInitiativeOrder);
 
-    // Show toast with rolled initiatives
     if (rolledInitiatives.length > 0) {
       const initiativeMessage = rolledInitiatives
         .map((item) => {
@@ -119,11 +111,9 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
     setHasUnsavedChanges(true);
   };
 
-  // Helper to update entire initiative order
   const handleUpdateInitiativeOrder = (
     newOrder: InitiativeOrderCharacter[],
   ) => {
-    // Update each character individually using the existing handleUpdateCharacter
     newOrder.forEach((character) => {
       const existingCharacter = draftEncounter.initiativeOrder.find(
         (c) => c._id === character._id,
@@ -139,7 +129,6 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
   };
 
   const startEncounter = async () => {
-    // Just set the encounter to active without rolling - player has already set initiatives
     const updatedEncounter = {
       ...draftEncounter,
       status: 'active' as const,
@@ -160,12 +149,10 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
     return draftEncounter.enemies.find((enemy) => enemy._id === characterId);
   };
 
-  // Check if all initiatives are set for starting the encounter
   const isAllInitiativeSet = draftEncounter.initiativeOrder.every(
     (character) => character.initiative !== undefined,
   );
 
-  // Count how many enemies need initiatives and how many enemies total
   const enemiesWithoutInitiative = draftEncounter.initiativeOrder.filter(
     (character) =>
       character.type === 'enemy' && character.initiative === undefined,
@@ -181,16 +168,30 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
         <div className="flex justify-between mb-2">
           <h3 className="text-lg font-semibold">Initiative Order</h3>
           <div className="flex gap-2">
-            <span className="badge badge-outline">
+            <span className="badge badge-outline whitespace-nowrap">
               Players:{' '}
               {
                 draftEncounter.initiativeOrder.filter((c) => c.type !== 'enemy')
                   .length
               }
             </span>
-            <span className="badge badge-outline">Enemies: {totalEnemies}</span>
+            <span className="badge badge-outline whitespace-nowrap">
+              Enemies: {totalEnemies}
+            </span>
           </div>
         </div>
+
+        <div className="bg-base-100 p-2 rounded-md mb-3">
+          <CondensedDifficultyCalculator
+            enemies={draftEncounter.enemies}
+            encounterPlayers={draftEncounter.initiativeOrder.filter(
+              (c) => c.type === 'player',
+            )}
+            players={players}
+            className="w-full"
+          />
+        </div>
+
         <table className="table">
           <thead>
             <tr>
@@ -292,6 +293,9 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
             onAddPlayers={handleAddPlayers}
             players={players}
             selectedCampaignId={encounter.campaignId.toString()}
+            currentPlayerIds={draftEncounter.players.map(
+              (player) => player._id,
+            )}
             className="w-full"
           />
           <Button

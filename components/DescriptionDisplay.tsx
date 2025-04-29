@@ -34,7 +34,6 @@ const DescriptionDisplay: React.FC<DescriptionDisplayProps> = ({
     try {
       await onUpdateDescription(editedDescription);
       setIsEditing(false);
-      // No need to manually update state here, assuming parent component re-fetches or updates
     } catch (err) {
       logger.error('Failed to update description:', err);
       setError('Failed to save. Please try again.');
@@ -50,14 +49,10 @@ const DescriptionDisplay: React.FC<DescriptionDisplayProps> = ({
   };
 
   const handleButtonClick = (e: MouseEvent<HTMLButtonElement>) => {
-    // Stop the click from propagating to the parent Link component
     e.stopPropagation();
-    // Prevent the default action (like following the link)
     e.preventDefault();
-    // Note: react-tooltip still handles showing the tooltip via its own event listeners
   };
 
-  // If not editable and no description, render nothing
   if (!isEditable && !hasDescription) {
     return null;
   }

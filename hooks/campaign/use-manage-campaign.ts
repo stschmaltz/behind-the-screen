@@ -7,19 +7,16 @@ import {
 import { Campaign, NewCampaign } from '../../types/campaigns';
 import { logger } from '../../lib/logger';
 
-// Define the expected shape of the saveCampaign mutation result
 interface SaveCampaignMutationResult {
   saveCampaign: {
     _id: string;
   } | null;
 }
 
-// Define the expected shape of the deleteCampaign mutation result
 interface DeleteCampaignMutationResult {
   deleteCampaign: boolean | null;
 }
 
-// Define a type for the campaign update payload
 type CampaignUpdatePayload = Partial<
   Omit<Campaign, '_id' | 'userId' | 'createdAt' | 'updatedAt'> & {
     name: string;

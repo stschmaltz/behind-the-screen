@@ -7,6 +7,7 @@ interface Props {
   players: Player[];
   onAddPlayers: (players: Player[]) => void;
   selectedCampaignId: string;
+  currentPlayerIds?: string[];
   className?: string;
 }
 
@@ -14,18 +15,27 @@ const AddPlayersModal: React.FC<Props> = ({
   onAddPlayers,
   players,
   selectedCampaignId,
+  currentPlayerIds = [],
   className,
 }) => {
   const { closeModal, showModal } = useModal('add-players-modal');
   const [toggledPlayers, setToggledPlayers] = React.useState<Player[]>([]);
+
+  // Filter players that are not already in the encounter
+  const availablePlayers = players.filter(
+    (player) =>
+      player.campaignId === selectedCampaignId &&
+      !currentPlayerIds.includes(player._id),
+  );
+
   const handleSubmit = () => {
     onAddPlayers(toggledPlayers);
-
     setToggledPlayers([]);
     closeModal();
   };
 
-  const areAllPlayersSelected = toggledPlayers.length === players.length;
+  const areAllPlayersSelected =
+    toggledPlayers.length === availablePlayers.length;
 
   return (
     <>
@@ -38,9 +48,13 @@ const AddPlayersModal: React.FC<Props> = ({
       <dialog className="modal" id="add-players-modal">
         <div className="modal-box">
           <h2 className="text-2xl font-bold mb-4">Add Players</h2>
-          {players
-            .filter((player) => player.campaignId === selectedCampaignId)
-            .map((player, index) => (
+
+          {availablePlayers.length === 0 ? (
+            <div className="alert alert-info mb-4">
+              All campaign players are already in this encounter.
+            </div>
+          ) : (
+            availablePlayers.map((player, index) => (
               <div key={index} className="mb-2 flex items-center gap-2">
                 <input
                   type="checkbox"
@@ -58,23 +72,30 @@ const AddPlayersModal: React.FC<Props> = ({
                 />
                 <label htmlFor={`player-${index}`}>{player.name}</label>
               </div>
-            ))}
-          <div className="flex justify-end">
-            <Button
-              variant="secondary"
-              label={areAllPlayersSelected ? 'Deselect All' : 'Select All'}
-              onClick={() =>
-                areAllPlayersSelected
-                  ? setToggledPlayers([])
-                  : setToggledPlayers(players)
-              }
-            />
-            <Button
-              variant="primary"
-              label="Add Players"
-              className="ml-4"
-              onClick={handleSubmit}
-            />
+            ))
+          )}
+
+          <div className="flex justify-end mt-4">
+            {availablePlayers.length > 0 && (
+              <>
+                <Button
+                  variant="secondary"
+                  label={areAllPlayersSelected ? 'Deselect All' : 'Select All'}
+                  onClick={() =>
+                    areAllPlayersSelected
+                      ? setToggledPlayers([])
+                      : setToggledPlayers(availablePlayers)
+                  }
+                />
+                <Button
+                  variant="primary"
+                  label="Add Players"
+                  className="ml-4"
+                  onClick={handleSubmit}
+                  disabled={toggledPlayers.length === 0}
+                />
+              </>
+            )}
             <Button
               variant="error"
               label="Cancel"

@@ -8,20 +8,16 @@ import { Adventure, NewAdventure } from '../../types/adventures';
 import { logger } from '../../lib/logger';
 import { TransformedAdventure } from './get-all-adventures';
 
-// Define the expected shape of the saveAdventure mutation result
 interface SaveAdventureMutationResult {
   saveAdventure: {
     _id: string;
   } | null;
 }
 
-// Define the expected shape of the deleteAdventure mutation result
 interface DeleteAdventureMutationResult {
-  deleteAdventure: boolean | null; // Assuming it returns boolean or null
+  deleteAdventure: boolean | null;
 }
 
-// Define a type for the adventure update payload
-// It requires _id and allows partial updates of other fields
 type AdventureUpdatePayload = Partial<
   Omit<Adventure, '_id' | 'userId' | 'createdAt' | 'updatedAt'> & {
     name: string;
@@ -43,7 +39,6 @@ const useManageAdventure = () => {
       | Adventure
       | NewAdventure
       | AdventureUpdatePayload;
-    // Basic validation (can be expanded)
     if (!adventure.name) {
       logger.info('Validation failed: Adventure name is required', {
         name: adventure.name,
@@ -62,10 +57,8 @@ const useManageAdventure = () => {
         isUpdate: !!isUpdate,
       });
 
-      // Build input based on whether it's an update or new adventure
       const mutationInput: any = {
         name: adventure.name,
-        // Only include fields if they exist in the payload
         ...(adventure.description && { description: adventure.description }),
         ...(adventure.status && { status: adventure.status }),
         ...(adventure.campaignId && { campaignId: adventure.campaignId }),
@@ -124,7 +117,6 @@ const useManageAdventure = () => {
         | Omit<NewAdventure, 'userId'>
         | AdventureUpdatePayload,
     ): Promise<string | null> => {
-      // Type assertion is safe here because saveAdventure handles the different structures
       return saveAdventure(adventure as any);
     },
     [saveAdventure],

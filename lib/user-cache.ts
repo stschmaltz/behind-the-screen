@@ -1,5 +1,3 @@
-// lib/user-cache.ts
-
 import { UserObject } from '../types/user';
 
 interface CacheEntry {

@@ -3,18 +3,16 @@ import {
   campaignByIdQuery,
   CampaignByIdResponse,
 } from '../../data/graphql/snippets/campaign';
-import { Campaign } from '../../types/campaigns'; // Assuming Campaign type includes needed fields
+import { Campaign } from '../../types/campaigns';
 import { useQuery } from '../use-async-query';
 
-// Type for the hook's return value, matching the transformed data
 interface TransformedCampaignData
   extends Omit<Campaign, 'createdAt' | 'updatedAt' | 'userId'> {
-  userId?: string; // Make userId optional
+  userId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-// Transformation function to convert string dates to Date objects and cast status
 const transformCampaignData = (
   data: CampaignByIdResponse,
 ): TransformedCampaignData | null => {
@@ -23,7 +21,6 @@ const transformCampaignData = (
   }
   return {
     ...data.getCampaign,
-    // Cast status to the expected literal type
     status: data.getCampaign.status as 'active' | 'completed' | 'archived',
     createdAt: data.getCampaign.createdAt
       ? new Date(data.getCampaign.createdAt)
@@ -49,7 +46,7 @@ function useGetCampaign(id: string): {
     query: campaignByIdQuery,
     variables,
     transform: transformCampaignData,
-    enabled: !!id, // Only run query if ID is available
+    enabled: !!id,
   });
 
   return { campaign, loading, refresh };

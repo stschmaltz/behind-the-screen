@@ -92,7 +92,7 @@ const CampaignSelector = ({
       {!isCreatingCampaign ? (
         <div className="form-control w-full">
           <label className="label">
-            <span className="label-text">Active Campaign</span>
+            <span className="label-text">Campaign</span>
           </label>
           <select
             className="select select-bordered"

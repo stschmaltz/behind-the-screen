@@ -1,6 +1,5 @@
 import { GetServerSideProps } from 'next';
 
-// Simple component that won't actually render (due to redirect)
 const DowntimePage = () => {
   return null;
 };

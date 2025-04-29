@@ -12,7 +12,7 @@ import { logger } from '../../lib/logger';
 export class PlayerRepository implements PlayerRepositoryInterface {
   private collectionName = 'players';
 
-  public async savePlayer(input: NewPlayer): Promise<Player> {
+  public async createPlayer(input: NewPlayer): Promise<Player> {
     if (!input.campaignId) {
       throw new Error('Campaign ID is required when saving a player');
     }
@@ -103,7 +103,6 @@ export class PlayerRepository implements PlayerRepositoryInterface {
     if (level !== undefined) {
       updateObj.level = level;
     } else if (levelUp) {
-      // If levelUp is true, increment the level
       const result = await db
         .collection(this.collectionName)
         .updateMany(filter, { $inc: { level: 1 } });
@@ -112,7 +111,7 @@ export class PlayerRepository implements PlayerRepositoryInterface {
     }
 
     if (Object.keys(updateObj).length === 0) {
-      return false; // Nothing to update
+      return false;
     }
 
     const result = await db
@@ -120,6 +119,80 @@ export class PlayerRepository implements PlayerRepositoryInterface {
       .updateMany(filter, { $set: updateObj });
 
     return result.modifiedCount > 0;
+  }
+
+  public async updatePlayer(
+    input: { _id: string; userId: string } & Partial<NewPlayer>,
+  ): Promise<Player> {
+    const { _id, userId, ...updateData } = input;
+    const { db } = await getDbClient();
+
+    logger.info('updatePlayer: starting update', { _id, userId });
+
+    const updateFields: Record<string, any> = {};
+
+    if (updateData.name !== undefined) {
+      updateFields.name = updateData.name;
+    }
+
+    if (updateData.campaignId !== undefined) {
+      updateFields.campaignId = new ObjectId(updateData.campaignId);
+    }
+
+    if (updateData.armorClass !== undefined) {
+      updateFields.armorClass = updateData.armorClass;
+    }
+
+    if (updateData.maxHP !== undefined) {
+      updateFields.maxHP = updateData.maxHP;
+    }
+
+    if (updateData.level !== undefined) {
+      updateFields.level = updateData.level;
+    }
+
+    logger.info('updatePlayer: update fields prepared', updateFields);
+
+    if (Object.keys(updateFields).length === 0) {
+      const existingDoc = await db
+        .collection(this.collectionName)
+        .findOne({ _id: new ObjectId(_id), userId: new ObjectId(userId) });
+
+      if (!existingDoc) {
+        logger.error(
+          'updatePlayer: Player not found when checking existing document',
+          { _id, userId },
+        );
+        throw new Error('Player not found');
+      }
+
+      return this.mapToPlayer(existingDoc);
+    }
+
+    updateFields.updatedAt = new Date();
+
+    try {
+      const result = await db
+        .collection(this.collectionName)
+        .findOneAndUpdate(
+          { _id: new ObjectId(_id), userId: new ObjectId(userId) },
+          { $set: updateFields },
+          { returnDocument: 'after' },
+        );
+
+      if (!result) {
+        throw new Error('Player not found');
+      }
+
+      return this.mapToPlayer(result);
+    } catch (error) {
+      logger.error('updatePlayer: Exception during update', {
+        error,
+        _id,
+        userId,
+      });
+      throw error;
+    }
   }
 
   private mapToPlayer(doc: any): Player {
@@ -131,7 +204,7 @@ export class PlayerRepository implements PlayerRepositoryInterface {
       armorClass: doc.armorClass,
       currentHP: doc.currentHP,
       maxHP: doc.maxHP,
-      level: doc.level || 1, // Default to level 1
+      level: doc.level || 1,
     };
   }
 }

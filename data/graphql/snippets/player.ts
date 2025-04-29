@@ -20,9 +20,18 @@ export const fullPlayer = /* GraphQL */ `
 // Mutations
 // ----------------------------------------------------------------------------
 
-export const savePlayerMutation = /* GraphQL */ `
-  mutation SavePlayer($input: NewPlayerInput!) {
-    savePlayer(input: $input) {
+export const createPlayerMutation = /* GraphQL */ `
+  mutation CreatePlayer($input: NewPlayerInput!) {
+    createPlayer(input: $input) {
+      ...FullPlayer
+    }
+  }
+  ${fullPlayer}
+`;
+
+export const updatePlayerMutation = /* GraphQL */ `
+  mutation UpdatePlayer($input: UpdatePlayerInput!) {
+    updatePlayer(input: $input) {
       ...FullPlayer
     }
   }
@@ -30,7 +39,7 @@ export const savePlayerMutation = /* GraphQL */ `
 `;
 
 export const deletePlayerMutation = /* GraphQL */ `
-  mutation deletePlayer($id: String!) {
+  mutation DeletePlayer($id: String!) {
     deletePlayer(id: $id)
   }
 `;
@@ -41,11 +50,15 @@ export const updatePlayersMutation = /* GraphQL */ `
   }
 `;
 
-export interface SavePlayerMutationResponse {
-  savePlayer: Player;
+export interface CreatePlayerMutationResponse {
+  createPlayer: Player;
 }
 
-export interface SavePlayerMutationVariables {
+export interface UpdatePlayerMutationResponse {
+  updatePlayer: Player;
+}
+
+export interface CreatePlayerMutationVariables {
   input: {
     name: string;
     campaignId: string;
@@ -62,6 +75,17 @@ export interface UpdatePlayersMutationVariables {
     maxHP?: number;
     level?: number;
     levelUp?: boolean;
+  };
+}
+
+export interface UpdatePlayerMutationVariables {
+  input: {
+    _id: string;
+    name?: string;
+    campaignId?: string;
+    armorClass?: number;
+    maxHP?: number;
+    level?: number;
   };
 }
 

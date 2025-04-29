@@ -1,6 +1,5 @@
 import { EncounterCharacter } from '../types/encounters';
 
-// Define types for thresholds
 type DifficultyThresholds = {
   easy: number;
   medium: number;
@@ -12,7 +11,6 @@ type LevelThresholds = {
   [key: number]: DifficultyThresholds;
 };
 
-// XP Thresholds by Character Level
 const xpThresholds: LevelThresholds = {
   1: { easy: 25, medium: 50, hard: 75, deadly: 100 },
   2: { easy: 50, medium: 100, hard: 150, deadly: 200 },
@@ -36,7 +34,6 @@ const xpThresholds: LevelThresholds = {
   20: { easy: 2800, medium: 5700, hard: 8500, deadly: 12700 },
 };
 
-// Multipliers for multiple monsters
 const encounterMultipliers = [
   { count: 1, multiplier: 1 },
   { count: 2, multiplier: 1.5 },
@@ -46,27 +43,21 @@ const encounterMultipliers = [
   { count: 15, multiplier: 4 },
 ];
 
-// Get the XP value from a CR string
 export const getChallengeRatingXp = (challengeRating: string): number => {
-  // Handle fractions in CR
   if (challengeRating.includes('/')) {
     const [numerator, denominator] = challengeRating.split('/').map(Number);
     if (!isNaN(numerator) && !isNaN(denominator)) {
-      return Math.floor((numerator / denominator) * 50); // CR 1/2 = 100 XP, CR 1/4 = 50 XP, etc.
+      return Math.floor((numerator / denominator) * 50);
     }
   }
 
-  // Extract the XP value from the challenge string
-  // Example format: "5 (1,800 XP)"
   const xpMatch = challengeRating.match(/\(([0-9,]+)\s*XP\)/);
   if (xpMatch && xpMatch[1]) {
     return parseInt(xpMatch[1].replace(/,/g, ''), 10);
   }
 
-  // Handle plain number CR (e.g. "5")
   const crNumber = parseFloat(challengeRating);
   if (!isNaN(crNumber)) {
-    // Standard CR to XP conversion
     const crToXp: { [key: number]: number } = {
       0: 10,
       0.125: 25,
@@ -110,7 +101,6 @@ export const getChallengeRatingXp = (challengeRating: string): number => {
   return 0;
 };
 
-// Calculate the encounter multiplier based on number of monsters
 export const getEncounterMultiplier = (monsterCount: number): number => {
   for (let i = encounterMultipliers.length - 1; i >= 0; i--) {
     if (monsterCount >= encounterMultipliers[i].count) {
@@ -121,26 +111,21 @@ export const getEncounterMultiplier = (monsterCount: number): number => {
   return 1;
 };
 
-// Calculate the total adjusted XP for an encounter
 export const calculateAdjustedXp = (enemies: EncounterCharacter[]): number => {
-  // Sum up the XP for all enemies
   const totalXp = enemies.reduce((sum, enemy) => {
     const xp = getChallengeRatingXp(enemy.challenge || '0');
 
     return sum + xp;
   }, 0);
 
-  // Apply the multiplier based on the number of enemies
   const multiplier = getEncounterMultiplier(enemies.length);
 
   return Math.floor(totalXp * multiplier);
 };
 
-// Calculate the difficulty thresholds for a party
 export const calculatePartyThresholds = (
   partyLevels: number[],
 ): DifficultyThresholds => {
-  // Sum up thresholds for each party member
   return partyLevels.reduce(
     (thresholds, level) => {
       const levelThresholds =
@@ -157,7 +142,6 @@ export const calculatePartyThresholds = (
   );
 };
 
-// Determine the encounter difficulty
 export const getEncounterDifficulty = (
   enemies: EncounterCharacter[],
   partyLevels: number[],
@@ -166,7 +150,6 @@ export const getEncounterDifficulty = (
   adjustedXp: number;
   thresholds: DifficultyThresholds;
 } => {
-  // If no enemies, return trivial difficulty with 0 XP
   if (!enemies || enemies.length === 0) {
     const thresholds = calculatePartyThresholds(partyLevels);
 

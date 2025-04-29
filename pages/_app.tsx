@@ -11,7 +11,6 @@ import { CurrentUserProvider } from '../context/UserContext';
 import { usePWASetup } from '../hooks/use-pwa-setup.hook';
 import { Layout } from '../components/layout';
 
-// Define types for pages with custom layouts
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
 };
@@ -23,7 +22,6 @@ type AppPropsWithLayout = AppProps & {
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   usePWASetup();
 
-  // Use the layout defined at the page level, if available
   const getLayout =
     Component.getLayout ??
     ((page) => (

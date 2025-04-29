@@ -27,7 +27,6 @@ interface DeleteEncounterArgs {
   };
 }
 
-// Define args type for the new mutation
 interface UpdateEncounterDescriptionArgs {
   input: {
     _id: string;

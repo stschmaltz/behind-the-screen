@@ -3,8 +3,9 @@ import { Button } from '../../components/Button';
 import { FormInput } from '../../components/FormInput';
 import { asyncFetch } from '../../data/graphql/graphql-fetcher';
 import {
+  createPlayerMutation,
   deletePlayerMutation,
-  savePlayerMutation,
+  updatePlayerMutation,
   updatePlayersMutation,
 } from '../../data/graphql/snippets/player';
 import { Player } from '../../types/player';
@@ -48,7 +49,7 @@ const PlayerManagementSection: React.FC<Props> = ({
     setSelectedCampaignId(campaignId);
   }, [campaignId]);
 
-  const savePlayer = async (
+  const createPlayer = async (
     playerName: string,
     playerCampaignId: string,
     level: number = 1,
@@ -62,8 +63,8 @@ const PlayerManagementSection: React.FC<Props> = ({
     }
 
     const response: {
-      savePlayer: Player;
-    } = await asyncFetch(savePlayerMutation, {
+      createPlayer: Player;
+    } = await asyncFetch(createPlayerMutation, {
       input: {
         name: playerName,
         campaignId: playerCampaignId,
@@ -73,18 +74,18 @@ const PlayerManagementSection: React.FC<Props> = ({
       },
     });
 
-    if (!response.savePlayer._id) return;
+    if (!response.createPlayer._id) return;
 
     setPlayers([
       ...players,
       {
-        _id: response.savePlayer._id,
-        name: response.savePlayer.name,
-        userId: response.savePlayer.userId,
-        campaignId: response.savePlayer.campaignId,
-        armorClass: response.savePlayer.armorClass,
-        maxHP: response.savePlayer.maxHP,
-        level: response.savePlayer.level,
+        _id: response.createPlayer._id,
+        name: response.createPlayer.name,
+        userId: response.createPlayer.userId,
+        campaignId: response.createPlayer.campaignId,
+        armorClass: response.createPlayer.armorClass,
+        maxHP: response.createPlayer.maxHP,
+        level: response.createPlayer.level,
       },
     ]);
     setNewPlayerName('');
@@ -114,7 +115,6 @@ const PlayerManagementSection: React.FC<Props> = ({
       },
     });
 
-    // Optimistically update the UI
     if (levelUp) {
       setPlayers(
         players.map((player) => {
@@ -143,7 +143,6 @@ const PlayerManagementSection: React.FC<Props> = ({
       );
     }
 
-    // Reset bulk fields
     setBulkLevel(undefined);
   };
 
@@ -152,37 +151,58 @@ const PlayerManagementSection: React.FC<Props> = ({
     field: 'armorClass' | 'maxHP',
     value: number,
   ) => {
-    // Find the player
     const player = players.find((p) => p._id === playerId);
     if (!player) return;
 
-    // Save to database
-    await asyncFetch(savePlayerMutation, {
-      input: {
-        name: player.name,
-        campaignId: player.campaignId,
-        level: player.level,
-        armorClass: field === 'armorClass' ? value : player.armorClass,
-        maxHP: field === 'maxHP' ? value : player.maxHP,
-      },
-    });
+    try {
+      const response: {
+        updatePlayer: Player | null;
+      } = await asyncFetch(updatePlayerMutation, {
+        input: {
+          _id: player._id,
+          name: player.name,
+          campaignId: player.campaignId,
+          level: player.level,
+          armorClass: field === 'armorClass' ? value : player.armorClass,
+          maxHP: field === 'maxHP' ? value : player.maxHP,
+        },
+      });
 
-    // Update locally
-    setPlayers(
-      players.map((p) => {
-        if (p._id === playerId) {
-          return {
-            ...p,
-            [field]: value,
-          };
-        }
+      if (response.updatePlayer) {
+        setPlayers(
+          players.map((p) => {
+            if (p._id === playerId) {
+              return {
+                ...p,
+                [field]: value,
+              };
+            }
 
-        return p;
-      }),
-    );
+            return p;
+          }),
+        );
 
-    // Exit editing mode
-    setEditingPlayer(null);
+        setEditingPlayer(null);
+      } else {
+        logger.error('Failed to update player field', {
+          playerId,
+          field,
+          value,
+          response,
+        });
+        alert('Failed to update player. Please try again.');
+        setEditingPlayer(null);
+      }
+    } catch (error) {
+      logger.error('Error updating player field', {
+        playerId,
+        field,
+        value,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      alert('An error occurred while updating the player. Please try again.');
+      setEditingPlayer(null);
+    }
   };
 
   const startEditing = (playerId: string, field: 'armorClass' | 'maxHP') => {
@@ -335,7 +355,7 @@ const PlayerManagementSection: React.FC<Props> = ({
               disabled={!newPlayerName || !selectedCampaignId}
               onClick={() => {
                 if (!newPlayerName || !selectedCampaignId) return;
-                savePlayer(
+                createPlayer(
                   newPlayerName,
                   selectedCampaignId,
                   newPlayerLevel,

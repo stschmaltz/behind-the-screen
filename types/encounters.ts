@@ -60,6 +60,7 @@ export interface InitiativeOrderCharacter {
   maxHP?: number;
   currentHP?: number;
   initiative?: number;
+  level?: number;
   conditions: Condition[];
   type: 'player' | 'npc' | 'enemy';
 }

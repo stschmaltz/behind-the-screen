@@ -1,10 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Set the content type to HTML
   res.setHeader('Content-Type', 'text/html');
 
-  // Return the HTML content
   res.status(200).send(`
 <!DOCTYPE html>
 <html lang="en">
