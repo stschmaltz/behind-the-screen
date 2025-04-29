@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ToastContainer } from 'react-toastify';
+import Head from 'next/head';
 import { NavBar } from './NavBar';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { useUserSignIn } from '../hooks/use-user-sign-in.hook';
@@ -24,6 +25,19 @@ function Layout({ children }: LayoutProps) {
 
   return (
     <div className="min-h-screen flex flex-col w-full">
+      <Head>
+        <title>DM Essentials</title>
+        <meta
+          name="description"
+          content="Essential tools for Dungeon Masters."
+          key="desc"
+        />
+        {/* Favicon Links */}
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/site.webmanifest" />
+      </Head>
       <header className="sticky top-0 z-50 bg-primary text-white p-2">
         <div className="container mx-auto flex flex-wrap items-center justify-between">
           <Link href="/" className="flex items-center">
