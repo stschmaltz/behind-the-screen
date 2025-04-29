@@ -1,7 +1,7 @@
 import { ObjectId } from 'bson';
 import { injectable } from 'inversify';
 import { getDbClient } from '../../data/database/mongodb';
-import { Adventure, NewAdventure } from '../../types/adventures';
+import { Adventure } from '../../types/adventures';
 import { AdventureRepositoryInterface } from './adventure.repository.interface';
 import { logger } from '../../lib/logger';
 
@@ -11,31 +11,36 @@ export class AdventureRepository implements AdventureRepositoryInterface {
 
   public async saveAdventure(
     input: Partial<Adventure> & {
+      id?: string;
       userId: string;
       campaignId: string;
     },
   ): Promise<Adventure> {
     const { db } = await getDbClient();
-    const { _id, userId, campaignId, ...docToInsert } = input;
+    const documentId = input.id || input._id;
+    const { _id, id, userId, campaignId, ...docToSet } = input;
     const now = new Date();
 
     let result;
-    if (_id) {
-      result = await db.collection(this.collectionName).findOneAndUpdate(
-        { _id: new ObjectId(_id), userId: new ObjectId(userId) },
-        {
-          $set: {
-            ...docToInsert,
-            userId: new ObjectId(userId),
-            campaignId: new ObjectId(campaignId),
-            updatedAt: now,
-          },
-        },
-        { returnDocument: 'after' },
-      );
+    if (documentId) {
+      const updateData = {
+        ...docToSet,
+        userId: new ObjectId(userId),
+        campaignId: new ObjectId(campaignId),
+        updatedAt: now,
+      };
+      result = await db
+        .collection(this.collectionName)
+        .findOneAndUpdate(
+          { _id: new ObjectId(documentId), userId: new ObjectId(userId) },
+          { $set: updateData },
+          { returnDocument: 'after' },
+        );
     } else {
-      const docWithDates = {
-        ...docToInsert,
+      const docToInsert = {
+        ...docToSet,
+        name: docToSet.name || 'Untitled Adventure',
+        status: docToSet.status || 'active',
         userId: new ObjectId(userId),
         campaignId: new ObjectId(campaignId),
         createdAt: now,
@@ -43,9 +48,9 @@ export class AdventureRepository implements AdventureRepositoryInterface {
       };
       const insertResult = await db
         .collection(this.collectionName)
-        .insertOne(docWithDates);
+        .insertOne(docToInsert);
       result = {
-        ...docWithDates,
+        ...docToInsert,
         _id: insertResult.insertedId,
       };
     }
@@ -54,7 +59,7 @@ export class AdventureRepository implements AdventureRepositoryInterface {
       throw new Error('Failed to save adventure');
     }
 
-    return this.mapToAdventure(result);
+    return this.mapToAdventure(result as any);
   }
 
   public async getAdventureById(input: {
@@ -119,9 +124,9 @@ export class AdventureRepository implements AdventureRepositoryInterface {
 
   private mapToAdventure(doc: any): Adventure {
     return {
-      _id: doc._id?.toString() || doc._id,
-      userId: doc.userId?.toString() || doc.userId,
-      campaignId: doc.campaignId?.toString() || doc.campaignId,
+      _id: doc._id?.toString(),
+      userId: doc.userId?.toString(),
+      campaignId: doc.campaignId?.toString(),
       name: doc.name,
       description: doc.description,
       status: doc.status,

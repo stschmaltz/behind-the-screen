@@ -1,7 +1,7 @@
 import { ObjectId } from 'bson';
 import { injectable } from 'inversify';
 import { getDbClient } from '../../data/database/mongodb';
-import { Campaign, NewCampaign } from '../../types/campaigns';
+import { Campaign } from '../../types/campaigns';
 import { CampaignRepositoryInterface } from './campaign.repository.interface';
 import { logger } from '../../lib/logger';
 
@@ -10,45 +10,48 @@ export class CampaignRepository implements CampaignRepositoryInterface {
   private collectionName = 'campaigns';
 
   public async saveCampaign(
-    input: Partial<Campaign> & {
-      userId: string;
-    },
+    input: Partial<Campaign> & { id?: string; userId: string },
   ): Promise<Campaign> {
     const { db } = await getDbClient();
-    const { _id, userId, ...docToInsert } = input;
+    const documentId = input.id || input._id;
+    const { _id, id, userId, ...docToSet } = input;
     const now = new Date();
 
     const defaultValues = {
-      status: 'active',
+      status: 'active' as const,
     };
 
     let result;
-    if (_id) {
-      result = await db.collection(this.collectionName).findOneAndUpdate(
-        { _id: new ObjectId(_id), userId: new ObjectId(userId) },
-        {
-          $set: {
-            ...defaultValues,
-            ...docToInsert,
-            userId: new ObjectId(userId),
-            updatedAt: now,
-          },
-        },
-        { returnDocument: 'after' },
-      );
-    } else {
-      const docWithDates = {
+    if (documentId) {
+      const updateData = {
         ...defaultValues,
-        ...docToInsert,
+        ...docToSet,
+        userId: new ObjectId(userId),
+        updatedAt: now,
+      };
+
+      result = await db
+        .collection(this.collectionName)
+        .findOneAndUpdate(
+          { _id: new ObjectId(documentId), userId: new ObjectId(userId) },
+          { $set: updateData },
+          { returnDocument: 'after' },
+        );
+    } else {
+      const docToInsert = {
+        ...defaultValues,
+        ...docToSet,
+        name: docToSet.name || 'Untitled Campaign',
         userId: new ObjectId(userId),
         createdAt: now,
         updatedAt: now,
       };
+
       const insertResult = await db
         .collection(this.collectionName)
-        .insertOne(docWithDates);
+        .insertOne(docToInsert);
       result = {
-        ...docWithDates,
+        ...docToInsert,
         _id: insertResult.insertedId,
       };
     }
@@ -57,7 +60,7 @@ export class CampaignRepository implements CampaignRepositoryInterface {
       throw new Error('Failed to save campaign');
     }
 
-    return this.mapToCampaign(result);
+    return this.mapToCampaign(result as any);
   }
 
   public async getCampaignById(input: {
@@ -101,8 +104,8 @@ export class CampaignRepository implements CampaignRepositoryInterface {
 
   private mapToCampaign(doc: any): Campaign {
     return {
-      _id: doc._id?.toString() || doc._id,
-      userId: doc.userId?.toString() || doc.userId,
+      _id: doc._id?.toString(),
+      userId: doc.userId?.toString(),
       name: doc.name,
       status: doc.status || 'active',
       createdAt: doc.createdAt,

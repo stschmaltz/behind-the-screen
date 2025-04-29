@@ -16,7 +16,13 @@ const adventureMutationTypeDefs = /* GraphQL */ `
 `;
 
 interface SaveAdventureArgs {
-  input: Adventure;
+  input: {
+    id?: string;
+    campaignId: string;
+    name: string;
+    description?: string;
+    status: 'active' | 'completed' | 'archived';
+  };
 }
 
 interface DeleteAdventureArgs {

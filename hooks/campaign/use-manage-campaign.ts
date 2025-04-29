@@ -59,7 +59,7 @@ const useManageCampaign = () => {
       };
 
       if (isUpdate) {
-        mutationInput._id = campaignId;
+        mutationInput.id = campaignId;
       }
 
       const result = await asyncFetch<SaveCampaignMutationResult>(

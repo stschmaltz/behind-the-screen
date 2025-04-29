@@ -65,7 +65,7 @@ const useManageAdventure = () => {
       };
 
       if (isUpdate) {
-        mutationInput._id = adventureId;
+        mutationInput.id = adventureId;
       }
 
       const result = await asyncFetch<SaveAdventureMutationResult>(
