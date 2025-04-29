@@ -15,7 +15,6 @@ import {
   PopoverProvider,
   usePopoverContext,
 } from '../../../../context/PopoverContext';
-import EncounterDifficultyBadge from '../../../../components/EncounterDifficultyBadge';
 
 const DeadCharacterRow: React.FC<{
   character: InitiativeOrderCharacter;
@@ -98,7 +97,7 @@ const ActiveEncounterTableContent: React.FC<{
     handleNextTurn,
     handlePreviousTurn,
     handleUpdateCharacter,
-    handleAddEnemyToActive,
+    handleAddCharacterToActive,
   } = useEncounterTurnManagement(encounter, onSave);
 
   const getMonsterData = (
@@ -135,9 +134,9 @@ const ActiveEncounterTableContent: React.FC<{
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
           <div className="w-full sm:w-auto">
             <NewEnemyModal
-              onAddEnemy={(enemy, initiative) => {
+              onAddCharacter={(character, initiative, type) => {
                 if (initiative !== undefined) {
-                  handleAddEnemyToActive(enemy, initiative);
+                  handleAddCharacterToActive(character, initiative, type);
                 }
               }}
               requireInitiative={true}
@@ -165,14 +164,6 @@ const ActiveEncounterTableContent: React.FC<{
           </span>
           <span className="badge badge-info">Turn {encounter.currentTurn}</span>
           {isSaving && <span className="badge badge-warning">Saving...</span>}
-          <EncounterDifficultyBadge
-            enemies={encounter.enemies}
-            playerLevels={
-              encounter.initiativeOrder
-                .filter((char) => char.type === 'player')
-                .map(() => 1) // Default to level 1 since initiativeOrder doesn't contain levels
-            }
-          />
         </div>
       </div>
 

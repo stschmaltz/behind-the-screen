@@ -11,9 +11,10 @@ interface UseTurnManagementResult {
   handleNextTurn: () => void;
   handlePreviousTurn: () => void;
   handleUpdateCharacter: (character: InitiativeOrderCharacter) => void;
-  handleAddEnemyToActive: (
-    enemy: EncounterCharacter,
+  handleAddCharacterToActive: (
+    character: EncounterCharacter,
     initiative: number,
+    type: 'enemy' | 'npc',
   ) => void;
 }
 
@@ -82,24 +83,35 @@ export const useEncounterTurnManagement = (
     });
   };
 
-  const handleAddEnemyToActive = (
-    newEnemy: EncounterCharacter,
+  const handleAddCharacterToActive = (
+    newCharacter: EncounterCharacter,
     initiative: number,
+    type: 'enemy' | 'npc',
   ) => {
     const newInitiativeCharacter: InitiativeOrderCharacter = {
-      _id: newEnemy._id,
-      name: newEnemy.name,
-      armorClass: newEnemy.armorClass,
-      maxHP: newEnemy.maxHP,
-      currentHP: newEnemy.maxHP,
+      _id: newCharacter._id,
+      name: newCharacter.name,
+      armorClass: newCharacter.armorClass,
+      maxHP: newCharacter.maxHP,
+      currentHP: newCharacter.maxHP,
       initiative: initiative,
       conditions: [],
-      type: 'enemy',
+      type: type,
     };
+
+    const updatedEnemies = [...encounter.enemies];
+    const updatedNpcs = [...encounter.npcs];
+
+    if (type === 'enemy') {
+      updatedEnemies.push(newCharacter);
+    } else {
+      updatedNpcs.push(newCharacter);
+    }
 
     onSave({
       ...encounter,
-      enemies: [...encounter.enemies, newEnemy],
+      enemies: updatedEnemies,
+      npcs: updatedNpcs,
       initiativeOrder: [...encounter.initiativeOrder, newInitiativeCharacter],
     });
   };
@@ -126,6 +138,6 @@ export const useEncounterTurnManagement = (
     handleNextTurn,
     handlePreviousTurn,
     handleUpdateCharacter,
-    handleAddEnemyToActive,
+    handleAddCharacterToActive,
   };
 };

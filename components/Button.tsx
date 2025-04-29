@@ -1,7 +1,8 @@
 import React from 'react';
 
 interface ButtonProps {
-  label: string;
+  label?: string;
+  icon?: React.ReactNode;
   variant?:
     | 'primary'
     | 'secondary'
@@ -20,6 +21,7 @@ interface ButtonProps {
 
 const Button: React.FC<ButtonProps> = ({
   label,
+  icon,
   variant = 'primary',
   onClick,
   type = 'button',
@@ -59,6 +61,8 @@ const Button: React.FC<ButtonProps> = ({
       >
         {loading ? (
           <span className="loading loading-spinner loading-xs" />
+        ) : icon ? (
+          icon
         ) : (
           label
         )}

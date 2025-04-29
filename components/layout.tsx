@@ -40,19 +40,8 @@ function Layout({ children }: LayoutProps) {
 
       {currentUser ? (
         <div className="flex-1 flex flex-col bg-content-100">
-          <div className="container mx-auto px-4 py-2 flex justify-end">
-            <Link
-              href="/api/auth/logout?returnTo=http%3A%2F%2Flocalhost%3A3000"
-              className="text-sm text-blue-600 hover:underline"
-            >
-              Logout
-            </Link>
-          </div>
-
-          <main className="container mx-auto p-4 flex-grow">{children}</main>
-
-          {router.pathname !== '/' && (
-            <div className="container mx-auto px-4 pb-4 hidden md:block">
+          <div className="container mx-auto px-4 py-2 flex justify-between items-center">
+            {router.pathname !== '/' ? (
               <button
                 onClick={() => router.back()}
                 className="text-sm text-base-content/70 hover:text-base-content hover:underline flex items-center gap-1 transition-colors"
@@ -71,10 +60,21 @@ function Layout({ children }: LayoutProps) {
                     d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
                   />
                 </svg>
-                Return to previous page
+                Return
               </button>
-            </div>
-          )}
+            ) : (
+              <div />
+            )}
+
+            <Link
+              href="/api/auth/logout?returnTo=http%3A%2F%2Flocalhost%3A3000"
+              className="text-sm text-blue-600 hover:underline"
+            >
+              Logout
+            </Link>
+          </div>
+
+          <main className="container mx-auto p-4 flex-grow">{children}</main>
         </div>
       ) : (
         <div className="flex-1 flex items-center justify-center w-full">

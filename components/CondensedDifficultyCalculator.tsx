@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   capitalizeFirstLetter,
   DifficultyResult,
@@ -25,50 +25,44 @@ const CondensedDifficultyCalculator: React.FC<
   const [difficultyResult, setDifficultyResult] =
     useState<DifficultyResult | null>(null);
 
-  const getPlayerLevels = (): number[] => {
-    // First check for player entries in the initiative order
-    if (
-      encounterPlayers.length > 0 &&
-      encounterPlayers.some((p) => p.type === 'player')
-    ) {
-      const playerData: { id: string; level: number }[] = [];
+  const playerLevels = useMemo(() => {
+    const getPlayerLevels = (): number[] => {
+      if (
+        encounterPlayers.length > 0 &&
+        encounterPlayers.some((p) => p.type === 'player')
+      ) {
+        const playerData: { id: string; level: number }[] = [];
 
-      // For each player in initiative order
-      for (const player of encounterPlayers.filter(
-        (p) => p.type === 'player',
-      )) {
-        // Try to find matching player in the players array to get current level
-        const fullPlayer = players.find((p) => p._id === player._id);
+        for (const player of encounterPlayers.filter(
+          (p) => p.type === 'player',
+        )) {
+          const fullPlayer = players.find((p) => p._id === player._id);
 
-        if (fullPlayer && fullPlayer.level) {
-          // Use the level from the player data (most up-to-date)
-          playerData.push({
-            id: player._id,
-            level: fullPlayer.level,
-          });
-        } else {
-          // Default to level 1 if no player data is available
-          playerData.push({
-            id: player._id,
-            level: 1,
-          });
+          if (fullPlayer && fullPlayer.level) {
+            playerData.push({
+              id: player._id,
+              level: fullPlayer.level,
+            });
+          } else {
+            playerData.push({
+              id: player._id,
+              level: 1,
+            });
+          }
         }
+
+        return playerData.map((p) => p.level);
       }
 
-      // Return just the levels
-      return playerData.map((p) => p.level);
-    }
+      if (players.length > 0) {
+        return players.map((player) => player.level || 1);
+      }
 
-    // If we have players array but no encounter players, use those players
-    if (players.length > 0) {
-      return players.map((player) => player.level || 1);
-    }
+      return [1, 1, 1, 1];
+    };
 
-    // Default case if no player data is available - standard 4 level 1 players
-    return [1, 1, 1, 1];
-  };
-
-  const playerLevels = getPlayerLevels();
+    return getPlayerLevels();
+  }, [encounterPlayers, players]);
 
   useEffect(() => {
     const result = getEncounterDifficulty(enemies, playerLevels);

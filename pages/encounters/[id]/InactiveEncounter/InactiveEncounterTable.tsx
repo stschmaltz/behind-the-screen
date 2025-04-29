@@ -27,7 +27,7 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
     useEncounterContext();
   const {
     draftEncounter,
-    handleAddEnemy,
+    handleAddCharacter,
     handleAddPlayers,
     handleUpdateCharacter,
     handleDeleteCharacter,
@@ -288,7 +288,12 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
 
       <div className="mt-4">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
-          <NewEnemyModal onAddEnemy={handleAddEnemy} className="w-full" />
+          <NewEnemyModal
+            onAddCharacter={(character, _) => {
+              handleAddCharacter(character);
+            }}
+            className="w-full"
+          />
           <AddPlayersModal
             onAddPlayers={handleAddPlayers}
             players={players}

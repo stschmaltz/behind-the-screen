@@ -9,6 +9,7 @@ import { useModal } from '../../../hooks/use-modal';
 import { showDaisyToast } from '../../../lib/daisy-toast';
 import { logger } from '../../../lib/logger';
 import DescriptionDisplay from '../../../components/DescriptionDisplay';
+import EncounterDifficultyBadge from '../../../components/EncounterDifficultyBadge';
 
 const EncounterContent = ({ players }: { players: Player[] }) => {
   const { encounter, deleteEncounter, updateEncounterDescription, handleSave } =
@@ -41,40 +42,42 @@ const EncounterContent = ({ players }: { players: Player[] }) => {
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body">
-          <div className="flex justify-between items-start mb-4">
-            <div className="flex items-center gap-2">
-              <h1 className="card-title text-3xl font-bold">
-                {encounter.name}
-              </h1>
-              <DescriptionDisplay
-                encounterId={encounter._id}
-                description={encounter.description}
-                isEditable={true}
-                onUpdateDescription={async (newDescription) => {
-                  try {
-                    await updateEncounterDescription(
-                      encounter._id,
-                      newDescription,
-                    );
-                    showDaisyToast('success', 'Description updated');
-                  } catch (error) {
-                    logger.error(
-                      'Failed to update encounter description',
-                      error,
-                    );
-                    showDaisyToast('error', 'Failed to update description');
-                  }
-                }}
-                className="mt-1"
-              />
+          <div className="flex flex-col sm:flex-row justify-between items-start mb-4 gap-4 sm:gap-2">
+            <div className="flex flex-col w-full sm:w-auto">
+              <div className="flex items-center gap-2">
+                <h1 className="card-title text-3xl font-bold">
+                  {encounter.name}
+                </h1>
+                <DescriptionDisplay
+                  encounterId={encounter._id}
+                  description={encounter.description}
+                  isEditable={true}
+                  onUpdateDescription={async (newDescription) => {
+                    try {
+                      await updateEncounterDescription(
+                        encounter._id,
+                        newDescription,
+                      );
+                      showDaisyToast('success', 'Description updated');
+                    } catch (error) {
+                      logger.error(
+                        'Failed to update encounter description',
+                        error,
+                      );
+                      showDaisyToast('error', 'Failed to update description');
+                    }
+                  }}
+                  className="mt-1"
+                />
+              </div>
             </div>
-            <div className="flex-shrink-0 flex gap-2">
+            <div className="flex flex-row gap-2 w-full sm:w-auto">
               <Button
                 label="Delete Encounter"
                 variant="error"
                 tooltip="Delete Encounter"
                 onClick={() => showModal()}
-                className="btn btn-error"
+                className="btn-sm btn-error"
               />
               {encounter.status === 'active' && (
                 <Button
@@ -84,40 +87,10 @@ const EncounterContent = ({ players }: { players: Player[] }) => {
                   onClick={handleFinishEncounter}
                   disabled={isFinishingEncounter}
                   loading={isFinishingEncounter}
+                  className="btn-sm"
                 />
               )}
             </div>
-            <dialog id="delete-encounter-modal" className="modal modal-center">
-              <div className="modal-box">
-                <p>Are you sure you want to delete this encounter?</p>
-                <div className="modal-action">
-                  <Button
-                    label="Cancel"
-                    variant="secondary"
-                    onClick={closeModal}
-                  />
-                  <Button
-                    label="Delete"
-                    variant="error"
-                    onClick={async () => {
-                      const result = await deleteEncounter(encounter._id);
-
-                      closeModal();
-                      if (!result) {
-                        logger.error('Failed to delete encounter');
-                        showDaisyToast('error', 'Failed to delete encounter');
-
-                        return false;
-                      } else {
-                        showDaisyToast('success', 'Encounter deleted');
-
-                        router.replace('/encounters');
-                      }
-                    }}
-                  />
-                </div>
-              </div>
-            </dialog>
           </div>
 
           <div className="my-4">
@@ -131,6 +104,19 @@ const EncounterContent = ({ players }: { players: Player[] }) => {
               {encounter.status.charAt(0).toUpperCase() +
                 encounter.status.slice(1)}
             </div>
+            <EncounterDifficultyBadge
+              enemies={encounter.enemies}
+              playerLevels={encounter.initiativeOrder
+                .filter((char) => char.type === 'player')
+                .map((playerChar) => {
+                  const matchedPlayer = players.find(
+                    (p) => p._id === playerChar._id,
+                  );
+
+                  return matchedPlayer?.level || 1;
+                })}
+              className="badge-lg ml-2"
+            />
           </div>
 
           <div>
@@ -142,6 +128,34 @@ const EncounterContent = ({ players }: { players: Player[] }) => {
           </div>
         </div>
       </div>
+
+      <dialog id="delete-encounter-modal" className="modal modal-center">
+        <div className="modal-box">
+          <p>Are you sure you want to delete this encounter?</p>
+          <div className="modal-action">
+            <Button label="Cancel" variant="secondary" onClick={closeModal} />
+            <Button
+              label="Delete"
+              variant="error"
+              onClick={async () => {
+                const result = await deleteEncounter(encounter._id);
+
+                closeModal();
+                if (!result) {
+                  logger.error('Failed to delete encounter');
+                  showDaisyToast('error', 'Failed to delete encounter');
+
+                  return false;
+                } else {
+                  showDaisyToast('success', 'Encounter deleted');
+
+                  router.replace('/encounters');
+                }
+              }}
+            />
+          </div>
+        </div>
+      </dialog>
     </div>
   );
 };

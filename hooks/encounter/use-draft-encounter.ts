@@ -44,7 +44,7 @@ export const useEncounterDraft = (
     setDraftEncounter({ ...encounter, initiativeOrder });
   }, [encounter, players]);
 
-  const handleAddEnemy = (newEnemy: EncounterCharacter) => {
+  const handleAddCharacter = (newEnemy: EncounterCharacter) => {
     setHasUnsavedChanges?.(true);
     setDraftEncounter((prev) => ({
       ...prev,
@@ -59,13 +59,11 @@ export const useEncounterDraft = (
   const handleAddPlayers = (selectedPlayers: Player[]) => {
     setHasUnsavedChanges?.(true);
     setDraftEncounter((prev) => {
-      // Filter out players that are already in the encounter
       const newPlayers = selectedPlayers.filter(
         (selectedPlayer) =>
           !prev.players.some((p) => p._id === selectedPlayer._id),
       );
 
-      // If no new players to add, return the current state
       if (newPlayers.length === 0) {
         return prev;
       }
@@ -94,7 +92,6 @@ export const useEncounterDraft = (
   const handleDeleteCharacter = (characterName: string) => {
     setHasUnsavedChanges?.(true);
     setDraftEncounter((prev) => {
-      // Find the character to be deleted
       const characterToDelete = prev.initiativeOrder.find(
         (c) => c.name === characterName,
       );
@@ -103,7 +100,6 @@ export const useEncounterDraft = (
         return prev;
       }
 
-      // Create new state object
       const newState = {
         ...prev,
         initiativeOrder: prev.initiativeOrder.filter(
@@ -111,12 +107,10 @@ export const useEncounterDraft = (
         ),
       };
 
-      // If it's an enemy, remove from enemies array too
       if (characterToDelete.type === 'enemy') {
         newState.enemies = prev.enemies.filter((e) => e.name !== characterName);
       }
 
-      // If it's a player, remove from players array too
       if (characterToDelete.type === 'player') {
         newState.players = prev.players.filter(
           (p) => p._id !== characterToDelete._id,
@@ -129,7 +123,7 @@ export const useEncounterDraft = (
 
   return {
     draftEncounter,
-    handleAddEnemy,
+    handleAddCharacter,
     handleAddPlayers,
     handleUpdateCharacter,
     handleDeleteCharacter,

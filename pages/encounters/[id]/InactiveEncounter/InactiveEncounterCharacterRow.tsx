@@ -1,4 +1,6 @@
+import React from 'react';
 import { ChangeEvent } from 'react';
+import { MinusIcon } from '@heroicons/react/24/outline';
 import { FormInput } from '../../../../components/FormInput';
 import { Button } from '../../../../components/Button';
 import {
@@ -78,14 +80,14 @@ const InactiveEncounterCharacterRow = ({
         />
       </td>
       <td className="py-2 px-4">
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end gap-2 items-center">
           {isMonster && <MonsterDetailModal monster={monsterData} />}
           <Button
             variant="error"
-            label="Delete"
+            className="btn-square btn-sm"
             onClick={onDelete}
-            aria-label={`Delete ${character.name}`}
-            className="btn-sm"
+            tooltip="Remove Enemy"
+            icon={<MinusIcon className="w-3 h-6 stroke-black" />}
           />
         </div>
       </td>

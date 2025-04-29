@@ -7,7 +7,11 @@ import { EncounterCharacter } from '../../../../types/encounters';
 import { useModal } from '../../../../hooks/use-modal';
 
 interface Props {
-  onAddEnemy: (enemy: EncounterCharacter, initiative?: number) => void;
+  onAddCharacter: (
+    character: EncounterCharacter,
+    initiative: number | undefined,
+    type: 'enemy' | 'npc',
+  ) => void;
   requireInitiative?: boolean;
   className?: string;
 }
@@ -28,7 +32,7 @@ const INITIAL_ENEMY_STATE: EncounterCharacter = {
 };
 
 const NewEnemyModal: React.FC<Props> = ({
-  onAddEnemy,
+  onAddCharacter,
   requireInitiative,
   className,
 }) => {
@@ -37,6 +41,7 @@ const NewEnemyModal: React.FC<Props> = ({
   const [initiative, setInitiative] = useState<number | ''>('');
   const [selectedMonsterName, setSelectedMonsterName] = useState<string>('');
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+  const [characterType, setCharacterType] = useState<'enemy' | 'npc'>('enemy');
 
   const modalRef = useRef<HTMLDialogElement>(null);
   const defaultModal = useModal('new-enemy-modal');
@@ -82,11 +87,7 @@ const NewEnemyModal: React.FC<Props> = ({
       return;
     }
 
-    if (requireInitiative) {
-      onAddEnemy(newEnemy, Number(initiative));
-    } else {
-      onAddEnemy(newEnemy);
-    }
+    onAddCharacter(newEnemy, Number(initiative) || undefined, characterType);
 
     handleCloseActions();
   };
@@ -103,13 +104,13 @@ const NewEnemyModal: React.FC<Props> = ({
     <>
       <Button
         variant="primary"
-        label="Add Enemy"
+        label="Add Character"
         onClick={showModal}
         className={className}
       />
       <dialog ref={modalRef} className="modal" id="new-enemy-modal">
         <div className="modal-box">
-          <h2 className="text-2xl font-bold mb-4">Add New Enemy</h2>
+          <h2 className="text-2xl font-bold mb-4">Add New Character</h2>
 
           <MonsterSelector
             onMonsterSelect={handleMonsterSelect}
@@ -123,6 +124,36 @@ const NewEnemyModal: React.FC<Props> = ({
             setInitiative={setInitiative}
             requireInitiative={requireInitiative}
           />
+
+          <div className="form-control mt-4">
+            <label className="label">
+              <span className="label-text">Character Type</span>
+            </label>
+            <div className="flex gap-4">
+              <label className="label cursor-pointer">
+                <input
+                  type="radio"
+                  name="character-type"
+                  className="radio checked:bg-red-500"
+                  value="enemy"
+                  checked={characterType === 'enemy'}
+                  onChange={() => setCharacterType('enemy')}
+                />
+                <span className="label-text ml-2">Enemy</span>
+              </label>
+              <label className="label cursor-pointer">
+                <input
+                  type="radio"
+                  name="character-type"
+                  className="radio checked:bg-blue-500"
+                  value="npc"
+                  checked={characterType === 'npc'}
+                  onChange={() => setCharacterType('npc')}
+                />
+                <span className="label-text ml-2">NPC</span>
+              </label>
+            </div>
+          </div>
 
           <div className="collapse collapse-arrow bg-base-200 mt-4">
             <input
