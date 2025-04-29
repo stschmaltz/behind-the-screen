@@ -1,5 +1,6 @@
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 import '../styles/global.css';
 import { AppProps } from 'next/app';
@@ -44,6 +45,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
       </Head>
       {getLayout(<Component {...pageProps} />)}
       <Analytics />
+      <SpeedInsights />
     </>
   );
 }
