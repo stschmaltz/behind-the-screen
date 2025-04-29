@@ -15,6 +15,7 @@ import {
   usePopoverContext,
 } from '../../../../context/PopoverContext';
 import NewEnemyModal from '../enemy/NewEnemyModal';
+import AddPlayersModal from '../AddPlayersModal';
 
 const DeadCharacterRow: React.FC<{
   character: InitiativeOrderCharacter;
@@ -98,6 +99,7 @@ const ActiveEncounterTableContent: React.FC<{
     handlePreviousTurn,
     handleUpdateCharacter,
     handleAddCharacterToActive,
+    handleAddPlayersToActive,
   } = useEncounterTurnManagement(encounter, onSave);
 
   const getMonsterData = (
@@ -140,6 +142,16 @@ const ActiveEncounterTableContent: React.FC<{
                 }
               }}
               requireInitiative={true}
+              className="btn-sm w-full sm:w-auto"
+            />
+          </div>
+          <div className="w-full sm:w-auto">
+            <AddPlayersModal
+              onAddPlayers={handleAddPlayersToActive}
+              players={_}
+              selectedCampaignId={encounter.campaignId.toString()}
+              currentPlayerIds={encounter.players.map((p) => p._id)}
+              className="btn-sm w-full sm:w-auto"
             />
           </div>
           <Button

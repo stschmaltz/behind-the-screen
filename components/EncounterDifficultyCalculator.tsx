@@ -120,26 +120,10 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
   }, [playerCount, uniformLevel]);
 
   const allPlayerLevels = useMemo(() => {
-    if (encounterPlayerLevels.length > 0) {
-      return encounterPlayerLevels;
-    }
-
-    if (campaignPlayers.length > 0) {
-      return campaignPlayers.map((player) => player.level || 1);
-    }
-
-    if (players.length > 0) {
-      return players.map((player) => player.level || 1);
-    }
-
-    return Array(playerCount).fill(uniformLevel);
-  }, [
-    encounterPlayerLevels,
-    campaignPlayers,
-    playerCount,
-    uniformLevel,
-    players,
-  ]);
+    return useCustomLevels
+      ? customLevels
+      : Array(playerCount).fill(uniformLevel);
+  }, [useCustomLevels, customLevels, playerCount, uniformLevel]);
 
   useEffect(() => {
     if (customLevels.length !== playerCount) {
