@@ -100,7 +100,7 @@ export const useEncounterTurnManagement = (
     };
 
     const updatedEnemies = [...encounter.enemies];
-    const updatedNpcs = [...encounter.npcs];
+    const updatedNpcs = [...(encounter.npcs || [])];
 
     if (type === 'enemy') {
       updatedEnemies.push(newCharacter);

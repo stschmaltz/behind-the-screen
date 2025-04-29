@@ -14,6 +14,7 @@ interface Props {
   ) => void;
   requireInitiative?: boolean;
   className?: string;
+  allowedCharacterTypes?: ('enemy' | 'npc')[];
 }
 
 const INITIAL_ENEMY_STATE: EncounterCharacter = {
@@ -35,13 +36,16 @@ const NewEnemyModal: React.FC<Props> = ({
   onAddCharacter,
   requireInitiative,
   className,
+  allowedCharacterTypes = ['enemy', 'npc'],
 }) => {
   const [newEnemy, setNewEnemy] =
     useState<EncounterCharacter>(INITIAL_ENEMY_STATE);
   const [initiative, setInitiative] = useState<number | ''>('');
   const [selectedMonsterName, setSelectedMonsterName] = useState<string>('');
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
-  const [characterType, setCharacterType] = useState<'enemy' | 'npc'>('enemy');
+  const [characterType, setCharacterType] = useState<'enemy' | 'npc'>(
+    allowedCharacterTypes.includes('enemy') ? 'enemy' : 'npc',
+  );
 
   const modalRef = useRef<HTMLDialogElement>(null);
   const defaultModal = useModal('new-enemy-modal');
@@ -138,20 +142,23 @@ const NewEnemyModal: React.FC<Props> = ({
                   value="enemy"
                   checked={characterType === 'enemy'}
                   onChange={() => setCharacterType('enemy')}
+                  disabled={!allowedCharacterTypes.includes('enemy')}
                 />
                 <span className="label-text ml-2">Enemy</span>
               </label>
-              <label className="label cursor-pointer">
-                <input
-                  type="radio"
-                  name="character-type"
-                  className="radio checked:bg-blue-500"
-                  value="npc"
-                  checked={characterType === 'npc'}
-                  onChange={() => setCharacterType('npc')}
-                />
-                <span className="label-text ml-2">NPC</span>
-              </label>
+              {allowedCharacterTypes.includes('npc') && (
+                <label className="label cursor-pointer">
+                  <input
+                    type="radio"
+                    name="character-type"
+                    className="radio checked:bg-blue-500"
+                    value="npc"
+                    checked={characterType === 'npc'}
+                    onChange={() => setCharacterType('npc')}
+                  />
+                  <span className="label-text ml-2">NPC</span>
+                </label>
+              )}
             </div>
           </div>
 

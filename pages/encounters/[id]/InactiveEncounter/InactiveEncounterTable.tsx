@@ -289,10 +289,11 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
       <div className="mt-4">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
           <NewEnemyModal
-            onAddCharacter={(character, _) => {
-              handleAddCharacter(character);
+            onAddCharacter={(character, _, type) => {
+              handleAddCharacter(character, type);
             }}
             className="w-full"
+            allowedCharacterTypes={['enemy']}
           />
           <AddPlayersModal
             onAddPlayers={handleAddPlayers}
