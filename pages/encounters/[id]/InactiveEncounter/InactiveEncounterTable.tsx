@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import InactiveEncounterCharacterRow from './InactiveEncounterCharacterRow';
-import NewEnemyModal from '../NewEnemyModal';
+import NewEnemyModal from '../enemy/NewEnemyModal';
 import AddPlayersModal from '../AddPlayersModal';
 import { useEncounterDraft } from '../../../../hooks/encounter/use-draft-encounter';
 import { Button } from '../../../../components/Button';

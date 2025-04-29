@@ -10,11 +10,11 @@ import {
   EncounterCharacter,
   InitiativeOrderCharacter,
 } from '../../../../types/encounters';
-import NewEnemyModal from '../NewEnemyModal';
 import {
   PopoverProvider,
   usePopoverContext,
 } from '../../../../context/PopoverContext';
+import NewEnemyModal from '../enemy/NewEnemyModal';
 
 const DeadCharacterRow: React.FC<{
   character: InitiativeOrderCharacter;
