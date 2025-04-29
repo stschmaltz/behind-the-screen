@@ -27,21 +27,20 @@ export const useEncounterDraft = (
   });
 
   useEffect(() => {
+    // Only initialize initiative order if it's empty
+    if (encounter.initiativeOrder.length > 0) {
+      setDraftEncounter(encounter);
+      return;
+    }
+
     const encounterPlayers = encounter.players
       .map(({ _id }) => players.find((player) => player._id === _id))
       .filter((player): player is Player => player !== undefined);
 
-    const initiativeOrder =
-      encounter.initiativeOrder.length > 0
-        ? encounter.initiativeOrder
-        : [
-            ...encounter.enemies.map((enemy) =>
-              toInitiativeOrder(enemy, 'enemy'),
-            ),
-            ...encounterPlayers.map((player) =>
-              toInitiativeOrder(player, 'player'),
-            ),
-          ];
+    const initiativeOrder = [
+      ...encounter.enemies.map((enemy) => toInitiativeOrder(enemy, 'enemy')),
+      ...encounterPlayers.map((player) => toInitiativeOrder(player, 'player')),
+    ];
 
     setDraftEncounter({ ...encounter, initiativeOrder });
   }, [encounter, players]);

@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { EncounterCharacter } from '../types/encounters';
 import { getEncounterDifficulty } from '../lib/encounterUtils';
 import { getAllPlayers } from '../hooks/get-all-players.hook';
+import { logger } from '../lib/logger';
 
 interface EncounterDifficultyProps {
   enemies: EncounterCharacter[];
@@ -12,10 +13,84 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
   enemies,
   campaignId,
 }) => {
-  const [playerCount, setPlayerCount] = useState<number>(4);
-  const [playerLevel, setPlayerLevel] = useState<number>(1);
-  const [playerLevels, setPlayerLevels] = useState<number[]>([1, 1, 1, 1]);
+  // Force useCampaignPlayers to true by default if a campaignId is provided
+  const [useCampaignPlayers, setUseCampaignPlayers] =
+    useState<boolean>(!!campaignId);
   const { players, loading: playersLoading } = getAllPlayers();
+
+  // Filter players by campaign
+  const campaignPlayers = useMemo(() => {
+    if (!campaignId) return [];
+
+    const filtered = players.filter(
+      (player) => player.campaignId === campaignId,
+    );
+    logger.info('Filtered campaign players:', {
+      campaignId,
+      filteredCount: filtered.length,
+      totalPlayers: players.length,
+    });
+
+    return filtered;
+  }, [campaignId, players]);
+
+  // Determine if campaign has varying levels
+  const campaignHasVaryingLevels = useMemo(() => {
+    if (campaignPlayers.length <= 1) return false;
+
+    const firstLevel = campaignPlayers[0]?.level || 1;
+
+    return campaignPlayers.some((player) => (player.level || 1) !== firstLevel);
+  }, [campaignPlayers]);
+
+  // Set initial values based on campaign
+  const initialPlayerCount = useMemo(() => {
+    return campaignId && useCampaignPlayers && campaignPlayers.length > 0
+      ? campaignPlayers.length
+      : 4;
+  }, [campaignId, useCampaignPlayers, campaignPlayers]);
+
+  const initialPlayerLevel = useMemo(() => {
+    if (
+      campaignId &&
+      useCampaignPlayers &&
+      campaignPlayers.length > 0 &&
+      !campaignHasVaryingLevels
+    ) {
+      return campaignPlayers[0]?.level || 1;
+    }
+
+    return 1;
+  }, [
+    campaignId,
+    useCampaignPlayers,
+    campaignPlayers,
+    campaignHasVaryingLevels,
+  ]);
+
+  const initialPlayerLevels = useMemo(() => {
+    if (campaignId && useCampaignPlayers && campaignPlayers.length > 0) {
+      return campaignPlayers.map((player) => player.level || 1);
+    }
+
+    return Array(initialPlayerCount).fill(initialPlayerLevel);
+  }, [
+    campaignId,
+    useCampaignPlayers,
+    campaignPlayers,
+    initialPlayerCount,
+    initialPlayerLevel,
+  ]);
+
+  // Initialize state with the calculated values
+  const [playerCount, setPlayerCount] = useState<number>(initialPlayerCount);
+  const [playerLevel, setPlayerLevel] = useState<number>(initialPlayerLevel);
+  const [playerLevels, setPlayerLevels] =
+    useState<number[]>(initialPlayerLevels);
+  const [useUniformLevels, setUseUniformLevels] = useState<boolean>(
+    !campaignHasVaryingLevels,
+  );
+
   const [difficultyResult, setDifficultyResult] = useState<{
     difficulty: 'trivial' | 'easy' | 'medium' | 'hard' | 'deadly';
     adjustedXp: number;
@@ -26,62 +101,39 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
       deadly: number;
     };
   } | null>(null);
-  const [useUniformLevels, setUseUniformLevels] = useState<boolean>(true);
-  const [useCampaignPlayers, setUseCampaignPlayers] =
-    useState<boolean>(!!campaignId);
 
-  // Filter players by campaign
-  const campaignPlayers = useMemo(() => {
-    if (!campaignId) return [];
-
-    return players.filter((player) => player.campaignId === campaignId);
-  }, [campaignId, players]);
-
-  // Auto-detect if campaign players have varying levels
-  const campaignHasVaryingLevels = useMemo(() => {
-    if (campaignPlayers.length <= 1) return false;
-
-    const firstLevel = campaignPlayers[0]?.level || 1;
-
-    return campaignPlayers.some((player) => (player.level || 1) !== firstLevel);
-  }, [campaignPlayers]);
-
-  // Set default useUniformLevels based on campaign players
+  // Force update values when campaign players change
   useEffect(() => {
-    if (campaignHasVaryingLevels && useCampaignPlayers) {
-      setUseUniformLevels(false);
-    }
-  }, [campaignHasVaryingLevels, useCampaignPlayers]);
+    if (campaignId && useCampaignPlayers && campaignPlayers.length > 0) {
+      logger.info('Force updating from campaign players', {
+        campaignId,
+        playerCount: campaignPlayers.length,
+        levels: campaignPlayers.map((p) => p.level || 1),
+      });
 
-  // Set default player count and levels based on campaign players
-  useEffect(() => {
-    if (!campaignId || playersLoading) return;
+      // Update player count
+      setPlayerCount(campaignPlayers.length);
 
-    // Always check for campaign players to set defaults, even if not using them
-    if (campaignPlayers.length > 0) {
-      // If we're using campaign players, update the player count and levels
-      if (useCampaignPlayers) {
-        setPlayerCount(campaignPlayers.length);
+      // Update player levels
+      const levels = campaignPlayers.map((player) => player.level || 1);
+      setPlayerLevels(levels);
 
-        // Use actual player levels from campaign
-        const levels = campaignPlayers.map((player) => player.level || 1);
-        setPlayerLevels(levels);
-
-        // If all players have the same level, use that for the uniform level
-        if (!campaignHasVaryingLevels) {
-          setPlayerLevel(levels[0]);
-        }
+      // Update uniform level if appropriate
+      if (!campaignHasVaryingLevels) {
+        setPlayerLevel(levels[0]);
       }
+
+      // Update useUniformLevels based on campaign players
+      setUseUniformLevels(!campaignHasVaryingLevels);
     }
   }, [
     campaignId,
-    campaignPlayers,
-    playersLoading,
     useCampaignPlayers,
+    campaignPlayers,
     campaignHasVaryingLevels,
   ]);
 
-  // Update player levels array when count changes in uniform mode
+  // Update player levels array when count or level changes in uniform mode
   useEffect(() => {
     if (useUniformLevels) {
       setPlayerLevels(Array(playerCount).fill(playerLevel));
@@ -108,7 +160,6 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
     useUniformLevels,
     useCampaignPlayers,
     campaignPlayers.length,
-    playerLevels,
   ]);
 
   // Calculate difficulty whenever enemies, player count, or levels change
@@ -187,6 +238,8 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
               {useCampaignPlayers && campaignPlayers.length > 0 && (
                 <div className="text-sm text-success mt-1">
                   Using {campaignPlayers.length} players from this campaign
+                  (levels: {campaignPlayers.map((p) => p.level || 1).join(', ')}
+                  )
                 </div>
               )}
             </div>
