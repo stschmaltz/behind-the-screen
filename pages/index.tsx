@@ -43,7 +43,7 @@ const HomePage: NextPage = () => {
           key="desc"
         />
       </Head>
-      <div className="bg-base-100 min-h-screen p-4 flex flex-col items-center space-y-6">
+      <div className="bg-base-100 h-full p-4 flex flex-col items-center space-y-6">
         <h1 className="text-3xl font-bold">Dungeon Master Essentials</h1>
         <p className="text-center max-w-xl text-base-content opacity-90">
           Welcome, and thanks for checking out my app! I&apos;m Shane, a solo
