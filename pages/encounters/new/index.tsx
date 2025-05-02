@@ -10,6 +10,7 @@ import { Button } from '../../../components/Button';
 import { showDaisyToast } from '../../../lib/daisy-toast';
 import { useManageEncounter } from '../../../hooks/encounter/use-manage-encounter';
 import { useUserPreferences } from '../../../hooks/user-preferences/use-user-preferences';
+import { useActiveCampaign } from '../../../context/ActiveCampaignContext';
 import { getAllCampaigns } from '../../../hooks/campaign/get-all-campaigns';
 import CampaignSelector from '../../../components/selectors/CampaignSelector';
 import AdventureSelector from '../../../components/selectors/AdventureSelector';
@@ -37,7 +38,9 @@ const NewEncounterPage: NextPage = () => {
     setNewEncounter,
     handleFieldChange: originalHandleFieldChange,
   } = useNewEncounter();
-  const { activeCampaignId, setActiveCampaign } = useUserPreferences();
+  const { setActiveCampaign } = useUserPreferences();
+  const { activeCampaignId: contextCampaignId } = useActiveCampaign();
+  const activeCampaignId = contextCampaignId || undefined;
   const { campaigns, loading: campaignsLoading } = getAllCampaigns();
 
   const [campaignId, setCampaignId] = useState<string | undefined>(undefined);
@@ -161,7 +164,6 @@ const NewEncounterPage: NextPage = () => {
                 onCampaignChange={handleCampaignChange}
               />
               <AdventureSelector
-                campaignId={campaignId}
                 selectedAdventureId={adventureId}
                 onAdventureChange={handleAdventureChange}
               />

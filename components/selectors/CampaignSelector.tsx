@@ -4,6 +4,7 @@ import { useUserPreferences } from '../../hooks/user-preferences/use-user-prefer
 import { asyncFetch } from '../../data/graphql/graphql-fetcher';
 import { saveCampaignMutation } from '../../data/graphql/snippets/campaign';
 import { logger } from '../../lib/logger';
+import { useActiveCampaign } from '../../context/ActiveCampaignContext';
 
 interface CampaignSelectorProps {
   onCampaignChange: (campaignId: string | undefined) => void;
@@ -29,6 +30,7 @@ const CampaignSelector = ({
     refresh: refreshCampaigns,
   } = getAllCampaigns();
   const { setActiveCampaign } = useUserPreferences();
+  const { setActiveCampaignId } = useActiveCampaign();
   const [isCreatingCampaign, setIsCreatingCampaign] = useState(false);
   const [newCampaignName, setNewCampaignName] = useState('');
   const newCampaignInputRef = useRef<HTMLInputElement>(null);
@@ -47,9 +49,10 @@ const CampaignSelector = ({
       }
 
       await setActiveCampaign(value || null);
+      setActiveCampaignId(value || null);
       onCampaignChange(value || undefined);
     },
-    [setActiveCampaign, onCampaignChange],
+    [setActiveCampaign, setActiveCampaignId, onCampaignChange],
   );
 
   const handleCreateCampaign = useCallback(async () => {
@@ -70,6 +73,7 @@ const CampaignSelector = ({
 
       if (newCampaignId) {
         await setActiveCampaign(newCampaignId);
+        setActiveCampaignId(newCampaignId);
         onCampaignChange(newCampaignId);
 
         setNewCampaignName('');
@@ -80,7 +84,13 @@ const CampaignSelector = ({
     } catch (error) {
       logger.error('Failed to create campaign', error);
     }
-  }, [newCampaignName, setActiveCampaign, onCampaignChange, refreshCampaigns]);
+  }, [
+    newCampaignName,
+    setActiveCampaign,
+    setActiveCampaignId,
+    onCampaignChange,
+    refreshCampaigns,
+  ]);
 
   const handleCancelCreate = useCallback(() => {
     setIsCreatingCampaign(false);

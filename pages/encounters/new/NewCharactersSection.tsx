@@ -6,6 +6,8 @@ import { generateMongoId } from '../../../lib/mongo';
 import { logger } from '../../../lib/logger';
 import MonsterCombobox from '../../../components/MonsterCombobox';
 import EncounterDifficultyCalculator from '../../../components/EncounterDifficultyCalculator';
+import { getAllPlayers } from '../../../hooks/get-all-players.hook';
+import { useActiveCampaign } from '../../../context/ActiveCampaignContext';
 
 interface MonsterOption {
   _id: string;
@@ -36,14 +38,14 @@ interface MonsterData {
 interface NewEnemiesSectionProps {
   enemies: EncounterCharacter[];
   onEnemiesChange: (updatedEnemies: EncounterCharacter[]) => void;
-  campaignId?: string;
 }
 
 const NewCharactersSection: React.FC<NewEnemiesSectionProps> = ({
   enemies,
   onEnemiesChange,
-  campaignId,
 }) => {
+  const { activeCampaignId: _campaignId } = useActiveCampaign();
+  const { players: _allPlayers, loading: _playersLoading } = getAllPlayers();
   const [monsters, setMonsters] = useState<MonsterData[]>([]);
   const [monsterOptions, setMonsterOptions] = useState<MonsterOption[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -54,6 +56,7 @@ const NewCharactersSection: React.FC<NewEnemiesSectionProps> = ({
   const [advancedOpenState, setAdvancedOpenState] = useState<{
     [key: number]: boolean;
   }>({});
+  const [_query, _setQuery] = useState('');
 
   const collapseRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
 
@@ -264,18 +267,13 @@ const NewCharactersSection: React.FC<NewEnemiesSectionProps> = ({
     <div className="mb-6">
       <h2 className="text-lg font-semibold mb-2">Enemies</h2>
 
-      <EncounterDifficultyCalculator
-        enemies={enemies}
-        campaignId={campaignId}
-        initiativeOrder={[]}
-      />
+      <EncounterDifficultyCalculator enemies={enemies} initiativeOrder={[]} />
 
       <div className="mb-4">
-        <label className="label text-lg font-semibold">Enemies</label>
-
+        {' '}
+        <label className="label text-lg font-semibold">Characters</label>
         {isLoading && <p>Loading monster list...</p>}
         {error && <p className="text-error">Error loading monsters: {error}</p>}
-
         <div className="space-y-4">
           {enemies.map((enemy, index) => (
             <div key={enemy._id} className="relative">
@@ -530,7 +528,6 @@ const NewCharactersSection: React.FC<NewEnemiesSectionProps> = ({
             </div>
           ))}
         </div>
-
         <Button
           variant="secondary"
           label={enemies.length > 0 ? 'Add Another Enemy' : 'Add Enemy'}

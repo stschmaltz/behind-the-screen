@@ -10,7 +10,7 @@ import {
 } from '../../data/graphql/snippets/player';
 import { Player } from '../../types/player';
 import { useModal } from '../../hooks/use-modal';
-import { getAllCampaigns } from '../../hooks/campaign/get-all-campaigns';
+import { useActiveCampaign } from '../../context/ActiveCampaignContext';
 import { logger } from '../../lib/logger';
 
 interface Props {
@@ -39,7 +39,7 @@ const PlayerManagementSection: React.FC<Props> = ({
   const [selectedCampaignId, setSelectedCampaignId] = useState<
     string | undefined
   >(campaignId);
-  const { campaigns, loading: campaignsLoading } = getAllCampaigns();
+  const { campaigns, campaignsLoading } = useActiveCampaign();
 
   useEffect(() => {
     setPlayers(startingPlayers);

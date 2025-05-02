@@ -12,21 +12,21 @@ import {
 import { getEncounterDifficulty } from '../lib/encounterUtils';
 import { getAllPlayers } from '../hooks/get-all-players.hook';
 import { Player } from '../types/player';
+import { useActiveCampaign } from '../context/ActiveCampaignContext';
 
 interface EncounterDifficultyProps {
   enemies: EncounterCharacter[];
-  campaignId?: string;
   initiativeOrder?: InitiativeOrderCharacter[];
   players?: Player[];
 }
 
 const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
   enemies,
-  campaignId,
   initiativeOrder = [],
   players = [],
 }) => {
-  const [useCampaignPlayers, setUseCampaignPlayers] = useState<boolean>(false);
+  const { activeCampaignId: campaignId } = useActiveCampaign();
+  const [useCampaignPlayers, setUseCampaignPlayers] = useState<boolean>(true);
   const [useCustomLevels, setUseCustomLevels] = useState<boolean>(false);
   const [playerCount, setPlayerCount] = useState<number>(4);
   const [uniformLevel, setUniformLevel] = useState<number>(1);
@@ -277,30 +277,27 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
               </div>
             </div>
 
-            <div className="mb-2">
-              <label className="label cursor-pointer inline-flex items-center">
-                <input
-                  type="checkbox"
-                  className="checkbox checkbox-primary mr-2"
-                  checked={useCustomLevels}
-                  onChange={(e) => {
-                    setUseCustomLevels(e.target.checked);
-                    if (e.target.checked) {
-                      resetToDefaultLevels();
+            <div className="mb-2 flex items-center justify-between">
+              {(!useCampaignPlayers || !hasCampaignPlayers) && (
+                <label className="label cursor-pointer inline-flex items-center">
+                  <input
+                    type="checkbox"
+                    className="checkbox checkbox-primary mr-2"
+                    checked={useCustomLevels}
+                    onChange={(e) => {
+                      setUseCustomLevels(e.target.checked);
+                      if (e.target.checked) {
+                        resetToDefaultLevels();
+                      }
+                    }}
+                    disabled={
+                      useCampaignPlayers &&
+                      hasCampaignPlayers &&
+                      hasVaryingLevels
                     }
-                  }}
-                  disabled={
-                    useCampaignPlayers && hasCampaignPlayers && hasVaryingLevels
-                  }
-                />
-                <span className="label-text">Use custom player levels</span>
-              </label>
-
-              {useCampaignPlayers && hasCampaignPlayers && hasVaryingLevels && (
-                <div className="text-sm text-info mt-1">
-                  Campaign players have different levels, using individual
-                  levels by default
-                </div>
+                  />
+                  <span className="label-text">Use custom player levels</span>
+                </label>
               )}
             </div>
 
@@ -352,6 +349,13 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
               </div>
             )}
           </div>
+
+          {useCampaignPlayers && hasCampaignPlayers && hasVaryingLevels && (
+            <div className="text-sm text-info mt-1">
+              Campaign players have different levels, using individual levels by
+              default
+            </div>
+          )}
 
           {difficultyResult && (
             <div className="bg-base-300 p-3 rounded-md">

@@ -255,7 +255,7 @@ const CampaignsPage: NextPage = () => {
                         {new Date().toLocaleDateString()}
                       </div>
                       <div
-                        className={`badge ${campaign.status === 'active' ? 'badge-accent' : 'badge-ghost'}`}
+                        className={`badge ${campaign.status === 'active' ? 'badge-outline badge-success' : 'badge-ghost'}`}
                       >
                         {campaign.status === 'active'
                           ? 'Active'

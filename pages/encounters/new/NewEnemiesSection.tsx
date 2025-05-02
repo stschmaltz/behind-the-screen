@@ -36,13 +36,11 @@ interface MonsterData {
 interface NewEnemiesSectionProps {
   enemies: EncounterCharacter[];
   onEnemiesChange: (updatedEnemies: EncounterCharacter[]) => void;
-  campaignId?: string;
 }
 
 const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
   enemies,
   onEnemiesChange,
-  campaignId,
 }) => {
   const [monsters, setMonsters] = useState<MonsterData[]>([]);
   const [monsterOptions, setMonsterOptions] = useState<MonsterOption[]>([]);
@@ -215,48 +213,100 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
     onEnemiesChange(updated);
   };
 
-  const toggleAdvanced = (index: number) => {
-    setAdvancedOpenState((prev) => ({ ...prev, [index]: !prev[index] }));
-  };
-
   const addEnemy = () => {
     const newId = generateMongoId();
-    onEnemiesChange([
-      ...enemies,
-      {
-        name: '',
-        maxHP: 0,
-        armorClass: 0,
-        _id: newId,
-      },
-    ]);
-
-    setAdvancedOpenState((prev) => ({ ...prev, [enemies.length]: false }));
-  };
-
-  const removeEnemy = (index: number) => {
-    onEnemiesChange(enemies.filter((_, i) => i !== index));
+    const newEnemy = {
+      name: '',
+      maxHP: 0,
+      armorClass: 0,
+      _id: newId,
+    };
+    onEnemiesChange([newEnemy, ...enemies]);
 
     setSelectedMonsterNames((prev) => {
-      const { [index]: _, ...rest } = prev;
-      const adjusted: { [key: number]: string } = {};
-      Object.keys(rest).forEach((keyStr) => {
+      const newState: { [key: number]: string } = {};
+      Object.keys(prev).forEach((keyStr) => {
         const key = parseInt(keyStr, 10);
-        adjusted[key > index ? key - 1 : key] = rest[key];
+        newState[key + 1] = prev[key];
       });
+      newState[0] = '';
 
-      return adjusted;
+      return newState;
     });
-
     setAdvancedOpenState((prev) => {
-      const { [index]: _, ...rest } = prev;
-      const adjusted: { [key: number]: boolean } = {};
-      Object.keys(rest).forEach((keyStr) => {
+      const newState: { [key: number]: boolean } = {};
+      Object.keys(prev).forEach((keyStr) => {
         const key = parseInt(keyStr, 10);
-        adjusted[key > index ? key - 1 : key] = rest[key];
+        newState[key + 1] = prev[key];
+      });
+      newState[0] = false;
+
+      return newState;
+    });
+  };
+
+  const removeEnemy = (indexToRemove: number) => {
+    onEnemiesChange(enemies.filter((_, i) => i !== indexToRemove));
+
+    setSelectedMonsterNames((prev) => {
+      const newState: { [key: number]: string } = {};
+      Object.keys(prev).forEach((keyStr) => {
+        const key = parseInt(keyStr, 10);
+        if (key !== indexToRemove) {
+          newState[key > indexToRemove ? key - 1 : key] = prev[key];
+        }
       });
 
-      return adjusted;
+      return newState;
+    });
+    setAdvancedOpenState((prev) => {
+      const newState: { [key: number]: boolean } = {};
+      Object.keys(prev).forEach((keyStr) => {
+        const key = parseInt(keyStr, 10);
+        if (key !== indexToRemove) {
+          newState[key > indexToRemove ? key - 1 : key] = prev[key];
+        }
+      });
+
+      return newState;
+    });
+  };
+
+  const duplicateEnemy = (indexToDuplicate: number) => {
+    const originalEnemy = enemies[indexToDuplicate];
+    if (!originalEnemy) return;
+
+    const newId = generateMongoId();
+    const newEnemy = structuredClone(originalEnemy);
+    newEnemy._id = newId;
+
+    const updatedEnemies = [
+      ...enemies.slice(0, indexToDuplicate + 1),
+      newEnemy,
+      ...enemies.slice(indexToDuplicate + 1),
+    ];
+    onEnemiesChange(updatedEnemies);
+
+    const insertionIndex = indexToDuplicate + 1;
+    setSelectedMonsterNames((prev) => {
+      const newState: { [key: number]: string } = {};
+      Object.keys(prev).forEach((keyStr) => {
+        const key = parseInt(keyStr, 10);
+        newState[key >= insertionIndex ? key + 1 : key] = prev[key];
+      });
+      newState[insertionIndex] = '';
+
+      return newState;
+    });
+    setAdvancedOpenState((prev) => {
+      const newState: { [key: number]: boolean } = {};
+      Object.keys(prev).forEach((keyStr) => {
+        const key = parseInt(keyStr, 10);
+        newState[key >= insertionIndex ? key + 1 : key] = prev[key];
+      });
+      newState[insertionIndex] = advancedOpenState[indexToDuplicate] || false;
+
+      return newState;
     });
   };
 
@@ -264,10 +314,13 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
     <div className="mb-6">
       <h2 className="text-lg font-semibold mb-2">Enemies</h2>
 
-      <EncounterDifficultyCalculator
-        enemies={enemies}
-        campaignId={campaignId}
-        initiativeOrder={[]}
+      <EncounterDifficultyCalculator enemies={enemies} initiativeOrder={[]} />
+
+      <Button
+        variant="secondary"
+        label={enemies.length > 0 ? 'Add Another Enemy' : 'Add Enemy'}
+        onClick={addEnemy}
+        className="my-4 w-full"
       />
 
       <div className="mb-4">
@@ -279,16 +332,26 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
         <div className="space-y-4">
           {enemies.map((enemy, index) => (
             <div key={enemy._id} className="relative">
-              <Button
-                variant="error"
-                label="Remove"
+              <button
                 onClick={(e) => {
-                  e?.stopPropagation();
+                  e.stopPropagation();
+                  duplicateEnemy(index);
+                }}
+                className="btn btn-ghost btn-xs absolute top-4 right-28 z-10"
+                title="Duplicate Enemy"
+              >
+                Duplicate
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
                   removeEnemy(index);
                 }}
-                className="absolute top-4 right-14 z-10 btn-circle btn-ghost btn-sm text-error"
-                tooltip="Remove Enemy"
-              />
+                className="btn btn-ghost btn-xs absolute top-4 right-14 z-10 text-error"
+                title="Remove Enemy"
+              >
+                Remove
+              </button>
               <div className="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box">
                 <input
                   type="checkbox"
@@ -368,12 +431,7 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
                   </div>
 
                   <div className="collapse collapse-arrow bg-base-200 mt-4">
-                    <input
-                      type="checkbox"
-                      checked={!!advancedOpenState[index]}
-                      onChange={() => toggleAdvanced(index)}
-                      className="peer"
-                    />
+                    <input type="checkbox" className="peer" />
                     <div className="collapse-title text-md font-medium peer-checked:bg-base-300 peer-checked:text-base-content">
                       Advanced Monster Fields
                     </div>
@@ -530,13 +588,6 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
             </div>
           ))}
         </div>
-
-        <Button
-          variant="secondary"
-          label={enemies.length > 0 ? 'Add Another Enemy' : 'Add Enemy'}
-          onClick={addEnemy}
-          className="mt-4 w-full"
-        />
       </div>
     </div>
   );

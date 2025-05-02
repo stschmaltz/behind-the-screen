@@ -15,6 +15,7 @@ import { showDaisyToast } from '../../../../lib/daisy-toast';
 import { useEncounterContext } from '../../../../context/EncounterContext';
 import { getAbilityModifier, rollInitiative } from '../../../../lib/random';
 import CondensedDifficultyCalculator from '../../../../components/CondensedDifficultyCalculator';
+import { logger } from '../../../../lib/logger';
 
 interface Props {
   encounter: Encounter;
@@ -146,7 +147,31 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
   const getMonsterData = (
     characterId: string,
   ): EncounterCharacter | undefined => {
-    return draftEncounter.enemies.find((enemy) => enemy._id === characterId);
+    return (
+      draftEncounter.enemies.find((enemy) => enemy._id === characterId) ||
+      draftEncounter.npcs?.find((npc) => npc._id === characterId)
+    );
+  };
+
+  const handleDuplicateCharacter = (
+    characterToDuplicate: InitiativeOrderCharacter,
+  ) => {
+    const fullCharacterData = getMonsterData(characterToDuplicate._id);
+    if (!fullCharacterData) {
+      logger.error(
+        'Could not find full data for character:',
+        characterToDuplicate.name,
+      );
+      showDaisyToast('error', 'Could not duplicate character: data not found.');
+
+      return;
+    }
+
+    handleAddCharacter(
+      fullCharacterData,
+      characterToDuplicate.type === 'npc' ? 'npc' : 'enemy',
+    );
+    showDaisyToast('success', `Duplicated ${characterToDuplicate.name}`);
   };
 
   const isAllInitiativeSet = draftEncounter.initiativeOrder.every(
@@ -209,11 +234,8 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
                 character={character}
                 onDelete={() => handleDeleteCharacter(character.name)}
                 onUpdate={handleUpdateCharacter}
-                monsterData={
-                  character.type === 'enemy'
-                    ? getMonsterData(character._id)
-                    : undefined
-                }
+                onDuplicate={() => handleDuplicateCharacter(character)}
+                monsterData={getMonsterData(character._id)}
               />
             ))}
           </tbody>

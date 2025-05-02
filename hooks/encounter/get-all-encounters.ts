@@ -4,6 +4,7 @@ import {
 } from '../../data/graphql/snippets/encounter';
 import { Encounter } from '../../types/encounters';
 import { useQuery } from '../use-async-query';
+import { logger } from '../../lib/logger';
 
 interface GetAllEncountersOptions {
   campaignId?: string;

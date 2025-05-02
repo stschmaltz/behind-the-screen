@@ -211,7 +211,7 @@ const CampaignDetailPage: NextPage = () => {
       <div className="flex flex-col items-center justify-center min-h-screen">
         <p>Campaign not found or failed to load.</p>
         <Link href="/campaigns">
-          <button className="btn btn-link mt-4">Back to Campaigns</button>
+          <button className="btn btn-primary mt-4">Back to Campaigns</button>
         </Link>
       </div>
     );
@@ -219,17 +219,11 @@ const CampaignDetailPage: NextPage = () => {
 
   return (
     <div className="container mx-auto p-4 max-w-3xl">
-      <div className="mb-6">
-        <Link href="/campaigns">
-          <button className="btn btn-ghost btn-sm">← Back to Campaigns</button>
-        </Link>
-      </div>
-
       <div className="bg-base-200 rounded-lg p-6 mb-8 shadow-sm">
         <h1 className="text-3xl font-bold mb-2">{campaign.name}</h1>
         <div className="flex items-center gap-3 mb-2">
           <div
-            className={`badge ${campaign.status === 'active' ? 'badge-accent' : 'badge-ghost'}`}
+            className={`badge ${campaign.status === 'active' ? 'badge-outline badge-success' : 'badge-ghost'}`}
           >
             {campaign.status === 'active' ? 'Active' : 'Completed'}
           </div>
@@ -360,7 +354,7 @@ const CampaignDetailPage: NextPage = () => {
                       <div className="flex items-center gap-2">
                         <div className="text-sm opacity-80"></div>
                         <div
-                          className={`badge ${adventure.status === 'active' ? 'badge-accent' : 'badge-ghost'}`}
+                          className={`badge ${adventure.status === 'active' ? 'badge-outline badge-success' : 'badge-ghost'}`}
                         >
                           {adventure.status === 'active'
                             ? 'Active'

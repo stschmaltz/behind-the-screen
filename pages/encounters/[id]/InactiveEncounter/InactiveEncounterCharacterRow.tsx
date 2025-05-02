@@ -1,26 +1,25 @@
-import React from 'react';
-import { ChangeEvent } from 'react';
-import { MinusIcon } from '@heroicons/react/24/outline';
+import React, { ChangeEvent } from 'react';
+import { DocumentDuplicateIcon, MinusIcon } from '@heroicons/react/24/outline';
 import { FormInput } from '../../../../components/FormInput';
 import { Button } from '../../../../components/Button';
 import {
   EncounterCharacter,
   InitiativeOrderCharacter,
 } from '../../../../types/encounters';
-import MonsterDetailModal from '../MonsterDetailModal';
 
-type Props = {
+interface Props {
   character: InitiativeOrderCharacter;
-  onDelete: () => void;
+  onDelete?: () => void;
   onUpdate?: (character: InitiativeOrderCharacter) => void;
   monsterData?: EncounterCharacter;
-};
+  onDuplicate?: () => void;
+}
 
 const InactiveEncounterCharacterRow = ({
   character,
   onDelete,
   onUpdate,
-  monsterData,
+  onDuplicate,
 }: Props) => {
   const handleNumberChange = (
     field: keyof Omit<
@@ -36,8 +35,6 @@ const InactiveEncounterCharacterRow = ({
       [field]: value,
     });
   };
-
-  const isMonster = character.type === 'enemy' && monsterData;
 
   return (
     <tr className="hover:bg-gray-50">
@@ -80,15 +77,25 @@ const InactiveEncounterCharacterRow = ({
         />
       </td>
       <td className="py-2 px-4">
-        <div className="flex justify-end gap-2 items-center">
-          {isMonster && <MonsterDetailModal monster={monsterData} />}
-          <Button
-            variant="error"
-            className="btn-square btn-sm"
-            onClick={onDelete}
-            tooltip="Remove Enemy"
-            icon={<MinusIcon className="w-3 h-6 stroke-black" />}
-          />
+        <div className="flex justify-end gap-1 items-center">
+          {onDuplicate && (
+            <Button
+              variant="secondary"
+              className="btn-square btn-xs"
+              onClick={onDuplicate}
+              tooltip="Duplicate Character"
+              icon={<DocumentDuplicateIcon className="w-4 h-4" />}
+            />
+          )}
+          {onDelete && (
+            <Button
+              variant="secondary"
+              className="btn-square btn-xs text-error"
+              onClick={onDelete}
+              tooltip="Remove Character"
+              icon={<MinusIcon className="w-4 h-4" />}
+            />
+          )}
         </div>
       </td>
     </tr>

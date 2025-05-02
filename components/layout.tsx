@@ -18,7 +18,6 @@ function Layout({ children }: LayoutProps) {
   const isHomePage = router.pathname === '/';
 
   if (isLoading) {
-    // Show a basic loading state while checking auth, prevents flash of login page
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="loading loading-spinner loading-lg text-primary"></div>
@@ -49,11 +48,7 @@ function Layout({ children }: LayoutProps) {
           content="Essential tools for Dungeon Masters."
           key="ogdesc"
         />
-        <meta
-          property="og:image"
-          content="/og-image.png" // Replace with your actual OG image URL
-          key="ogimage"
-        />
+        <meta property="og:image" content="/og-image.png" key="ogimage" />
         <meta
           property="og:site_name"
           content="DM Essentials"
@@ -68,11 +63,7 @@ function Layout({ children }: LayoutProps) {
           content="Essential tools for Dungeon Masters."
           key="twdesc"
         />
-        <meta
-          name="twitter:image"
-          content="/twitter-image.png" // Replace with your actual Twitter image URL
-          key="twimage"
-        />
+        <meta name="twitter:image" content="/twitter-image.png" key="twimage" />
       </Head>
       <header className="sticky top-0 z-50 bg-primary text-white p-2">
         <div className="container mx-auto flex flex-wrap items-center justify-between">
@@ -82,7 +73,6 @@ function Layout({ children }: LayoutProps) {
           <div className="flex items-center gap-2 md:gap-4">
             <NavBar router={router} />
 
-            {/* User Avatar Dropdown / Login Link */}
             {currentUser ? (
               <div className="dropdown dropdown-end">
                 <div
@@ -91,14 +81,13 @@ function Layout({ children }: LayoutProps) {
                   className="btn btn-ghost btn-circle avatar"
                 >
                   <div className="w-10 rounded-full relative">
-                    {/* Use next/image for optimization */}
                     <Image
                       alt={currentUser.name || 'User avatar'}
-                      src={currentUser.picture || '/default-avatar.svg'} // Use the new SVG fallback
-                      fill // Use fill layout
-                      sizes="40px" // Specify size for optimization
-                      style={{ objectFit: 'cover' }} // Ensure image covers the area
-                      priority // Prioritize loading avatar
+                      src={currentUser.picture || '/default-avatar.svg'}
+                      fill
+                      sizes="40px"
+                      style={{ objectFit: 'cover' }}
+                      priority
                     />
                   </div>
                 </div>
@@ -131,12 +120,11 @@ function Layout({ children }: LayoutProps) {
 
       <ToastContainer />
 
-      {/* Secondary Header Area (Back button, Logout/Login link) */}
       <div className="container mx-auto px-4 py-2 flex justify-between items-center min-h-[40px]">
         {currentUser && !isHomePage ? (
           <button
             onClick={() => router.back()}
-            className="text-sm text-base-content/70 hover:text-base-content hover:underline flex items-center gap-1 transition-colors"
+            className="btn btn-ghost btn-sm flex items-center gap-1"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -152,19 +140,17 @@ function Layout({ children }: LayoutProps) {
                 d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
               />
             </svg>
-            Return
+            Back
           </button>
         ) : (
-          <div /> // Placeholder to keep alignment
+          <div />
         )}
       </div>
 
-      {/* Main Content Area */}
       <main className="container mx-auto p-4 flex-grow flex flex-col">
         {currentUser || isHomePage ? (
-          children // Show actual page content if logged in OR on the homepage
+          children
         ) : (
-          // Show login prompt if not logged in AND not on the homepage
           <div className="flex-1 flex flex-col items-center justify-center text-center">
             <h2 className="text-2xl font-semibold mb-4">Please Login</h2>
             <p className="mb-6">You need to be logged in to view this page.</p>

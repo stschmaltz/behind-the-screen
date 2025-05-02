@@ -11,6 +11,7 @@ import { NextPage } from 'next';
 import { CurrentUserProvider } from '../context/UserContext';
 import { usePWASetup } from '../hooks/use-pwa-setup.hook';
 import { Layout } from '../components/layout';
+import { ActiveCampaignProvider } from '../context/ActiveCampaignContext';
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -29,7 +30,9 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
       <ThemeProvider>
         <UserProvider user={pageProps.user}>
           <CurrentUserProvider>
-            <Layout>{page}</Layout>
+            <ActiveCampaignProvider>
+              <Layout>{page}</Layout>
+            </ActiveCampaignProvider>
           </CurrentUserProvider>
         </UserProvider>
       </ThemeProvider>

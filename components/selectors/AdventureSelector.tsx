@@ -3,11 +3,11 @@ import { getAllAdventures } from '../../hooks/adventure/get-all-adventures';
 import { asyncFetch } from '../../data/graphql/graphql-fetcher';
 import { saveAdventureMutation } from '../../data/graphql/snippets/adventure';
 import { logger } from '../../lib/logger';
+import { useActiveCampaign } from '../../context/ActiveCampaignContext';
 
 interface AdventureSelectorProps {
-  campaignId?: string;
-  selectedAdventureId?: string;
   onAdventureChange: (adventureId: string | undefined) => void;
+  selectedAdventureId?: string;
 }
 
 interface SaveAdventureResponse {
@@ -19,30 +19,30 @@ interface SaveAdventureResponse {
   };
 }
 
-const AdventureSelector = ({
-  campaignId,
-  selectedAdventureId,
+const AdventureSelector: React.FC<AdventureSelectorProps> = ({
   onAdventureChange,
-}: AdventureSelectorProps) => {
+  selectedAdventureId,
+}) => {
+  const { activeCampaignId: campaignId } = useActiveCampaign();
   const {
-    adventures: allAdventures,
+    adventures,
     loading: adventuresLoading,
     refresh: refreshAdventures,
   } = getAllAdventures({
-    campaignId,
+    campaignId: campaignId ?? undefined,
   });
   const [isCreatingAdventure, setIsCreatingAdventure] = useState(false);
   const [newAdventureName, setNewAdventureName] = useState('');
   const newAdventureInputRef = useRef<HTMLInputElement>(null);
 
+  const filteredAdventures = useMemo(() => {
+    return adventures || [];
+  }, [adventures]);
+
   const sortedAdventuresForDropdown = useMemo(() => {
-    if (!campaignId || !allAdventures) return [];
+    if (!filteredAdventures) return [];
 
-    const filtered = allAdventures.filter(
-      (adv) => adv.campaignId === campaignId,
-    );
-
-    return filtered.sort((a, b) => {
+    const sorted = [...filteredAdventures].sort((a, b) => {
       const statusOrder = { active: 1, completed: 2, archived: 3 };
       const orderA = statusOrder[a.status as keyof typeof statusOrder] ?? 99;
       const orderB = statusOrder[b.status as keyof typeof statusOrder] ?? 99;
@@ -53,7 +53,9 @@ const AdventureSelector = ({
 
       return a.name.localeCompare(b.name);
     });
-  }, [allAdventures, campaignId]);
+
+    return sorted;
+  }, [filteredAdventures]);
 
   const handleAdventureChange = useCallback(
     async (e: React.ChangeEvent<HTMLSelectElement>) => {

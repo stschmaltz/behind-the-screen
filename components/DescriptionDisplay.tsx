@@ -8,7 +8,7 @@ interface DescriptionDisplayProps {
   encounterId: string;
   isEditable?: boolean;
   onUpdateDescription?: (newDescription: string) => Promise<void>;
-  className?: string; // Allow passing additional classes
+  className?: string;
 }
 
 const DescriptionDisplay: React.FC<DescriptionDisplayProps> = ({

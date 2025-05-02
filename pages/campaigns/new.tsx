@@ -1,6 +1,5 @@
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import { useManageCampaign } from '../../hooks/campaign/use-manage-campaign';
 import { logger } from '../../lib/logger';
@@ -34,11 +33,6 @@ const NewCampaignPage: NextPage = () => {
 
   return (
     <div className="container mx-auto p-4 max-w-lg">
-      <div className="mb-6">
-        <Link href="/campaigns">
-          <button className="btn btn-ghost btn-sm">← Back to Campaigns</button>
-        </Link>
-      </div>
       <h1 className="text-3xl font-bold mb-6">Create New Campaign</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>

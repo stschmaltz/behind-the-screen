@@ -39,7 +39,7 @@ const ThemeSwitcher: React.FC = () => {
   ];
 
   // Common themes to show at the top
-  const commonThemes = ['cupcake', 'dark', 'sunset', '', 'dracula'];
+  const commonThemes = ['light', 'dark', 'sunset', 'cupcake', 'cyberpunk'];
 
   return (
     <div className="dropdown dropdown-end z-50">
