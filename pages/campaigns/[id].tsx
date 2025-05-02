@@ -1,7 +1,7 @@
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useMemo, useState } from 'react';
 import { useGetCampaign } from '../../hooks/campaign/get-campaign.hook';
 import {
   getAllAdventures,
@@ -49,19 +49,19 @@ const CampaignDetailPage: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  const campaignId = typeof id === 'string' ? id : undefined;
+  const campaignId = typeof id === 'string' && id.length > 0 ? id : undefined;
 
-  const { campaign, loading } = useGetCampaign(campaignId || '');
+  const { campaign, loading: campaignLoading } = useGetCampaign(campaignId);
   const {
     adventures,
     loading: adventuresLoading,
     refresh: refreshAdventures,
   } = getAllAdventures({
-    campaignId,
+    campaignId: campaignId,
   });
   const { handleSave, deleteAdventure, isSaving, isDeleting } =
     useManageAdventure();
-  const { players, loading: _playersLoading } = getAllPlayers();
+  const { players, loading: playersLoading } = getAllPlayers();
 
   const [newAdventureName, setNewAdventureName] = useState('');
   const [renamingAdventureId, setRenamingAdventureId] = useState<string | null>(
@@ -72,9 +72,32 @@ const CampaignDetailPage: NextPage = () => {
   );
   const [adventureRenameValue, setAdventureRenameValue] = useState('');
 
+  const sortedAdventures = useMemo(() => {
+    if (!adventures) return [];
+
+    return [...adventures].sort((a, b) => {
+      if (a.status === 'active' && b.status !== 'active') return -1;
+      if (a.status !== 'active' && b.status === 'active') return 1;
+
+      return a.name.localeCompare(b.name);
+    });
+  }, [adventures]);
+
+  if (!router.isReady || !campaignId) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
+
   const handleCreateAdventure = async (e: FormEvent) => {
     e.preventDefault();
-    if (!newAdventureName.trim() || !campaignId) return;
+    if (!newAdventureName.trim() || !campaignId) {
+      logger.warn('Attempted to create adventure without campaignId');
+
+      return;
+    }
 
     const success = await handleSave({
       name: newAdventureName.trim(),
@@ -105,14 +128,20 @@ const CampaignDetailPage: NextPage = () => {
     adventure: TransformedAdventure,
   ) => {
     e.preventDefault();
-    if (!renamingAdventureId || !adventureRenameValue.trim()) return;
+    if (!renamingAdventureId || !adventureRenameValue.trim() || !campaignId) {
+      logger.warn(
+        'Attempted to rename adventure without campaignId or rename info',
+      );
+
+      return;
+    }
 
     const updatePayload = {
       _id: adventure._id,
       name: adventureRenameValue.trim(),
       description: adventure.description,
       status: adventure.status as 'active' | 'completed' | 'archived',
-      campaignId: adventure.campaignId,
+      campaignId: campaignId,
     };
 
     const success = await handleSave(updatePayload);
@@ -145,12 +174,31 @@ const CampaignDetailPage: NextPage = () => {
     }
   };
 
-  if (!campaignId) {
-    // Should ideally not happen if routing is set up correctly
-    return <div>Invalid campaign ID specified.</div>;
-  }
+  const handleMarkAdventureComplete = async (
+    adventure: TransformedAdventure,
+  ) => {
+    if (!campaignId) {
+      logger.warn('Attempted to complete adventure without campaignId');
 
-  if (loading || adventuresLoading) {
+      return;
+    }
+    const updatePayload = {
+      ...adventure,
+      status: 'completed' as const,
+      campaignId: campaignId,
+    };
+    const success = await handleSave(updatePayload);
+    if (success) {
+      refreshAdventures();
+    } else {
+      logger.error('Failed to mark adventure as complete', {
+        adventureId: adventure._id,
+      });
+    }
+  };
+
+  const isLoading = campaignLoading || adventuresLoading || playersLoading;
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <span className="loading loading-spinner loading-lg"></span>
@@ -222,12 +270,12 @@ const CampaignDetailPage: NextPage = () => {
           </button>
         </form>
 
-        {adventures && adventures.length > 0 ? (
+        {sortedAdventures && sortedAdventures.length > 0 ? (
           <div className="space-y-4">
-            {adventures.map((adventure) => (
+            {sortedAdventures.map((adventure) => (
               <div
                 key={adventure._id}
-                className="p-4 bg-base-200 border border-base-300 rounded shadow-sm"
+                className={`p-4 bg-base-200 border border-base-300 rounded shadow-sm ${adventure.status === 'completed' ? 'opacity-60' : ''}`}
               >
                 {renamingAdventureId === adventure._id ? (
                   <form
@@ -266,9 +314,12 @@ const CampaignDetailPage: NextPage = () => {
                 ) : (
                   <div className="flex flex-col gap-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-lg font-semibold">
+                      <Link
+                        href={`/encounters?adventureId=${adventure._id}`}
+                        className={`text-lg font-semibold hover:underline ${adventure.status === 'completed' ? 'line-through' : ''}`}
+                      >
                         {adventure.name}
-                      </span>
+                      </Link>
                       <div className="flex items-center gap-2">
                         <button
                           className="btn btn-xs btn-ghost"
@@ -290,19 +341,32 @@ const CampaignDetailPage: NextPage = () => {
                             'Delete'
                           )}
                         </button>
+                        {adventure.status === 'active' && (
+                          <button
+                            className="btn btn-xs btn-secondary btn-outline"
+                            onClick={() =>
+                              handleMarkAdventureComplete(adventure)
+                            }
+                            disabled={
+                              isSaving || isDeleting || !!renamingAdventureId
+                            }
+                          >
+                            Mark Complete
+                          </button>
+                        )}
                       </div>
                     </div>
                     <div className="flex justify-between items-center text-sm">
                       <div className="flex items-center gap-2">
-                        <div className="text-sm opacity-80">
-                          {new Date().toLocaleDateString()}
-                        </div>
+                        <div className="text-sm opacity-80"></div>
                         <div
                           className={`badge ${adventure.status === 'active' ? 'badge-accent' : 'badge-ghost'}`}
                         >
                           {adventure.status === 'active'
                             ? 'Active'
-                            : 'Completed'}
+                            : adventure.status === 'completed'
+                              ? 'Completed'
+                              : 'Archived'}
                         </div>
                       </div>
                     </div>
@@ -325,7 +389,7 @@ const CampaignDetailPage: NextPage = () => {
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
         title="Delete Adventure?"
-        message={`Are you sure you want to delete the adventure${adventures.find((a) => a._id === adventureToDelete)?.name ? ` "${adventures.find((a) => a._id === adventureToDelete)?.name}"` : ''}? This action cannot be undone.
+        message={`Are you sure you want to delete the adventure${adventures?.find((a) => a._id === adventureToDelete)?.name ? ` "${adventures.find((a) => a._id === adventureToDelete)?.name}"` : ''}? This action cannot be undone.
         
 ⚠️ WARNING: Deleting an adventure will also permanently delete any encounters, NPCs, and player records linked to it. This data cannot be recovered.`}
       />

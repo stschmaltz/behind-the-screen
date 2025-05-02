@@ -222,9 +222,7 @@ const PlayerManagementSection: React.FC<Props> = ({
         label="Manage Players"
         onClick={showModal}
         className={
-          buttonClassName
-            ? `btn-accent ${buttonClassName}`
-            : 'btn-accent btn-sm'
+          buttonClassName ? `btn-info ${buttonClassName}` : 'btn-info btn-sm'
         }
       />
       <dialog
@@ -395,7 +393,7 @@ const PlayerManagementSection: React.FC<Props> = ({
                   <div className="flex gap-2 flex-wrap">
                     <Button
                       label="Set Level For All"
-                      variant="secondary"
+                      variant="info"
                       disabled={!selectedCampaignId || bulkLevel === undefined}
                       onClick={() => {
                         if (!selectedCampaignId) return;
@@ -405,7 +403,7 @@ const PlayerManagementSection: React.FC<Props> = ({
                     />
                     <Button
                       label="Level Up All"
-                      variant="secondary"
+                      variant="accent"
                       disabled={!selectedCampaignId}
                       onClick={() => {
                         if (!selectedCampaignId) return;
@@ -554,10 +552,14 @@ const PlayerManagementSection: React.FC<Props> = ({
             )}
           </div>
 
-          <div className="modal-action">
-            <form method="dialog">
-              <Button variant="secondary" label="Close" onClick={closeModal} />
-            </form>
+          <div className="modal-action mt-6">
+            <Button
+              label="Close"
+              variant="secondary"
+              onClick={() => {
+                closeModal();
+              }}
+            />
           </div>
         </div>
         <form method="dialog" className="modal-backdrop">

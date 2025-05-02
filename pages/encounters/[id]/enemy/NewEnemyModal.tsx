@@ -15,6 +15,14 @@ interface Props {
   requireInitiative?: boolean;
   className?: string;
   allowedCharacterTypes?: ('enemy' | 'npc')[];
+  buttonVariant?:
+    | 'primary'
+    | 'secondary'
+    | 'accent'
+    | 'info'
+    | 'success'
+    | 'warning'
+    | 'error';
 }
 
 const INITIAL_ENEMY_STATE: EncounterCharacter = {
@@ -37,6 +45,7 @@ const NewEnemyModal: React.FC<Props> = ({
   requireInitiative,
   className,
   allowedCharacterTypes = ['enemy', 'npc'],
+  buttonVariant = 'primary',
 }) => {
   const [newEnemy, setNewEnemy] =
     useState<EncounterCharacter>(INITIAL_ENEMY_STATE);
@@ -107,7 +116,7 @@ const NewEnemyModal: React.FC<Props> = ({
   return (
     <>
       <Button
-        variant="primary"
+        variant={buttonVariant}
         label="Add Character"
         onClick={showModal}
         className={className}

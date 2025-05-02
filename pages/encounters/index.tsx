@@ -28,17 +28,30 @@ const EncountersPage: NextPage = () => {
   const [showCompleted, setShowCompleted] = useState(false);
 
   useEffect(() => {
-    if (selectedCampaignId) return;
+    if (!router.isReady) return;
 
-    const queryCampaignId = router.query.selectedCampaign as string | undefined;
+    const queryCampaignId = router.query.campaignId as string | undefined;
+    const queryAdventureId = router.query.adventureId as string | undefined;
 
-    if (queryCampaignId) {
-      setSelectedCampaignId(queryCampaignId);
-    } else if (activeCampaignId) {
-      setSelectedCampaignId(activeCampaignId);
+    let campaignToSet = queryCampaignId;
+    if (!campaignToSet && !selectedCampaignId) {
+      campaignToSet = activeCampaignId;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeCampaignId, router.query.selectedCampaign]);
+    if (campaignToSet) {
+      setSelectedCampaignId(campaignToSet);
+    }
+
+    const currentOrQueryCampaignId = campaignToSet || selectedCampaignId;
+    if (currentOrQueryCampaignId && queryAdventureId) {
+      setSelectedAdventureId(queryAdventureId);
+    }
+  }, [
+    router.isReady,
+    router.query.campaignId,
+    router.query.adventureId,
+    activeCampaignId,
+    selectedCampaignId,
+  ]);
 
   const { loading: encountersLoading, encounters } = getAllEncounters({
     campaignId: selectedCampaignId,
@@ -140,7 +153,6 @@ const EncountersPage: NextPage = () => {
       ? adventures?.find((a) => a._id === encounter.adventureId?.toString())
       : null;
 
-    // Get player levels for the campaign
     const campaignPlayerLevels =
       players
         ?.filter((p) => p.campaignId === encounter.campaignId?.toString())
@@ -172,14 +184,14 @@ const EncountersPage: NextPage = () => {
             </div>
           </div>
 
-          <div className="mt-2 flex gap-2">
+          <div className="mt-2 flex gap-2 flex-wrap items-center">
             {encounter.campaignId && (
-              <div className="badge badge-outline">
+              <div className="badge badge-primary badge-outline badge-sm">
                 {campaign?.name || 'Campaign'}
               </div>
             )}
             {encounter.adventureId && (
-              <div className="badge badge-outline">
+              <div className="badge badge-secondary badge-outline badge-sm">
                 {adventure?.name || 'Adventure'}
               </div>
             )}
@@ -188,6 +200,7 @@ const EncountersPage: NextPage = () => {
                 <EncounterDifficultyBadge
                   enemies={encounter.enemies}
                   playerLevels={campaignPlayerLevels}
+                  className="badge-sm"
                 />
               )}
           </div>
@@ -268,7 +281,6 @@ const EncountersPage: NextPage = () => {
         emptyState
       ) : (
         <div className="flex w-full flex-col gap-6">
-          {/* Active Encounters */}
           {encounters.some((e) => e.status === 'active') && (
             <div className="w-full">
               <div className="flex justify-between items-center mb-2 border-b pb-2">
@@ -300,7 +312,6 @@ const EncountersPage: NextPage = () => {
             </div>
           )}
 
-          {/* Inactive Encounters */}
           {encounters.some((e) => e.status === 'inactive') && (
             <div className="w-full">
               <div className="flex justify-between items-center mb-2 border-b pb-2">
@@ -332,7 +343,6 @@ const EncountersPage: NextPage = () => {
             </div>
           )}
 
-          {/* Completed Encounters */}
           {encounters.some((e) => e.status === 'completed') && (
             <div className="w-full">
               <div className="flex justify-between items-center mb-2 border-b pb-2">

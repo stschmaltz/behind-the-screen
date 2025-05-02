@@ -9,6 +9,14 @@ interface Props {
   selectedCampaignId: string;
   currentPlayerIds?: string[];
   className?: string;
+  buttonVariant?:
+    | 'primary'
+    | 'secondary'
+    | 'accent'
+    | 'info'
+    | 'success'
+    | 'warning'
+    | 'error';
 }
 
 const AddPlayersModal: React.FC<Props> = ({
@@ -17,6 +25,7 @@ const AddPlayersModal: React.FC<Props> = ({
   selectedCampaignId,
   currentPlayerIds = [],
   className,
+  buttonVariant = 'primary',
 }) => {
   const { closeModal, showModal } = useModal('add-players-modal');
   const [toggledPlayers, setToggledPlayers] = React.useState<Player[]>([]);
@@ -40,7 +49,7 @@ const AddPlayersModal: React.FC<Props> = ({
   return (
     <>
       <Button
-        variant="primary"
+        variant={buttonVariant}
         label="Add Players"
         onClick={showModal}
         className={className}

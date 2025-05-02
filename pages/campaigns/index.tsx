@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { NextPage } from 'next';
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useMemo, useState } from 'react';
 import { getAllCampaigns } from '../../hooks/campaign/get-all-campaigns';
 import { useManageCampaign } from '../../hooks/campaign/use-manage-campaign';
 import { logger } from '../../lib/logger';
@@ -51,6 +51,18 @@ const CampaignsPage: NextPage = () => {
   );
   const [newName, setNewName] = useState<string>('');
   const [campaignToDelete, setCampaignToDelete] = useState<string | null>(null);
+
+  // Sort campaigns: active first, then completed
+  const sortedCampaigns = useMemo(() => {
+    if (!campaigns) return [];
+
+    return [...campaigns].sort((a, b) => {
+      if (a.status === 'active' && b.status !== 'active') return -1;
+      if (a.status !== 'active' && b.status === 'active') return 1;
+
+      return a.name.localeCompare(b.name);
+    });
+  }, [campaigns]);
 
   const handleRenameStart = (campaign: { _id: string; name: string }) => {
     setRenamingCampaignId(campaign._id);
@@ -107,6 +119,27 @@ const CampaignsPage: NextPage = () => {
     setCampaignToDelete(null);
   };
 
+  const handleMarkCampaignComplete = async (campaign: {
+    _id: string;
+    name: string;
+    status: string;
+  }) => {
+    const updatePayload = {
+      _id: campaign._id,
+      name: campaign.name,
+      status: 'completed' as const,
+    };
+
+    const success = await handleSave(updatePayload);
+    if (success) {
+      await refreshCampaigns();
+    } else {
+      logger.error('Failed to mark campaign as complete', {
+        campaignId: campaign._id,
+      });
+    }
+  };
+
   const loadingState = (
     <div className="bg-base-100 flex items-center justify-center">
       <p>Loading...</p>
@@ -129,17 +162,17 @@ const CampaignsPage: NextPage = () => {
       </div>
       {loading && loadingState}
       {!loading &&
-        (!campaigns?.length ? (
+        (!sortedCampaigns?.length ? (
           emptyState
         ) : (
           <div className="flex w-full flex-col gap-2 max-w-md">
-            {campaigns.map((campaign) => {
+            {sortedCampaigns.map((campaign) => {
               const isRenaming = renamingCampaignId === campaign._id;
 
               return (
                 <div
                   key={campaign._id}
-                  className="p-4 bg-base-200 border border-base-300 rounded shadow-sm flex flex-col gap-2"
+                  className={`p-4 bg-base-200 border border-base-300 rounded shadow-sm flex flex-col gap-2 ${campaign.status === 'completed' ? 'opacity-60' : ''}`}
                 >
                   {isRenaming ? (
                     <form
@@ -202,6 +235,17 @@ const CampaignsPage: NextPage = () => {
                             'Delete'
                           )}
                         </button>
+                        {campaign.status === 'active' && (
+                          <button
+                            className="btn btn-xs btn-secondary btn-outline"
+                            onClick={() => handleMarkCampaignComplete(campaign)}
+                            disabled={
+                              isSaving || isDeleting || !!renamingCampaignId
+                            }
+                          >
+                            Mark Complete
+                          </button>
+                        )}
                       </div>
                     </div>
                   )}
@@ -213,7 +257,11 @@ const CampaignsPage: NextPage = () => {
                       <div
                         className={`badge ${campaign.status === 'active' ? 'badge-accent' : 'badge-ghost'}`}
                       >
-                        {campaign.status === 'active' ? 'Active' : 'Completed'}
+                        {campaign.status === 'active'
+                          ? 'Active'
+                          : campaign.status === 'completed'
+                            ? 'Completed'
+                            : 'Archived'}
                       </div>
                     </div>
                     <div className="flex gap-2 items-center">
