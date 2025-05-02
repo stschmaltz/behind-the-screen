@@ -1,6 +1,7 @@
-import { EncounterCharacter } from '../../../types/encounters';
-import { generateMongoId } from '../../../lib/mongo';
-import { logger } from '../../../lib/logger';
+import { useCallback, useEffect, useState } from 'react';
+import { EncounterCharacter } from '../types/encounters';
+import { generateMongoId } from '../lib/mongo';
+import { logger } from '../lib/logger';
 
 export interface MonsterOption {
   _id: string;
@@ -28,37 +29,8 @@ export interface MonsterData {
   CHA: string;
 }
 
-export const fetchMonsters = async (): Promise<{
-  monsters: MonsterData[];
-  options: MonsterOption[];
-  error: string | null;
-}> => {
-  try {
-    const response = await fetch('/api/monsters');
-    if (!response.ok) {
-      throw new Error('Failed to fetch monsters');
-    }
-    const data: MonsterData[] = await response.json();
-
-    const options: MonsterOption[] = data.map((monster) => ({
-      _id: monster._id,
-      name: monster.name,
-      original: monster,
-    }));
-
-    return { monsters: data, options, error: null };
-  } catch (err: unknown) {
-    const errorMessage =
-      err instanceof Error ? err.message : 'An unknown error occurred';
-    logger.error('Error fetching monsters:', err);
-
-    return { monsters: [], options: [], error: errorMessage };
-  }
-};
-
 export const parseStat = (statString: string): number => {
   const match = statString.match(/^\d+/);
-
   return match ? parseInt(match[0], 10) : 0;
 };
 
@@ -120,5 +92,53 @@ export const createEmptyEnemyState = (
     legendaryActions: undefined,
     img_url: undefined,
     monsterSource: undefined,
+  };
+};
+
+export const useMonsters = () => {
+  const [monsters, setMonsters] = useState<MonsterData[]>([]);
+  const [options, setOptions] = useState<MonsterOption[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchMonsters = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/monsters');
+      if (!response.ok) {
+        throw new Error('Failed to fetch monsters');
+      }
+      const data: MonsterData[] = await response.json();
+
+      const monsterOptions: MonsterOption[] = data.map((monster) => ({
+        _id: monster._id,
+        name: monster.name,
+        original: monster,
+      }));
+
+      setMonsters(data);
+      setOptions(monsterOptions);
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : 'An unknown error occurred';
+      logger.error('Error fetching monsters:', err);
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchMonsters();
+  }, [fetchMonsters]);
+
+  return {
+    monsters,
+    options,
+    isLoading,
+    error,
+    refetch: fetchMonsters,
   };
 };

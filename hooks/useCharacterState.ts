@@ -1,22 +1,19 @@
 import { useState, useRef, useEffect } from 'react';
 import { EncounterCharacter } from '../types/encounters';
 import {
-  MonsterData,
-  MonsterOption,
-  fetchMonsters,
+  type MonsterData,
+  type MonsterOption,
   createEmptyEnemy,
   applyMonsterDataToEnemy,
   createEmptyEnemyState,
-} from '../pages/encounters/new/encounterHelpers';
+  useMonsters,
+} from '../hooks/use-monsters.hook';
 
 export const useCharacterState = (
   initialCharacters: EncounterCharacter[],
   onCharactersChange: (updatedCharacters: EncounterCharacter[]) => void,
 ) => {
-  const [monsters, setMonsters] = useState<MonsterData[]>([]);
-  const [monsterOptions, setMonsterOptions] = useState<MonsterOption[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const { monsters, options: monsterOptions, isLoading, error } = useMonsters();
   const [selectedMonsterNames, setSelectedMonsterNames] = useState<{
     [key: number]: string;
   }>({});
@@ -25,19 +22,6 @@ export const useCharacterState = (
   }>({});
 
   const collapseRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
-
-  useEffect(() => {
-    const loadMonsters = async () => {
-      setIsLoading(true);
-      const result = await fetchMonsters();
-      setMonsters(result.monsters);
-      setMonsterOptions(result.options);
-      setError(result.error);
-      setIsLoading(false);
-    };
-
-    loadMonsters();
-  }, []);
 
   const handleCharacterFieldChange = (
     index: number,
@@ -202,7 +186,7 @@ export const useCharacterState = (
         const key = parseInt(keyStr, 10);
         newState[key >= insertionIndex ? key + 1 : key] = prev[key];
       });
-      newState[insertionIndex] = advancedOpenState[indexToDuplicate] || false;
+      newState[insertionIndex] = false;
 
       return newState;
     });
@@ -222,5 +206,6 @@ export const useCharacterState = (
     addCharacter,
     removeCharacter,
     duplicateCharacter,
+    setAdvancedOpenState,
   };
 };

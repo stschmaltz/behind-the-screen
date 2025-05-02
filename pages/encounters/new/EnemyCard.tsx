@@ -1,9 +1,8 @@
 import React from 'react';
-import { MonsterData, MonsterOption } from './encounterHelpers';
 import { EncounterCharacter } from '../../../types/encounters';
 import { FormInput } from '../../../components/FormInput';
 import MonsterCombobox from '../../../components/MonsterCombobox';
-
+import { MonsterData, MonsterOption } from '../../../hooks/use-monsters.hook';
 interface EnemyCardProps {
   enemy: EncounterCharacter;
   index: number;
