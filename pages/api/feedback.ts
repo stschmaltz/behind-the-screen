@@ -83,8 +83,10 @@ export default async function handler(
         };
 
         const emailMsg = {
-          to: process.env.FEEDBACK_TO_EMAIL || 'stschmaltz@gmail.com',
-          from: userEmail || 'stschmaltz@gmail.com',
+          to:
+            process.env.FEEDBACK_TO_EMAIL ||
+            'stschmaltz+dmessentials@gmail.com',
+          from: userEmail || 'stschmaltz+dmessentials@gmail.com',
           replyTo: userEmail,
           subject: `Dungeon Master Essentials Feedback from ${name} <${userEmail}>: ${feedbackTypeLabels[feedbackType as keyof typeof feedbackTypeLabels] || feedbackType}`,
           text: `
