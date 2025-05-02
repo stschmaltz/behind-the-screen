@@ -70,7 +70,7 @@ const HomePage: NextPage = () => {
           <primaryFeature.icon className="w-12 h-12 text-primary" />
           <span className="text-2xl font-semibold flex items-center gap-2">
             {primaryFeature.label}
-            <span className="badge badge-warning badge-sm">Alpha</span>
+            <span className="badge badge-warning badge-sm">In Beta</span>
           </span>
           <span className="text-center opacity-80">
             {primaryFeature.description}

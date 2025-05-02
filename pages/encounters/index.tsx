@@ -186,12 +186,12 @@ const EncountersPage: NextPage = () => {
 
           <div className="mt-2 flex gap-2 flex-wrap items-center">
             {encounter.campaignId && (
-              <div className="badge badge-primary badge-outline badge-sm">
+              <div className="badge badge-primary badge-outline badge-sm font-semibold">
                 {campaign?.name || 'Campaign'}
               </div>
             )}
             {encounter.adventureId && (
-              <div className="badge badge-secondary badge-outline badge-sm">
+              <div className="badge badge-secondary badge-outline badge-sm font-semibold">
                 {adventure?.name || 'Adventure'}
               </div>
             )}
