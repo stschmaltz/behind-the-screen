@@ -39,7 +39,7 @@ const ThemeSwitcher: React.FC = () => {
   ];
 
   // Common themes to show at the top
-  const commonThemes = ['light', 'dark', 'emerald', 'corporate', 'dracula'];
+  const commonThemes = ['cupcake', 'dark', 'sunset', '', 'dracula'];
 
   return (
     <div className="dropdown dropdown-end z-50">
@@ -69,7 +69,7 @@ const ThemeSwitcher: React.FC = () => {
                 <button
                   key={t}
                   onClick={() => setTheme(t)}
-                  className={`btn btn-xs ${theme === t ? 'btn-primary' : 'btn-ghost'}`}
+                  className={`btn btn-xs ${theme === t ? 'btn-primary' : 'text-primary-content hover:bg-base-300'}`}
                 >
                   {t}
                 </button>
@@ -82,7 +82,7 @@ const ThemeSwitcher: React.FC = () => {
               <button
                 key={t}
                 onClick={() => setTheme(t)}
-                className={`btn btn-xs ${theme === t ? 'btn-primary' : 'btn-ghost'}`}
+                className={`btn btn-xs ${theme === t ? 'btn-primary' : 'text-primary-content hover:bg-base-300'}`}
               >
                 {t}
               </button>
