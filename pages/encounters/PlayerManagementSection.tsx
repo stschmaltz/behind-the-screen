@@ -47,6 +47,8 @@ const PlayerManagementSection: React.FC<Props> = ({
       newPlayerHP,
     );
   };
+  const campaignsLoaded =
+    !campaignsLoading && campaigns?.length && campaigns.length > 0;
 
   return (
     <>
@@ -121,7 +123,7 @@ const PlayerManagementSection: React.FC<Props> = ({
               </div>
 
               <div className="form-control w-full md:w-72">
-                {!campaignsLoading && campaigns?.length > 0 && (
+                {campaignsLoaded && (
                   <div className="form-control w-full">
                     <label htmlFor="campaign-select" className="label">
                       <span className="label-text">Campaign</span>
@@ -160,7 +162,7 @@ const PlayerManagementSection: React.FC<Props> = ({
               <div className="flex justify-between items-end mb-4">
                 <h4 className="font-semibold text-lg">Players</h4>
 
-                {!campaignsLoading && campaigns?.length > 0 && (
+                {campaignsLoaded && (
                   <div className="flex items-end gap-4">
                     <div className="form-control">
                       <FormInput
