@@ -6,6 +6,7 @@ import {
   EncounterCharacter,
   InitiativeOrderCharacter,
 } from '../../../../types/encounters';
+import MonsterDetailModal from '../MonsterDetailModal';
 
 const ActiveEncounterCharacterRow: React.FC<{
   character: InitiativeOrderCharacter;
@@ -25,9 +26,12 @@ const ActiveEncounterCharacterRow: React.FC<{
   const [modifierType, setModifierType] = useState<'damage' | 'heal' | 'temp'>(
     'damage',
   );
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const isMonster = character.type === 'enemy' && Boolean(monsterData);
   const currentHP = character.currentHP ?? 0;
+
+  const openModal = () => setIsModalOpen(true);
 
   const handleHealthApply = () => {
     const numValue = Number(modifierValue);
@@ -75,6 +79,14 @@ const ActiveEncounterCharacterRow: React.FC<{
     <div
       className={`card relative ${isCurrentTurn ? 'bg-primary bg-opacity-10 z-20' : 'bg-base-100 z-10'} shadow-sm mb-4`}
     >
+      {isMonster && (
+        <MonsterDetailModal
+          monster={monsterData}
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
+
       <div className="card-body p-4">
         <MobileListLayout
           character={character}
@@ -89,6 +101,7 @@ const ActiveEncounterCharacterRow: React.FC<{
           onApplyModifier={handleHealthApply}
           onAddCondition={handleAddCondition}
           onRemoveCondition={handleRemoveCondition}
+          onViewStats={isMonster ? openModal : undefined}
         />
 
         <DesktopListLayout
@@ -104,6 +117,7 @@ const ActiveEncounterCharacterRow: React.FC<{
           onApplyModifier={handleHealthApply}
           onAddCondition={handleAddCondition}
           onRemoveCondition={handleRemoveCondition}
+          onViewStats={isMonster ? openModal : undefined}
         />
       </div>
     </div>

@@ -35,10 +35,24 @@ const AdventureSelector = ({
   const [newAdventureName, setNewAdventureName] = useState('');
   const newAdventureInputRef = useRef<HTMLInputElement>(null);
 
-  const adventures = useMemo(() => {
+  const sortedAdventuresForDropdown = useMemo(() => {
     if (!campaignId || !allAdventures) return [];
 
-    return allAdventures.filter((adv) => adv.campaignId === campaignId);
+    const filtered = allAdventures.filter(
+      (adv) => adv.campaignId === campaignId,
+    );
+
+    return filtered.sort((a, b) => {
+      const statusOrder = { active: 1, completed: 2, archived: 3 };
+      const orderA = statusOrder[a.status as keyof typeof statusOrder] ?? 99;
+      const orderB = statusOrder[b.status as keyof typeof statusOrder] ?? 99;
+
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+
+      return a.name.localeCompare(b.name);
+    });
   }, [allAdventures, campaignId]);
 
   const handleAdventureChange = useCallback(
@@ -108,9 +122,10 @@ const AdventureSelector = ({
             disabled={adventuresLoading || !campaignId}
           >
             <option value="all">All Adventures</option>
-            {adventures?.map((adventure) => (
+            {sortedAdventuresForDropdown?.map((adventure) => (
               <option key={adventure._id} value={adventure._id}>
                 {adventure.name}
+                {adventure.status === 'completed' ? ' (Completed)' : ''}
               </option>
             ))}
             {campaignId && (

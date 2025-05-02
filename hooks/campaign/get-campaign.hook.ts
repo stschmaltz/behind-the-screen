@@ -31,12 +31,12 @@ const transformCampaignData = (
   };
 };
 
-function useGetCampaign(id: string): {
+function useGetCampaign(id: string | undefined): {
   campaign: TransformedCampaignData | null;
   loading: boolean;
   refresh: () => Promise<TransformedCampaignData | null>;
 } {
-  const variables = useMemo(() => ({ id }), [id]);
+  const variables = useMemo(() => (id ? { id } : undefined), [id]);
 
   const {
     data: campaign,

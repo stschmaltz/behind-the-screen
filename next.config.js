@@ -26,7 +26,7 @@ const securityHeaders = [
   {
     key: 'Content-Security-Policy',
     // Adjust this policy based on your specific needs
-    value: `default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' d205bpvrqc9yn1.cloudfront.net data:; font-src 'self'; object-src 'none'; frame-ancestors 'none'; connect-src 'self' https://api.sendgrid.com;`,
+    value: `default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' d205bpvrqc9yn1.cloudfront.net media-waterdeep.cursecdn.com data:; font-src 'self'; object-src 'none'; frame-ancestors 'none'; connect-src 'self' https://api.sendgrid.com;`,
   },
 ];
 

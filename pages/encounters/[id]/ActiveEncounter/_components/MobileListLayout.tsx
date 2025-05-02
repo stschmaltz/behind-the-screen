@@ -2,7 +2,6 @@ import React from 'react';
 import { ConditionManager } from './ConditionManager';
 import { CharacterHP } from './CharacterHP';
 import { ArmorClassInput } from './ArmorClassInput';
-import MonsterDetailModal from '../../MonsterDetailModal';
 import {
   Condition,
   EncounterCharacter,
@@ -22,11 +21,11 @@ export const MobileListLayout: React.FC<{
   onApplyModifier: () => void;
   onAddCondition: (condition: Condition) => void;
   onRemoveCondition: (condition: Condition) => void;
+  onViewStats?: () => void;
 }> = ({
   character,
   isCurrentTurn,
   isMonster,
-  monsterData,
   modifierType,
   modifierValue,
   setModifierType,
@@ -35,6 +34,7 @@ export const MobileListLayout: React.FC<{
   onApplyModifier,
   onAddCondition,
   onRemoveCondition,
+  onViewStats,
 }) => (
   <div className="flex flex-wrap justify-between items-start gap-x-4 gap-y-1 sm:hidden">
     <h3 className="text-lg font-bold flex items-center gap-2 flex-wrap w-full">
@@ -47,14 +47,18 @@ export const MobileListLayout: React.FC<{
     </h3>
 
     <div className="flex justify-between items-start w-full">
-      <div className="mt-1">
+      <div className="mt-1 flex flex-col">
         <span className="text-sm text-base-content text-opacity-70">
           Initiative: {character.initiative}
         </span>
-        {isMonster && monsterData && (
-          <div className="mt-1 flex">
-            <MonsterDetailModal monster={monsterData} />
-          </div>
+        {isMonster && onViewStats && (
+          <button
+            onClick={onViewStats}
+            className="btn btn-ghost btn-xs text-info p-0 h-auto justify-start mt-1 hover:bg-transparent"
+            aria-label="View Stats"
+          >
+            View Stats
+          </button>
         )}
       </div>
 

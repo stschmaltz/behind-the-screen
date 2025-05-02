@@ -12,8 +12,13 @@ import DescriptionDisplay from '../../../components/DescriptionDisplay';
 import EncounterDifficultyBadge from '../../../components/EncounterDifficultyBadge';
 
 const EncounterContent = ({ players }: { players: Player[] }) => {
-  const { encounter, deleteEncounter, updateEncounterDescription, handleSave } =
-    useEncounterContext();
+  const {
+    encounter,
+    deleteEncounter,
+    updateEncounterDescription,
+    handleSave,
+    isSaving,
+  } = useEncounterContext();
   const { closeModal, showModal } = useModal('delete-encounter-modal');
   const [isFinishingEncounter, setIsFinishingEncounter] = useState(false);
   const router = useRouter();
@@ -117,6 +122,9 @@ const EncounterContent = ({ players }: { players: Player[] }) => {
                 })}
               className="badge-lg ml-2"
             />
+            {isSaving && (
+              <span className="ml-2 badge badge-warning">Saving...</span>
+            )}
           </div>
 
           <div>

@@ -22,6 +22,7 @@ export const DesktopListLayout: React.FC<{
   onApplyModifier: () => void;
   onAddCondition: (condition: Condition) => void;
   onRemoveCondition: (condition: Condition) => void;
+  onViewStats?: () => void;
 }> = ({
   character,
   isCurrentTurn,
@@ -35,6 +36,7 @@ export const DesktopListLayout: React.FC<{
   onApplyModifier,
   onAddCondition,
   onRemoveCondition,
+  onViewStats,
 }) => (
   <div className="hidden sm:flex sm:flex-row sm:justify-between sm:items-start sm:gap-4">
     <div className="flex flex-col min-w-0 sm:flex-1">
@@ -44,6 +46,7 @@ export const DesktopListLayout: React.FC<{
         isCurrentTurn={isCurrentTurn}
         isMonster={isMonster}
         monsterData={monsterData}
+        onViewStats={onViewStats}
       />
     </div>
 
