@@ -232,7 +232,7 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
               <InactiveEncounterCharacterRow
                 key={character._id}
                 character={character}
-                onDelete={() => handleDeleteCharacter(character.name)}
+                onDelete={() => handleDeleteCharacter(character._id)}
                 onUpdate={handleUpdateCharacter}
                 onDuplicate={() => handleDuplicateCharacter(character)}
                 monsterData={getMonsterData(character._id)}

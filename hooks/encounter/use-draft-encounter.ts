@@ -92,11 +92,11 @@ export const useEncounterDraft = (
     }));
   };
 
-  const handleDeleteCharacter = (characterName: string) => {
+  const handleDeleteCharacter = (characterId: string) => {
     setHasUnsavedChanges?.(true);
     setDraftEncounter((prev) => {
       const characterToDelete = prev.initiativeOrder.find(
-        (c) => c.name === characterName,
+        (c) => c._id === characterId,
       );
 
       if (!characterToDelete) {
@@ -106,12 +106,12 @@ export const useEncounterDraft = (
       const newState = {
         ...prev,
         initiativeOrder: prev.initiativeOrder.filter(
-          (c) => c.name !== characterName,
+          (c) => c._id !== characterId,
         ),
       };
 
       if (characterToDelete.type === 'enemy') {
-        newState.enemies = prev.enemies.filter((e) => e.name !== characterName);
+        newState.enemies = prev.enemies.filter((e) => e._id !== characterId);
       }
 
       if (characterToDelete.type === 'player') {
