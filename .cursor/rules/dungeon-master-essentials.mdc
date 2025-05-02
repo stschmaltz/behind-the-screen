@@ -3,4 +3,37 @@ description:
 globs: 
 alwaysApply: true
 ---
-This project is a nextjs application using typescript. Follow typescript best practices where possible. Prefer using immutable and functional based solutions. This project also uses tailwind and daisyui, use daisyui versions where possible. Let's also keep components clean and follow best practices, they should be not too large and should break into sub components when it makes sense without hurting readability.
+# Dungeon Master Essentials Overview
+
+This is a [Next.js](https://nextjs.org/) application built with [TypeScript](https://www.typescriptlang.org/).
+
+## Key Technologies & Libraries
+
+*   **Framework:** [Next.js](https://nextjs.org/) (App Router likely, check `pages/` structure)
+*   **Language:** [TypeScript](https://www.typescriptlang.org/)
+*   **Styling:** [Tailwind CSS](https://tailwindcss.com/) with [DaisyUI](https://daisyui.com/) component library. Use DaisyUI components/classes (`btn`, `card`, `dropdown`, etc.) where possible.
+*   **Authentication:** [Auth0](https://auth0.com/) via [`@auth0/nextjs-auth0`](https://github.com/auth0/nextjs-auth0). See `[auth.mdc](mdc:.cursor/rules/auth.mdc)` for details.
+*   **State Management:** Primarily React context (e.g., `CurrentUserProvider` in `[context/UserContext.tsx](mdc:context/UserContext.tsx)`) and component state. Hooks are used for fetching and logic (e.g., `[hooks/use-user-sign-in.hook.ts](mdc:hooks/use-user-sign-in.hook.ts)`).
+
+## Core Principles & Best Practices
+
+*   **TypeScript:** Follow TypeScript best practices. Use types effectively.
+*   **Functional Programming:** Prefer immutable data structures and functional approaches where practical.
+*   **Component Design:** Keep React components clean, focused, and reasonably sized. Break down large components into smaller, reusable sub-components where it improves readability and maintainability.
+*   **Styling:** Utilize Tailwind utility classes and DaisyUI component classes.
+*   **No Comments:** Avoid redundant comments. Focus on writing clear, self-explanatory code. Comments should only be used for complex logic that cannot be simplified.
+
+## Important Files & Directories
+
+*   `[pages/](mdc:pages)`: Contains the application pages and API routes.
+    *   `[pages/_app.tsx](mdc:pages/_app.tsx)`: Custom App component, wraps pages with providers and layout.
+    *   `[pages/index.tsx](mdc:pages/index.tsx)`: Homepage component.
+    *   `[pages/api/](mdc:pages/api)`: Backend API routes, including Auth0 handlers.
+*   `[components/](mdc:components)`: Reusable React components.
+    *   `[components/layout.tsx](mdc:components/layout.tsx)`: Main application layout wrapper, includes header, footer, and conditional rendering based on auth state.
+    *   `[components/NavBar.tsx](mdc:components/NavBar.tsx)`: Main navigation component.
+    *   `[components/ThemeSwitcher.tsx](mdc:components/ThemeSwitcher.tsx)`: Component for changing UI themes.
+*   `[hooks/](mdc:hooks)`: Custom React hooks for shared logic and data fetching.
+*   `[context/](mdc:context)`: React context providers.
+*   `[public/](mdc:public)`: Static assets (images, fonts, manifests).
+*   `[styles/](mdc:styles)`: Global CSS styles (`[styles/global.css](mdc:styles/global.css)`).

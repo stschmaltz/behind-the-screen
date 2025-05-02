@@ -47,6 +47,12 @@ module.exports = withPWA({
         hostname: 'd205bpvrqc9yn1.cloudfront.net',
         pathname: '/**.gif',
       },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        port: '',
+        pathname: '/a/**',
+      },
     ],
   },
 

@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ToastContainer } from 'react-toastify';
 import Head from 'next/head';
+import Image from 'next/image';
 import { NavBar } from './NavBar';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { useUserSignIn } from '../hooks/use-user-sign-in.hook';
@@ -80,6 +81,49 @@ function Layout({ children }: LayoutProps) {
           </Link>
           <div className="flex items-center gap-2 md:gap-4">
             <NavBar router={router} />
+
+            {/* User Avatar Dropdown / Login Link */}
+            {currentUser ? (
+              <div className="dropdown dropdown-end">
+                <div
+                  tabIndex={0}
+                  role="button"
+                  className="btn btn-ghost btn-circle avatar"
+                >
+                  <div className="w-10 rounded-full relative">
+                    {/* Use next/image for optimization */}
+                    <Image
+                      alt={currentUser.name || 'User avatar'}
+                      src={currentUser.picture || '/default-avatar.svg'} // Use the new SVG fallback
+                      fill // Use fill layout
+                      sizes="40px" // Specify size for optimization
+                      style={{ objectFit: 'cover' }} // Ensure image covers the area
+                      priority // Prioritize loading avatar
+                    />
+                  </div>
+                </div>
+                <ul
+                  tabIndex={0}
+                  className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 text-base-content"
+                >
+                  {currentUser.name && (
+                    <li className="menu-title">
+                      <span>Signed in as {currentUser.name}</span>
+                    </li>
+                  )}
+                  <li>
+                    <Link href="/api/auth/logout?returnTo=http%3A%2F%2Flocalhost%3A3000">
+                      Logout
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+            ) : (
+              <Link href="/api/auth/login" className="btn btn-ghost">
+                Login / Sign Up
+              </Link>
+            )}
+
             <ThemeSwitcher />
           </div>
         </div>
@@ -112,23 +156,6 @@ function Layout({ children }: LayoutProps) {
           </button>
         ) : (
           <div /> // Placeholder to keep alignment
-        )}
-
-        {currentUser ? (
-          <Link
-            href="/api/auth/logout?returnTo=http%3A%2F%2Flocalhost%3A3000"
-            className="text-sm text-blue-600 hover:underline"
-          >
-            Logout
-          </Link>
-        ) : (
-          // Always show Login / Sign Up link if not logged in
-          <Link
-            href="/api/auth/login"
-            className="text-sm text-blue-600 hover:underline"
-          >
-            Login / Sign Up
-          </Link>
         )}
       </div>
 

@@ -12,7 +12,7 @@ const HomePage: NextPage = () => {
     href: '/encounters',
     label: 'Encounter Manager',
     description: 'Plan and run encounters with ease',
-    status: 'alpha' as const,
+    status: 'beta' as const,
     icon: UsersIcon,
   } as const;
 
