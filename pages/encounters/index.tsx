@@ -318,7 +318,7 @@ const EncountersPage: NextPage = () => {
   return (
     <div className="bg-base-100 min-h-full p-4 flex flex-col w-full max-w-2xl space-y-4 m-auto min-w-72">
       <div className="flex flex-col items-center w-full max-w-[400px] mx-auto">
-        <div className="w-full flex justify-between items-center mb-6 gap-4">
+        <div className="w-full flex justify-between items-center mb-2 gap-1">
           <div className="flex flex-col w-96 max-w-[70%]">
             <CampaignSelector
               onCampaignChange={handleCampaignChange}
@@ -337,7 +337,7 @@ const EncountersPage: NextPage = () => {
         </div>
 
         {selectedCampaignId && (
-          <div className="w-full flex flex-col mb-6 items-center">
+          <div className="w-full flex flex-col mb-4 items-center">
             <AdventureSelector
               selectedAdventureId={selectedAdventureId}
               onAdventureChange={handleAdventureChange}

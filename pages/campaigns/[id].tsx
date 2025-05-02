@@ -242,7 +242,7 @@ const CampaignDetailPage: NextPage = () => {
       <div className="mb-8">
         <h2 className="text-2xl font-bold mb-4">Adventures</h2>
 
-        <form onSubmit={handleCreateAdventure} className="mb-6 flex gap-2">
+        <form onSubmit={handleCreateAdventure} className="mb-4 flex gap-2">
           <input
             type="text"
             placeholder="New adventure name"

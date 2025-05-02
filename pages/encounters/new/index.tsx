@@ -131,7 +131,7 @@ const NewEncounterPage: NextPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center">
-      <h1 className="text-xl font-bold mb-4">New Encounter</h1>
+      <h1 className="text-xl font-bold mb-2">New Encounter</h1>
 
       <div className="w-full max-w-xl bg-base-300 shadow-md rounded px-8 pt-6 pb-8 mb-4 h-[72vh] sm:h-auto max-h-[72vh] overflow-y-auto relative">
         {!hasCampaigns && !campaignsLoading ? (
@@ -158,7 +158,7 @@ const NewEncounterPage: NextPage = () => {
               onChange={handleFieldChange('description')}
             />
 
-            <div className="mb-6 grid grid-cols-1 gap-4">
+            <div className="mb-4 grid grid-cols-1 gap-1">
               <CampaignSelector
                 selectedCampaignId={campaignId}
                 onCampaignChange={handleCampaignChange}
