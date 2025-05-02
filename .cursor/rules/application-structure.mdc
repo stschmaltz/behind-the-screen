@@ -1,0 +1,23 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Application Structure
+
+This is a Next.js application for tabletop RPG management with TypeScript. The application follows a component-based architecture with custom hooks for state management.
+
+## Key Directories
+- `/pages`: Contains route components organized by feature
+- `/components`: Reusable UI components
+- `/hooks`: Custom React hooks for state and logic
+- `/types`: TypeScript type definitions
+- `/context`: React context providers
+- `/lib`: Utility functions
+
+## Important Concepts
+- Encounters are managed through combinations of components, hooks, and context
+- Player and monster data is managed through a common character interface
+- Custom hooks handle complex state operations to keep components clean
+
+The application uses React context for global state with custom hooks for specific state management needs.

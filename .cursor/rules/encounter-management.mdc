@@ -1,0 +1,19 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Encounter Management
+
+Encounters have different statuses (inactive, active) and are managed through a combination of components and hooks.
+
+## Key Files
+- [pages/encounters/[id]/InactiveEncounter/InactiveEncounterTable.tsx](mdc:pages/encounters/[id]/InactiveEncounter/InactiveEncounterTable.tsx): Main component for inactive encounter management
+- [hooks/encounter/use-draft-encounter.ts](mdc:hooks/encounter/use-draft-encounter.ts): Hook managing the encounter draft state
+- [context/EncounterContext.tsx](mdc:context/EncounterContext.tsx): Context provider for encounter state
+
+## Important Concepts
+- Encounters have initiative order tracking for combat
+- Characters in the encounter include both players and enemies
+- All characters have unique IDs (`_id`) which should be used for operations like deletion
+- Changes to encounters get tracked with unsaved changes state for saving

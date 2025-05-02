@@ -1,0 +1,18 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Character System
+
+Characters in the system include players, enemies, and NPCs, all managed through a common interface.
+
+## Key Types
+- `EncounterCharacter`: Base interface for all character types
+- `InitiativeOrderCharacter`: Specialized interface for characters in combat with initiative tracking
+- `Player`: Player character type with additional fields
+
+## Important Operations
+- Characters must be uniquely identified by their `_id` field, not by name
+- Character updates should maintain immutability patterns
+- Always use ID-based operations for updates, deletes, and lookups instead of name-based operations
