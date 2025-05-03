@@ -101,6 +101,9 @@ function Layout({ children }: LayoutProps) {
                     </li>
                   )}
                   <li>
+                    <Link href="/account-settings">Account Settings</Link>
+                  </li>
+                  <li>
                     <Link href="/api/auth/logout?returnTo=http%3A%2F%2Flocalhost%3A3000">
                       Logout
                     </Link>
@@ -135,6 +138,9 @@ function Layout({ children }: LayoutProps) {
             reserved.
           </div>
           <div className="flex gap-4">
+            <Link href="/feedback" className="link link-hover">
+              Have Feedback?
+            </Link>
             <Link href="/privacy" className="link link-hover">
               Privacy Policy
             </Link>

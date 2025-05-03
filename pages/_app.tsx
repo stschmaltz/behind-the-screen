@@ -9,7 +9,7 @@ import React, { ReactElement, ReactNode } from 'react';
 import { NextPage } from 'next';
 import { CurrentUserProvider } from '../context/UserContext';
 import { usePWASetup } from '../hooks/use-pwa-setup.hook';
-import { Layout } from '../components/layout';
+import { ProtectedLayout } from '../components/ProtectedLayout';
 import { ActiveCampaignProvider } from '../context/ActiveCampaignContext';
 import { ThemeProvider } from '../context/ThemeContext';
 
@@ -31,7 +31,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
         <UserProvider user={pageProps.user}>
           <CurrentUserProvider>
             <ActiveCampaignProvider>
-              <Layout>{page}</Layout>
+              <ProtectedLayout>{page}</ProtectedLayout>
             </ActiveCampaignProvider>
           </CurrentUserProvider>
         </UserProvider>

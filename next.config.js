@@ -53,6 +53,16 @@ module.exports = withPWA({
         port: '',
         pathname: '/a/**',
       },
+      {
+        protocol: 'https',
+        hostname: 's.gravatar.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.auth0.com',
+        pathname: '/avatars/**',
+      },
     ],
   },
 
