@@ -42,7 +42,7 @@ function truncateObject<T>(obj: T, maxDepth = 8, currentDepth = 0): unknown {
     : {};
 
   if (Array.isArray(obj)) {
-    const maxItems = 3;
+    const maxItems = 5;
     for (let i = 0; i < Math.min(obj.length, maxItems); i++) {
       (result as unknown[])[i] = truncateObject(
         obj[i],
