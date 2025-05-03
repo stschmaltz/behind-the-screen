@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { NavBar } from './NavBar';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { useUserSignIn } from '../hooks/use-user-sign-in.hook';
+import { useUserPreferences } from '../hooks/user-preferences/use-user-preferences';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -16,6 +17,9 @@ function Layout({ children }: LayoutProps) {
   const [isLoading, currentUser] = useUserSignIn();
   const router = useRouter();
   const isHomePage = router.pathname === '/';
+
+  // Load user preferences but don't directly apply theme
+  useUserPreferences();
 
   if (isLoading) {
     return (
@@ -65,7 +69,7 @@ function Layout({ children }: LayoutProps) {
         />
         <meta name="twitter:image" content="/twitter-image.png" key="twimage" />
       </Head>
-      <header className="sticky top-0 z-50 bg-primary text-white p-2">
+      <header className="sticky top-0 z-30 bg-primary text-white p-2">
         <div className="container mx-auto flex flex-wrap items-center justify-between">
           <Link href="/" className="flex items-center">
             <h1 className="text-xl md:text-2xl font-bold">DM Essentials</h1>

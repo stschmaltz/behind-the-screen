@@ -1,48 +1,88 @@
-import { useTheme } from 'next-themes';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { asyncFetch } from '../data/graphql/graphql-fetcher';
+import { setThemeMutation } from '../data/graphql/snippets/user-preferences';
+import { logger } from '../lib/logger';
 
 const ThemeSwitcher: React.FC = () => {
-  const { theme, setTheme } = useTheme();
+  // Keep track of current theme locally
+  const [currentTheme, setCurrentTheme] = useState<string>('dark');
+
+  // Initialize theme from localStorage on component mount
+  useEffect(() => {
+    const storedTheme = localStorage.getItem('dme-theme') || 'dark';
+    setCurrentTheme(storedTheme);
+  }, []);
+
   const themes = [
-    'light',
-    'dark',
-    'cupcake',
-    'bumblebee',
-    'emerald',
-    'corporate',
-    'synthwave',
-    'retro',
-    'cyberpunk',
-    'valentine',
-    'halloween',
-    'garden',
-    'forest',
-    'aqua',
-    'lofi',
-    'pastel',
-    'fantasy',
-    'wireframe',
-    'black',
-    'luxury',
-    'dracula',
-    'cmyk',
+    'acid',
     'autumn',
     'business',
-    'acid',
+    'dim',
+    'dracula',
+    'emerald',
+    'fantasy',
+    'garden',
+    'halloween',
     'lemonade',
     'night',
-    'coffee',
-    'winter',
-    'dim',
     'nord',
+    'pastel',
+    'retro',
     'sunset',
+    'synthwave',
+    'valentine',
+    'winter',
+    // 'aqua',
+    // 'black',
+    // 'bumblebee',
+    // 'cmyk',
+    // 'coffee',
+    // 'corporate',
+    // 'cupcake',
+    // 'cyberpunk',
+    // 'dark',
+    // 'forest',
+    // 'light',
+    // 'lofi',
+    // 'luxury',
+    // 'wireframe',
   ];
 
   // Common themes to show at the top
-  const commonThemes = ['light', 'dark', 'sunset', 'cupcake', 'cyberpunk'];
+  const commonThemes = [
+    'light',
+    'dark',
+    // 'dracula',
+    'cupcake',
+    'cyberpunk',
+    // 'fantasy',
+  ];
+
+  const handleThemeChange = async (newTheme: string) => {
+    // Update local state
+    setCurrentTheme(newTheme);
+
+    // Set in localStorage
+    localStorage.setItem('dme-theme', newTheme);
+
+    // Apply to document
+    document.documentElement.setAttribute('data-theme', newTheme);
+
+    try {
+      // Save to MongoDB
+      await asyncFetch(setThemeMutation, {
+        input: { theme: newTheme },
+      });
+    } catch (error) {
+      logger.error('Failed to save theme preference to database', {
+        error: error instanceof Error ? error.message : String(error),
+        theme: newTheme,
+      });
+    }
+  };
 
   return (
-    <div className="dropdown dropdown-end z-50">
+    <div className="dropdown dropdown-end">
       <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -60,7 +100,7 @@ const ThemeSwitcher: React.FC = () => {
       </div>
       <div
         tabIndex={0}
-        className="mt-3 z-[1] dropdown-content shadow-lg bg-base-100 rounded-box w-52 max-h-96 overflow-y-auto"
+        className="mt-3 dropdown-content shadow-lg bg-base-100 rounded-box w-52 max-h-96 overflow-y-auto z-50"
       >
         <div className="grid grid-cols-1 gap-1 p-2">
           <div className="mb-2 p-2 border-b">
@@ -68,8 +108,12 @@ const ThemeSwitcher: React.FC = () => {
               {commonThemes.map((t) => (
                 <button
                   key={t}
-                  onClick={() => setTheme(t)}
-                  className={`btn btn-xs ${theme === t ? 'btn-primary' : 'text-primary-content hover:bg-base-300'}`}
+                  onClick={() => handleThemeChange(t)}
+                  className={`btn btn-xs font-medium ${
+                    currentTheme === t
+                      ? 'bg-primary text-primary-content border-primary'
+                      : 'bg-neutral-content text-neutral border-2 hover:bg-neutral-focus hover:text-neutral-content'
+                  }`}
                 >
                   {t}
                 </button>
@@ -81,8 +125,12 @@ const ThemeSwitcher: React.FC = () => {
             {themes.map((t) => (
               <button
                 key={t}
-                onClick={() => setTheme(t)}
-                className={`btn btn-xs ${theme === t ? 'btn-primary' : 'text-primary-content hover:bg-base-300'}`}
+                onClick={() => handleThemeChange(t)}
+                className={`btn btn-xs font-medium ${
+                  currentTheme === t
+                    ? 'bg-primary text-primary-content border-primary'
+                    : 'bg-neutral-content text-neutral border-2 hover:bg-neutral-focus hover:text-neutral-content'
+                }`}
               >
                 {t}
               </button>

@@ -5,8 +5,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import '../styles/global.css';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
-import { ThemeProvider } from 'next-themes';
-import { ReactElement, ReactNode } from 'react';
+import React, { ReactElement, ReactNode, useEffect } from 'react';
 import { NextPage } from 'next';
 import { CurrentUserProvider } from '../context/UserContext';
 import { usePWASetup } from '../hooks/use-pwa-setup.hook';
@@ -24,18 +23,22 @@ type AppPropsWithLayout = AppProps & {
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   usePWASetup();
 
+  // Apply default theme on initial load
+  useEffect(() => {
+    const theme = localStorage.getItem('dme-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+  }, []);
+
   const getLayout =
     Component.getLayout ??
     ((page) => (
-      <ThemeProvider>
-        <UserProvider user={pageProps.user}>
-          <CurrentUserProvider>
-            <ActiveCampaignProvider>
-              <Layout>{page}</Layout>
-            </ActiveCampaignProvider>
-          </CurrentUserProvider>
-        </UserProvider>
-      </ThemeProvider>
+      <UserProvider user={pageProps.user}>
+        <CurrentUserProvider>
+          <ActiveCampaignProvider>
+            <Layout>{page}</Layout>
+          </ActiveCampaignProvider>
+        </CurrentUserProvider>
+      </UserProvider>
     ));
 
   return (
