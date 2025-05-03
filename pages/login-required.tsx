@@ -36,17 +36,13 @@ const LoginRequiredPage: NextPage = () => {
 
           <div className="flex flex-col w-full gap-3">
             <Link href={loginUrl} className="btn btn-primary w-full">
-              Sign In
+              Log In / Sign up
             </Link>
 
             <Link href="/" className="btn btn-outline w-full">
               Return to Home
             </Link>
           </div>
-
-          <p className="mt-6 text-sm opacity-70 text-center">
-            Don&apos;t have an account? You can create one when you sign in.
-          </p>
         </div>
       </div>
     </>

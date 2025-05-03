@@ -46,13 +46,10 @@ const HomePage: NextPage = () => {
       <div className="bg-base-100 h-full p-4 flex flex-col items-center space-y-6">
         <h1 className="text-3xl font-bold">Dungeon Master Essentials</h1>
         <p className="text-center max-w-xl text-base-content opacity-90">
-          Welcome, and thanks for checking out my app! I&apos;m Shane, a solo
-          developer building{' '}
-          <span className="font-semibold">
-            Dungeon&nbsp;Master&nbsp;Essentials
-          </span>
-          —a multi-purpose toolkit for game and dungeon masters to run their
-          tabletop role-playing campaigns like Dungeons &amp; Dragons.
+          Welcome, and thanks for checking out DM Essentials! I&apos;m Shane, a
+          solo developer building it — a multi-purpose toolkit for game and
+          dungeon masters to run their tabletop role-playing campaigns like
+          Dungeons &amp; Dragons.
         </p>
         <p className="text-center max-w-xl text-base-content opacity-70">
           Dungeon&nbsp;Master&nbsp;Essentials is in active development, and your

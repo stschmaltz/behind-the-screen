@@ -159,61 +159,56 @@ const PlayerManagementSection: React.FC<Props> = ({
             <div className="divider"></div>
 
             <div className="overflow-x-auto">
-              <div className="flex justify-between items-end mb-4">
-                <h4 className="font-semibold text-lg">Players</h4>
-
-                {campaignsLoaded && (
-                  <div className="flex items-end gap-4">
-                    <div className="form-control">
-                      <FormInput
-                        id="bulk-level"
-                        label="Set Level For All"
-                        type="number"
-                        placeholder="New level"
-                        value={bulkLevel || ''}
-                        onChange={(e) =>
-                          setField(
-                            'bulkLevel',
-                            e.target.value
-                              ? parseInt(e.target.value)
-                              : undefined,
-                          )
-                        }
-                        min={1}
-                        max={20}
-                      />
-                    </div>
-                    <Button
-                      label="Apply"
-                      onClick={() =>
-                        selectedCampaignId &&
-                        bulkUpdatePlayers(selectedCampaignId)
+              {campaignsLoaded && (
+                <div className="flex items-end gap-4">
+                  <div className="form-control">
+                    <FormInput
+                      id="bulk-level"
+                      label="Set Level For All"
+                      type="number"
+                      placeholder="New level"
+                      value={bulkLevel || ''}
+                      onChange={(e) =>
+                        setField(
+                          'bulkLevel',
+                          e.target.value ? parseInt(e.target.value) : undefined,
+                        )
                       }
-                      disabled={
-                        !bulkLevel ||
-                        !selectedCampaignId ||
-                        players.filter(
-                          (p) => p.campaignId === selectedCampaignId,
-                        ).length === 0
-                      }
-                      className="btn-sm"
-                    />
-                    <Button
-                      label="Level Up All"
-                      onClick={() =>
-                        selectedCampaignId &&
-                        bulkUpdatePlayers(selectedCampaignId, true)
-                      }
-                      disabled={
-                        !selectedCampaignId ||
-                        players.filter(
-                          (p) => p.campaignId === selectedCampaignId,
-                        ).length === 0
-                      }
-                      className="btn-sm"
+                      min={1}
+                      max={20}
                     />
                   </div>
-                )}
+                  <Button
+                    label="Apply"
+                    onClick={() =>
+                      selectedCampaignId &&
+                      bulkUpdatePlayers(selectedCampaignId)
+                    }
+                    disabled={
+                      !bulkLevel ||
+                      !selectedCampaignId ||
+                      players.filter((p) => p.campaignId === selectedCampaignId)
+                        .length === 0
+                    }
+                    className="btn-sm"
+                  />
+                  <Button
+                    label="Level Up All"
+                    onClick={() =>
+                      selectedCampaignId &&
+                      bulkUpdatePlayers(selectedCampaignId, true)
+                    }
+                    disabled={
+                      !selectedCampaignId ||
+                      players.filter((p) => p.campaignId === selectedCampaignId)
+                        .length === 0
+                    }
+                    className="btn-sm"
+                  />
+                </div>
+              )}
+              <div className="flex justify-between items-end mb-4">
+                <h4 className="font-semibold text-lg">Players</h4>
               </div>
 
               {players.length === 0 ? (

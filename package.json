@@ -19,6 +19,7 @@
     "@sendgrid/mail": "^8.1.5",
     "@vercel/analytics": "^1.5.0",
     "@vercel/speed-insights": "^1.2.0",
+    "auth0": "^4.22.0",
     "bson": "^6.10.3",
     "daisyui": "^4.12.23",
     "fs": "^0.0.1-security",

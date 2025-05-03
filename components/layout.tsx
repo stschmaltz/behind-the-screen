@@ -112,7 +112,7 @@ function Layout({ children }: LayoutProps) {
               </div>
             ) : (
               <Link href="/api/auth/login" className="btn btn-ghost">
-                Login / Sign Up
+                Log In / Sign Up
               </Link>
             )}
 
@@ -131,11 +131,11 @@ function Layout({ children }: LayoutProps) {
         )}
       </main>
 
-      <footer className="p-4 bg-neutral text-neutral-content">
+      <footer className="p-4 pb-10 md:pb-4 bg-neutral text-neutral-content">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center text-sm">
           <div className="mb-2 md:mb-0">
-            &copy; {new Date().getFullYear()} DM Essentials. All rights
-            reserved.
+            &copy; {new Date().getFullYear()} Dungeon Master Essentials. All
+            rights reserved.
           </div>
           <div className="flex gap-4">
             <Link href="/feedback" className="link link-hover">
