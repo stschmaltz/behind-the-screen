@@ -98,7 +98,7 @@ const CampaignSelector = ({
   }, []);
 
   return (
-    <div className="w-full max-w-md">
+    <div className="w-full">
       {!isCreatingCampaign ? (
         <div className="form-control w-full">
           <label className="label">
@@ -129,11 +129,11 @@ const CampaignSelector = ({
           </select>
         </div>
       ) : (
-        <div className="form-control w-full">
-          <label className="label">
-            <span className="label-text">New Campaign Name</span>
-          </label>
-          <div className="flex items-center gap-2">
+        <div className="card bg-base-200 p-3">
+          <div className="form-control mb-2">
+            <label className="label">
+              <span className="label-text">New Campaign Name</span>
+            </label>
             <input
               type="text"
               ref={newCampaignInputRef}
@@ -146,16 +146,22 @@ const CampaignSelector = ({
                 if (e.key === 'Escape') handleCancelCreate();
               }}
             />
+          </div>
+          <div className="flex gap-2 justify-end">
             <button
               type="button"
-              className="btn btn-primary"
+              className="btn btn-sm"
+              onClick={handleCancelCreate}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="btn btn-sm btn-primary"
               onClick={handleCreateCampaign}
               disabled={!newCampaignName.trim()}
             >
               Create
-            </button>
-            <button className="btn btn-ghost" onClick={handleCancelCreate}>
-              Cancel
             </button>
           </div>
         </div>

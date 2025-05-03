@@ -1,36 +1,29 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getSession } from '@auth0/nextjs-auth0';
 import sgMail from '@sendgrid/mail';
-import fs from 'fs';
-import path from 'path';
+import { getDbClient } from '../../data/database/mongodb';
 import { logger } from '../../lib/logger';
 
 if (process.env.SENDGRID_API_KEY) {
   sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 }
 
-const writeFeedbackToFile = (feedbackData: {
+const saveFeedbackToDb = async (feedbackData: {
   name: string;
+  email: string;
   allowContact: boolean;
   feedbackType: string;
   message: string;
-}) => {
+  timestamp: Date;
+}): Promise<boolean> => {
   try {
-    const feedbackDir = path.join(process.cwd(), 'feedback');
-
-    if (!fs.existsSync(feedbackDir)) {
-      fs.mkdirSync(feedbackDir, { recursive: true });
-    }
-
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const filename = path.join(feedbackDir, `feedback-${timestamp}.json`);
-
-    fs.writeFileSync(filename, JSON.stringify(feedbackData, null, 2));
-    logger.info(`Feedback saved to file: ${filename}`);
+    const { db } = await getDbClient();
+    await db.collection('feedback').insertOne(feedbackData);
+    logger.info(`Feedback saved to database`);
 
     return true;
   } catch (error) {
-    logger.error('Error writing feedback to file:', error);
+    logger.error('Error saving feedback to database:', error);
 
     return false;
   }
@@ -86,7 +79,7 @@ export default async function handler(
           to:
             process.env.FEEDBACK_TO_EMAIL ||
             'stschmaltz+dmessentials@gmail.com',
-          from: userEmail || 'stschmaltz+dmessentials@gmail.com',
+          from: 'feedback@dungeon-master-essentials.com',
           replyTo: userEmail,
           subject: `Dungeon Master Essentials Feedback from ${name} <${userEmail}>: ${feedbackTypeLabels[feedbackType as keyof typeof feedbackTypeLabels] || feedbackType}`,
           text: `
@@ -117,7 +110,7 @@ ${message}
             'SendGrid sending error:',
             sendError instanceof Error ? sendError.message : String(sendError),
           );
-          throw sendError; // Re-throw for outer catch
+          throw sendError;
         }
       } else {
         logger.warn('SendGrid API key not set. Email not sent.');
@@ -131,15 +124,27 @@ ${message}
         allowContact,
         feedbackType,
         message,
-        timestamp: new Date().toISOString(),
+        timestamp: new Date(),
       };
 
-      writeFeedbackToFile(feedbackData);
+      await saveFeedbackToDb(feedbackData);
 
       return res
         .status(200)
         .json({ message: 'Feedback received successfully' });
     }
+
+    // Always save feedback to DB regardless of email success
+    const feedbackData = {
+      name,
+      email: userEmail,
+      allowContact,
+      feedbackType,
+      message,
+      timestamp: new Date(),
+    };
+
+    await saveFeedbackToDb(feedbackData);
 
     logger.info('Feedback received:', {
       name,

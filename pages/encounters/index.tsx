@@ -317,27 +317,25 @@ const EncountersPage: NextPage = () => {
 
   return (
     <div className="bg-base-100 min-h-full p-4 flex flex-col w-full max-w-2xl space-y-4 m-auto min-w-72">
-      <div className="flex flex-col items-center w-full max-w-[400px] mx-auto">
-        <div className="w-full flex justify-between items-center mb-2 gap-1">
-          <div className="flex flex-col w-96 max-w-[70%]">
-            <CampaignSelector
-              onCampaignChange={handleCampaignChange}
-              selectedCampaignId={selectedCampaignId}
-            />
-          </div>
+      <div className="flex flex-col w-full max-w-xl mx-auto">
+        <div className="flex justify-end mb-2">
+          <Link href="/campaigns">
+            <button className="btn btn-sm btn-outline">
+              <span className="hidden sm:inline">Manage Campaigns</span>
+              <SettingsIcon className="w-5 h-5 sm:hidden" />
+            </button>
+          </Link>
+        </div>
 
-          <div className="flex flex-col items-center justify-end h-full">
-            <div className="mt-8">
-              <Link href="/campaigns" className="btn btn-outline">
-                <span className="hidden sm:inline">Manage Campaigns</span>
-                <SettingsIcon className="w-6 h-6 sm:hidden" />
-              </Link>
-            </div>
-          </div>
+        <div className="mb-4">
+          <CampaignSelector
+            onCampaignChange={handleCampaignChange}
+            selectedCampaignId={selectedCampaignId}
+          />
         </div>
 
         {selectedCampaignId && (
-          <div className="w-full flex flex-col mb-4 items-center">
+          <div className="w-full mb-4">
             <AdventureSelector
               selectedAdventureId={selectedAdventureId}
               onAdventureChange={handleAdventureChange}
@@ -346,15 +344,17 @@ const EncountersPage: NextPage = () => {
         )}
 
         {selectedCampaignId && (
-          <div className="w-full flex justify-between items-center mb-8 gap-4">
-            <PlayerManagementSection
-              startingPlayers={players ?? []}
-              campaignId={selectedCampaignId}
-              buttonClassName="btn-primary btn"
-            />
+          <div className="w-full flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+            <div className="w-full sm:w-auto">
+              <PlayerManagementSection
+                startingPlayers={players ?? []}
+                campaignId={selectedCampaignId}
+                buttonClassName="btn-primary btn w-full"
+              />
+            </div>
 
-            <Link href={newEncounterUrl}>
-              <button className="btn btn-primary">New Encounter</button>
+            <Link href={newEncounterUrl} className="w-full sm:w-auto">
+              <button className="btn btn-primary w-full">New Encounter</button>
             </Link>
           </div>
         )}

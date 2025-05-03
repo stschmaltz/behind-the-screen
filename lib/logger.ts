@@ -2,19 +2,15 @@ import pino from 'pino';
 
 const isBrowser = typeof window !== 'undefined';
 
-// Helper function to truncate large objects in logs
-function truncateObject<T>(obj: T, maxDepth = 2, currentDepth = 0): unknown {
-  // Handle primitive values (directly return them)
+function truncateObject<T>(obj: T, maxDepth = 8, currentDepth = 0): unknown {
   if (obj === null || obj === undefined || typeof obj !== 'object') {
     return obj;
   }
 
-  // Handle dates
   if (obj instanceof Date) {
     return obj.toISOString();
   }
 
-  // Special handling for MongoDB ObjectID-like objects
   if (
     typeof (obj as Record<string, unknown>)._id === 'object' &&
     (obj as Record<string, unknown>)._id !== null &&
@@ -26,13 +22,11 @@ function truncateObject<T>(obj: T, maxDepth = 2, currentDepth = 0): unknown {
     ).toString();
   }
 
-  // Stop at max depth with descriptive placeholder
   if (currentDepth >= maxDepth) {
     if (Array.isArray(obj)) {
       return `[Array with ${obj.length} items]`;
     }
 
-    // For objects like IDs, try to get a string representation
     if (
       typeof (obj as { toString?: () => string }).toString === 'function' &&
       (obj as { toString: () => string }).toString() !== '[object Object]'
@@ -47,9 +41,7 @@ function truncateObject<T>(obj: T, maxDepth = 2, currentDepth = 0): unknown {
     ? []
     : {};
 
-  // Process arrays or objects
   if (Array.isArray(obj)) {
-    // For arrays, limit the number of items logged
     const maxItems = 3;
     for (let i = 0; i < Math.min(obj.length, maxItems); i++) {
       (result as unknown[])[i] = truncateObject(
@@ -62,19 +54,15 @@ function truncateObject<T>(obj: T, maxDepth = 2, currentDepth = 0): unknown {
       (result as unknown[]).push(`... (${obj.length - maxItems} more items)`);
     }
   } else {
-    // For objects, process all properties but with depth control
     for (const key in obj) {
       if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        // Skip logging large nested objects like "enemies" or "players"
         if (
           ['enemies', 'players', 'initiativeOrder'].includes(key) &&
           Array.isArray((obj as Record<string, unknown>)[key])
         ) {
           (result as Record<string, unknown>)[key] =
             `[Array with ${((obj as Record<string, unknown>)[key] as unknown[]).length} items]`;
-        }
-        // Handle specific properties we want to preserve, even at depth
-        else if (['_id', 'id', 'name', 'status'].includes(key)) {
+        } else if (['_id', 'id', 'name', 'status'].includes(key)) {
           (result as Record<string, unknown>)[key] = (
             obj as Record<string, unknown>
           )[key];
