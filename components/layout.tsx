@@ -7,7 +7,6 @@ import Image from 'next/image';
 import { NavBar } from './NavBar';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { useUserSignIn } from '../hooks/use-user-sign-in.hook';
-import { useUserPreferences } from '../hooks/user-preferences/use-user-preferences';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -17,9 +16,6 @@ function Layout({ children }: LayoutProps) {
   const [isLoading, currentUser] = useUserSignIn();
   const router = useRouter();
   const isHomePage = router.pathname === '/';
-
-  // Load user preferences but don't directly apply theme
-  useUserPreferences();
 
   if (isLoading) {
     return (
@@ -122,59 +118,34 @@ function Layout({ children }: LayoutProps) {
         </div>
       </header>
 
-      <ToastContainer />
-
-      <div className="container mx-auto px-4 py-2 flex justify-between items-center min-h-[40px]">
-        {currentUser && !isHomePage ? (
-          <button
-            onClick={() => router.back()}
-            className="btn btn-ghost btn-sm flex items-center gap-1"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-4 h-4"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
-              />
-            </svg>
-            Back
-          </button>
+      <main className="flex-grow flex flex-col">
+        {isHomePage ? (
+          <div className="container mx-auto px-4 py-8">{children}</div>
         ) : (
-          <div />
-        )}
-      </div>
-
-      <main className="container mx-auto p-4 flex-grow flex flex-col">
-        {currentUser || isHomePage ? (
-          children
-        ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-center">
-            <h2 className="text-2xl font-semibold mb-4">Please Login</h2>
-            <p className="mb-6">You need to be logged in to view this page.</p>
-            <Link href="/api/auth/login">
-              <button className="btn btn-primary">Login</button>
-            </Link>
+          <div className="container mx-auto px-4 py-8 flex-grow">
+            {children}
           </div>
         )}
       </main>
 
-      <footer className="bg-base-300 p-4 text-center text-sm">
-        <div className="container mx-auto">
-          <p>
-            Copyright Shane Schmaltz 2025.{' '}
-            <Link href="/feedback" className="text-primary hover:underline">
-              Have feedback or need support?
+      <footer className="p-4 bg-neutral text-neutral-content">
+        <div className="container mx-auto flex flex-col md:flex-row justify-between items-center text-sm">
+          <div className="mb-2 md:mb-0">
+            &copy; {new Date().getFullYear()} DM Essentials. All rights
+            reserved.
+          </div>
+          <div className="flex gap-4">
+            <Link href="/privacy" className="link link-hover">
+              Privacy Policy
             </Link>
-          </p>
+            <Link href="/terms" className="link link-hover">
+              Terms of Service
+            </Link>
+          </div>
         </div>
       </footer>
+
+      <ToastContainer />
     </div>
   );
 }

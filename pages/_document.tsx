@@ -25,7 +25,7 @@ export default class MyDocument extends Document {
           />
           <meta
             name="description"
-            content="Organize your workouts, join the fam."
+            content="Essential tools for dungeon masters to manage your tabletop RPG campaigns."
           />
           <meta name="format-detection" content="telephone=no" />
           <meta name="mobile-web-app-capable" content="yes" />
@@ -62,7 +62,7 @@ export default class MyDocument extends Document {
           <meta name="twitter:title" content="Dungeon Master Essentials" />
           <meta
             name="twitter:description"
-            content="Organize your workouts, join the fam."
+            content="Essential tools for dungeon masters to manage your tabletop RPG campaigns."
           />
           <meta
             name="twitter:image"
@@ -72,7 +72,7 @@ export default class MyDocument extends Document {
           <meta property="og:title" content="dungeon-master-essentials.com" />
           <meta
             property="og:description"
-            content="Placeholder app for getting started quickly."
+            content="Essential tools for dungeon masters to manage your tabletop RPG campaigns."
           />
           <meta property="og:site_name" content="Dungeon Master Essentials" />
           <meta

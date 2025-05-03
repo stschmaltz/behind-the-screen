@@ -11,16 +11,27 @@ import {
 const userPreferencesMutationTypeDefs = /* GraphQL */ `
   extend type Mutation {
     setActiveCampaign(input: SetActiveCampaignInput!): UserPreferences
+    setTheme(input: SetThemeInput!): UserPreferences
   }
 
   input SetActiveCampaignInput {
     campaignId: ID
+  }
+
+  input SetThemeInput {
+    theme: String!
   }
 `;
 
 interface SetActiveCampaignArgs {
   input: {
     campaignId: string | null;
+  };
+}
+
+interface SetThemeArgs {
+  input: {
+    theme: string;
   };
 }
 
@@ -42,6 +53,20 @@ const userPreferencesMutationResolver = {
       return userPreferencesRepository.setActiveCampaign({
         userId: context.user._id,
         campaignId: input.campaignId || null,
+      });
+    },
+
+    async setTheme(
+      _: any,
+      { input }: SetThemeArgs,
+      context: GraphQLContext,
+    ): Promise<UserPreferences | null> {
+      logger.info('setTheme', input);
+      isAuthorizedOrThrow(context);
+
+      return userPreferencesRepository.setTheme({
+        userId: context.user._id,
+        theme: input.theme,
       });
     },
   },

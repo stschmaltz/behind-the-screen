@@ -11,4 +11,6 @@ export interface UserPreferencesRepositoryInterface {
     userId: string;
     campaignId: string | null;
   }): Promise<UserPreferences>;
+
+  setTheme(input: { userId: string; theme: string }): Promise<UserPreferences>;
 }

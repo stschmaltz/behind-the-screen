@@ -83,7 +83,7 @@ export const ConditionManager: React.FC<{
         id={`condition-modal-${characterId}`}
         className="modal-toggle"
       />
-      <div className="modal modal-bottom sm:modal-middle z-50">
+      <div className="modal modal-bottom sm:modal-middle z-40">
         <div className="modal-box relative">
           <h3 className="font-bold text-lg">Manage Conditions</h3>
 

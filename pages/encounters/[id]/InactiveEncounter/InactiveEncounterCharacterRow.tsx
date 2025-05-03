@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from 'react';
-import { DocumentDuplicateIcon, MinusIcon } from '@heroicons/react/24/outline';
+import { DocumentDuplicateIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { FormInput } from '../../../../components/FormInput';
 import { Button } from '../../../../components/Button';
 import {
@@ -90,10 +90,10 @@ const InactiveEncounterCharacterRow = ({
           {onDelete && (
             <Button
               variant="secondary"
-              className="btn-square btn-xs text-error"
+              className="btn-square btn-xs bg-error bg-opacity-10 hover:bg-error hover:bg-opacity-20"
               onClick={onDelete}
               tooltip="Remove Character"
-              icon={<MinusIcon className="w-4 h-4" />}
+              icon={<TrashIcon className="w-4 h-4 text-error" />}
             />
           )}
         </div>

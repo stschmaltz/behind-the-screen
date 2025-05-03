@@ -1,17 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { asyncFetch } from '../data/graphql/graphql-fetcher';
-import { setThemeMutation } from '../data/graphql/snippets/user-preferences';
-import { logger } from '../lib/logger';
+import React from 'react';
+import { useTheme } from '../context/ThemeContext';
 
 const ThemeSwitcher: React.FC = () => {
-  // Keep track of current theme locally
-  const [currentTheme, setCurrentTheme] = useState<string>('dark');
-
-  // Initialize theme from localStorage on component mount
-  useEffect(() => {
-    const storedTheme = localStorage.getItem('dme-theme') || 'dark';
-    setCurrentTheme(storedTheme);
-  }, []);
+  const { theme: currentTheme, setTheme } = useTheme();
 
   const themes = [
     'acid',
@@ -49,37 +40,7 @@ const ThemeSwitcher: React.FC = () => {
   ];
 
   // Common themes to show at the top
-  const commonThemes = [
-    'light',
-    'dark',
-    // 'dracula',
-    'cupcake',
-    'cyberpunk',
-    // 'fantasy',
-  ];
-
-  const handleThemeChange = async (newTheme: string) => {
-    // Update local state
-    setCurrentTheme(newTheme);
-
-    // Set in localStorage
-    localStorage.setItem('dme-theme', newTheme);
-
-    // Apply to document
-    document.documentElement.setAttribute('data-theme', newTheme);
-
-    try {
-      // Save to MongoDB
-      await asyncFetch(setThemeMutation, {
-        input: { theme: newTheme },
-      });
-    } catch (error) {
-      logger.error('Failed to save theme preference to database', {
-        error: error instanceof Error ? error.message : String(error),
-        theme: newTheme,
-      });
-    }
-  };
+  const commonThemes = ['light', 'dark', 'cupcake', 'cyberpunk'];
 
   return (
     <div className="dropdown dropdown-end">
@@ -108,7 +69,7 @@ const ThemeSwitcher: React.FC = () => {
               {commonThemes.map((t) => (
                 <button
                   key={t}
-                  onClick={() => handleThemeChange(t)}
+                  onClick={() => setTheme(t)}
                   className={`btn btn-xs font-medium ${
                     currentTheme === t
                       ? 'bg-primary text-primary-content border-primary'
@@ -125,7 +86,7 @@ const ThemeSwitcher: React.FC = () => {
             {themes.map((t) => (
               <button
                 key={t}
-                onClick={() => handleThemeChange(t)}
+                onClick={() => setTheme(t)}
                 className={`btn btn-xs font-medium ${
                   currentTheme === t
                     ? 'bg-primary text-primary-content border-primary'

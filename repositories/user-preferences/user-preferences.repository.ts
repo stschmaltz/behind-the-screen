@@ -113,12 +113,59 @@ export class UserPreferencesRepository
     }
   }
 
+  public async setTheme(input: {
+    userId: string;
+    theme: string;
+  }): Promise<UserPreferences> {
+    const { userId, theme } = input;
+    const { db } = await getDbClient();
+    const now = new Date();
+
+    const existingPrefs = await this.getUserPreferences(userId);
+
+    if (existingPrefs) {
+      const result = await db.collection(this.collectionName).findOneAndUpdate(
+        { _id: new ObjectId(existingPrefs._id), userId: new ObjectId(userId) },
+        {
+          $set: {
+            theme,
+            updatedAt: now,
+          },
+        },
+        { returnDocument: 'after' },
+      );
+
+      if (!result) {
+        throw new Error('Failed to update theme preference');
+      }
+
+      return this.mapToUserPreferences(result);
+    } else {
+      const newPrefs = {
+        userId: new ObjectId(userId),
+        theme,
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      const insertResult = await db
+        .collection(this.collectionName)
+        .insertOne(newPrefs);
+
+      return this.mapToUserPreferences({
+        ...newPrefs,
+        _id: insertResult.insertedId,
+      });
+    }
+  }
+
   private mapToUserPreferences(doc: any): UserPreferences {
     return {
       _id: doc._id?.toString() || doc._id,
       userId: doc.userId?.toString() || doc.userId,
       activeCampaignId:
         doc.activeCampaignId?.toString() || doc.activeCampaignId,
+      theme: doc.theme,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };
