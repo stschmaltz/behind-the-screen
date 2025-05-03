@@ -83,8 +83,8 @@ export const ConditionManager: React.FC<{
         id={`condition-modal-${characterId}`}
         className="modal-toggle"
       />
-      <div className="modal">
-        <div className="modal-box">
+      <div className="modal modal-bottom sm:modal-middle z-50">
+        <div className="modal-box relative">
           <h3 className="font-bold text-lg">Manage Conditions</h3>
 
           <div className="grid grid-cols-2 gap-2 my-4">
@@ -94,7 +94,11 @@ export const ConditionManager: React.FC<{
               return (
                 <div
                   key={condition}
-                  className={`btn btn-sm justify-start ${isActive ? conditionColors[condition] + ' text-white' : 'btn-outline'}`}
+                  className={`btn btn-sm justify-start hover:opacity-90 ${
+                    isActive
+                      ? conditionColors[condition] + ' text-white'
+                      : 'btn-outline'
+                  }`}
                   onClick={() => handleToggleCondition(condition)}
                 >
                   {isActive ? '✓ ' : ''}
@@ -110,6 +114,10 @@ export const ConditionManager: React.FC<{
             </label>
           </div>
         </div>
+        <label
+          className="modal-backdrop"
+          htmlFor={`condition-modal-${characterId}`}
+        ></label>
       </div>
     </div>
   );

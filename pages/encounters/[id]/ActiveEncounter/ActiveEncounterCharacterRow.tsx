@@ -77,7 +77,7 @@ const ActiveEncounterCharacterRow: React.FC<{
 
   return (
     <div
-      className={`card relative ${isCurrentTurn ? 'bg-primary bg-opacity-10 z-20' : 'bg-base-100 z-10'} shadow-sm mb-4`}
+      className={`card relative ${isCurrentTurn ? 'bg-primary bg-opacity-10 z-10' : 'bg-base-100'} shadow-sm mb-4`}
     >
       {isMonster && (
         <MonsterDetailModal
