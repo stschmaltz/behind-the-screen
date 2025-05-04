@@ -6,6 +6,17 @@ A modern tabletop RPG encounter management application designed to streamline yo
 
 Behind-the-screen is a comprehensive tool for Game Masters to manage tabletop RPG encounters. Track initiative, manage players and NPCs during combat encounters. This application is currently in early development, with the encounter management system being the first feature under construction.
 
+## Features
+
+- **Encounter Management:** Create, view, and manage combat encounters.
+- **Initiative Tracking:** Easily track turn order for players and monsters during combat.
+- **Character Management:** Add and manage player characters and non-player characters/monsters within encounters.
+- **Difficulty Calculation:** Estimate encounter difficulty based on player levels and monster challenge ratings.
+
+## License
+
+This project is free to use under the MIT License. The copyright belongs to Shane Schmaltz. While the project is freely available, it is not currently open for contributions.
+
 ## Tech Stack
 
 - Next.js 15
@@ -16,6 +27,10 @@ Behind-the-screen is a comprehensive tool for Game Masters to manage tabletop RP
 - Auth0 Authentication
 - GraphQL (GraphQL Yoga)
 - Vercel (Deployment & CI/CD)
+
+## High-Level Architecture
+
+This application utilizes Next.js for both the React frontend and the server-side API routes. GraphQL (via GraphQL Yoga) is used for data fetching between the client and server. The architecture follows standard Next.js patterns, leveraging React components, custom hooks for state management, and context for global state.
 
 ## Getting Started
 
@@ -83,4 +98,4 @@ The application uses Vercel for continuous integration and deployment:
 
 ## Current Status
 
-This project is under active development. Currently focusing on building the encounter management system.
+This project is under active development. Currently focusing on building the encounter management system, which includes initiative tracking, character management, and combat facilitation for tabletop RPG sessions.

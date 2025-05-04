@@ -46,17 +46,25 @@ const HomePage: NextPage = () => {
       <div className="bg-base-100 h-full p-4 flex flex-col items-center space-y-6">
         <h1 className="text-3xl font-bold">Dungeon Master Essentials</h1>
         <p className="text-center max-w-xl text-base-content opacity-90">
-          Welcome, and thanks for checking out DM Essentials! I&apos;m Shane, a
-          solo developer building it — a multi-purpose toolkit for game and
-          dungeon masters to run their tabletop role-playing campaigns like
-          Dungeons &amp; Dragons.
+          Welcome to DM Essentials! I&apos;m Shane, the solo developer building
+          this free toolkit to help Game Masters run engaging TTRPGs like
+          D&amp;D.
+        </p>
+        <p className="text-center max-w-xl text-base-content opacity-90">
+          Start streamlining your combat with the beta{' '}
+          <Link
+            href="/encounters"
+            className="font-bold text-primary hover:underline"
+          >
+            Encounter Manager
+          </Link>
+          , designed for ease of use. More helpful tools are coming soon!
         </p>
         <p className="text-center max-w-xl text-base-content opacity-70">
-          Dungeon&nbsp;Master&nbsp;Essentials is in active development, and your
-          feedback will directly shape its direction. Please share your ideas,
-          pain points, or feature requests—
+          Your feedback is vital as I build this solo project. Please share your
+          valuable thoughts and feature requests{' '}
           <Link href="/feedback" className="text-primary hover:underline">
-            I&apos;d love to hear from you!
+            here!
           </Link>
         </p>
 
