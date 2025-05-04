@@ -59,5 +59,44 @@ This application utilizes Next.js for both the React frontend and the server-sid
 Run the development server:
 
 ```
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to view the application.
+
+### Deployment
+
+The application uses Vercel for continuous integration and deployment:
+
+- **Preview Deployments**: Every push to a branch automatically creates a preview deployment
+- **Production Deployment**: Merges to the main branch trigger automatic deployment to production
+- **Environment Variables**: Managed through the Vercel dashboard
+
+### Other Commands
+
+- `npm run build` - Build the application for production
+- `npm run start` - Start the production server
+- `npm run lint` - Run ESLint
+- `npm run prettier` - Run Prettier code formatter
+
+## Project Structure
+
+- `/components` - Reusable UI components
+- `/container` - Container components
+- `/context` - React context providers
+- `/hooks` - Custom React hooks
+- `/lib` - Utility functions and libraries
+- `/pages` - Next.js pages and API routes
+- `/providers` - Service providers
+- `/public` - Static assets
+- `/repositories` - Data access layer
+- `/styles` - Global styles and Tailwind configuration
+- `/types` - TypeScript type definitions
+
+## Current Status
+
+This project is under active development. Currently focusing on building the encounter management system, which includes initiative tracking, character management, and combat facilitation for tabletop RPG sessions.
+
+```
 
 ```
