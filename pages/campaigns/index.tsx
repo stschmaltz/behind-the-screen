@@ -212,11 +212,11 @@ const CampaignsPage: NextPage = () => {
                     <div className="flex justify-between items-center">
                       <Link
                         href={`/campaigns/${campaign._id}`}
-                        className="text-lg font-semibold hover:underline"
+                        className="text-lg font-semibold hover:underline flex-1"
                       >
                         {campaign.name}
                       </Link>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center justify-end gap-2 flex-wrap">
                         <button
                           className="btn btn-xs btn-ghost"
                           onClick={() => handleRenameStart(campaign)}
