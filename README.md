@@ -47,55 +47,17 @@ This application utilizes Next.js for both the React frontend and the server-sid
    npm install
    ```
 3. Set up environment variables:
-   Create a `.env.local` file with the following variables (adjust as needed):
+   Create a `.env.local` file by copying the template:
+   ```bash
+   cp .env.base .env.local
    ```
-   MONGODB_URI=your_mongodb_connection_string
-   AUTH0_SECRET=your_auth0_secret
-   AUTH0_BASE_URL=http://localhost:3000
-   AUTH0_ISSUER_BASE_URL=your_auth0_domain
-   AUTH0_CLIENT_ID=your_auth0_client_id
-   AUTH0_CLIENT_SECRET=your_auth0_client_secret
-   ```
+   Then, open `.env.local` and fill in the required values for your environment (e.g., database connection strings, API keys).
+   **Important:** Ensure `.env.local` is included in your `.gitignore` file and is never committed to version control.
 
 ### Development
 
 Run the development server:
 
 ```
-npm run dev
+
 ```
-
-Open [http://localhost:3000](http://localhost:3000) to view the application.
-
-### Deployment
-
-The application uses Vercel for continuous integration and deployment:
-
-- **Preview Deployments**: Every push to a branch automatically creates a preview deployment
-- **Production Deployment**: Merges to the main branch trigger automatic deployment to production
-- **Environment Variables**: Managed through the Vercel dashboard
-
-### Other Commands
-
-- `npm run build` - Build the application for production
-- `npm run start` - Start the production server
-- `npm run lint` - Run ESLint
-- `npm run prettier` - Run Prettier code formatter
-
-## Project Structure
-
-- `/components` - Reusable UI components
-- `/container` - Container components
-- `/context` - React context providers
-- `/hooks` - Custom React hooks
-- `/lib` - Utility functions and libraries
-- `/pages` - Next.js pages and API routes
-- `/providers` - Service providers
-- `/public` - Static assets
-- `/repositories` - Data access layer
-- `/styles` - Global styles and Tailwind configuration
-- `/types` - TypeScript type definitions
-
-## Current Status
-
-This project is under active development. Currently focusing on building the encounter management system, which includes initiative tracking, character management, and combat facilitation for tabletop RPG sessions.
