@@ -6,6 +6,7 @@ import {
   ShieldCheckIcon,
   UsersIcon,
 } from '@heroicons/react/24/outline';
+import { KofiButton } from '../components/KofiButton';
 
 const HomePage: NextPage = () => {
   const primaryFeature = {
@@ -82,13 +83,21 @@ const HomePage: NextPage = () => {
           </span>
           <span className="text-sm mt-2 text-center opacity-70">
             Use the{' '}
-            <Link href="/campaigns" className="text-primary hover:underline">
+            <span
+              className="text-primary hover:underline cursor-pointer"
+              onClick={() => (window.location.href = '/campaigns')}
+            >
               Campaigns page
-            </Link>{' '}
+            </span>{' '}
             to organize your game world
           </span>
         </Link>
-
+        <div className="flex items-center gap-4 mb-6">
+          <KofiButton
+            buttonClassName="btn btn-primary btn-sm"
+            text="Buy Me a Coffee"
+          />
+        </div>
         <div className="mt-10 w-full max-w-3xl">
           <h2 className="text-xl font-semibold mb-4">Coming Soon</h2>
           <div className="grid gap-4 sm:grid-cols-2">

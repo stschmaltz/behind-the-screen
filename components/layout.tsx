@@ -6,6 +6,7 @@ import Head from 'next/head';
 import Image from 'next/image';
 import { NavBar } from './NavBar';
 import { ThemeSwitcher } from './ThemeSwitcher';
+import { KofiButton } from './KofiButton';
 import { useUserSignIn } from '../hooks/use-user-sign-in.hook';
 
 interface LayoutProps {
@@ -116,6 +117,10 @@ function Layout({ children }: LayoutProps) {
               </Link>
             )}
 
+            <KofiButton
+              buttonClassName="btn btn-ghost btn-sm hidden md:flex"
+              text="Support"
+            />
             <ThemeSwitcher />
           </div>
         </div>
@@ -133,13 +138,17 @@ function Layout({ children }: LayoutProps) {
 
       <footer className="p-4 pb-10 md:pb-4 bg-neutral text-neutral-content">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center text-sm">
-          <div className="mb-2 md:mb-0">
-            &copy; {new Date().getFullYear()} Dungeon Master Essentials. All
-            rights reserved.
+          <div className="flex flex-col items-center mb-4 md:mb-0 text-xs">
+            &copy; {new Date().getFullYear()} Dungeon Master Essentials.
+            <div>All rights reserved.</div>
           </div>
+
           <div className="flex gap-4">
             <Link href="/feedback" className="link link-hover">
               Have Feedback?
+            </Link>
+            <Link href="/support" className="link link-hover">
+              Support Project
             </Link>
             <Link href="/privacy" className="link link-hover">
               Privacy Policy
