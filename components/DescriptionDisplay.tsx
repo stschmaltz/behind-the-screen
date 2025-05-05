@@ -58,7 +58,7 @@ const DescriptionDisplay: React.FC<DescriptionDisplayProps> = ({
   }
 
   return (
-    <div className={`inline-block flex items-center ${className}`}>
+    <div className={`inline-block flex items-center h-full mt-1 ${className}`}>
       <button
         type="button"
         data-tooltip-id={tooltipId}
@@ -66,7 +66,7 @@ const DescriptionDisplay: React.FC<DescriptionDisplayProps> = ({
         aria-label="View description"
         onClick={handleButtonClick}
       >
-        <InformationCircleIcon className="mt-2 h-6 w-6 text-info hover:text-info-focus" />
+        <InformationCircleIcon className="h-6 w-6 text-info hover:text-info-focus" />
       </button>
 
       <Tooltip

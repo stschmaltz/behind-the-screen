@@ -79,7 +79,6 @@ const EncounterCard: React.FC<EncounterCardProps> = ({
               <DescriptionDisplay
                 encounterId={encounter._id.toString()}
                 description={encounter.description}
-                className="mt-1"
               />
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
