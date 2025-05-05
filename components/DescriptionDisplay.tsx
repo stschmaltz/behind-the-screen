@@ -66,7 +66,7 @@ const DescriptionDisplay: React.FC<DescriptionDisplayProps> = ({
         aria-label="View description"
         onClick={handleButtonClick}
       >
-        <InformationCircleIcon className="h-5 w-5 text-info hover:text-info-focus" />
+        <InformationCircleIcon className="mt-2 h-6 w-6 text-info hover:text-info-focus" />
       </button>
 
       <Tooltip

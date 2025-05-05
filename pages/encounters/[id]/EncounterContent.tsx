@@ -1,169 +1,211 @@
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
-import InactiveEncounterTable from './InactiveEncounter/InactiveEncounterTable';
 import ActiveEncounterTable from './ActiveEncounter/ActiveEncounterTable';
-import { Player } from '../../../types/player';
+import InactiveEncounterTable from './InactiveEncounter/InactiveEncounterTable';
 import { useEncounterContext } from '../../../context/EncounterContext';
+import { Player } from '../../../types/player';
 import { Button } from '../../../components/Button';
 import { useModal } from '../../../hooks/use-modal';
-import { showDaisyToast } from '../../../lib/daisy-toast';
-import { logger } from '../../../lib/logger';
+import ConfirmationModal from '../../../components/modals/ConfirmationModal';
 import DescriptionDisplay from '../../../components/DescriptionDisplay';
 import EncounterDifficultyBadge from '../../../components/EncounterDifficultyBadge';
+import InlineEditableText from '../../../components/ui/InlineEditableText';
+import { logger } from '../../../lib/logger';
 
-const EncounterContent = ({ players }: { players: Player[] }) => {
+interface EncounterContentProps {
+  players: Player[];
+}
+
+const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
   const {
     encounter,
-    deleteEncounter,
-    updateEncounterDescription,
     handleSave,
     isSaving,
+    deleteEncounter,
+    updateEncounterDescription,
   } = useEncounterContext();
-  const { closeModal, showModal } = useModal('delete-encounter-modal');
+
+  const [draftName, setDraftName] = useState(encounter.name);
+  const { showModal: showDeleteModal, closeModal: closeDeleteModal } = useModal(
+    'delete-encounter-modal',
+  );
+  const [isDeleteModalActuallyOpen, setIsDeleteModalActuallyOpen] =
+    useState(false);
   const [isFinishingEncounter, setIsFinishingEncounter] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    setDraftName(encounter.name);
+  }, [encounter.name]);
+
+  if (!encounter) {
+    return <div>Loading encounter details...</div>;
+  }
+
+  const openDeleteModalAndSetState = () => {
+    showDeleteModal();
+    setIsDeleteModalActuallyOpen(true);
+  };
+
+  const closeDeleteModalAndSetState = () => {
+    closeDeleteModal();
+    setIsDeleteModalActuallyOpen(false);
+  };
+
+  const handleDeleteConfirm = async () => {
+    setIsDeleting(true);
+    const result = await deleteEncounter(encounter._id);
+    closeDeleteModalAndSetState();
+    setIsDeleting(false);
+    if (result) {
+      router.push('/encounters');
+    } else {
+      logger.error('Failed to delete encounter.');
+    }
+  };
 
   const handleFinishEncounter = async () => {
     setIsFinishingEncounter(true);
-
     try {
       const finishedEncounter = {
         ...encounter,
         status: 'completed' as const,
         completedAt: new Date().toISOString(),
       };
-
-      await handleSave(finishedEncounter);
-      showDaisyToast('success', 'Encounter completed successfully!');
-      router.replace('/encounters');
+      const success = await handleSave(finishedEncounter);
+      if (success) {
+        router.push('/encounters');
+      } else {
+        logger.error('Failed to finish encounter.');
+      }
     } catch (error) {
-      logger.error('Failed to complete encounter', error);
-      showDaisyToast('error', 'Failed to complete encounter');
+      logger.error('Error finishing encounter:', error);
+    } finally {
       setIsFinishingEncounter(false);
     }
   };
 
+  const handleNameSave = async (newName: string) => {
+    const trimmedNewName = newName.trim();
+    if (!trimmedNewName || trimmedNewName === encounter.name) {
+      setDraftName(encounter.name);
+
+      return;
+    }
+
+    const updatedEncounterForSave = {
+      ...encounter,
+      name: trimmedNewName,
+    };
+
+    const success = await handleSave(updatedEncounterForSave);
+
+    if (success) {
+      logger.info('Encounter name updated successfully via inline edit.');
+    } else {
+      logger.error('Failed to save encounter name change via inline edit.');
+      setDraftName(encounter.name);
+    }
+  };
+
+  const { status } = encounter;
+
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
-      <div className="card bg-base-100 shadow-xl">
+    <div className="p-4">
+      <div className="card bg-base-100 shadow-xl mb-6">
         <div className="card-body">
-          <div className="flex flex-col sm:flex-row justify-between items-start mb-4 gap-4 sm:gap-2">
-            <div className="flex flex-col w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div className="flex-grow">
               <div className="flex items-center gap-2">
-                <h1 className="card-title text-3xl font-bold">
-                  {encounter.name}
-                </h1>
-                <DescriptionDisplay
-                  encounterId={encounter._id}
-                  description={encounter.description}
-                  isEditable={true}
-                  onUpdateDescription={async (newDescription) => {
-                    try {
-                      await updateEncounterDescription(
-                        encounter._id,
-                        newDescription,
-                      );
-                      showDaisyToast('success', 'Description updated');
-                    } catch (error) {
-                      logger.error(
-                        'Failed to update encounter description',
-                        error,
-                      );
-                      showDaisyToast('error', 'Failed to update description');
-                    }
-                  }}
-                  className="mt-1"
+                <InlineEditableText
+                  initialValue={draftName}
+                  onSave={handleNameSave}
+                  isSaving={isSaving}
+                  placeholder="Enter Encounter Name"
+                  displayClassName="card-title text-3xl font-bold cursor-pointer hover:bg-base-200 p-1 rounded"
+                  inputClassName="input input-bordered input-lg w-full font-bold text-3xl"
+                  ariaLabel="Encounter name"
                 />
               </div>
-            </div>
-            <div className="flex flex-row gap-2 w-full sm:w-auto">
-              <Button
-                label="Delete Encounter"
-                variant="error"
-                tooltip="Delete Encounter"
-                onClick={() => showModal()}
-                className="btn-sm btn-error"
+              <DescriptionDisplay
+                encounterId={encounter._id}
+                description={encounter.description}
+                isEditable={true}
+                onUpdateDescription={async (newDescription) => {
+                  try {
+                    await updateEncounterDescription(
+                      encounter._id,
+                      newDescription,
+                    );
+                  } catch (_error) {
+                    logger.error('Update description failed in component');
+                  }
+                }}
               />
-              {encounter.status === 'active' && (
-                <Button
-                  label="Finish Encounter"
-                  variant="accent"
-                  tooltip="Complete this encounter"
-                  onClick={handleFinishEncounter}
-                  disabled={isFinishingEncounter}
-                  loading={isFinishingEncounter}
-                  className="btn-sm"
+            </div>
+            <div className="flex flex-col items-start sm:items-end gap-3">
+              <div className="flex items-center gap-2">
+                <div
+                  className={`badge badge-lg ${
+                    status === 'active' ? 'badge-primary' : 'badge-secondary'
+                  }`}
+                >
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                </div>
+                <EncounterDifficultyBadge
+                  enemies={encounter.enemies}
+                  playerLevels={encounter.initiativeOrder
+                    .filter((char) => char.type === 'player')
+                    .map((playerChar) => {
+                      const player = players.find(
+                        (p) => p._id === playerChar._id,
+                      );
+
+                      return player?.level || 1;
+                    })}
+                  className="badge-md"
                 />
-              )}
+              </div>
+              <div className="card-actions justify-end">
+                <Button
+                  label="Delete Encounter"
+                  onClick={openDeleteModalAndSetState}
+                  variant="error"
+                  className="btn-sm"
+                  disabled={isSaving || isFinishingEncounter || isDeleting}
+                />
+                {status === 'active' && (
+                  <Button
+                    label="Finish Encounter"
+                    onClick={handleFinishEncounter}
+                    className="btn-sm btn-warning"
+                    loading={isFinishingEncounter}
+                    disabled={isSaving}
+                  />
+                )}
+              </div>
             </div>
-          </div>
-
-          <div className="my-4">
-            <div
-              className={`badge badge-lg ${
-                encounter.status === 'active'
-                  ? 'badge-primary'
-                  : 'badge-secondary'
-              }`}
-            >
-              {encounter.status.charAt(0).toUpperCase() +
-                encounter.status.slice(1)}
-            </div>
-            <EncounterDifficultyBadge
-              enemies={encounter.enemies}
-              playerLevels={encounter.initiativeOrder
-                .filter((char) => char.type === 'player')
-                .map((playerChar) => {
-                  const matchedPlayer = players.find(
-                    (p) => p._id === playerChar._id,
-                  );
-
-                  return matchedPlayer?.level || 1;
-                })}
-              className="badge-lg ml-2"
-            />
-            {isSaving && (
-              <span className="ml-2 badge badge-warning">Saving...</span>
-            )}
-          </div>
-
-          <div>
-            {encounter.status === 'active' ? (
-              <ActiveEncounterTable players={players} />
-            ) : (
-              <InactiveEncounterTable encounter={encounter} players={players} />
-            )}
           </div>
         </div>
       </div>
 
-      <dialog id="delete-encounter-modal" className="modal modal-center">
-        <div className="modal-box">
-          <p>Are you sure you want to delete this encounter?</p>
-          <div className="modal-action">
-            <Button label="Cancel" variant="secondary" onClick={closeModal} />
-            <Button
-              label="Delete"
-              variant="error"
-              onClick={async () => {
-                const result = await deleteEncounter(encounter._id);
+      <div>
+        {status === 'active' ? (
+          <ActiveEncounterTable players={players} />
+        ) : (
+          <InactiveEncounterTable encounter={encounter} players={players} />
+        )}
+      </div>
 
-                closeModal();
-                if (!result) {
-                  logger.error('Failed to delete encounter');
-                  showDaisyToast('error', 'Failed to delete encounter');
-
-                  return false;
-                } else {
-                  showDaisyToast('success', 'Encounter deleted');
-
-                  router.replace('/encounters');
-                }
-              }}
-            />
-          </div>
-        </div>
-      </dialog>
+      <ConfirmationModal
+        isOpen={isDeleteModalActuallyOpen}
+        onClose={closeDeleteModalAndSetState}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Encounter?"
+        message={`Are you sure you want to delete the encounter "${encounter.name}"? This action cannot be undone.`}
+        isProcessing={isDeleting}
+      />
     </div>
   );
 };

@@ -1,17 +1,17 @@
-import Link from 'next/link';
 import { NextPage } from 'next';
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import PlayerManagementSection from './PlayerManagementSection';
-import CampaignSelector from '../../components/selectors/CampaignSelector';
-import AdventureSelector from '../../components/selectors/AdventureSelector';
 import { getAllEncounters } from '../../hooks/encounter/get-all-encounters';
 import { getAllAdventures } from '../../hooks/adventure/get-all-adventures';
 import { useActiveCampaign } from '../../context/ActiveCampaignContext';
-import DescriptionDisplay from '../../components/DescriptionDisplay';
-import { Encounter } from '../../types/encounters';
-import EncounterDifficultyBadge from '../../components/EncounterDifficultyBadge';
-import { DocumentIcon, SettingsIcon } from '../../components/icons';
+import { Encounter, NewEncounterTemplate } from '../../types/encounters';
+import { DocumentIcon } from '../../components/icons';
+import { useManageEncounter } from '../../hooks/encounter/use-manage-encounter';
+import EncounterList from '../../components/encounters/EncounterList';
+import EncounterPageHeader from '../../components/encounters/EncounterPageHeader';
+import ConfirmationModal from '../../components/modals/ConfirmationModal';
+import CopyConfirmationModal from '../../components/modals/CopyConfirmationModal';
+import { logger } from '../../lib/logger';
 
 const EncountersPage: NextPage = () => {
   const router = useRouter();
@@ -29,9 +29,21 @@ const EncountersPage: NextPage = () => {
   const [selectedAdventureId, setSelectedAdventureId] = useState<
     string | undefined
   >(undefined);
-  const [showActive, setShowActive] = useState(true);
-  const [showInactive, setShowInactive] = useState(true);
-  const [showCompleted, setShowCompleted] = useState(false);
+
+  const {
+    handleSave: performSaveEncounter,
+    isSaving,
+    deleteEncounter,
+    isDeleting,
+  } = useManageEncounter();
+
+  const [encounterToDelete, setEncounterToDelete] = useState<string | null>(
+    null,
+  );
+  const [encounterToCopy, setEncounterToCopy] = useState<Encounter | null>(
+    null,
+  );
+  const [newEncounterName, setNewEncounterName] = useState<string>('');
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -59,7 +71,11 @@ const EncountersPage: NextPage = () => {
     selectedCampaignId,
   ]);
 
-  const { loading: encountersLoading, encounters } = getAllEncounters({
+  const {
+    loading: encountersLoading,
+    encounters,
+    refresh: refreshEncounters,
+  } = getAllEncounters({
     campaignId: selectedCampaignId,
     adventureId: selectedAdventureId,
   });
@@ -114,91 +130,73 @@ const EncountersPage: NextPage = () => {
     setSelectedAdventureId(id);
   }, []);
 
-  const getStatusBadgeClass = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'badge-outline badge-success';
-      case 'completed':
-        return 'badge-ghost';
-      default:
-        return 'badge-secondary';
+  const handleDeleteClick = (encounterId: string) => {
+    setEncounterToDelete(encounterId);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!encounterToDelete || isDeleting) return;
+
+    const success = await deleteEncounter(encounterToDelete);
+    if (success) {
+      logger.info('Encounter deleted successfully, refreshing...');
+      await refreshEncounters();
+      setEncounterToDelete(null);
+    } else {
+      logger.error('Failed to delete encounter.');
+      setEncounterToDelete(null);
     }
   };
 
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'Active';
-      case 'completed':
-        return 'Completed';
-      default:
-        return 'Inactive';
+  const handleDeleteCancel = () => {
+    if (isDeleting) return;
+    setEncounterToDelete(null);
+  };
+
+  const handleCopyClick = (encounter: Encounter) => {
+    setNewEncounterName(`${encounter.name} (Copy)`);
+    setEncounterToCopy(encounter);
+  };
+
+  const handleCopyConfirm = async () => {
+    if (!encounterToCopy || isSaving || !newEncounterName.trim()) return;
+
+    logger.debug('Original encounter ID for copy:', encounterToCopy._id);
+
+    const newEncounterData: NewEncounterTemplate = {
+      name: newEncounterName.trim(),
+      status: 'inactive',
+      enemies: encounterToCopy.enemies || [],
+      notes: encounterToCopy.notes || [],
+      description: encounterToCopy.description || '',
+      campaignId: encounterToCopy.campaignId?.toString() || '',
+      adventureId: encounterToCopy.adventureId?.toString(),
+    };
+
+    logger.debug('Attempting to save cloned data:', newEncounterData);
+
+    const success = await performSaveEncounter(newEncounterData);
+
+    setEncounterToCopy(null);
+    setNewEncounterName('');
+
+    if (success) {
+      logger.info('Save reported success. Refreshing encounters list...');
+      try {
+        await refreshEncounters();
+        logger.info('Encounter list refresh completed.');
+      } catch (refreshError) {
+        logger.error('Error during encounter list refresh:', refreshError);
+      }
+    } else {
+      logger.error('Save reported failure.');
     }
   };
 
-  const renderEncounterCard = (encounter: Encounter) => {
-    const campaign = encounter.campaignId
-      ? campaigns?.find((c) => c._id === encounter.campaignId.toString())
-      : null;
-
-    const adventure = encounter.adventureId
-      ? adventures?.find((a) => a._id === encounter.adventureId?.toString())
-      : null;
-
-    const campaignPlayerLevels =
-      players
-        ?.filter((p) => p.campaignId === encounter.campaignId?.toString())
-        .map((p) => p.level || 1) || [];
-
-    return (
-      <Link
-        key={encounter._id.toString()}
-        href={`/encounters/${encounter._id.toString()}`}
-        className="block w-full"
-      >
-        <div className="p-4 bg-base-200 border border-base-300 rounded shadow-sm hover:bg-base-300 transition-colors">
-          <div className="flex justify-between items-center">
-            <div className="text-lg font-semibold flex items-center gap-2">
-              <span>{encounter.name}</span>
-              <DescriptionDisplay
-                encounterId={encounter._id.toString()}
-                description={encounter.description}
-                className="mt-1"
-              />
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="text-sm opacity-80">
-                {encounter.createdAt.toLocaleString()}
-              </div>
-              <div className={`badge ${getStatusBadgeClass(encounter.status)}`}>
-                {getStatusLabel(encounter.status)}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-2 flex gap-2 flex-wrap items-center">
-            {encounter.campaignId && (
-              <div className="badge badge-primary badge-outline badge-sm font-semibold">
-                {campaign?.name || 'Campaign'}
-              </div>
-            )}
-            {encounter.adventureId && (
-              <div className="badge badge-secondary badge-outline badge-sm font-semibold">
-                {adventure?.name || 'Adventure'}
-              </div>
-            )}
-            {encounter.enemies?.length > 0 &&
-              campaignPlayerLevels.length > 0 && (
-                <EncounterDifficultyBadge
-                  enemies={encounter.enemies}
-                  playerLevels={campaignPlayerLevels}
-                  className="badge-sm"
-                />
-              )}
-          </div>
-        </div>
-      </Link>
-    );
+  const handleCopyCancel = () => {
+    if (isSaving) return;
+    setEncounterToCopy(null);
+    setNewEncounterName('');
   };
 
   const renderContent = () => {
@@ -215,152 +213,49 @@ const EncountersPage: NextPage = () => {
     }
 
     return (
-      <div className="flex w-full flex-col gap-6">
-        {/* Active encounters section */}
-        {encounters.some((e) => e.status === 'active') && (
-          <div className="w-full">
-            <div className="flex justify-between items-center mb-2 border-b pb-2">
-              <h2 className="text-xl font-semibold">
-                Active Encounters
-                <span className="ml-2 badge badge-accent">
-                  {encounters.filter((e) => e.status === 'active').length}
-                </span>
-              </h2>
-              <button
-                className="btn btn-xs btn-ghost"
-                onClick={() => setShowActive(!showActive)}
-              >
-                {showActive ? 'Hide' : 'Show'}
-              </button>
-            </div>
-            {showActive ? (
-              <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-1">
-                {encounters
-                  .filter((encounter) => encounter.status === 'active')
-                  .map(renderEncounterCard)}
-              </div>
-            ) : (
-              <div className="text-sm text-gray-500 italic mt-1 mb-2">
-                {encounters.filter((e) => e.status === 'active').length} active
-                encounters
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Inactive encounters section */}
-        {encounters.some((e) => e.status === 'inactive') && (
-          <div className="w-full">
-            <div className="flex justify-between items-center mb-2 border-b pb-2">
-              <h2 className="text-xl font-semibold">
-                Ready Encounters
-                <span className="ml-2 badge badge-secondary">
-                  {encounters.filter((e) => e.status === 'inactive').length}
-                </span>
-              </h2>
-              <button
-                className="btn btn-xs btn-ghost"
-                onClick={() => setShowInactive(!showInactive)}
-              >
-                {showInactive ? 'Hide' : 'Show'}
-              </button>
-            </div>
-            {showInactive ? (
-              <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-1">
-                {encounters
-                  .filter((encounter) => encounter.status === 'inactive')
-                  .map(renderEncounterCard)}
-              </div>
-            ) : (
-              <div className="text-sm text-gray-500 italic mt-1 mb-2">
-                {encounters.filter((e) => e.status === 'inactive').length} ready
-                encounters
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Completed encounters section */}
-        {encounters.some((e) => e.status === 'completed') && (
-          <div className="w-full">
-            <div className="flex justify-between items-center mb-2 border-b pb-2">
-              <h2 className="text-xl font-semibold">
-                Completed Encounters
-                <span className="ml-2 badge badge-ghost">
-                  {encounters.filter((e) => e.status === 'completed').length}
-                </span>
-              </h2>
-              <button
-                className="btn btn-xs btn-ghost"
-                onClick={() => setShowCompleted(!showCompleted)}
-              >
-                {showCompleted ? 'Hide' : 'Show'}
-              </button>
-            </div>
-            {showCompleted ? (
-              <div className="flex flex-col gap-2 max-h-[300px] overflow-y-auto pr-1">
-                {encounters
-                  .filter((encounter) => encounter.status === 'completed')
-                  .map(renderEncounterCard)}
-              </div>
-            ) : (
-              <div className="text-sm text-gray-500 italic mt-1 mb-2">
-                {encounters.filter((e) => e.status === 'completed').length}{' '}
-                completed encounters
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+      <EncounterList
+        encounters={encounters}
+        campaigns={campaigns ?? undefined}
+        adventures={adventures}
+        players={players ?? undefined}
+        isSaving={isSaving}
+        isDeleting={isDeleting}
+        encounterToDelete={encounterToDelete}
+        onCopyClick={handleCopyClick}
+        onDeleteClick={handleDeleteClick}
+      />
     );
   };
 
   return (
     <div className="bg-base-100 min-h-full p-4 flex flex-col w-full max-w-2xl space-y-4 m-auto min-w-72">
-      <div className="flex flex-col w-full max-w-xl mx-auto">
-        <div className="flex justify-end mb-2">
-          <Link href="/campaigns">
-            <button className="btn btn-sm btn-outline">
-              <span className="hidden sm:inline">Manage Campaigns</span>
-              <SettingsIcon className="w-5 h-5 sm:hidden" />
-            </button>
-          </Link>
-        </div>
-
-        <div className="mb-4">
-          <CampaignSelector
-            onCampaignChange={handleCampaignChange}
-            selectedCampaignId={selectedCampaignId}
-          />
-        </div>
-
-        {selectedCampaignId && (
-          <div className="w-full mb-4">
-            <AdventureSelector
-              selectedAdventureId={selectedAdventureId}
-              onAdventureChange={handleAdventureChange}
-            />
-          </div>
-        )}
-
-        {selectedCampaignId && (
-          <div className="w-full flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-            <div className="w-full sm:w-auto">
-              <PlayerManagementSection
-                startingPlayers={players ?? []}
-                campaignId={selectedCampaignId}
-                buttonClassName="btn-primary btn w-full"
-              />
-            </div>
-
-            <Link href={newEncounterUrl} className="w-full sm:w-auto">
-              <button className="btn btn-primary w-full">New Encounter</button>
-            </Link>
-          </div>
-        )}
-      </div>
+      <EncounterPageHeader
+        selectedCampaignId={selectedCampaignId}
+        selectedAdventureId={selectedAdventureId}
+        players={players ?? undefined}
+        handleCampaignChange={handleCampaignChange}
+        handleAdventureChange={handleAdventureChange}
+        newEncounterUrl={newEncounterUrl}
+      />
 
       <div className="w-full">{renderContent()}</div>
+      <ConfirmationModal
+        isOpen={!!encounterToDelete}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Encounter?"
+        message={`Are you sure you want to delete the encounter "${encounters?.find((e) => e._id === encounterToDelete)?.name || 'this encounter'}"? This action cannot be undone.`}
+        isProcessing={isDeleting}
+      />
+      <CopyConfirmationModal
+        isOpen={!!encounterToCopy}
+        onClose={handleCopyCancel}
+        onConfirm={handleCopyConfirm}
+        encounterName={encounterToCopy?.name}
+        newEncounterName={newEncounterName}
+        setNewEncounterName={setNewEncounterName}
+        isSaving={isSaving}
+      />
     </div>
   );
 };

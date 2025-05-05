@@ -13,6 +13,7 @@ const DEBOUNCE_DELAY = 500;
 
 const useManageEncounter = () => {
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const validateNewEncounter = (
     encounter: Encounter | NewEncounterTemplate,
@@ -21,10 +22,6 @@ const useManageEncounter = () => {
     if (!encounter.enemies.length) return 'At least one enemy is required';
     if (!encounter.enemies.every((enemy) => enemy.name))
       return 'All enemies must have a name';
-    if (!encounter.enemies.every((enemy) => enemy.maxHP))
-      return 'All enemies must have a max HP';
-    if (!encounter.enemies.every((enemy) => enemy.maxHP > 0))
-      return 'All enemies must have a max HP greater than 0';
     if (!encounter.notes.every((note) => note))
       return 'All notes must have a value';
 
@@ -156,14 +153,17 @@ const useManageEncounter = () => {
 
   const deleteEncounter = async (encounterId: string): Promise<boolean> => {
     logger.debug('Deleting encounter', { id: encounterId });
+    setIsDeleting(true);
     try {
       await asyncFetch(deleteEncounterMutation, {
         input: { id: encounterId.toString() },
       });
       logger.info('Encounter deleted successfully', { id: encounterId });
+      setIsDeleting(false);
       return true;
     } catch (err) {
       logger.error('Failed to delete encounter', err);
+      setIsDeleting(false);
       return false;
     }
   };
@@ -189,7 +189,13 @@ const useManageEncounter = () => {
     [],
   );
 
-  return { isSaving, handleSave, deleteEncounter, updateDescription };
+  return {
+    isSaving,
+    handleSave,
+    deleteEncounter,
+    isDeleting,
+    updateDescription,
+  };
 };
 
 export { useManageEncounter };

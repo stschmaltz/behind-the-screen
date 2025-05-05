@@ -35,7 +35,6 @@ export function useQuery<T>({
       setLoading(true);
 
       try {
-        // Check cache first unless forced refresh or skipCache
         if (!forceRefresh && !skipCache) {
           const cachedData = getCachedResult<T>(cacheKey);
           if (cachedData) {
@@ -47,12 +46,10 @@ export function useQuery<T>({
           }
         }
 
-        // Fetch fresh data
         logger.info(`API CALL for query: ${query.substring(0, 50)}...`);
         const response = await asyncFetch<T>(query, variables);
         const transformedData = transform ? transform(response) : response;
 
-        // Update cache
         if (!skipCache) {
           setCachedResult(cacheKey, transformedData);
         }
@@ -78,7 +75,6 @@ export function useQuery<T>({
     let isMounted = true;
     setLoading(true);
 
-    // Check cache first
     if (!skipCache) {
       const cachedData = getCachedResult<T>(cacheKey);
       if (cachedData) {
@@ -99,7 +95,6 @@ export function useQuery<T>({
 
         const transformedData = transform ? transform(response) : response;
 
-        // Update cache
         if (!skipCache) {
           setCachedResult(cacheKey, transformedData);
         }
@@ -122,7 +117,6 @@ export function useQuery<T>({
     };
   }, [query, enabled, variables, transform, skipCache, cacheKey]);
 
-  // Manual refresh function that bypasses cache
   const refresh = useCallback(() => fetchData(true), [fetchData]);
 
   return { data, loading, error, refresh };
