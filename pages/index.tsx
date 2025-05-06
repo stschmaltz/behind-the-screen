@@ -6,7 +6,6 @@ import {
   ShieldCheckIcon,
   UsersIcon,
 } from '@heroicons/react/24/outline';
-import { KofiButton } from '../components/KofiButton';
 
 const HomePage: NextPage = () => {
   const primaryFeature = {
@@ -92,12 +91,12 @@ const HomePage: NextPage = () => {
             to organize your game world
           </span>
         </Link>
-        <div className="flex items-center gap-4 mb-6">
+        {/* <div className="flex items-center gap-4 mb-6">
           <KofiButton
             buttonClassName="btn btn-primary btn-sm"
             text="Buy Me a Coffee"
           />
-        </div>
+        </div> */}
         <div className="mt-10 w-full max-w-3xl">
           <h2 className="text-xl font-semibold mb-4">Coming Soon</h2>
           <div className="grid gap-4 sm:grid-cols-2">
