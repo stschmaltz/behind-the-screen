@@ -90,7 +90,7 @@ const HomePage: NextPage = () => {
             to organize your game world
           </span>
         </Link>
-        <p className="text-center max-w-xl text-base-content opacity-70">
+        <p className="text-center max-w-xl text-base-content ">
           Your feedback is vital as I build this solo project. Please share your
           valuable thoughts and feature requests{' '}
           <Link href="/feedback" className="text-primary hover:underline">

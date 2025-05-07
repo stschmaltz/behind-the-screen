@@ -228,7 +228,7 @@ const EncountersPage: NextPage = () => {
   };
 
   return (
-    <div className="bg-base-100 min-h-full p-4 flex flex-col w-full max-w-2xl space-y-4 m-auto min-w-72">
+    <div className="bg-base-200 min-h-full p-4 flex flex-col w-full max-w-2xl space-y-4 m-auto min-w-72">
       <EncounterPageHeader
         selectedCampaignId={selectedCampaignId}
         selectedAdventureId={selectedAdventureId}

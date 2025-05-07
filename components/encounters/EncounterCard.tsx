@@ -25,9 +25,9 @@ const getStatusBadgeClass = (status: string) => {
     case 'active':
       return 'badge-outline badge-success';
     case 'completed':
-      return 'badge-ghost';
+      return 'badge-outline badge-ghost';
     default:
-      return 'badge-secondary';
+      return 'badge-outline badge-secondary';
   }
 };
 

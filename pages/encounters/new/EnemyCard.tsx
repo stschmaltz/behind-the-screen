@@ -97,7 +97,7 @@ const EnemyCard: React.FC<EnemyCardProps> = ({
             </div>
           )}
 
-          <div className="divider">OR</div>
+          <div className="divider">Or Enter Manually Below</div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
             <FormInput

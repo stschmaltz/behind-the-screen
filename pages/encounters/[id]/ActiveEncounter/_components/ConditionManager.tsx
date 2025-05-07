@@ -53,7 +53,7 @@ export const ConditionManager: React.FC<{
   return (
     <div>
       {conditions.length > 0 ? (
-        <div className="flex flex-wrap gap-1 mb-1 max-w-[300px]">
+        <div className="flex justify-end flex-wrap gap-1 mb-1 max-w-[150px] sm:max-w-[300px] md:max-w-[50vw]">
           {conditions.map((condition) => (
             <div
               key={condition}

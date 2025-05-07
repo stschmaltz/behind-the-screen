@@ -92,17 +92,10 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
           (level) => level !== encounterPlayerLevels[0],
         ),
       );
-      if (
-        encounterPlayerLevels.every(
-          (level) => level === encounterPlayerLevels[0],
-        )
-      ) {
-        setUniformLevel(encounterPlayerLevels[0]);
-      }
     } else if (hasCampaignPlayers && useCampaignPlayers) {
       setCustomLevels(campaignPlayerLevels);
       setPlayerCount(campaignPlayerLevels.length);
-      setUseCustomLevels(hasVaryingLevels);
+      setUseCustomLevels(false);
       if (!hasVaryingLevels && campaignPlayerLevels[0]) {
         setUniformLevel(campaignPlayerLevels[0]);
       }
@@ -301,7 +294,7 @@ const EncounterDifficultyCalculator: React.FC<EncounterDifficultyProps> = ({
               )}
             </div>
 
-            {useCustomLevels && (
+            {useCustomLevels && !useCampaignPlayers && (
               <div className="mt-4">
                 <div className="flex justify-between items-center mb-2">
                   <label className="label-text">Individual Player Levels</label>

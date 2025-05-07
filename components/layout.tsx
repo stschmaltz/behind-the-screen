@@ -3,11 +3,11 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ToastContainer } from 'react-toastify';
 import Head from 'next/head';
-import Image from 'next/image';
 import { NavBar } from './NavBar';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { KofiButton } from './KofiButton';
 import { BottomNav } from './ui/BottomNav';
+import AccountMenu from './AccountMenu';
 import { useUserSignIn } from '../hooks/use-user-sign-in.hook';
 
 interface LayoutProps {
@@ -83,62 +83,16 @@ function Layout({ children }: LayoutProps) {
           <div className="flex items-center gap-2 md:gap-4">
             <NavBar router={router} />
 
-            {currentUser ? (
-              <div
-                className="dropdown dropdown-end relative"
-                ref={accountMenuRef}
-              >
-                <button
-                  className="btn btn-ghost btn-circle avatar"
-                  onClick={toggleAccountMenu}
-                  aria-expanded={isAccountMenuOpen}
-                >
-                  <div className="w-10 rounded-full relative">
-                    <Image
-                      alt={currentUser.name || 'User avatar'}
-                      src={currentUser.picture || '/default-avatar.svg'}
-                      fill
-                      sizes="40px"
-                      style={{ objectFit: 'cover' }}
-                      priority
-                    />
-                  </div>
-                </button>
-                {isAccountMenuOpen && (
-                  <ul className="menu menu-sm dropdown-content mt-0 z-[1] p-2 shadow bg-base-100 rounded-box w-52 text-base-content">
-                    {currentUser.name && (
-                      <li className="menu-title">
-                        <span>Signed in as {currentUser.name}</span>
-                      </li>
-                    )}
-                    <li>
-                      <Link
-                        href="/account-settings"
-                        onClick={() => setIsAccountMenuOpen(false)}
-                      >
-                        Account Settings
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        href="/api/auth/logout?returnTo=http%3A%2F%2Flocalhost%3A3000"
-                        onClick={() => setIsAccountMenuOpen(false)}
-                      >
-                        Logout
-                      </Link>
-                    </li>
-                  </ul>
-                )}
-              </div>
-            ) : (
-              <Link href="/api/auth/login" className="btn btn-ghost">
-                Log In / Sign Up
-              </Link>
-            )}
-
             <KofiButton
               buttonClassName="btn btn-ghost btn-sm hidden md:flex"
               text="Support"
+            />
+            <AccountMenu
+              currentUser={currentUser}
+              accountMenuRef={accountMenuRef}
+              isAccountMenuOpen={isAccountMenuOpen}
+              toggleAccountMenu={toggleAccountMenu}
+              setIsAccountMenuOpen={setIsAccountMenuOpen}
             />
             <ThemeSwitcher />
           </div>

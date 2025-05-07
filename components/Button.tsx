@@ -28,7 +28,6 @@ const Button: React.FC<ButtonProps> = React.memo(
     type = 'button',
     disabled = false,
     className = '',
-    tooltip,
     loading,
   }) => {
     const variantClassesMap: Record<
@@ -53,22 +52,20 @@ const Button: React.FC<ButtonProps> = React.memo(
     };
 
     return (
-      <div className={tooltip ? 'tooltip' : ''} data-tip={tooltip}>
-        <button
-          type={type}
-          onClick={handleClick}
-          disabled={disabled}
-          className={`${variantClasses} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
-        >
-          {loading ? (
-            <span className="loading loading-spinner loading-xs" />
-          ) : icon ? (
-            icon
-          ) : (
-            label
-          )}
-        </button>
-      </div>
+      <button
+        type={type}
+        onClick={handleClick}
+        disabled={disabled}
+        className={`${variantClasses} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
+      >
+        {loading ? (
+          <span className="loading loading-spinner loading-xs" />
+        ) : icon ? (
+          icon
+        ) : (
+          label
+        )}
+      </button>
     );
   },
 );

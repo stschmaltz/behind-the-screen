@@ -26,7 +26,7 @@ const EncounterPageHeader = ({
     <div className="flex flex-col w-full max-w-xl mx-auto">
       <div className="flex justify-end mb-2">
         <Link href="/campaigns">
-          <button className="btn btn-sm btn-outline">
+          <button className="btn btn-sm btn-outline bg-neutral-content text-neutral">
             <span className="hidden sm:inline">Manage Campaigns</span>
             <SettingsIcon className="w-5 h-5 sm:hidden" />
           </button>

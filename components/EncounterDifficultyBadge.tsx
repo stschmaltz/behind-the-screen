@@ -26,7 +26,7 @@ const EncounterDifficultyBadge: React.FC<EncounterDifficultyBadgeProps> = ({
   const difficultyResult = getEncounterDifficulty(enemies, playerLevels);
 
   const badgeClass =
-    `badge ${className} ` +
+    `badge badge-outline ${className} ` +
     (difficultyResult.difficulty === 'deadly'
       ? 'badge-error'
       : difficultyResult.difficulty === 'hard'

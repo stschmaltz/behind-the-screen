@@ -101,7 +101,7 @@ const MonsterDetailModal: React.FC<Props> = ({ monster, isOpen, onClose }) => {
                 alt={monster.name}
                 width={300}
                 height={200}
-                className="rounded-lg w-full max-h-40 object-cover"
+                className="rounded-lg w-full object-cover"
                 unoptimized={!imgSrc || !imgSrc.startsWith('/')}
                 onError={() => {
                   if (imgSrc !== fallbackSrc) {

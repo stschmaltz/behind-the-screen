@@ -9,7 +9,7 @@ import {
   InitiativeOrderCharacter,
 } from '../../../../../types/encounters';
 
-export const DesktopListLayout: React.FC<{
+export const ListLayout: React.FC<{
   character: InitiativeOrderCharacter;
   isCurrentTurn: boolean;
   isMonster: boolean;
@@ -38,7 +38,7 @@ export const DesktopListLayout: React.FC<{
   onRemoveCondition,
   onViewStats,
 }) => (
-  <div className="hidden sm:flex sm:flex-row sm:justify-between sm:items-start sm:gap-4">
+  <div className=" flex flex-row  justify-between   items-start   gap-4">
     <div className="flex flex-col min-w-0 sm:flex-1">
       <CharacterInfo
         name={character.name}
@@ -51,31 +51,31 @@ export const DesktopListLayout: React.FC<{
     </div>
 
     <div className="flex flex-col items-end gap-2 flex-shrink-0 sm:w-auto">
-      <ArmorClassInput
-        id={`desktop-armorClass-${character._id}`}
-        armorClass={character.armorClass}
-        onChange={onUpdateArmorClass}
-        width="w-[65px]"
-      />
-
-      <CharacterHP
-        currentHP={character.currentHP ?? 0}
-        maxHP={character.maxHP}
-        modifierType={modifierType}
-        modifierValue={modifierValue}
-        setModifierType={setModifierType}
-        setModifierValue={setModifierValue}
-        onApplyModifier={onApplyModifier}
-      />
-
       <ConditionManager
         characterId={`desktop-${character._id}`}
         conditions={character.conditions ?? []}
         onAddCondition={onAddCondition}
         onRemoveCondition={onRemoveCondition}
       />
+      <div className="flex flex-col sm:flex-row gap-2">
+        <ArmorClassInput
+          id={`desktop-armorClass-${character._id}`}
+          armorClass={character.armorClass}
+          onChange={onUpdateArmorClass}
+          width="w-[65px]"
+        />
+        <CharacterHP
+          currentHP={character.currentHP ?? 0}
+          maxHP={character.maxHP}
+          modifierType={modifierType}
+          modifierValue={modifierValue}
+          setModifierType={setModifierType}
+          setModifierValue={setModifierValue}
+          onApplyModifier={onApplyModifier}
+        />
+      </div>
     </div>
   </div>
 );
 
-export default DesktopListLayout;
+export default ListLayout;

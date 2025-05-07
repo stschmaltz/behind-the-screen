@@ -92,19 +92,21 @@ const NewEncounterPage: NextPage = () => {
       adventureId,
     };
 
-    const success = await handleSave(encounterInput);
+    const { success, errors } = await handleSave(encounterInput, {
+      requireAdventure: true,
+    });
     if (success) {
       setHasUnsavedChanges(false);
       if (campaignId !== activeCampaignId) {
         await setActiveCampaign(campaignId);
       }
-
       showDaisyToast('success', 'Encounter saved');
-
       router.push({
         pathname: '/encounters',
         query: { selectedCampaign: campaignId },
       });
+    } else if (errors && errors.length > 0) {
+      errors.forEach((err) => showDaisyToast('error', err));
     } else {
       showDaisyToast('error', 'Failed to save encounter');
     }
@@ -130,7 +132,7 @@ const NewEncounterPage: NextPage = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    <div className="flex flex-col items-center justify-center relative">
       <h1 className="text-xl font-bold mb-2">New Encounter</h1>
 
       <div className="w-full max-w-xl bg-base-300 shadow-md rounded px-8 pt-6 pb-8 mb-4 h-[72vh] sm:h-auto max-h-[72vh] overflow-y-auto relative">
@@ -184,7 +186,7 @@ const NewEncounterPage: NextPage = () => {
       </div>
 
       {hasCampaigns && !campaignsLoading && (
-        <div className="sticky bottom-6 w-full max-w-xl px-8 z-10">
+        <div className="sticky bottom-4 w-full max-w-xl px-8 z-10">
           <Button
             className="w-full"
             onClick={onSave}

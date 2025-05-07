@@ -11,43 +11,53 @@ import { logger } from '../../lib/logger';
 
 const DEBOUNCE_DELAY = 500;
 
+const validateNewEncounter = (
+  encounter: Encounter | NewEncounterTemplate,
+  options?: { requireAdventure?: boolean },
+): string[] => {
+  const errors: string[] = [];
+  if (!encounter.name) errors.push('Name is required');
+  if (!encounter.enemies.length) errors.push('At least one enemy is required');
+  if (!encounter.enemies.every((enemy) => enemy.name))
+    errors.push('All enemies must have a name');
+  if (!encounter.notes.every((note) => note))
+    errors.push('All notes must have a value');
+  if (options?.requireAdventure) {
+    if (
+      !('adventureId' in encounter) ||
+      !encounter.adventureId ||
+      encounter.adventureId === 'all'
+    ) {
+      errors.push('Please select an adventure');
+    }
+  }
+  return errors;
+};
+
 const useManageEncounter = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const validateNewEncounter = (
-    encounter: Encounter | NewEncounterTemplate,
-  ) => {
-    if (!encounter.name) return 'Name is required';
-    if (!encounter.enemies.length) return 'At least one enemy is required';
-    if (!encounter.enemies.every((enemy) => enemy.name))
-      return 'All enemies must have a name';
-    if (!encounter.notes.every((note) => note))
-      return 'All notes must have a value';
-
-    return '';
-  };
-
   const saveEncounter = async (
     encounterData: Encounter | NewEncounterTemplate | any,
-  ): Promise<boolean> => {
+    options?: { requireAdventure?: boolean },
+  ): Promise<{ success: boolean; errors?: string[] }> => {
     const encounter = encounterData as Encounter | NewEncounterTemplate;
-    const validationError = validateNewEncounter(encounter);
+    const validationErrors = validateNewEncounter(encounter, options);
     logger.debug('Validating encounter', {
-      validationError,
+      validationErrors,
       name: encounter.name,
     });
 
-    if (validationError) {
-      logger.info(`Validation failed: ${validationError}`, {
+    if (validationErrors.length > 0) {
+      logger.info(`Validation failed: ${validationErrors.join('; ')}`, {
         name: encounter.name,
-        error: validationError,
+        errors: validationErrors,
       });
-      return false;
+      return { success: false, errors: validationErrors };
     }
 
     try {
-      console.log('encounter', encounter);
       const encounterId =
         '_id' in encounter && encounter._id ? encounter._id : 'new';
       logger.debug('Saving encounter', {
@@ -97,13 +107,13 @@ const useManageEncounter = () => {
         id: encounterId,
         name: encounter.name,
       });
-      return true;
+      return { success: true };
     } catch (err) {
       logger.error('Failed to save encounter', {
         error: err instanceof Error ? err.message : String(err),
         name: encounter.name,
       });
-      return false;
+      return { success: false, errors: ['Failed to save encounter'] };
     }
   };
 
@@ -111,10 +121,11 @@ const useManageEncounter = () => {
     debounce(
       (
         encounter: Encounter | NewEncounterTemplate | any,
-        resolve: (result: boolean) => void,
+        resolve: (result: { success: boolean; errors?: string[] }) => void,
+        options?: { requireAdventure?: boolean },
       ) => {
         setIsSaving(true);
-        saveEncounter(encounter)
+        saveEncounter(encounter, options)
           .then((result) => {
             setIsSaving(false);
             resolve(result);
@@ -122,7 +133,7 @@ const useManageEncounter = () => {
           .catch((error) => {
             logger.error('Error in debounced save', error);
             setIsSaving(false);
-            resolve(false);
+            resolve({ success: false, errors: ['Failed to save encounter'] });
           });
       },
       DEBOUNCE_DELAY,
@@ -137,9 +148,10 @@ const useManageEncounter = () => {
   const handleSave = useCallback(
     async (
       encounter: Encounter | Omit<NewEncounterTemplate, 'userId'>,
-    ): Promise<boolean> => {
+      options?: { requireAdventure?: boolean },
+    ): Promise<{ success: boolean; errors?: string[] }> => {
       return new Promise((resolve) => {
-        debouncedSave(encounter, resolve);
+        debouncedSave(encounter, resolve, options);
       });
     },
     [debouncedSave],
@@ -198,4 +210,4 @@ const useManageEncounter = () => {
   };
 };
 
-export { useManageEncounter };
+export { useManageEncounter, validateNewEncounter };

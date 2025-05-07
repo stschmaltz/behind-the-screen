@@ -22,6 +22,7 @@ const ActiveEncounterTableContent: React.FC<
   const { isScrollLockActive } = usePopoverContext();
   const [showDeadPool, setShowDeadPool] = useState(false);
   const scrollableListRef = useRef<HTMLDivElement>(null);
+  const characterRowRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   useEffect(() => {
     const listElement = scrollableListRef.current;
@@ -74,6 +75,15 @@ const ActiveEncounterTableContent: React.FC<
     handleAddPlayersToActive,
   } = useEncounterTurnManagement(encounter, onSave);
 
+  useEffect(() => {
+    if (currentCharacter && characterRowRefs.current[currentCharacter._id]) {
+      characterRowRefs.current[currentCharacter._id]?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+      });
+    }
+  }, [currentCharacter, currentCharacter?._id]);
+
   const getMonsterData = (
     characterId: string,
   ): EncounterCharacter | undefined => {
@@ -104,9 +114,39 @@ const ActiveEncounterTableContent: React.FC<
 
   return (
     <div className="w-full max-w-full flex flex-col">
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-2 mb-4">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
-          <div className="w-full sm:w-auto">
+      <div className="flex flex-col-reverse sm:flex-row gap-2 mb-4 w-full items-center">
+        <div
+          className="flex flex-col items-center gap-2 w-full mt-2 md:mt-0 sm:w-1/2 \
+ bg-base-100 rounded-lg p-2 border border-base-300"
+        >
+          <div className="flex flex-wrap gap-2 justify-center items-center mb-2">
+            <span className="badge  badge-outline">
+              Round {encounter.currentRound ?? 1}
+            </span>
+            <span className="badge  badge-outline">
+              Turn {encounter.currentTurn}
+            </span>
+          </div>
+          <div className="flex flex-row gap-2 w-full">
+            <Button
+              variant="secondary"
+              label="Previous"
+              className="btn-sm w-full flex-1"
+              onClick={handlePreviousTurn}
+              disabled={
+                encounter.currentTurn === 1 && encounter.currentRound === 1
+              }
+            />
+            <Button
+              variant="primary"
+              label="Next"
+              className="btn-sm w-full flex-1"
+              onClick={handleNextTurn}
+            />
+          </div>
+        </div>
+        <div className="flex flex-row gap-2 w-full sm:w-1/2">
+          <div className="w-full flex-1">
             <NewEnemyModal
               onAddCharacter={(character, initiative, type) => {
                 if (initiative !== undefined) {
@@ -114,52 +154,34 @@ const ActiveEncounterTableContent: React.FC<
                 }
               }}
               requireInitiative={true}
-              className="btn-sm w-full sm:w-auto"
+              className="btn-sm w-full"
               buttonVariant="accent"
             />
           </div>
-          <div className="w-full sm:w-auto">
+          <div className="w-full flex-1">
             <AddPlayersModal
               onAddPlayers={handleAddPlayersToActive}
               players={_}
               selectedCampaignId={encounter.campaignId.toString()}
               currentPlayerIds={encounter.players.map((p) => p._id)}
-              className="btn-sm w-full sm:w-auto"
+              className="btn-sm w-full"
               buttonVariant="accent"
             />
           </div>
-          {/* Previous/Next are core actions, keep them distinct */}
-          <Button
-            variant="secondary"
-            label="Previous"
-            className="btn-sm w-full sm:w-24"
-            onClick={handlePreviousTurn}
-            disabled={
-              encounter.currentTurn === 1 && encounter.currentRound === 1
-            }
-          />
-          <Button
-            variant="primary"
-            label="Next"
-            className="btn-sm w-full sm:w-24"
-            onClick={handleNextTurn}
-          />
-        </div>
-        {/* Keep Round/Turn badges prominent */}
-        <div className="flex flex-wrap gap-2 justify-center sm:justify-start items-center">
-          <span className="badge">Round {encounter.currentRound ?? 1}</span>
-          <span className="badge">Turn {encounter.currentTurn}</span>
         </div>
       </div>
 
       <div
         ref={scrollableListRef}
-        className={`relative h-[50vh] mb-4 overflow-y-auto`}
+        className={`relative h-[70vh] mb-4 overflow-y-auto`}
       >
         <div className="space-y-2 w-full">
           {sortedCharacters.map((character) => (
             <ActiveEncounterCharacterRow
               key={character._id}
+              ref={(el) => {
+                characterRowRefs.current[character._id] = el;
+              }}
               character={character}
               isCurrentTurn={character._id === currentCharacter._id}
               onUpdateCharacter={handleUpdateCharacter}

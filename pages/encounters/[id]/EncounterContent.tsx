@@ -113,7 +113,7 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
 
   return (
     <div className="p-4">
-      <div className="card bg-base-100 shadow-sm mb-6">
+      <div className="card bg-base-100 shadow-sm mb-4">
         <div className="card-body">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex-grow">
@@ -128,24 +128,22 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
                   ariaLabel="Encounter name"
                 />
               </div>
-              <DescriptionDisplay
-                encounterId={encounter._id}
-                description={encounter.description}
-                isEditable={true}
-                onUpdateDescription={async (newDescription) => {
-                  try {
-                    await updateEncounterDescription(
-                      encounter._id,
-                      newDescription,
-                    );
-                  } catch (_error) {
-                    logger.error('Update description failed in component');
-                  }
-                }}
-              />
-            </div>
-            <div className="flex flex-col items-start sm:items-end gap-3 w-full">
               <div className="flex items-center gap-2">
+                <DescriptionDisplay
+                  encounterId={encounter._id}
+                  description={encounter.description}
+                  isEditable={true}
+                  onUpdateDescription={async (newDescription) => {
+                    try {
+                      await updateEncounterDescription(
+                        encounter._id,
+                        newDescription,
+                      );
+                    } catch (_error) {
+                      logger.error('Update description failed in component');
+                    }
+                  }}
+                />
                 <div
                   className={`badge badge-lg badge-outline ${
                     status === 'active' ? 'badge-primary' : 'badge-secondary'
@@ -167,19 +165,21 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
                   className="badge-md badge-outline"
                 />
               </div>
-              <div className="card-actions flex w-full  gap-2 sm:flex-row sm:w-auto sm:justify-end sm:gap-3">
+            </div>
+            <div className="flex flex-col items-start sm:items-end gap-3 w-full">
+              <div className="card-actions flex w-full gap-2 sm:flex-row sm:w-auto sm:justify-end sm:gap-3">
                 <Button
                   label="Delete Encounter"
                   onClick={openDeleteModalAndSetState}
                   variant="error"
-                  className="btn-sm w-full md:w-auto "
+                  className="btn-sm flex-1 w-auto min-w-[9rem]"
                   disabled={isSaving || isFinishingEncounter || isDeleting}
                 />
                 {status === 'active' && (
                   <Button
                     label="Finish Encounter"
                     onClick={handleFinishEncounter}
-                    className="btn-sm btn-warning w-full md:w-auto"
+                    className="btn-sm btn-success flex-1 w-auto"
                     loading={isFinishingEncounter}
                     disabled={isSaving}
                   />

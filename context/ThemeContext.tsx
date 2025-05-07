@@ -8,7 +8,7 @@ import React, {
 import { asyncFetch } from '../data/graphql/graphql-fetcher';
 import { setThemeMutation } from '../data/graphql/snippets/user-preferences';
 import { logger } from '../lib/logger';
-import debounce from 'lodash/debounce';
+
 interface ThemeContextType {
   theme: string;
   setTheme: (theme: string) => void;
@@ -18,10 +18,10 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const getInitialTheme = (): string => {
   try {
-    return localStorage.getItem('dme-theme') || 'dark';
+    return localStorage.getItem('dme-theme') || 'cupcake';
   } catch (error) {
     logger.error('Error reading theme from localStorage:', error);
-    return 'dark';
+    return 'cupcake';
   }
 };
 
@@ -43,7 +43,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       );
     }
   }, [theme]);
-
 
   const saveThemeToDb = async (themeToSave: string) => {
     try {

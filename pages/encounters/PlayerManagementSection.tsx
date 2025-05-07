@@ -60,11 +60,37 @@ const PlayerManagementSection: React.FC<Props> = ({
       />
 
       <dialog id="player-management-modal" className="modal">
-        <div className="modal-box max-w-4xl">
+        <div className="modal-box max-w-3xl">
           <h3 className="font-bold text-lg mb-4">Player Management</h3>
 
           <div className="mb-6">
-            <div className="flex flex-col md:flex-row gap-4 mb-4 items-end">
+            <div className="form-control w-full md:w-72">
+              {campaignsLoaded && (
+                <div className="form-control w-full">
+                  <label htmlFor="campaign-select" className="label">
+                    <span className="label-text">Campaign</span>
+                  </label>
+                  <select
+                    id="campaign-select"
+                    className="select select-bordered w-full"
+                    value={selectedCampaignId || ''}
+                    onChange={(e) =>
+                      setField('selectedCampaignId', e.target.value)
+                    }
+                  >
+                    <option value="" disabled>
+                      Select campaign
+                    </option>
+                    {campaigns?.map((campaign) => (
+                      <option key={campaign._id} value={campaign._id}>
+                        {campaign.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+            <div className="flex flex-col md:flex-row gap-4 mb-4 ">
               <div className="form-control flex-1">
                 <FormInput
                   id="player-name"
@@ -75,7 +101,7 @@ const PlayerManagementSection: React.FC<Props> = ({
                 />
               </div>
 
-              <div className="form-control w-full md:w-32">
+              <div className="form-control w-full md:w-16 ">
                 <FormInput
                   id="player-level"
                   label="Level"
@@ -90,7 +116,7 @@ const PlayerManagementSection: React.FC<Props> = ({
                 />
               </div>
 
-              <div className="form-control w-full md:w-32">
+              <div className="form-control w-full md:w-24">
                 <FormInput
                   id="player-ac"
                   label="AC (Optional)"
@@ -106,7 +132,7 @@ const PlayerManagementSection: React.FC<Props> = ({
                 />
               </div>
 
-              <div className="form-control w-full md:w-32">
+              <div className="form-control w-full md:w-24">
                 <FormInput
                   id="player-hp"
                   label="HP (Optional)"
@@ -122,38 +148,14 @@ const PlayerManagementSection: React.FC<Props> = ({
                 />
               </div>
 
-              <div className="form-control w-full md:w-72">
-                {campaignsLoaded && (
-                  <div className="form-control w-full">
-                    <label htmlFor="campaign-select" className="label">
-                      <span className="label-text">Campaign</span>
-                    </label>
-                    <select
-                      id="campaign-select"
-                      className="select select-bordered w-full"
-                      value={selectedCampaignId || ''}
-                      onChange={(e) =>
-                        setField('selectedCampaignId', e.target.value)
-                      }
-                    >
-                      <option value="" disabled>
-                        Select campaign
-                      </option>
-                      {campaigns?.map((campaign) => (
-                        <option key={campaign._id} value={campaign._id}>
-                          {campaign.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                )}
+              <div className="flex flex-col md:flex-row w-full items-end">
+                <Button
+                  label="Add Player"
+                  onClick={handleCreatePlayer}
+                  disabled={!newPlayerName || !selectedCampaignId}
+                  className="w-full "
+                />
               </div>
-
-              <Button
-                label="Add Player"
-                onClick={handleCreatePlayer}
-                disabled={!newPlayerName || !selectedCampaignId}
-              />
             </div>
 
             <div className="divider"></div>
