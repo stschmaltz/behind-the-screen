@@ -52,14 +52,14 @@ const EnemyCard: React.FC<EnemyCardProps> = ({
       <div className="absolute top-4 right-10 z-10 flex gap-1">
         <Button
           variant="secondary"
-          className="btn-square btn-xs"
+          className="btn-square btn-xs bg-opacity-30 hover:bg-opacity-80"
           onClick={() => onDuplicate(index)}
           tooltip="Duplicate Enemy"
           icon={<DocumentDuplicateIcon className="w-4 h-4" />}
         />
         <Button
           variant="secondary"
-          className="btn-square btn-xs bg-error bg-opacity-10 hover:bg-error hover:bg-opacity-20"
+          className="btn-square btn-xs bg-error bg-opacity-20 hover:bg-error hover:bg-opacity-40"
           onClick={() => onRemove(index)}
           tooltip="Remove Enemy"
           icon={<TrashIcon className="w-4 h-4 text-error" />}

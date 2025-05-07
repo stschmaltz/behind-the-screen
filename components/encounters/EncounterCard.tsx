@@ -119,7 +119,7 @@ const EncounterCard: React.FC<EncounterCardProps> = ({
                 encounter.status === 'completed') && (
                 <>
                   <button
-                    className="btn btn-sm btn-secondary btn-outline"
+                    className="btn btn-sm btn-secondary bg-opacity-20 hover:bg-opacity-80"
                     title="Re-create Encounter"
                     onClick={(e) => {
                       logger.debug(
@@ -135,7 +135,7 @@ const EncounterCard: React.FC<EncounterCardProps> = ({
                     <DocumentDuplicateIcon className="w-4 h-4" />
                   </button>
                   <button
-                    className="btn btn-sm bg-error bg-opacity-10 hover:bg-error hover:bg-opacity-20"
+                    className="btn btn-sm bg-error bg-opacity-20 hover:bg-error hover:bg-opacity-40"
                     title="Delete Encounter"
                     onClick={(e) => {
                       logger.debug(

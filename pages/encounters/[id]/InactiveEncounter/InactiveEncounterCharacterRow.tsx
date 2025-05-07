@@ -81,7 +81,7 @@ const InactiveEncounterCharacterRow = ({
           {onDuplicate && (
             <Button
               variant="secondary"
-              className="btn-square btn-xs"
+              className="btn-square btn-xs bg-opacity-30 hover:bg-opacity-80"
               onClick={onDuplicate}
               tooltip="Duplicate Character"
               icon={<DocumentDuplicateIcon className="w-4 h-4" />}
@@ -90,7 +90,7 @@ const InactiveEncounterCharacterRow = ({
           {onDelete && (
             <Button
               variant="secondary"
-              className="btn-square btn-xs bg-error bg-opacity-10 hover:bg-error hover:bg-opacity-20"
+              className="btn-square btn-xs bg-error bg-opacity-20 hover:bg-error hover:bg-opacity-40"
               onClick={onDelete}
               tooltip="Remove Character"
               icon={<TrashIcon className="w-4 h-4 text-error" />}
