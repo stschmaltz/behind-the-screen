@@ -93,6 +93,21 @@ class UserRepository implements UserRepositoryInterface {
       throw error;
     }
   }
+
+  public async getAllUsers(limit = 100): Promise<UserObject[]> {
+    try {
+      const { db } = await getDbClient();
+      const users = await db
+        .collection<UserDocument>(collectionName)
+        .find({})
+        .limit(limit)
+        .toArray();
+      return users.map(mapUserDocumentToUserObject);
+    } catch (error) {
+      logger.error('Error fetching all users', error);
+      throw error;
+    }
+  }
 }
 
 export { UserRepository };

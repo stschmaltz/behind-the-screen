@@ -99,36 +99,8 @@ const CampaignSelector = ({
 
   return (
     <div className="w-full">
-      {!isCreatingCampaign ? (
-        <div className="form-control w-full">
-          <label className="label">
-            <span className="label-text">Campaign</span>
-          </label>
-          <select
-            className="select select-bordered"
-            value={selectedCampaignId || ''}
-            onChange={handleCampaignChange}
-            disabled={campaignsLoading}
-          >
-            {!campaignsLoading && campaigns && campaigns.length === 0 && (
-              <option value="">No campaigns found</option>
-            )}
-            {campaignsLoading && (
-              <option value="" disabled>
-                Loading campaigns...
-              </option>
-            )}
-            {campaigns?.map((campaign) => (
-              <option key={campaign._id} value={campaign._id}>
-                {campaign.name}
-              </option>
-            ))}
-            <option value="new" className="text-primary font-semibold">
-              + Create New Campaign
-            </option>
-          </select>
-        </div>
-      ) : (
+      {(!campaignsLoading && campaigns && campaigns.length === 0) ||
+      isCreatingCampaign ? (
         <div className="card bg-base-200 p-3">
           <div className="form-control mb-2">
             <label className="label">
@@ -148,13 +120,15 @@ const CampaignSelector = ({
             />
           </div>
           <div className="flex gap-2 justify-end">
-            <button
-              type="button"
-              className="btn btn-sm"
-              onClick={handleCancelCreate}
-            >
-              Cancel
-            </button>
+            {!(campaigns && campaigns.length === 0 && !campaignsLoading) && (
+              <button
+                type="button"
+                className="btn btn-sm"
+                onClick={handleCancelCreate}
+              >
+                Cancel
+              </button>
+            )}
             <button
               type="button"
               className="btn btn-sm btn-primary"
@@ -164,6 +138,32 @@ const CampaignSelector = ({
               Create
             </button>
           </div>
+        </div>
+      ) : (
+        <div className="form-control w-full">
+          <label className="label">
+            <span className="label-text">Campaign</span>
+          </label>
+          <select
+            className="select select-bordered"
+            value={selectedCampaignId || ''}
+            onChange={handleCampaignChange}
+            disabled={campaignsLoading}
+          >
+            {campaignsLoading && (
+              <option value="" disabled>
+                Loading campaigns...
+              </option>
+            )}
+            {campaigns?.map((campaign) => (
+              <option key={campaign._id} value={campaign._id}>
+                {campaign.name}
+              </option>
+            ))}
+            <option value="new" className="text-primary font-semibold">
+              + Create New Campaign
+            </option>
+          </select>
         </div>
       )}
     </div>

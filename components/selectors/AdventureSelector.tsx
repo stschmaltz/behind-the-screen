@@ -112,7 +112,43 @@ const AdventureSelector: React.FC<AdventureSelectorProps> = ({
 
   return (
     <div className="w-full max-w-md">
-      {!isCreatingAdventure ? (
+      {(!adventuresLoading && sortedAdventuresForDropdown.length === 0) ||
+      isCreatingAdventure ? (
+        <div className="form-control w-full">
+          <label className="label">
+            <span className="label-text">New Adventure Name</span>
+          </label>
+          <div className="flex items-center gap-2">
+            <input
+              type="text"
+              ref={newAdventureInputRef}
+              className="input input-bordered w-full"
+              value={newAdventureName}
+              onChange={(e) => setNewAdventureName(e.target.value)}
+              placeholder="Enter adventure name"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleCreateAdventure();
+                if (e.key === 'Escape') handleCancelCreate();
+              }}
+            />
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={handleCreateAdventure}
+              disabled={!newAdventureName.trim()}
+            >
+              Create
+            </button>
+            {!(
+              sortedAdventuresForDropdown.length === 0 && !adventuresLoading
+            ) && (
+              <button className="btn btn-ghost" onClick={handleCancelCreate}>
+                Cancel
+              </button>
+            )}
+          </div>
+        </div>
+      ) : (
         <div className="form-control w-full">
           <label className="label">
             <span className="label-text">Adventure</span>
@@ -143,37 +179,6 @@ const AdventureSelector: React.FC<AdventureSelectorProps> = ({
               </span>
             </label>
           )}
-        </div>
-      ) : (
-        <div className="form-control w-full">
-          <label className="label">
-            <span className="label-text">New Adventure Name</span>
-          </label>
-          <div className="flex items-center gap-2">
-            <input
-              type="text"
-              ref={newAdventureInputRef}
-              className="input input-bordered w-full"
-              value={newAdventureName}
-              onChange={(e) => setNewAdventureName(e.target.value)}
-              placeholder="Enter adventure name"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') handleCreateAdventure();
-                if (e.key === 'Escape') handleCancelCreate();
-              }}
-            />
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={handleCreateAdventure}
-              disabled={!newAdventureName.trim()}
-            >
-              Create
-            </button>
-            <button className="btn btn-ghost" onClick={handleCancelCreate}>
-              Cancel
-            </button>
-          </div>
         </div>
       )}
     </div>

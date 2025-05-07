@@ -135,8 +135,8 @@ const EncountersPage: NextPage = () => {
     <div className="flex flex-col items-center justify-center text-base-content opacity-80 p-8 bg-base-200 rounded-lg min-h-[40vh]">
       <DocumentIcon className="w-12 h-12 mb-4 opacity-50" />
       <p className="text-xl font-semibold mb-2">Select a Campaign</p>
-      <p className="text-center">
-        Please select a campaign to view its encounters.
+      <p className="text-center mb-2">
+        Please select or create a campaign to manage its encounters.
       </p>
     </div>
   );

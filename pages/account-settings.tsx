@@ -4,6 +4,7 @@ import { NextPage } from 'next';
 import Head from 'next/head';
 import { useCurrentUserContext } from '../context/UserContext';
 import { useTheme } from '../context/ThemeContext';
+import { darkThemes, themeDisplayNames } from '../components/theme-options';
 
 const AccountSettingsPage: NextPage = () => {
   const router = useRouter();
@@ -38,7 +39,12 @@ const AccountSettingsPage: NextPage = () => {
     'synthwave',
     'valentine',
     'winter',
-  ];
+  ].sort((a, b) => {
+    const nameA = themeDisplayNames[a]?.toLowerCase() || a;
+    const nameB = themeDisplayNames[b]?.toLowerCase() || b;
+
+    return nameA.localeCompare(nameB);
+  });
 
   const handleOpenDeleteModal = () => {
     setShowDeleteConfirmation(true);
@@ -115,35 +121,56 @@ const AccountSettingsPage: NextPage = () => {
             <h2 className="card-title">Appearance</h2>
             <div className="mb-4">
               <h3 className="text-lg font-medium mb-2">Theme</h3>
-              <div className="flex flex-wrap gap-2 mb-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 w-full gap-2 mb-4">
                 {commonThemes.map((theme) => (
                   <button
                     key={theme}
                     onClick={() => setTheme(theme)}
-                    className={`btn ${
-                      currentTheme === theme ? 'btn-primary' : 'btn-outline'
+                    className={`btn btn-xs font-medium items-center justify-start text-left border-2 focus:ring-2 focus:ring-primary/30 hover:ring-2 hover:ring-primary/20 transition-colors duration-100 ${
+                      currentTheme === theme
+                        ? 'bg-primary text-primary-content border-primary'
+                        : darkThemes.has(theme)
+                          ? 'bg-gray-600 text-white border-gray-500'
+                          : 'bg-gray-100 text-gray-900 border-gray-200'
                     }`}
                   >
-                    {theme.charAt(0).toUpperCase() + theme.slice(1)}
+                    <span className="flex flex-row items-center gap-2">
+                      {darkThemes.has(theme) ? (
+                        <span title="Dark theme">🌙</span>
+                      ) : (
+                        <span title="Light theme">☀️</span>
+                      )}
+                      {themeDisplayNames[theme] || theme}
+                    </span>
                   </button>
                 ))}
               </div>
-
               <details className="collapse collapse-arrow bg-base-100">
                 <summary className="collapse-title font-medium">
                   More themes
                 </summary>
                 <div className="collapse-content">
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 pt-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 pt-2">
                     {additionalThemes.map((theme) => (
                       <button
                         key={theme}
                         onClick={() => setTheme(theme)}
-                        className={`btn btn-sm ${
-                          currentTheme === theme ? 'btn-primary' : 'btn-outline'
+                        className={`btn btn-xs font-medium items-center justify-start text-left border-2 focus:ring-2 focus:ring-primary/30 hover:ring-2 hover:ring-primary/20 transition-colors duration-100 ${
+                          currentTheme === theme
+                            ? 'bg-primary text-primary-content border-primary'
+                            : darkThemes.has(theme)
+                              ? 'bg-gray-600 text-white border-gray-500'
+                              : 'bg-gray-100 text-gray-900 border-gray-200'
                         }`}
                       >
-                        {theme.charAt(0).toUpperCase() + theme.slice(1)}
+                        <span className="flex flex-row items-center gap-2">
+                          {darkThemes.has(theme) ? (
+                            <span title="Dark theme">🌙</span>
+                          ) : (
+                            <span title="Light theme">☀️</span>
+                          )}
+                          {themeDisplayNames[theme] || theme}
+                        </span>
                       </button>
                     ))}
                   </div>

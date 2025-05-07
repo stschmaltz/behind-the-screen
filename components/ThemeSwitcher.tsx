@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { darkThemes, themeDisplayNames } from './theme-options';
 import { useTheme } from '../context/ThemeContext';
 
 const ThemeSwitcher: React.FC = () => {
@@ -47,10 +48,21 @@ const ThemeSwitcher: React.FC = () => {
     // 'lofi',
     // 'luxury',
     // 'wireframe',
-  ];
+  ].sort((a, b) => {
+    const nameA = themeDisplayNames[a]?.toLowerCase() || a;
+    const nameB = themeDisplayNames[b]?.toLowerCase() || b;
 
-  // Common themes to show at the top
+    return nameA.localeCompare(nameB);
+  });
+
   const commonThemes = ['light', 'dark', 'cupcake', 'cyberpunk'];
+
+  const getThemeIndicator = (theme: string) =>
+    darkThemes.has(theme) ? (
+      <span title="Dark theme">🌙</span>
+    ) : (
+      <span title="Light theme">☀️</span>
+    );
 
   return (
     <div className="dropdown dropdown-end relative" ref={dropdownRef}>
@@ -74,7 +86,7 @@ const ThemeSwitcher: React.FC = () => {
         </svg>
       </button>
       {isOpen && (
-        <div className="mt-0 dropdown-content shadow-lg bg-base-100 rounded-box w-52 max-h-96 overflow-y-auto z-50">
+        <div className="mt-0 dropdown-content shadow-lg bg-base-100 rounded-box w-64 max-h-96 overflow-y-auto z-50">
           <div className="grid grid-cols-1 gap-1 p-2">
             <div className="mb-2 p-2 border-b">
               <div className="grid grid-cols-2 gap-1">
@@ -82,13 +94,18 @@ const ThemeSwitcher: React.FC = () => {
                   <button
                     key={theme}
                     onClick={() => handleThemeChange(theme)}
-                    className={`btn btn-xs font-medium ${
+                    className={`btn btn-xs font-medium flex items-center min-w-[110px] justify-start text-left w-full border-2 focus:ring-2 focus:ring-primary/30 hover:ring-2 hover:ring-primary/20 transition-colors duration-100 ${
                       currentTheme === theme
                         ? 'bg-primary text-primary-content border-primary'
-                        : 'bg-neutral-content text-neutral border-2 hover:bg-neutral-focus hover:text-neutral-content'
+                        : darkThemes.has(theme)
+                          ? 'bg-gray-600 text-white border-gray-500'
+                          : 'bg-gray-100 text-gray-900 border-gray-200'
                     }`}
                   >
-                    {theme}
+                    <span className="flex flex-row items-center gap-2 w-full">
+                      {getThemeIndicator(theme)}
+                      {themeDisplayNames[theme] || theme}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -99,13 +116,18 @@ const ThemeSwitcher: React.FC = () => {
                 <button
                   key={theme}
                   onClick={() => handleThemeChange(theme)}
-                  className={`btn btn-xs font-medium ${
+                  className={`btn btn-xs font-medium flex items-center min-w-[110px] justify-start text-left w-full border-2 focus:ring-2 focus:ring-primary/30 hover:ring-2 hover:ring-primary/20 transition-colors duration-100 ${
                     currentTheme === theme
                       ? 'bg-primary text-primary-content border-primary'
-                      : 'bg-neutral-content text-neutral border-2 hover:bg-neutral-focus hover:text-neutral-content'
+                      : darkThemes.has(theme)
+                        ? 'bg-gray-600 text-white border-gray-500'
+                        : 'bg-gray-100 text-gray-900 border-gray-200'
                   }`}
                 >
-                  {theme}
+                  <span className="flex flex-row items-center gap-2 w-full">
+                    {getThemeIndicator(theme)}
+                    {themeDisplayNames[theme] || theme}
+                  </span>
                 </button>
               ))}
             </div>

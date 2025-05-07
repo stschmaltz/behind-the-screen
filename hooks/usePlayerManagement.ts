@@ -18,7 +18,7 @@ export interface PlayerManagementState {
   bulkLevel?: number;
   editingPlayer: {
     id: string;
-    field: 'armorClass' | 'maxHP';
+    field: 'armorClass' | 'maxHP' | 'level';
     value: number;
   } | null;
   selectedCampaignId?: string;
@@ -149,7 +149,7 @@ export const usePlayerManagement = (
 
   const updatePlayerField = async (
     playerId: string,
-    field: 'armorClass' | 'maxHP',
+    field: 'armorClass' | 'maxHP' | 'level',
     value: number,
   ) => {
     const player = state.players.find((p) => p._id === playerId);
@@ -163,7 +163,7 @@ export const usePlayerManagement = (
           _id: player._id,
           name: player.name,
           campaignId: player.campaignId,
-          level: player.level,
+          level: field === 'level' ? value : player.level,
           armorClass: field === 'armorClass' ? value : player.armorClass,
           maxHP: field === 'maxHP' ? value : player.maxHP,
         },
@@ -207,7 +207,7 @@ export const usePlayerManagement = (
 
   const setEditingPlayer = (
     id: string,
-    field: 'armorClass' | 'maxHP',
+    field: 'armorClass' | 'maxHP' | 'level',
     value: number,
   ) => {
     setState((prev) => ({

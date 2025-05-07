@@ -51,6 +51,9 @@ const EncounterPageHeader = ({
 
       {selectedCampaignId && (
         <div className="w-full flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+          <Link href={newEncounterUrl} className="w-full sm:w-auto">
+            <button className="btn btn-primary w-full">New Encounter</button>
+          </Link>
           <div className="w-full sm:w-auto">
             <PlayerManagementSection
               startingPlayers={players ?? []}
@@ -58,10 +61,6 @@ const EncounterPageHeader = ({
               buttonClassName="btn-primary btn w-full"
             />
           </div>
-
-          <Link href={newEncounterUrl} className="w-full sm:w-auto">
-            <button className="btn btn-primary w-full">New Encounter</button>
-          </Link>
         </div>
       )}
     </div>

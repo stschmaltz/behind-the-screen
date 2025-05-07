@@ -51,4 +51,9 @@ export interface UserRepositoryInterface {
    * Returns the total number of users.
    */
   countUsers(): Promise<number>;
+
+  /**
+   * Returns a list of all users (with optional limit).
+   */
+  getAllUsers(limit?: number): Promise<UserObject[]>;
 }
