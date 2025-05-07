@@ -44,11 +44,12 @@ const EncounterList = ({
     filteredEncounters: Encounter[],
     showState: boolean,
     setShowState: (show: boolean) => void,
+    sectionId?: string,
   ) => {
     if (filteredEncounters.length === 0) return null;
 
     return (
-      <div className="w-full">
+      <div className="w-full" id={sectionId}>
         <div className="flex justify-between items-center mb-2 border-b pb-2">
           <h2 className="text-xl font-semibold">
             {title}
@@ -97,6 +98,7 @@ const EncounterList = ({
         activeEncounters,
         showActive,
         setShowActive,
+        'active-encounters',
       )}
       {renderListSection(
         'Ready Encounters',
@@ -104,6 +106,7 @@ const EncounterList = ({
         inactiveEncounters,
         showInactive,
         setShowInactive,
+        'ready-encounters',
       )}
       {renderListSection(
         'Completed Encounters',
@@ -111,6 +114,7 @@ const EncounterList = ({
         completedEncounters,
         showCompleted,
         setShowCompleted,
+        'completed-encounters',
       )}
     </div>
   );

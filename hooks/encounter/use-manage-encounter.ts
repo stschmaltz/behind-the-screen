@@ -8,6 +8,7 @@ import {
 } from '../../data/graphql/snippets/encounter';
 import { Encounter, NewEncounterTemplate } from '../../types/encounters';
 import { logger } from '../../lib/logger';
+import { showDaisyToast } from '../../lib/daisy-toast';
 
 const DEBOUNCE_DELAY = 500;
 
@@ -107,6 +108,40 @@ const useManageEncounter = () => {
         id: encounterId,
         name: encounter.name,
       });
+
+      if (encounterId === 'new') {
+        setTimeout(() => {
+          const readyEncountersSection =
+            document.getElementById('ready-encounters');
+          if (readyEncountersSection) {
+            readyEncountersSection.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+            });
+            readyEncountersSection.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+            });
+          }
+          const card = Array.from(
+            document.querySelectorAll('.encounter-card'),
+          ).find((el) => {
+            const nameEl = el.querySelector('.card-title');
+            return (
+              nameEl && nameEl.textContent?.trim() === encounter.name.trim()
+            );
+          });
+          if (card) {
+            card.classList.add('flash-outline');
+            setTimeout(() => {
+              card.classList.remove('flash-outline');
+            }, 1000);
+          }
+        }, 500);
+      }
+
+      showDaisyToast('success', `Encounter "${encounter.name}" saved`);
+
       return { success: true };
     } catch (err) {
       logger.error('Failed to save encounter', {

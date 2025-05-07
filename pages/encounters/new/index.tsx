@@ -103,7 +103,11 @@ const NewEncounterPage: NextPage = () => {
       showDaisyToast('success', 'Encounter saved');
       router.push({
         pathname: '/encounters',
-        query: { selectedCampaign: campaignId },
+        query: {
+          selectedCampaign: campaignId,
+          newEncounterCreated: 'true',
+          newEncounterName: encodeURIComponent(newEncounter.name),
+        },
       });
     } else if (errors && errors.length > 0) {
       errors.forEach((err) => showDaisyToast('error', err));

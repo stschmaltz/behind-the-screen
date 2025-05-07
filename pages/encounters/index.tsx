@@ -50,6 +50,10 @@ const EncountersPage: NextPage = () => {
 
     const queryCampaignId = router.query.campaignId as string | undefined;
     const queryAdventureId = router.query.adventureId as string | undefined;
+    const newEncounterCreated = router.query.newEncounterCreated === 'true';
+    const newEncounterName = router.query.newEncounterName
+      ? decodeURIComponent(router.query.newEncounterName as string)
+      : undefined;
 
     let campaignToSet = queryCampaignId;
     if (!campaignToSet && !selectedCampaignId) {
@@ -63,12 +67,43 @@ const EncountersPage: NextPage = () => {
     if (currentOrQueryCampaignId && queryAdventureId) {
       setSelectedAdventureId(queryAdventureId);
     }
+
+    // Handle scrolling to a newly created encounter
+    if (newEncounterCreated && newEncounterName) {
+      // Remove the query parameters after we've processed them
+      const {
+        newEncounterCreated: _newEncounterCreated,
+        newEncounterName: _newEncounterName,
+        ...restQuery
+      } = router.query;
+
+      // Wait for encounters to load, then scroll to the Ready Encounters section
+      setTimeout(() => {
+        const readyEncountersSection =
+          document.getElementById('ready-encounters');
+        if (readyEncountersSection) {
+          readyEncountersSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          });
+        }
+        router.replace(
+          {
+            pathname: router.pathname,
+            query: restQuery,
+          },
+          undefined,
+          { shallow: true },
+        );
+      }, 1000);
+    }
   }, [
     router.isReady,
-    router.query.campaignId,
-    router.query.adventureId,
+    router.query,
     activeCampaignId,
     selectedCampaignId,
+    router.pathname,
+    router,
   ]);
 
   const {
@@ -185,6 +220,17 @@ const EncountersPage: NextPage = () => {
       try {
         await refreshEncounters();
         logger.info('Encounter list refresh completed.');
+
+        setTimeout(() => {
+          const readyEncountersSection =
+            document.getElementById('ready-encounters');
+          if (readyEncountersSection) {
+            readyEncountersSection.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start',
+            });
+          }
+        }, 500);
       } catch (refreshError) {
         logger.error('Error during encounter list refresh:', refreshError);
       }

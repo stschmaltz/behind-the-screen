@@ -67,7 +67,7 @@ const EncounterCard: React.FC<EncounterCardProps> = ({
       .map((p) => p.level || 1) || [];
 
   return (
-    <div key={encounter._id.toString()}>
+    <div key={encounter._id.toString()} className="encounter-card">
       <Link
         href={`/encounters/${encounter._id.toString()}`}
         className="block w-full"
@@ -75,7 +75,7 @@ const EncounterCard: React.FC<EncounterCardProps> = ({
         <div className="p-4 bg-base-200 border border-base-300 rounded shadow-sm hover:bg-base-300 transition-colors">
           <div className="flex justify-between items-start">
             <div className="text-lg font-semibold flex items-center gap-2 flex-grow mr-4">
-              <span>{encounter.name}</span>
+              <span className="card-title">{encounter.name}</span>
               <DescriptionDisplay
                 encounterId={encounter._id.toString()}
                 description={encounter.description}
