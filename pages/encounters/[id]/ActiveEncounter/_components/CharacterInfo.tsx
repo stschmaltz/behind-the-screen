@@ -13,7 +13,7 @@ export const CharacterInfo: React.FC<{
     <h3 className="text-lg font-bold flex items-center gap-2 flex-wrap">
       <span>{name}</span>
       {isCurrentTurn && (
-        <span className="badge badge-primary whitespace-nowrap">
+        <span className="badge badge-outline badge-primary whitespace-nowrap">
           Current Turn
         </span>
       )}

@@ -1,8 +1,11 @@
 import React from 'react';
+import { DocumentDuplicateIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { EncounterCharacter } from '../../../types/encounters';
 import { FormInput } from '../../../components/FormInput';
 import MonsterCombobox from '../../../components/MonsterCombobox';
 import { MonsterData, MonsterOption } from '../../../hooks/use-monsters.hook';
+import { Button } from '../../../components/Button';
+
 interface EnemyCardProps {
   enemy: EncounterCharacter;
   index: number;
@@ -12,6 +15,7 @@ interface EnemyCardProps {
   collapseRef: (el: HTMLInputElement | null) => void;
   error: string | null;
   monsters: MonsterData[];
+  isExpanded?: boolean;
   onMonsterSelectChange: (index: number, value: string) => void;
   onEnemyFieldChange: (
     index: number,
@@ -36,6 +40,7 @@ const EnemyCard: React.FC<EnemyCardProps> = ({
   collapseRef,
   error,
   monsters,
+  isExpanded = true,
   onMonsterSelectChange,
   onEnemyFieldChange,
   onAbilityScoreChange,
@@ -44,34 +49,33 @@ const EnemyCard: React.FC<EnemyCardProps> = ({
 }) => {
   return (
     <div className="relative">
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onDuplicate(index);
-        }}
-        className="btn btn-ghost btn-xs absolute top-4 right-28 z-10"
-        title="Duplicate Enemy"
-      >
-        Duplicate
-      </button>
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onRemove(index);
-        }}
-        className="btn btn-ghost btn-xs absolute top-4 right-14 z-10 text-error"
-        title="Remove Enemy"
-      >
-        Remove
-      </button>
+      <div className="absolute top-4 right-10 z-10 flex gap-1">
+        <Button
+          variant="secondary"
+          className="btn-square btn-xs"
+          onClick={() => onDuplicate(index)}
+          tooltip="Duplicate Enemy"
+          icon={<DocumentDuplicateIcon className="w-4 h-4" />}
+        />
+        <Button
+          variant="secondary"
+          className="btn-square btn-xs bg-error bg-opacity-10 hover:bg-error hover:bg-opacity-20"
+          onClick={() => onRemove(index)}
+          tooltip="Remove Enemy"
+          icon={<TrashIcon className="w-4 h-4 text-error" />}
+        />
+      </div>
       <div className="collapse collapse-arrow border border-base-300 bg-base-100 rounded-box">
         <input
           type="checkbox"
-          defaultChecked
+          defaultChecked={isExpanded}
           className="peer"
           ref={collapseRef}
         />
-        <div className="collapse-title text-lg font-medium flex justify-between items-center peer-checked:bg-base-200 peer-checked:text-base-content">
+        <div
+          className="collapse-title text-lg font-medium flex justify-between items-center peer-checked:bg-base-200 peer-checked:text-base-content pr-24
+        "
+        >
           <span>{enemy.name || `New Enemy ${index + 1}`}</span>
         </div>
         <div className="collapse-content peer-checked:bg-base-100 peer-checked:text-base-content">

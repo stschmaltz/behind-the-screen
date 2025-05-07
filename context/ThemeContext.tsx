@@ -8,67 +8,61 @@ import React, {
 import { asyncFetch } from '../data/graphql/graphql-fetcher';
 import { setThemeMutation } from '../data/graphql/snippets/user-preferences';
 import { logger } from '../lib/logger';
-
+import debounce from 'lodash/debounce';
 interface ThemeContextType {
   theme: string;
-  setTheme: (theme: string) => Promise<void>;
+  setTheme: (theme: string) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+const getInitialTheme = (): string => {
+  try {
+    return localStorage.getItem('dme-theme') || 'dark';
+  } catch (error) {
+    logger.error('Error reading theme from localStorage:', error);
+    return 'dark';
+  }
+};
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<string>('dark');
-  const [isClient, setIsClient] = useState(false);
-
+  const [theme, setThemeState] = useState<string>(getInitialTheme);
+  console.log('theme', theme);
   useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isClient) return;
-
-    const loadAndApplyTheme = () => {
-      try {
-        const storedTheme = localStorage.getItem('dme-theme') || 'dark';
-        setThemeState(storedTheme);
-        document.documentElement.setAttribute('data-theme', storedTheme);
-      } catch (error) {
-        logger.error('Error loading theme from localStorage', error);
-        document.documentElement.setAttribute('data-theme', 'dark');
-      }
-    };
-
-    loadAndApplyTheme();
-
-    window.addEventListener('storage', loadAndApplyTheme);
-    return () => window.removeEventListener('storage', loadAndApplyTheme);
-  }, [isClient]);
-
-  const setTheme = async (newTheme: string): Promise<void> => {
     try {
-      setThemeState(newTheme);
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('dme-theme', theme);
+    } catch (error) {
+      logger.error('Failed to apply theme to DOM/localStorage', {
+        error: error instanceof Error ? error.message : String(error),
+        theme: theme,
+      });
+      logger.error(
+        '[ThemeContext] Error applying theme to DOM/localStorage:',
+        error,
+      );
+    }
+  }, [theme]);
 
-      if (typeof window !== 'undefined') {
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('dme-theme', newTheme);
 
-        window.dispatchEvent(
-          new StorageEvent('storage', {
-            key: 'dme-theme',
-            newValue: newTheme,
-          }),
-        );
-      }
-
+  const saveThemeToDb = async (themeToSave: string) => {
+    try {
       await asyncFetch(setThemeMutation, {
-        input: { theme: newTheme },
+        input: { theme: themeToSave },
       });
     } catch (error) {
-      logger.error('Failed to set theme preference', {
+      logger.error('Failed to save theme preference to DB', {
         error: error instanceof Error ? error.message : String(error),
-        theme: newTheme,
+        theme: themeToSave,
       });
+      logger.error('[ThemeContext] Error saving theme to DB:', error);
     }
+  };
+
+  const setTheme = (newTheme: string): void => {
+    setThemeState(newTheme);
+
+    saveThemeToDb(newTheme);
   };
 
   return (

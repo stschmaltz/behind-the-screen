@@ -24,22 +24,20 @@ type AppPropsWithLayout = AppProps & {
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   usePWASetup();
 
-  const getLayout =
-    Component.getLayout ??
-    ((page) => (
-      <ThemeProvider>
-        <UserProvider user={pageProps.user}>
-          <CurrentUserProvider>
-            <ActiveCampaignProvider>
-              <ProtectedLayout>{page}</ProtectedLayout>
-            </ActiveCampaignProvider>
-          </CurrentUserProvider>
-        </UserProvider>
-      </ThemeProvider>
-    ));
+  const defaultLayout = (page: ReactElement) => (
+    <UserProvider user={pageProps.user}>
+      <CurrentUserProvider>
+        <ActiveCampaignProvider>
+          <ProtectedLayout>{page}</ProtectedLayout>
+        </ActiveCampaignProvider>
+      </CurrentUserProvider>
+    </UserProvider>
+  );
+
+  const getLayout = Component.getLayout ?? defaultLayout;
 
   return (
-    <>
+    <ThemeProvider>
       <Head>
         <meta
           name="viewport"
@@ -49,6 +47,6 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
       {getLayout(<Component {...pageProps} />)}
       <Analytics />
       <SpeedInsights />
-    </>
+    </ThemeProvider>
   );
 }

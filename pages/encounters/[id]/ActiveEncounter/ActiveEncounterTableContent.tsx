@@ -147,10 +147,8 @@ const ActiveEncounterTableContent: React.FC<
         </div>
         {/* Keep Round/Turn badges prominent */}
         <div className="flex flex-wrap gap-2 justify-center sm:justify-start items-center">
-          <span className="badge badge-info">
-            Round {encounter.currentRound ?? 1}
-          </span>
-          <span className="badge badge-info">Turn {encounter.currentTurn}</span>
+          <span className="badge">Round {encounter.currentRound ?? 1}</span>
+          <span className="badge">Turn {encounter.currentTurn}</span>
         </div>
       </div>
 

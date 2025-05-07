@@ -73,7 +73,7 @@ const CharacterCard: React.FC<CharacterCardProps> = ({
           className="peer"
           ref={collapseRef}
         />
-        <div className="collapse-title text-lg font-medium flex justify-between items-center peer-checked:bg-base-200 peer-checked:text-base-content">
+        <div className="collapse-title text-lg font-medium flex justify-between items-center peer-checked:bg-base-200 peer-checked:text-base-content =-">
           <span>{character.name || `New Character ${index + 1}`}</span>
         </div>
         <div className="collapse-content peer-checked:bg-base-100 peer-checked:text-base-content">

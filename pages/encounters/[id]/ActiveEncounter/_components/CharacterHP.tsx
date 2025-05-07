@@ -107,7 +107,7 @@ export const CharacterHP: React.FC<{
         <HPDisplay />
         <button
           ref={refs.setReference}
-          className="btn btn-xs"
+          className="btn btn-xs btn-ghost"
           aria-label="Adjust HP"
           {...getReferenceProps()}
         >

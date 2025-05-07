@@ -19,56 +19,60 @@ interface ButtonProps {
   loading?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({
-  label,
-  icon,
-  variant = 'primary',
-  onClick,
-  type = 'button',
-  disabled = false,
-  className = '',
-  tooltip,
-  loading,
-}) => {
-  const variantClassesMap: Record<
-    NonNullable<ButtonProps['variant']>,
-    string
-  > = {
-    primary: 'btn-primary',
-    secondary: 'btn-secondary',
-    accent: 'btn-accent',
-    info: 'btn-info',
-    success: 'btn-success',
-    warning: 'btn-warning',
-    error: 'btn-error',
-  };
+const Button: React.FC<ButtonProps> = React.memo(
+  ({
+    label,
+    icon,
+    variant = 'primary',
+    onClick,
+    type = 'button',
+    disabled = false,
+    className = '',
+    tooltip,
+    loading,
+  }) => {
+    const variantClassesMap: Record<
+      NonNullable<ButtonProps['variant']>,
+      string
+    > = {
+      primary: 'btn-primary',
+      secondary: 'btn-secondary',
+      accent: 'btn-accent',
+      info: 'btn-info',
+      success: 'btn-success',
+      warning: 'btn-warning',
+      error: 'btn-error',
+    };
 
-  const variantClasses = `btn ${variantClassesMap[variant] || 'btn-primary'}`;
+    const variantClasses = `btn ${variantClassesMap[variant] || 'btn-primary'}`;
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    if (onClick) {
-      onClick(event);
-    }
-  };
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+      if (onClick) {
+        onClick(event);
+      }
+    };
 
-  return (
-    <div className={`${!!tooltip && tooltip}`} data-tip={tooltip}>
-      <button
-        type={type}
-        onClick={handleClick}
-        disabled={disabled}
-        className={`${variantClasses} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
-      >
-        {loading ? (
-          <span className="loading loading-spinner loading-xs" />
-        ) : icon ? (
-          icon
-        ) : (
-          label
-        )}
-      </button>
-    </div>
-  );
-};
+    return (
+      <div className={tooltip ? 'tooltip' : ''} data-tip={tooltip}>
+        <button
+          type={type}
+          onClick={handleClick}
+          disabled={disabled}
+          className={`${variantClasses} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
+        >
+          {loading ? (
+            <span className="loading loading-spinner loading-xs" />
+          ) : icon ? (
+            icon
+          ) : (
+            label
+          )}
+        </button>
+      </div>
+    );
+  },
+);
+
+Button.displayName = 'Button';
 
 export { Button };

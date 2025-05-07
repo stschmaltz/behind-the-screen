@@ -58,7 +58,7 @@ const EncounterPage: NextPage<EncounterPageProps> = ({
 
   return (
     <EncounterProvider initialEncounter={encounter}>
-      <div className="min-h-[80vh] bg-base-200">
+      <div className=" bg-base-200">
         <EncounterContent players={allPlayers} />
       </div>
     </EncounterProvider>

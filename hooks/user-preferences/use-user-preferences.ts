@@ -18,48 +18,32 @@ interface UseUserPreferencesResult {
 export function useUserPreferences(): UseUserPreferencesResult {
   const [activeCampaignId, setActiveCampaignIdState] = useState<
     string | undefined
-  >(undefined);
+  >();
 
-  let themeContext;
-  try {
-    themeContext = useTheme();
-  } catch (e) {
-    themeContext = null;
-  }
-
-  const { data, loading, error } = useQuery<GetUserPreferencesResponse>({
+  const { data, loading } = useQuery<GetUserPreferencesResponse>({
     query: getUserPreferencesQuery,
   });
 
   useEffect(() => {
-    if (data?.getUserPreferences) {
-      if (data.getUserPreferences.activeCampaignId) {
-        setActiveCampaignIdState(data.getUserPreferences.activeCampaignId);
-      }
+    if (!data?.getUserPreferences) return;
 
-      if (data.getUserPreferences.theme && themeContext) {
-        const dbTheme = data.getUserPreferences.theme;
-        const storedTheme = localStorage.getItem('dme-theme');
-        if (!storedTheme) {
-          themeContext.setTheme(dbTheme);
-        }
-      }
+    const { activeCampaignId: dbCampaignId, theme: dbTheme } =
+      data.getUserPreferences;
+
+    if (dbCampaignId) {
+      setActiveCampaignIdState(dbCampaignId);
     }
-  }, [data, themeContext]);
+  }, [data]);
 
   const setActiveCampaign = async (
     campaignId: string | null,
   ): Promise<void> => {
     try {
-      logger.info('Setting active campaign', { campaignId });
-
-      await asyncFetch(setActiveCampaignMutation, {
-        input: { campaignId },
-      });
-
+      await asyncFetch(setActiveCampaignMutation, { input: { campaignId } });
       setActiveCampaignIdState(campaignId || undefined);
     } catch (error) {
       logger.error('Failed to set active campaign', error);
+      throw error;
     }
   };
 

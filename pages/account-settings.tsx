@@ -3,15 +3,42 @@ import { useRouter } from 'next/router';
 import { NextPage } from 'next';
 import Head from 'next/head';
 import { useCurrentUserContext } from '../context/UserContext';
+import { useTheme } from '../context/ThemeContext';
 
 const AccountSettingsPage: NextPage = () => {
   const router = useRouter();
   const { currentUser } = useCurrentUserContext();
+  const { theme: currentTheme, setTheme } = useTheme();
   const [isDeleting, setIsDeleting] = useState(false);
   const [confirmValue, setConfirmValue] = useState('');
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Common themes to show at the top
+  const commonThemes = ['light', 'dark', 'cupcake', 'cyberpunk'];
+
+  // All other themes
+  const additionalThemes = [
+    'acid',
+    'autumn',
+    'business',
+    'dim',
+    'dracula',
+    'emerald',
+    'fantasy',
+    'garden',
+    'halloween',
+    'lemonade',
+    'night',
+    'nord',
+    'pastel',
+    'retro',
+    'sunset',
+    'synthwave',
+    'valentine',
+    'winter',
+  ];
 
   const handleOpenDeleteModal = () => {
     setShowDeleteConfirmation(true);
@@ -80,6 +107,49 @@ const AccountSettingsPage: NextPage = () => {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+
+        <div className="card bg-base-200 shadow-xl mb-8">
+          <div className="card-body">
+            <h2 className="card-title">Appearance</h2>
+            <div className="mb-4">
+              <h3 className="text-lg font-medium mb-2">Theme</h3>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {commonThemes.map((theme) => (
+                  <button
+                    key={theme}
+                    onClick={() => setTheme(theme)}
+                    className={`btn ${
+                      currentTheme === theme ? 'btn-primary' : 'btn-outline'
+                    }`}
+                  >
+                    {theme.charAt(0).toUpperCase() + theme.slice(1)}
+                  </button>
+                ))}
+              </div>
+
+              <details className="collapse collapse-arrow bg-base-100">
+                <summary className="collapse-title font-medium">
+                  More themes
+                </summary>
+                <div className="collapse-content">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 pt-2">
+                    {additionalThemes.map((theme) => (
+                      <button
+                        key={theme}
+                        onClick={() => setTheme(theme)}
+                        className={`btn btn-sm ${
+                          currentTheme === theme ? 'btn-primary' : 'btn-outline'
+                        }`}
+                      >
+                        {theme.charAt(0).toUpperCase() + theme.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </details>
+            </div>
           </div>
         </div>
 

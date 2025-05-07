@@ -20,6 +20,9 @@ export const useEnemyState = (
   const [advancedOpenState, setAdvancedOpenState] = useState<{
     [key: number]: boolean;
   }>({});
+  const [duplicatedEnemyIds, setDuplicatedEnemyIds] = useState<Set<string>>(
+    new Set(),
+  );
 
   const collapseRefs = useRef<{ [key: number]: HTMLInputElement | null }>({});
 
@@ -125,10 +128,31 @@ export const useEnemyState = (
 
       return newState;
     });
+
+    // Scroll to the newly added enemy
+    setTimeout(() => {
+      const firstEnemyCard = document.querySelector(
+        '.space-y-4 > *:first-child',
+      );
+      if (firstEnemyCard) {
+        firstEnemyCard.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }
+    }, 100);
   };
 
   const removeEnemy = (indexToRemove: number) => {
+    // Get the ID of the enemy being removed to update duplicated enemies set if needed
+    const enemyId = initialEnemies[indexToRemove]?._id;
+
     onEnemiesChange(initialEnemies.filter((_, i) => i !== indexToRemove));
+
+    if (enemyId) {
+      setDuplicatedEnemyIds((prev) => {
+        const newSet = new Set(prev);
+        newSet.delete(enemyId);
+        return newSet;
+      });
+    }
 
     setSelectedMonsterNames((prev) => {
       const newState: { [key: number]: string } = {};
@@ -162,6 +186,13 @@ export const useEnemyState = (
     const newEnemy = structuredClone(originalEnemy);
     newEnemy._id = newId;
 
+    // Track this enemy as duplicated so it starts collapsed
+    setDuplicatedEnemyIds((prev) => {
+      const newSet = new Set(prev);
+      newSet.add(newId);
+      return newSet;
+    });
+
     const updatedEnemies = [
       ...initialEnemies.slice(0, indexToDuplicate + 1),
       newEnemy,
@@ -190,6 +221,22 @@ export const useEnemyState = (
 
       return newState;
     });
+
+    // Scroll to the newly duplicated enemy
+    setTimeout(() => {
+      const enemyCards = document.querySelectorAll('.space-y-4 > *');
+      if (enemyCards.length > insertionIndex) {
+        enemyCards[insertionIndex].scrollIntoView({
+          behavior: 'smooth',
+          block: 'start',
+        });
+      }
+    }, 100);
+  };
+
+  // Helper function to check if an enemy was created through duplication
+  const isEnemyDuplicated = (enemyId: string): boolean => {
+    return duplicatedEnemyIds.has(enemyId);
   };
 
   return {
@@ -206,6 +253,7 @@ export const useEnemyState = (
     addEnemy,
     removeEnemy,
     duplicateEnemy,
+    isEnemyDuplicated,
     setAdvancedOpenState,
   };
 };

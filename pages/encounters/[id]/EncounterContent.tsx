@@ -113,7 +113,7 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
 
   return (
     <div className="p-4">
-      <div className="card bg-base-100 shadow-xl mb-6">
+      <div className="card bg-base-100 shadow-sm mb-6">
         <div className="card-body">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div className="flex-grow">
@@ -144,10 +144,10 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
                 }}
               />
             </div>
-            <div className="flex flex-col items-start sm:items-end gap-3">
+            <div className="flex flex-col items-start sm:items-end gap-3 w-full">
               <div className="flex items-center gap-2">
                 <div
-                  className={`badge badge-lg ${
+                  className={`badge badge-lg badge-outline ${
                     status === 'active' ? 'badge-primary' : 'badge-secondary'
                   }`}
                 >
@@ -164,22 +164,22 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
 
                       return player?.level || 1;
                     })}
-                  className="badge-md"
+                  className="badge-md badge-outline"
                 />
               </div>
-              <div className="card-actions justify-end">
+              <div className="card-actions flex w-full  gap-2 sm:flex-row sm:w-auto sm:justify-end sm:gap-3">
                 <Button
                   label="Delete Encounter"
                   onClick={openDeleteModalAndSetState}
                   variant="error"
-                  className="btn-sm"
+                  className="btn-sm w-full md:w-auto "
                   disabled={isSaving || isFinishingEncounter || isDeleting}
                 />
                 {status === 'active' && (
                   <Button
                     label="Finish Encounter"
                     onClick={handleFinishEncounter}
-                    className="btn-sm btn-warning"
+                    className="btn-sm btn-warning w-full md:w-auto"
                     loading={isFinishingEncounter}
                     disabled={isSaving}
                   />

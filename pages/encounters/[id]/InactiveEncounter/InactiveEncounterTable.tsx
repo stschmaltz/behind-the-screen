@@ -315,7 +315,7 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
               handleAddCharacter(character, type);
             }}
             className="w-full"
-            allowedCharacterTypes={['enemy']}
+            allowedCharacterTypes={['enemy', 'npc']}
           />
           <AddPlayersModal
             onAddPlayers={handleAddPlayers}

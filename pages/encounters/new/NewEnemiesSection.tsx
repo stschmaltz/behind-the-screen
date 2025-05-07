@@ -27,6 +27,7 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
     addEnemy,
     removeEnemy,
     duplicateEnemy,
+    isEnemyDuplicated,
   } = useEnemyState(enemies, onEnemiesChange);
 
   return (
@@ -62,6 +63,7 @@ const NewEnemiesSection: React.FC<NewEnemiesSectionProps> = ({
               }}
               error={error}
               monsters={monsters}
+              isExpanded={!isEnemyDuplicated(enemy._id)}
               onMonsterSelectChange={handleMonsterSelectChange}
               onEnemyFieldChange={handleEnemyFieldChange}
               onAbilityScoreChange={handleAbilityScoreChange}

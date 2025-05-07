@@ -72,7 +72,7 @@ export const ConditionManager: React.FC<{
       <div className="flex justify-end">
         <label
           htmlFor={`condition-modal-${characterId}`}
-          className="btn btn-xs btn-outline"
+          className="btn btn-xs bg-base-300/20"
         >
           Manage Conditions
         </label>

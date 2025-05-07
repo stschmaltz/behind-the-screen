@@ -44,7 +44,9 @@ const HomePage: NextPage = () => {
         />
       </Head>
       <div className="bg-base-100 h-full p-4 flex flex-col items-center space-y-6">
-        <h1 className="text-3xl font-bold">Dungeon Master Essentials</h1>
+        <h1 className="text-3xl font-bold text-center">
+          Dungeon Master Essentials
+        </h1>
         <p className="text-center max-w-xl text-base-content opacity-90">
           Welcome to DM Essentials! I&apos;m Shane, the solo developer building
           this free toolkit to help Game Masters run engaging TTRPGs like
@@ -60,23 +62,20 @@ const HomePage: NextPage = () => {
           </Link>
           , designed for ease of use. More helpful tools are coming soon!
         </p>
-        <p className="text-center max-w-xl text-base-content opacity-70">
-          Your feedback is vital as I build this solo project. Please share your
-          valuable thoughts and feature requests{' '}
-          <Link href="/feedback" className="text-primary hover:underline">
-            here!
-          </Link>
-        </p>
 
         <Link
           href={primaryFeature.href}
           className="flex flex-col items-center gap-2 p-6 rounded-lg border border-base-300 bg-base-200 hover:bg-base-300 transition-colors w-full max-w-md"
         >
           <primaryFeature.icon className="w-12 h-12 text-primary" />
-          <span className="text-2xl font-semibold flex items-center gap-2">
-            {primaryFeature.label}
-            <span className="badge badge-warning badge-sm">In Beta</span>
-          </span>
+          <div className="flex flex-col md:flex-row items-center gap-0 md:gap-2">
+            <span className="text-2xl font-semibold text-center mb-0">
+              {primaryFeature.label}
+            </span>
+            <span className="badge badge-warning badge-sm whitespace-nowrap mt-1 md:mt-2">
+              In Beta
+            </span>
+          </div>
           <span className="text-center opacity-80">
             {primaryFeature.description}
           </span>
@@ -91,6 +90,13 @@ const HomePage: NextPage = () => {
             to organize your game world
           </span>
         </Link>
+        <p className="text-center max-w-xl text-base-content opacity-70">
+          Your feedback is vital as I build this solo project. Please share your
+          valuable thoughts and feature requests{' '}
+          <Link href="/feedback" className="text-primary hover:underline">
+            here!
+          </Link>
+        </p>
         {/* <div className="flex items-center gap-4 mb-6">
           <KofiButton
             buttonClassName="btn btn-primary btn-sm"

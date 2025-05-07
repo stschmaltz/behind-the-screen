@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ToastContainer } from 'react-toastify';
@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { NavBar } from './NavBar';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { KofiButton } from './KofiButton';
+import { BottomNav } from './ui/BottomNav';
 import { useUserSignIn } from '../hooks/use-user-sign-in.hook';
 
 interface LayoutProps {
@@ -15,8 +16,14 @@ interface LayoutProps {
 
 function Layout({ children }: LayoutProps) {
   const [isLoading, currentUser] = useUserSignIn();
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const isHomePage = router.pathname === '/';
+
+  const toggleAccountMenu = () => {
+    setIsAccountMenuOpen(!isAccountMenuOpen);
+  };
 
   if (isLoading) {
     return (
@@ -37,7 +44,7 @@ function Layout({ children }: LayoutProps) {
         />
         {/* Favicon Links */}
         <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/icons/favicon-32x32.png" type="image/png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
 
@@ -69,17 +76,22 @@ function Layout({ children }: LayoutProps) {
       <header className="sticky top-0 z-30 bg-primary text-white p-2">
         <div className="container mx-auto flex flex-wrap items-center justify-between">
           <Link href="/" className="flex items-center">
-            <h1 className="text-xl md:text-2xl font-bold">DM Essentials</h1>
+            <h1 className="ml-2 text-xl md:text-2xl font-bold">
+              DM Essentials
+            </h1>
           </Link>
           <div className="flex items-center gap-2 md:gap-4">
             <NavBar router={router} />
 
             {currentUser ? (
-              <div className="dropdown dropdown-end">
-                <div
-                  tabIndex={0}
-                  role="button"
+              <div
+                className="dropdown dropdown-end relative"
+                ref={accountMenuRef}
+              >
+                <button
                   className="btn btn-ghost btn-circle avatar"
+                  onClick={toggleAccountMenu}
+                  aria-expanded={isAccountMenuOpen}
                 >
                   <div className="w-10 rounded-full relative">
                     <Image
@@ -91,25 +103,32 @@ function Layout({ children }: LayoutProps) {
                       priority
                     />
                   </div>
-                </div>
-                <ul
-                  tabIndex={0}
-                  className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 text-base-content"
-                >
-                  {currentUser.name && (
-                    <li className="menu-title">
-                      <span>Signed in as {currentUser.name}</span>
+                </button>
+                {isAccountMenuOpen && (
+                  <ul className="menu menu-sm dropdown-content mt-0 z-[1] p-2 shadow bg-base-100 rounded-box w-52 text-base-content">
+                    {currentUser.name && (
+                      <li className="menu-title">
+                        <span>Signed in as {currentUser.name}</span>
+                      </li>
+                    )}
+                    <li>
+                      <Link
+                        href="/account-settings"
+                        onClick={() => setIsAccountMenuOpen(false)}
+                      >
+                        Account Settings
+                      </Link>
                     </li>
-                  )}
-                  <li>
-                    <Link href="/account-settings">Account Settings</Link>
-                  </li>
-                  <li>
-                    <Link href="/api/auth/logout?returnTo=http%3A%2F%2Flocalhost%3A3000">
-                      Logout
-                    </Link>
-                  </li>
-                </ul>
+                    <li>
+                      <Link
+                        href="/api/auth/logout?returnTo=http%3A%2F%2Flocalhost%3A3000"
+                        onClick={() => setIsAccountMenuOpen(false)}
+                      >
+                        Logout
+                      </Link>
+                    </li>
+                  </ul>
+                )}
               </div>
             ) : (
               <Link href="/api/auth/login" className="btn btn-ghost">
@@ -130,11 +149,13 @@ function Layout({ children }: LayoutProps) {
         {isHomePage ? (
           <div className="container mx-auto px-4 py-8">{children}</div>
         ) : (
-          <div className="container mx-auto px-4 py-8 flex-grow">
+          <div className="container mx-auto px-4 py-6 md:py-8 flex-grow max-w-screen-md min-h-[80vh]">
             {children}
           </div>
         )}
       </main>
+
+      <BottomNav />
 
       <footer className="p-4 pb-10 md:pb-4 bg-neutral text-neutral-content">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center text-sm">

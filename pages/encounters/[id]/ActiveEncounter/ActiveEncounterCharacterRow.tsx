@@ -77,7 +77,7 @@ const ActiveEncounterCharacterRow: React.FC<{
 
   return (
     <div
-      className={`card relative ${isCurrentTurn ? 'bg-primary bg-opacity-10 z-10' : 'bg-base-100'} shadow-sm mb-4`}
+      className={`card relative ${isCurrentTurn ? 'bg-primary bg-opacity-10 z-10 border-primary border-[1px]' : 'bg-base-100'} shadow-sm mb-4`}
     >
       {isMonster && (
         <MonsterDetailModal
@@ -87,7 +87,7 @@ const ActiveEncounterCharacterRow: React.FC<{
         />
       )}
 
-      <div className="card-body p-4">
+      <div className="card-body p-4 ">
         <MobileListLayout
           character={character}
           isCurrentTurn={isCurrentTurn}
