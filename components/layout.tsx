@@ -111,7 +111,7 @@ function Layout({ children }: LayoutProps) {
 
       <BottomNav />
 
-      <footer className="p-4 pb-10 md:pb-4 bg-neutral text-neutral-content">
+      <footer className="p-4 pb-10 md:pb-4 bg-neutral text-neutral-content mb-16 md:mb-0">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center text-sm">
           <div className="flex flex-col items-center mb-4 md:mb-0 text-xs">
             &copy; {new Date().getFullYear()} Dungeon Master Essentials.

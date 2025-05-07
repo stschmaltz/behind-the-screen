@@ -46,4 +46,9 @@ export interface UserRepositoryInterface {
    * @returns A promise resolving to the upserted user object.
    */
   handleUserSignIn(userData: UserSignInData): Promise<UserObject>;
+
+  /**
+   * Returns the total number of users.
+   */
+  countUsers(): Promise<number>;
 }

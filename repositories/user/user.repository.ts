@@ -83,6 +83,16 @@ class UserRepository implements UserRepositoryInterface {
 
     return mapUserDocumentToUserObject(user);
   }
+
+  public async countUsers(): Promise<number> {
+    try {
+      const { db } = await getDbClient();
+      return db.collection<UserDocument>(collectionName).countDocuments();
+    } catch (error) {
+      logger.error('Error counting users', error);
+      throw error;
+    }
+  }
 }
 
 export { UserRepository };

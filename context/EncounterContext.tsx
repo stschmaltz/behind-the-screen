@@ -13,7 +13,9 @@ interface EncounterContextProps {
   encounter: Encounter;
   setEncounter: React.Dispatch<React.SetStateAction<Encounter>>;
   isSaving: boolean;
-  handleSave: (encounter: Encounter | NewEncounterTemplate) => Promise<boolean>;
+  handleSave: (
+    encounter: Encounter | NewEncounterTemplate,
+  ) => Promise<{ success: boolean; errors?: string[] }>;
   deleteEncounter: (encounterId: string) => Promise<boolean>;
   updateEncounterDescription: (
     encounterId: string,
