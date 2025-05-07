@@ -131,12 +131,6 @@ const useManageEncounter = () => {
               nameEl && nameEl.textContent?.trim() === encounter.name.trim()
             );
           });
-          if (card) {
-            card.classList.add('flash-outline');
-            setTimeout(() => {
-              card.classList.remove('flash-outline');
-            }, 1000);
-          }
         }, 500);
       }
 
