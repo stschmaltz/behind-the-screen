@@ -22,6 +22,7 @@ const DescriptionDisplay: React.FC<DescriptionDisplayProps> = ({
   const [editedDescription, setEditedDescription] = useState(description || '');
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const hasDescription = description && description.trim().length > 0;
   const tooltipId = `desc-tooltip-${encounterId}`;
@@ -51,6 +52,7 @@ const DescriptionDisplay: React.FC<DescriptionDisplayProps> = ({
   const handleButtonClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     e.preventDefault();
+    setIsOpen((prev) => !prev);
   };
 
   if (!isEditable && !hasDescription) {
@@ -75,9 +77,10 @@ const DescriptionDisplay: React.FC<DescriptionDisplayProps> = ({
         events={['click']}
         place="top"
         variant="info"
-        className="!opacity-100 !z-50 max-w-xs"
+        className="!opacity-100 !z-50 max-w-xs !bg-transparent"
+        isOpen={isOpen}
       >
-        <div className="p-2 text-sm bg-base-100 text-base-content shadow-lg rounded-md border border-base-300">
+        <div className="p-3 text-sm bg-base-100 text-base-content shadow-lg rounded-md border border-base-300">
           {!isEditing ? (
             <>
               <p className="whitespace-pre-wrap break-words">
