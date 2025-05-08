@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ToastContainer } from 'react-toastify';
 import Head from 'next/head';
-import { NavBar } from './NavBar';
+import { NavBar } from './ui/NavBar';
 import { ThemeSwitcher } from './ThemeSwitcher';
 import { KofiButton } from './KofiButton';
 import { BottomNav } from './ui/BottomNav';

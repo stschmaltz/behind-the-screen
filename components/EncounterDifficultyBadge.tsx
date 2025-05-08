@@ -1,5 +1,5 @@
 import React from 'react';
-import { capitalizeFirstLetter } from './DifficultyCalculatorCore';
+import { capitalizeFirstLetter } from './encounter-difficulty/DifficultyCalculatorCore';
 import { EncounterCharacter } from '../types/encounters';
 import { getEncounterDifficulty } from '../lib/encounterUtils';
 

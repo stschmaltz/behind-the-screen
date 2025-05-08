@@ -1,6 +1,6 @@
 import React from 'react';
 import { EncounterCharacter } from '../../../types/encounters';
-import { FormInput } from '../../../components/FormInput';
+import { FormInput } from '../../../components/ui/FormInput';
 import MonsterCombobox from '../../../components/MonsterCombobox';
 import { MonsterData } from '../../../hooks/use-monsters.hook';
 import { MonsterOption } from '../../../hooks/use-monsters.hook';

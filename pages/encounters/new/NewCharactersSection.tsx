@@ -1,7 +1,7 @@
 import React from 'react';
 import CharacterCard from './CharacterCard';
 import { EncounterCharacter } from '../../../types/encounters';
-import { Button } from '../../../components/Button';
+import { Button } from '../../../components/ui/Button';
 import { useCharacterState } from '../../../hooks/useCharacterState';
 
 interface NewCharactersSectionProps {

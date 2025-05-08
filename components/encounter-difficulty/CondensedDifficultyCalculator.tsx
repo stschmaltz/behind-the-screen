@@ -8,9 +8,9 @@ import {
 import {
   EncounterCharacter,
   InitiativeOrderCharacter,
-} from '../types/encounters';
-import { getEncounterDifficulty } from '../lib/encounterUtils';
-import { Player } from '../types/player';
+} from '../../types/encounters';
+import { getEncounterDifficulty } from '../../lib/encounterUtils';
+import { Player } from '../../types/player';
 
 interface CondensedDifficultyCalculatorProps {
   enemies: EncounterCharacter[];
@@ -128,4 +128,4 @@ const CondensedDifficultyCalculator: React.FC<
   );
 };
 
-export default CondensedDifficultyCalculator;
+export { CondensedDifficultyCalculator };

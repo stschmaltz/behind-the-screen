@@ -35,7 +35,7 @@ export default class MyDocument extends Document {
           />
           <meta name="msapplication-TileColor" content="#2B5797" />
           <meta name="msapplication-tap-highlight" content="no" />
-          <meta name="theme-color" content="#E63946" />
+          <meta name="theme-color" content="#111111" />
           <link
             rel="icon"
             type="image/png"

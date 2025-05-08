@@ -3,7 +3,7 @@ import InactiveEncounterCharacterRow from './InactiveEncounterCharacterRow';
 import NewEnemyModal from '../enemy/NewEnemyModal';
 import AddPlayersModal from '../AddPlayersModal';
 import { useEncounterDraft } from '../../../../hooks/encounter/use-draft-encounter';
-import { Button } from '../../../../components/Button';
+import { Button } from '../../../../components/ui/Button';
 import { useUnsavedChangesWarning } from '../../../../hooks/use-unsaved-changes-warning';
 import {
   Encounter,
@@ -14,7 +14,7 @@ import { Player } from '../../../../types/player';
 import { showDaisyToast } from '../../../../lib/daisy-toast';
 import { useEncounterContext } from '../../../../context/EncounterContext';
 import { getAbilityModifier, rollInitiative } from '../../../../lib/random';
-import CondensedDifficultyCalculator from '../../../../components/CondensedDifficultyCalculator';
+import CondensedDifficultyCalculator from '../../../../components/encounter-difficulty/CondensedDifficultyCalculator';
 import { logger } from '../../../../lib/logger';
 
 interface Props {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormInput } from '../../../../components/FormInput';
+import { FormInput } from '../../../../components/ui/FormInput';
 import { EncounterCharacter } from '../../../../types/encounters';
 import { getAbilityModifier, rollInitiative } from '../../../../lib/random';
 

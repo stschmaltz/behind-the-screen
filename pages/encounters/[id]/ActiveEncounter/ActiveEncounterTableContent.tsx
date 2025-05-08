@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import ActiveEncounterCharacterRow from './ActiveEncounterCharacterRow';
 import DeadCharacterRow from './DeadCharacterRow';
-import { Button } from '../../../../components/Button';
+import { Button } from '../../../../components/ui/Button';
 import { Player } from '../../../../types/player';
 import { useEncounterContext } from '../../../../context/EncounterContext';
 import { showDaisyToast } from '../../../../lib/daisy-toast';

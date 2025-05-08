@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import MonsterSelector from './MonsterSelector';
 import BasicEnemyForm from './BasicEnemyForm';
 import AdvancedEnemyForm from './AdvancedEnemyForm';
-import { Button } from '../../../../components/Button';
+import { Button } from '../../../../components/ui/Button';
 import { EncounterCharacter } from '../../../../types/encounters';
 import { useModal } from '../../../../hooks/use-modal';
 

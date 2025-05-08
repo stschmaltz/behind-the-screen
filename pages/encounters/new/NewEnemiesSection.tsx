@@ -1,9 +1,9 @@
 import React from 'react';
 import EnemyCard from './EnemyCard';
 import { EncounterCharacter } from '../../../types/encounters';
-import { Button } from '../../../components/Button';
-import EncounterDifficultyCalculator from '../../../components/EncounterDifficultyCalculator';
+import { Button } from '../../../components/ui/Button';
 import { useEnemyState } from '../../../hooks/useEnemyState';
+import { EncounterDifficultyCalculator } from '../../../components/encounter-difficulty';
 
 interface NewEnemiesSectionProps {
   enemies: EncounterCharacter[];

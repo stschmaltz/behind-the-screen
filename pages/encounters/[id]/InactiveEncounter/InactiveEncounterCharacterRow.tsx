@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from 'react';
 import { DocumentDuplicateIcon, TrashIcon } from '@heroicons/react/24/outline';
-import { FormInput } from '../../../../components/FormInput';
-import { Button } from '../../../../components/Button';
+import { FormInput } from '../../../../components/ui/FormInput';
+import { Button } from '../../../../components/ui/Button';
 import {
   EncounterCharacter,
   InitiativeOrderCharacter,

@@ -1,10 +1,10 @@
 import React from 'react';
 import { DocumentDuplicateIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { EncounterCharacter } from '../../../types/encounters';
-import { FormInput } from '../../../components/FormInput';
+import { FormInput } from '../../../components/ui/FormInput';
 import MonsterCombobox from '../../../components/MonsterCombobox';
 import { MonsterData, MonsterOption } from '../../../hooks/use-monsters.hook';
-import { Button } from '../../../components/Button';
+import { Button } from '../../../components/ui/Button';
 
 interface EnemyCardProps {
   enemy: EncounterCharacter;
