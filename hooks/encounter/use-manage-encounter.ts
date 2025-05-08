@@ -134,8 +134,6 @@ const useManageEncounter = () => {
         }, 500);
       }
 
-      showDaisyToast('success', `Encounter "${encounter.name}" saved`);
-
       return { success: true };
     } catch (err) {
       logger.error('Failed to save encounter', {
