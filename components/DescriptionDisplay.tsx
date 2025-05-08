@@ -75,6 +75,7 @@ const DescriptionDisplay: React.FC<DescriptionDisplayProps> = ({
         id={tooltipId}
         clickable
         events={['click']}
+        openOnClick
         place="top"
         variant="info"
         className="!opacity-100 !z-50 max-w-xs !bg-transparent"

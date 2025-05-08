@@ -84,7 +84,7 @@ const ActiveEncounterCharacterRow = forwardRef<
     return (
       <div
         ref={ref}
-        className={`card relative ${isCurrentTurn ? 'bg-primary bg-opacity-10 z-10 border-primary border-[1px]' : 'bg-base-100'} shadow-sm mb-4`}
+        className={`card relative border-[1px] ${isCurrentTurn ? 'bg-primary bg-opacity-10 z-10 border-primary ' : 'bg-base-300/40'} shadow-sm mb-1`}
       >
         {isMonster && (
           <MonsterDetailModal

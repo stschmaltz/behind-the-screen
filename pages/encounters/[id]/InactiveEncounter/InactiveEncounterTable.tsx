@@ -14,9 +14,8 @@ import { Player } from '../../../../types/player';
 import { showDaisyToast } from '../../../../lib/daisy-toast';
 import { useEncounterContext } from '../../../../context/EncounterContext';
 import { getAbilityModifier, rollInitiative } from '../../../../lib/random';
-import CondensedDifficultyCalculator from '../../../../components/encounter-difficulty/CondensedDifficultyCalculator';
 import { logger } from '../../../../lib/logger';
-
+import { CondensedDifficultyCalculator } from '../../../../components/encounter-difficulty/CondensedDifficultyCalculator';
 interface Props {
   encounter: Encounter;
   players: Player[];

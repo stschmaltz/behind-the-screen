@@ -59,7 +59,7 @@ const ActiveEncounterTableContent: React.FC<
       ];
 
       if (currentCharacter) {
-        showDaisyToast('info', `${currentCharacter.name}'s turn`);
+        showDaisyToast('success', `${currentCharacter.name}'s turn`);
       }
     }
   };
@@ -79,7 +79,7 @@ const ActiveEncounterTableContent: React.FC<
     if (currentCharacter && characterRowRefs.current[currentCharacter._id]) {
       characterRowRefs.current[currentCharacter._id]?.scrollIntoView({
         behavior: 'smooth',
-        block: 'end',
+        block: 'center',
       });
     }
   }, [currentCharacter, currentCharacter?._id]);
@@ -114,7 +114,7 @@ const ActiveEncounterTableContent: React.FC<
 
   return (
     <div className="w-full max-w-full flex flex-col">
-      <div className="flex flex-col-reverse sm:flex-row gap-2 mb-4 w-full items-center">
+      <div className="flex flex-col-reverse sm:flex-row gap-2 mb-2 w-full items-center">
         <div
           className="flex flex-col items-center gap-2 w-full mt-2 md:mt-0 sm:w-1/2 \
  bg-base-100 rounded-lg p-2 border border-base-300"
@@ -173,9 +173,9 @@ const ActiveEncounterTableContent: React.FC<
 
       <div
         ref={scrollableListRef}
-        className={`relative h-[70vh] mb-4 overflow-y-auto`}
+        className={`relative  h-full max-h-[60vh] sm:max-h-[70vh] mb-4 overflow-y-auto`}
       >
-        <div className="space-y-2 w-full">
+        <div className="space-y-2 w-full bg-base-100 rounded-lg p-2 border border-base-300">
           {sortedCharacters.map((character) => (
             <ActiveEncounterCharacterRow
               key={character._id}
