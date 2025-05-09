@@ -11,7 +11,7 @@ const ViewStatsButton: React.FC<ViewStatsButtonProps> = ({
 }) => (
   <button
     onClick={onClick}
-    className={`btn btn-ghost btn-xs text-info p-0 h-auto justify-start mt-1 hover:bg-transparent ${className ?? ''}`.trim()}
+    className={`btn btn-ghost btn-xs text-info p-0 h-auto justify-start hover:bg-transparent ${className ?? ''}`.trim()}
     aria-label="View Stats"
     type="button"
   >

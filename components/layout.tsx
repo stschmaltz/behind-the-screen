@@ -17,6 +17,7 @@ interface LayoutProps {
 function Layout({ children }: LayoutProps) {
   const [isLoading, currentUser] = useUserSignIn();
   const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const [showLegalModal, setShowLegalModal] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const isHomePage = router.pathname === '/';
@@ -115,9 +116,18 @@ function Layout({ children }: LayoutProps) {
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center text-sm">
           <div className="flex flex-col items-center mb-4 md:mb-0 text-xs">
             &copy; {new Date().getFullYear()} Dungeon Master Essentials.
-            <div>All rights reserved.</div>
+            <div>
+              All rights reserved.
+              <button
+                className="ml-2 underline hover:text-primary transition-colors text-xs"
+                onClick={() => setShowLegalModal(true)}
+                aria-label="View Legal Notice"
+                type="button"
+              >
+                Legal Notice
+              </button>
+            </div>
           </div>
-
           <div className="flex gap-4">
             <Link href="/feedback" className="link link-hover">
               Have Feedback?
@@ -133,6 +143,28 @@ function Layout({ children }: LayoutProps) {
             </Link>
           </div>
         </div>
+        {showLegalModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
+            <div className="bg-base-100 rounded-lg shadow-lg max-w-md w-full mx-2 p-6 relative">
+              <button
+                className="absolute top-2 right-2 btn btn-xs btn-circle btn-ghost"
+                onClick={() => setShowLegalModal(false)}
+                aria-label="Close Legal Notice"
+                type="button"
+              >
+                ✕
+              </button>
+              <h2 className="text-lg font-bold mb-2">Legal Notice</h2>
+              <div className="text-xs max-h-64 overflow-y-auto text-base-content text-left whitespace-pre-line">
+                Portions of the materials used are Open Game Content from the
+                System Reference Document 5.1 (SRD 5.1) by Wizards of the Coast,
+                LLC, used under the Open Game License v1.0a. Dungeons & Dragons
+                and D&D are trademarks of Wizards of the Coast, LLC.\n\nFull
+                license text is available in the repository OGL.txt file.
+              </div>
+            </div>
+          </div>
+        )}
       </footer>
 
       <ToastContainer />

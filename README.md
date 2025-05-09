@@ -97,6 +97,10 @@ The application uses Vercel for continuous integration and deployment:
 
 This project is under active development. Currently focusing on building the encounter management system, which includes initiative tracking, character management, and combat facilitation for tabletop RPG sessions.
 
+## Legal Notice: D&D SRD and Open Game License
+
+This application includes Open Game Content from the System Reference Document 5.1 (SRD 5.1) by Wizards of the Coast, LLC, used under the terms of the Open Game License v1.0a. Only content from the SRD 5.1 is included. Dungeons & Dragons and D&D are trademarks of Wizards of the Coast, LLC. See the OGL.txt file in this repository for the full license text.
+
 ```
 
 ```

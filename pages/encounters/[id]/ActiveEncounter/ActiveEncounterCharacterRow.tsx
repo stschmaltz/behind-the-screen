@@ -108,7 +108,7 @@ const ActiveEncounterCharacterRow = forwardRef<
             onApplyModifier={handleHealthApply}
             onAddCondition={handleAddCondition}
             onRemoveCondition={handleRemoveCondition}
-            onViewStats={openModal}
+            onViewStats={monsterData ? openModal : undefined}
           />
         </div>
       </div>

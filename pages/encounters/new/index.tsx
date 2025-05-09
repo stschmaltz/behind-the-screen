@@ -159,7 +159,7 @@ const NewEncounterPage: NextPage = () => {
             />
             <FormInput
               id="description"
-              label="Description"
+              label="Short Summary"
               value={newEncounter.description}
               onChange={handleFieldChange('description')}
             />

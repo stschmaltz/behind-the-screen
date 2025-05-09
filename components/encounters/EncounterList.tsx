@@ -94,7 +94,7 @@ const EncounterList = ({
     <div className="flex w-full flex-col gap-6">
       {renderListSection(
         'Active Encounters',
-        'badge-accent',
+        'badge-accent badge-outline',
         activeEncounters,
         showActive,
         setShowActive,
@@ -102,7 +102,7 @@ const EncounterList = ({
       )}
       {renderListSection(
         'Ready Encounters',
-        'badge-secondary',
+        'badge-secondary badge-outline',
         inactiveEncounters,
         showInactive,
         setShowInactive,
@@ -110,7 +110,7 @@ const EncounterList = ({
       )}
       {renderListSection(
         'Completed Encounters',
-        'badge-ghost',
+        'badge-ghost badge-outline',
         completedEncounters,
         showCompleted,
         setShowCompleted,

@@ -8,6 +8,7 @@ import {
 } from '../../../../types/encounters';
 import ViewStatsButton from '../../../../components/ui/ViewStatsButton';
 import MonsterDetailModal from '../MonsterDetailModal';
+import InlineEditableText from '../../../../components/ui/InlineEditableText';
 
 interface Props {
   character: InitiativeOrderCharacter;
@@ -32,8 +33,11 @@ const InactiveEncounterCharacterRow = ({
     >,
     event: ChangeEvent<HTMLInputElement>,
   ) => {
-    const value =
+    let value =
       event.target.value === '' ? undefined : Number(event.target.value);
+    if (field === 'initiative' && typeof value === 'number') {
+      value = Math.min(Math.max(0, value), 35);
+    }
     onUpdate?.({
       ...character,
       [field]: value,
@@ -48,10 +52,36 @@ const InactiveEncounterCharacterRow = ({
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
-      <tr className="hover:bg-gray-50">
-        <td className="py-2 px-4">
-          {character.name}
-          {monsterData && <ViewStatsButton onClick={openModal} />}
+      <tr className="border-1 border-primary/30">
+        <td className="min-w-[120px] max-w-[180px] sticky left-0 z-10 p-0 ">
+          <div
+            className={`flex flex-col rounded-md bg-base-100 py-1 min-h-12  justify-center px-4 ${
+              monsterData ? 'my-1' : ''
+            }`}
+          >
+            {monsterData ? (
+              <InlineEditableText
+                initialValue={character.name}
+                onSave={(newName) => {
+                  if (newName.trim() && newName !== character.name) {
+                    onUpdate?.({ ...character, name: newName });
+                  }
+                }}
+                inputClassName="input input-bordered input-sm w-full h-6 px-1 py-0"
+                displayClassName="truncate w-full max-w-[120px] sm:max-w-none font-medium cursor-pointer"
+                ariaLabel="Edit enemy name"
+              />
+            ) : (
+              <span className="truncate w-full max-w-[120px] sm:max-w-none font-medium ">
+                {character.name}
+              </span>
+            )}
+            {monsterData && (
+              <span className="w-fit mb">
+                <ViewStatsButton onClick={openModal} />
+              </span>
+            )}
+          </div>
         </td>
         <td className="py-2 px-4">
           <FormInput
@@ -91,7 +121,7 @@ const InactiveEncounterCharacterRow = ({
           />
         </td>
         <td className="py-2 px-4">
-          <div className="flex justify-end gap-1 items-center">
+          <div className="flex gap-1 items-center justify-end sm:justify-end sm:items-center">
             {onDuplicate && (
               <Button
                 variant="secondary"

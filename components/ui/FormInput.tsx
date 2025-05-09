@@ -13,6 +13,7 @@ interface FormInputProps {
   placeholder?: string;
   className?: string;
   required?: boolean;
+  labelIcon?: React.ReactNode;
 }
 
 const FormInput: React.FC<FormInputProps> = ({
@@ -28,6 +29,7 @@ const FormInput: React.FC<FormInputProps> = ({
   placeholder,
   className,
   required = false,
+  labelIcon,
 }) => {
   const widthClass = width ? width : 'w-full';
 
@@ -35,7 +37,10 @@ const FormInput: React.FC<FormInputProps> = ({
     <div className={`form-control ${widthClass}`}>
       {label && (
         <label htmlFor={id} className="label">
-          <span className="label-text">{label}</span>
+          <span className="label-text flex items-center gap-2">
+            {label}
+            {labelIcon && <span className="text-info">{labelIcon}</span>}
+          </span>
         </label>
       )}
       <input

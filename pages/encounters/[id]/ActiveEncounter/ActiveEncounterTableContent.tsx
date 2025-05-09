@@ -113,12 +113,9 @@ const ActiveEncounterTableContent: React.FC<
   };
 
   return (
-    <div className="w-full max-w-full flex flex-col">
-      <div className="flex flex-col-reverse sm:flex-row gap-2 mb-2 w-full items-center">
-        <div
-          className="flex flex-col items-center gap-2 w-full mt-2 md:mt-0 sm:w-1/2 \
- bg-base-100 rounded-lg p-2 border border-base-300"
-        >
+    <div className="w-full max-w-full flex flex-col ">
+      <div className="flex flex-col-reverse sm:flex-row gap-6 mb-2 w-full items-center justify-center rounded-lg p-2 border border-base-300  bg-base-100">
+        <div className="flex flex-col items-center gap-2 w-full mt-2 md:mt-0 sm:w-1/2 ">
           <div className="flex flex-wrap gap-2 justify-center items-center mb-2">
             <span className="badge  badge-outline">
               Round {encounter.currentRound ?? 1}
@@ -131,7 +128,7 @@ const ActiveEncounterTableContent: React.FC<
             <Button
               variant="secondary"
               label="Previous"
-              className="btn-sm w-full flex-1"
+              className="btn-sm w-full flex-1 disabled:bg-secondary/25"
               onClick={handlePreviousTurn}
               disabled={
                 encounter.currentTurn === 1 && encounter.currentRound === 1
@@ -145,7 +142,7 @@ const ActiveEncounterTableContent: React.FC<
             />
           </div>
         </div>
-        <div className="flex flex-row gap-2 w-full sm:w-1/2">
+        <div className="flex flex-col gap-2 w-full sm:w-1/4 ml-4">
           <div className="w-full flex-1">
             <NewEnemyModal
               onAddCharacter={(character, initiative, type) => {

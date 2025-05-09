@@ -117,7 +117,7 @@ const NewEnemyModal: React.FC<Props> = ({
     <>
       <Button
         variant={buttonVariant}
-        label="Add Character"
+        label="Add Enemy/NPC"
         onClick={showModal}
         className={className}
       />
