@@ -12,6 +12,7 @@ import { usePWASetup } from '../hooks/use-pwa-setup.hook';
 import { ProtectedLayout } from '../components/ProtectedLayout';
 import { ActiveCampaignProvider } from '../context/ActiveCampaignContext';
 import { ThemeProvider } from '../context/ThemeContext';
+import { SpellsProvider } from '../context/SpellsContext';
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;
@@ -28,7 +29,9 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     <UserProvider user={pageProps.user}>
       <CurrentUserProvider>
         <ActiveCampaignProvider>
-          <ProtectedLayout>{page}</ProtectedLayout>
+          <SpellsProvider>
+            <ProtectedLayout>{page}</ProtectedLayout>
+          </SpellsProvider>
         </ActiveCampaignProvider>
       </CurrentUserProvider>
     </UserProvider>

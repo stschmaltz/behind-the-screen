@@ -2,6 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { EncounterCharacter } from '../../../types/encounters';
 import { Button } from '../../../components/ui/Button';
+import { useSpells } from '../../../context/SpellsContext';
+import { useSpellPopover } from '../../../hooks/use-spell-popover';
+import SpellPopover from '../../../components/spells/SpellPopover';
 
 interface Props {
   monster?: EncounterCharacter;
@@ -13,6 +16,9 @@ const MonsterDetailModal: React.FC<Props> = ({ monster, isOpen, onClose }) => {
   const modalRef = useRef<HTMLDialogElement>(null);
   const [imgSrc, setImgSrc] = useState(monster?.img_url);
   const [imgError, setImgError] = useState(false);
+  const { spells } = useSpells();
+  const { popoverSpell, setPopoverSpell, renderTraitsWithSpellPopovers } =
+    useSpellPopover(spells);
 
   useEffect(() => {
     setImgSrc(monster?.img_url);
@@ -152,7 +158,9 @@ const MonsterDetailModal: React.FC<Props> = ({ monster, isOpen, onClose }) => {
         {monster.traits && (
           <div className="mt-4">
             <h3 className="text-lg font-semibold border-b pb-1 mb-2">Traits</h3>
-            <div className="prose">{renderHTML(monster.traits)}</div>
+            <div className="prose relative">
+              {renderTraitsWithSpellPopovers(monster.traits)}
+            </div>
           </div>
         )}
 
@@ -175,12 +183,18 @@ const MonsterDetailModal: React.FC<Props> = ({ monster, isOpen, onClose }) => {
         )}
 
         <div className="modal-action">
-          <Button variant="primary" label="Close" onClick={onClose} />
+          <Button variant="primary" label="Close Stats" onClick={onClose} />
         </div>
       </div>
       <form method="dialog" className="modal-backdrop">
         <button onClick={onClose}>close</button>
       </form>
+      {popoverSpell && (
+        <SpellPopover
+          spell={popoverSpell}
+          onClose={() => setPopoverSpell(null)}
+        />
+      )}
     </dialog>
   );
 };
