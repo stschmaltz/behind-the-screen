@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Spell } from '../../types/spells';
+import CloseButton from '../ui/CloseButton';
 
 interface SpellPopoverProps {
   spell: Spell | null;
@@ -22,16 +23,10 @@ export default function SpellPopover({ spell, onClose }: SpellPopoverProps) {
 
   return (
     <div className="absolute z-50 p-4 bg-base-300 border- border-accent ring-1 ring-accent rounded-xl shadow-xl max-w-md">
+      <CloseButton onClick={onClose} className="mb-2" />
       <div className="flex justify-between items-center mb-2">
         <h3 className="font-bold text-2xl text-accent">{spell.name}</h3>
-        <button
-          className="btn btn-xs btn-circle btn-ghost"
-          onClick={onClose}
-          aria-label="Close"
-        >
-          ✕
-        </button>
-      </div>{' '}
+      </div>
       <div className="bg-base-200 p-2 rounded-lg">
         <div></div>
         <div className="grid grid-cols-2 gap-2 mt-2 text-neutral-content text-sm mb-2 ">

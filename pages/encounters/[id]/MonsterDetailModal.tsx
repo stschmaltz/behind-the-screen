@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { EncounterCharacter } from '../../../types/encounters';
-import { Button } from '../../../components/ui/Button';
+import CloseButton from '../../../components/ui/CloseButton';
 import { useSpells } from '../../../context/SpellsContext';
 import { useSpellPopover } from '../../../hooks/use-spell-popover';
 import SpellPopover from '../../../components/spells/SpellPopover';
@@ -71,6 +71,7 @@ const MonsterDetailModal: React.FC<Props> = ({ monster, isOpen, onClose }) => {
   return (
     <dialog className="modal" ref={modalRef}>
       <div className="modal-box max-w-4xl">
+        <CloseButton onClick={onClose} />
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
             <h2 className="text-2xl font-bold">{monster.name}</h2>
@@ -187,10 +188,6 @@ const MonsterDetailModal: React.FC<Props> = ({ monster, isOpen, onClose }) => {
             <div className="prose">{renderHTML(monster.legendaryActions)}</div>
           </div>
         )}
-
-        <div className="modal-action">
-          <Button variant="primary" label="Close Stats" onClick={onClose} />
-        </div>
       </div>
       <form method="dialog" className="modal-backdrop">
         <button onClick={onClose}>close</button>
