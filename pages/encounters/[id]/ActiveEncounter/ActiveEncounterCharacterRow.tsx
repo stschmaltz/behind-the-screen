@@ -86,13 +86,13 @@ const ActiveEncounterCharacterRow = forwardRef<
         ref={ref}
         className={`card relative border-[1px] ${isCurrentTurn ? 'bg-primary bg-opacity-10 z-10 border-primary ' : 'bg-base-300/40'} shadow-sm mb-1`}
       >
-        {isMonster && (
+        {
           <MonsterDetailModal
             monster={monsterData}
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
           />
-        )}
+        }
 
         <div className="card-body p-4 ">
           <ListLayout
@@ -108,7 +108,7 @@ const ActiveEncounterCharacterRow = forwardRef<
             onApplyModifier={handleHealthApply}
             onAddCondition={handleAddCondition}
             onRemoveCondition={handleRemoveCondition}
-            onViewStats={isMonster ? openModal : undefined}
+            onViewStats={openModal}
           />
         </div>
       </div>

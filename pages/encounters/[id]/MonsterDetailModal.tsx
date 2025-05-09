@@ -5,6 +5,7 @@ import { Button } from '../../../components/ui/Button';
 import { useSpells } from '../../../context/SpellsContext';
 import { useSpellPopover } from '../../../hooks/use-spell-popover';
 import SpellPopover from '../../../components/spells/SpellPopover';
+import SpellTraitsWithPopovers from '../../../components/spells/SpellTraitsWithPopovers';
 
 interface Props {
   monster?: EncounterCharacter;
@@ -17,7 +18,7 @@ const MonsterDetailModal: React.FC<Props> = ({ monster, isOpen, onClose }) => {
   const [imgSrc, setImgSrc] = useState(monster?.img_url);
   const [imgError, setImgError] = useState(false);
   const { spells } = useSpells();
-  const { popoverSpell, setPopoverSpell, renderTraitsWithSpellPopovers } =
+  const { popoverSpell, setPopoverSpell, handleSpellClick } =
     useSpellPopover(spells);
 
   useEffect(() => {
@@ -32,9 +33,10 @@ const MonsterDetailModal: React.FC<Props> = ({ monster, isOpen, onClose }) => {
         modalElement.showModal();
       } else {
         modalElement.close();
+        setPopoverSpell(null);
       }
     }
-  }, [isOpen]);
+  }, [isOpen, setPopoverSpell]);
 
   useEffect(() => {
     const modalElement = modalRef.current;
@@ -159,7 +161,11 @@ const MonsterDetailModal: React.FC<Props> = ({ monster, isOpen, onClose }) => {
           <div className="mt-4">
             <h3 className="text-lg font-semibold border-b pb-1 mb-2">Traits</h3>
             <div className="prose relative">
-              {renderTraitsWithSpellPopovers(monster.traits)}
+              <SpellTraitsWithPopovers
+                traits={monster.traits}
+                spells={spells || []}
+                onSpellClick={handleSpellClick}
+              />
             </div>
           </div>
         )}

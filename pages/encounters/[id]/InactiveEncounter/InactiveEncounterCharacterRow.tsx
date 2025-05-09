@@ -6,6 +6,7 @@ import {
   EncounterCharacter,
   InitiativeOrderCharacter,
 } from '../../../../types/encounters';
+import ViewStatsButton from '../../../../components/ui/ViewStatsButton';
 
 interface Props {
   character: InitiativeOrderCharacter;
@@ -13,6 +14,7 @@ interface Props {
   onUpdate?: (character: InitiativeOrderCharacter) => void;
   monsterData?: EncounterCharacter;
   onDuplicate?: () => void;
+  onViewStats?: () => void;
 }
 
 const InactiveEncounterCharacterRow = ({
@@ -20,6 +22,7 @@ const InactiveEncounterCharacterRow = ({
   onDelete,
   onUpdate,
   onDuplicate,
+  onViewStats,
 }: Props) => {
   const handleNumberChange = (
     field: keyof Omit<
@@ -48,6 +51,7 @@ const InactiveEncounterCharacterRow = ({
           aria-label="Initiative"
           onChange={(e) => handleNumberChange('initiative', e)}
         />
+        {onViewStats && <ViewStatsButton onClick={onViewStats} />}
       </td>
       <td className="py-2 px-4">
         <FormInput

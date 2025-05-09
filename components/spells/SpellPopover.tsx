@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Spell } from '../../types/spells';
 
 interface SpellPopoverProps {
@@ -7,12 +7,23 @@ interface SpellPopoverProps {
 }
 
 export default function SpellPopover({ spell, onClose }: SpellPopoverProps) {
+  useEffect(() => {
+    if (!spell) return;
+    const handleClick = () => {
+      onClose();
+    };
+    document.addEventListener('mousedown', handleClick);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClick);
+    };
+  }, [spell, onClose]);
   if (!spell) return null;
 
   return (
-    <div className="absolute z-50 p-4 bg-base-100 rounded-lg shadow-lg border border-base-300 max-w-md">
+    <div className="absolute z-50 p-4 bg-base-300 border- border-accent ring-1 ring-accent rounded-xl shadow-xl max-w-md">
       <div className="flex justify-between items-center mb-2">
-        <h3 className="font-bold text-lg text-primary">{spell.name}</h3>
+        <h3 className="font-bold text-2xl text-accent">{spell.name}</h3>
         <button
           className="btn btn-xs btn-circle btn-ghost"
           onClick={onClose}
@@ -20,16 +31,10 @@ export default function SpellPopover({ spell, onClose }: SpellPopoverProps) {
         >
           ✕
         </button>
-      </div>
-      <div className="text-sm text-base-content">
-        {spell.description && <div className="mb-2">{spell.description}</div>}
-        {spell.higher_levels && (
-          <div className="mb-2">
-            <span className="font-semibold">At Higher Levels:</span>{' '}
-            {spell.higher_levels}
-          </div>
-        )}
-        <div className="grid grid-cols-2 gap-2 mt-2">
+      </div>{' '}
+      <div className="bg-base-200 p-2 rounded-lg">
+        <div></div>
+        <div className="grid grid-cols-2 gap-2 mt-2 text-neutral-content text-sm mb-2 ">
           <div>
             <span className="font-semibold">Level:</span> {spell.level}
           </div>
@@ -50,6 +55,17 @@ export default function SpellPopover({ spell, onClose }: SpellPopoverProps) {
             <span className="font-semibold">Components:</span>{' '}
             {spell.components.join(', ')}
           </div>
+        </div>
+        <div className="text-md text-base-content">
+          {spell.description && (
+            <div className="mb-2 text-base-content">{spell.description}</div>
+          )}
+          {spell.higher_levels && (
+            <div className="mb-2 text-sm">
+              <span className="font-semibold">At Higher Levels:</span>{' '}
+              {spell.higher_levels}
+            </div>
+          )}
         </div>
       </div>
     </div>
