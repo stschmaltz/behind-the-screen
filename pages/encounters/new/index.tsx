@@ -2,6 +2,7 @@ import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import Head from 'next/head';
 import NewEnemiesSection from './NewEnemiesSection';
 import { useNewEncounter } from '../../../hooks/encounter/use-new-encounter';
 import { NewEncounterTemplate } from '../../../types/encounters';
@@ -136,70 +137,83 @@ const NewEncounterPage: NextPage = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center relative">
-      <h1 className="text-xl font-bold mb-2">New Encounter</h1>
+    <>
+      <Head>
+        <title>Create New Encounter | Tabletop RPG Combat Management</title>
+        <meta
+          name="description"
+          content="Create and customize new encounters for tabletop RPGs. Add enemies, set initiative, and manage combat scenarios for D&D and other TTRPGs with advanced encounter management tools."
+        />
+        <meta
+          name="keywords"
+          content="Create Encounter, Combat Management, Tabletop RPG, D&D, Initiative Tracker, Enemy Management, Encounter Builder, RPG Tools, Dungeon Master, Combat Tracker"
+        />
+      </Head>
+      <div className="flex flex-col items-center justify-center relative">
+        <h1 className="text-xl font-bold mb-2">New Encounter</h1>
 
-      <div className="w-full max-w-xl bg-base-300 shadow-md rounded px-8 pt-6 pb-8 mb-4 h-[72vh] sm:h-auto max-h-[72vh] overflow-y-auto relative">
-        {!hasCampaigns && !campaignsLoading ? (
-          <div className="flex flex-col items-center justify-center py-8">
-            <p className="text-center mb-4">
-              You need to create a campaign before you can create encounters.
-            </p>
-            <Link href="/campaigns/new">
-              <button className="btn btn-primary">Create New Campaign</button>
-            </Link>
-          </div>
-        ) : (
-          <>
-            <FormInput
-              id="name"
-              label="Name"
-              value={newEncounter.name}
-              onChange={handleFieldChange('name')}
-            />
-            <FormInput
-              id="description"
-              label="Short Summary"
-              value={newEncounter.description}
-              onChange={handleFieldChange('description')}
-            />
-
-            <div className="mb-4 grid grid-cols-1 gap-1">
-              <CampaignSelector
-                selectedCampaignId={campaignId}
-                onCampaignChange={handleCampaignChange}
-              />
-              <AdventureSelector
-                selectedAdventureId={adventureId}
-                onAdventureChange={handleAdventureChange}
-              />
+        <div className="w-full max-w-xl bg-base-300 shadow-md rounded px-8 pt-6 pb-8 mb-4 h-[72vh] sm:h-auto max-h-[72vh] overflow-y-auto relative">
+          {!hasCampaigns && !campaignsLoading ? (
+            <div className="flex flex-col items-center justify-center py-8">
+              <p className="text-center mb-4">
+                You need to create a campaign before you can create encounters.
+              </p>
+              <Link href="/campaigns/new">
+                <button className="btn btn-primary">Create New Campaign</button>
+              </Link>
             </div>
+          ) : (
+            <>
+              <FormInput
+                id="name"
+                label="Name"
+                value={newEncounter.name}
+                onChange={handleFieldChange('name')}
+              />
+              <FormInput
+                id="description"
+                label="Short Summary"
+                value={newEncounter.description}
+                onChange={handleFieldChange('description')}
+              />
 
-            <NewEnemiesSection
-              enemies={newEncounter.enemies}
-              onEnemiesChange={(updatedEnemies) => {
-                setNewEncounter((prev) => ({
-                  ...prev,
-                  enemies: updatedEnemies,
-                }));
-                setHasUnsavedChanges(true);
-              }}
+              <div className="mb-4 grid grid-cols-1 gap-1">
+                <CampaignSelector
+                  selectedCampaignId={campaignId}
+                  onCampaignChange={handleCampaignChange}
+                />
+                <AdventureSelector
+                  selectedAdventureId={adventureId}
+                  onAdventureChange={handleAdventureChange}
+                />
+              </div>
+
+              <NewEnemiesSection
+                enemies={newEncounter.enemies}
+                onEnemiesChange={(updatedEnemies) => {
+                  setNewEncounter((prev) => ({
+                    ...prev,
+                    enemies: updatedEnemies,
+                  }));
+                  setHasUnsavedChanges(true);
+                }}
+              />
+            </>
+          )}
+        </div>
+
+        {hasCampaigns && !campaignsLoading && (
+          <div className="sticky bottom-4 w-full max-w-xl px-8 z-10">
+            <Button
+              className="w-full"
+              onClick={onSave}
+              disabled={isSaving || !campaignId}
+              label="Save"
             />
-          </>
+          </div>
         )}
       </div>
-
-      {hasCampaigns && !campaignsLoading && (
-        <div className="sticky bottom-4 w-full max-w-xl px-8 z-10">
-          <Button
-            className="w-full"
-            onClick={onSave}
-            disabled={isSaving || !campaignId}
-            label="Save"
-          />
-        </div>
-      )}
-    </div>
+    </>
   );
 };
 
