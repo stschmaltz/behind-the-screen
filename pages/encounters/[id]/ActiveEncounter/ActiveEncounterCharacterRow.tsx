@@ -46,28 +46,39 @@ const ActiveEncounterCharacterRow = forwardRef<
       let newHP = currentHP;
       let newTempHP = character.tempHP ?? 0;
 
-      if (modifierType === 'damage') {
-        let damage = numValue;
-        if (newTempHP > 0) {
-          if (damage >= newTempHP) {
-            damage -= newTempHP;
-            newTempHP = 0;
+      const applyDamage = (hp: number, temp: number, dmg: number) => {
+        if (temp > 0) {
+          if (dmg >= temp) {
+            dmg -= temp;
+            temp = 0;
           } else {
-            newTempHP -= damage;
-            damage = 0;
+            temp -= dmg;
+            dmg = 0;
           }
         }
-        newHP = Math.max(0, newHP - damage);
-      } else if (modifierType === 'heal') {
-        if (character.maxHP !== undefined) {
-          newHP = Math.min(character.maxHP, newHP + numValue);
-        } else {
-          newHP = newHP + numValue;
+
+        return { hp: Math.max(0, hp - dmg), temp };
+      };
+
+      const applyHeal = (hp: number, heal: number, max?: number) =>
+        max !== undefined ? Math.min(max, hp + heal) : hp + heal;
+
+      const applyTemp = (temp: number, value: number) =>
+        value > temp ? value : temp;
+
+      switch (modifierType) {
+        case 'damage': {
+          const result = applyDamage(newHP, newTempHP, numValue);
+          newHP = result.hp;
+          newTempHP = result.temp;
+          break;
         }
-      } else if (modifierType === 'temp') {
-        if (numValue > newTempHP) {
-          newTempHP = numValue;
-        }
+        case 'heal':
+          newHP = applyHeal(newHP, numValue, character.maxHP);
+          break;
+        case 'temp':
+          newTempHP = applyTemp(newTempHP, numValue);
+          break;
       }
 
       onUpdateCharacter({ ...character, currentHP: newHP, tempHP: newTempHP });

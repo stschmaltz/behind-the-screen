@@ -121,16 +121,6 @@ const InactiveEncounterCharacterRow = ({
           />
         </td>
         <td className="py-2 px-4">
-          <FormInput
-            type="number"
-            value={character.tempHP ?? 0}
-            className="w-16"
-            id={`tempHP-${character.name}`}
-            aria-label="Temporary HP"
-            onChange={(e) => handleNumberChange('tempHP', e)}
-          />
-        </td>
-        <td className="py-2 px-4">
           <div className="flex gap-1 items-center justify-end sm:justify-end sm:items-center">
             {onDuplicate && (
               <Button

@@ -73,7 +73,7 @@ export const CharacterHP: React.FC<{
           >
             HP: {currentHP}/{maxHP}
             {typeof tempHP === 'number' && tempHP > 0 && (
-              <span className="ml-2 text-info">(+{tempHP} temp)</span>
+              <span className="ml-1 text-info">(+{tempHP})</span>
             )}
           </span>
           {currentHP > 0 && (
@@ -98,7 +98,7 @@ export const CharacterHP: React.FC<{
       >
         HP: {currentHP}
         {typeof tempHP === 'number' && tempHP > 0 && (
-          <span className="ml-2 text-info">(+{tempHP} temp)</span>
+          <span className="ml-1 text-info">(+{tempHP})</span>
         )}
       </div>
     );
