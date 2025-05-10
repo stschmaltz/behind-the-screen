@@ -4,4 +4,5 @@ export interface UserObject {
   auth0Id: string;
   name?: string;
   picture?: string;
+  emailVerified?: boolean;
 }

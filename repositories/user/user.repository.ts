@@ -16,6 +16,7 @@ const mapUserDocumentToUserObject = (doc: UserDocument): UserObject => ({
   email: doc.email,
   name: doc.name,
   picture: doc.picture,
+  emailVerified: doc.emailVerified ?? false,
 });
 
 class UserRepository implements UserRepositoryInterface {
@@ -72,6 +73,7 @@ class UserRepository implements UserRepositoryInterface {
             email: userData.email,
             name: userData.name,
             picture: userData.picture,
+            emailVerified: false,
           },
         },
         { upsert: true, returnDocument: 'after' },

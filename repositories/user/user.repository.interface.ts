@@ -10,6 +10,7 @@ export interface UserDocument {
   email: string;
   name?: string;
   picture?: string;
+  emailVerified?: boolean;
 }
 
 /**
