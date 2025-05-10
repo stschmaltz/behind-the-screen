@@ -70,6 +70,7 @@ export const ListLayout: React.FC<{
         <CharacterHP
           currentHP={character.currentHP ?? 0}
           maxHP={character.maxHP}
+          tempHP={character.tempHP}
           modifierType={modifierType}
           modifierValue={modifierValue}
           setModifierType={setModifierType}

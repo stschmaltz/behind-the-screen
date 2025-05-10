@@ -16,6 +16,7 @@ import { HPModifierPopover } from './HPModifierPopover';
 export const CharacterHP: React.FC<{
   currentHP: number;
   maxHP?: number;
+  tempHP?: number;
   modifierType: 'damage' | 'heal' | 'temp';
   setModifierType: (type: 'damage' | 'heal' | 'temp') => void;
   modifierValue: string;
@@ -24,6 +25,7 @@ export const CharacterHP: React.FC<{
 }> = ({
   currentHP,
   maxHP,
+  tempHP,
   modifierType,
   setModifierType,
   modifierValue,
@@ -70,6 +72,9 @@ export const CharacterHP: React.FC<{
             }`}
           >
             HP: {currentHP}/{maxHP}
+            {typeof tempHP === 'number' && tempHP > 0 && (
+              <span className="ml-2 text-info">(+{tempHP} temp)</span>
+            )}
           </span>
           {currentHP > 0 && (
             <progress
@@ -92,6 +97,9 @@ export const CharacterHP: React.FC<{
         }`}
       >
         HP: {currentHP}
+        {typeof tempHP === 'number' && tempHP > 0 && (
+          <span className="ml-2 text-info">(+{tempHP} temp)</span>
+        )}
       </div>
     );
   };

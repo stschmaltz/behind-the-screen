@@ -22,6 +22,7 @@ export const useEncounterDraft = (
     armorClass: character.armorClass,
     maxHP: character.maxHP,
     currentHP: character.maxHP,
+    tempHP: 0,
     conditions: [],
     type,
   });
@@ -59,13 +60,17 @@ export const useEncounterDraft = (
     }));
   };
 
-  const handleAddPlayers = (selectedPlayers: Player[]) => {
+  const handleAddPlayers = (
+    selectedPlayers: import('../../types/player').PlayerWithInitiative[],
+  ) => {
     setHasUnsavedChanges?.(true);
     setDraftEncounter((prev) => {
-      const newPlayers = selectedPlayers.filter(
-        (selectedPlayer) =>
-          !prev.players.some((p) => p._id === selectedPlayer._id),
-      );
+      const newPlayers = selectedPlayers
+        .map((sp) => sp.player)
+        .filter(
+          (selectedPlayer) =>
+            !prev.players.some((p) => p._id === selectedPlayer._id),
+        );
 
       if (newPlayers.length === 0) {
         return prev;
@@ -76,7 +81,17 @@ export const useEncounterDraft = (
         players: [...prev.players, ...newPlayers.map((p) => ({ _id: p._id }))],
         initiativeOrder: [
           ...prev.initiativeOrder,
-          ...newPlayers.map((player) => toInitiativeOrder(player, 'player')),
+          ...selectedPlayers.map(({ player, initiative }) => ({
+            _id: player._id,
+            name: player.name,
+            armorClass: player.armorClass,
+            maxHP: player.maxHP,
+            currentHP: player.maxHP,
+            tempHP: 0,
+            conditions: [],
+            type: 'player' as const,
+            initiative: Number(initiative),
+          })),
         ],
       };
     });

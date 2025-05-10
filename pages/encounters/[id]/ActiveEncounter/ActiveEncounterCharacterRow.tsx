@@ -44,9 +44,20 @@ const ActiveEncounterCharacterRow = forwardRef<
       if (isNaN(numValue) || numValue <= 0) return;
 
       let newHP = currentHP;
+      let newTempHP = character.tempHP ?? 0;
 
       if (modifierType === 'damage') {
-        newHP = Math.max(0, newHP - numValue);
+        let damage = numValue;
+        if (newTempHP > 0) {
+          if (damage >= newTempHP) {
+            damage -= newTempHP;
+            newTempHP = 0;
+          } else {
+            newTempHP -= damage;
+            damage = 0;
+          }
+        }
+        newHP = Math.max(0, newHP - damage);
       } else if (modifierType === 'heal') {
         if (character.maxHP !== undefined) {
           newHP = Math.min(character.maxHP, newHP + numValue);
@@ -54,10 +65,12 @@ const ActiveEncounterCharacterRow = forwardRef<
           newHP = newHP + numValue;
         }
       } else if (modifierType === 'temp') {
-        newHP = Math.max(newHP, numValue);
+        if (numValue > newTempHP) {
+          newTempHP = numValue;
+        }
       }
 
-      onUpdateCharacter({ ...character, currentHP: newHP });
+      onUpdateCharacter({ ...character, currentHP: newHP, tempHP: newTempHP });
       setModifierValue('');
       setPopoverOpen(false);
       onPopoverVisibilityChange?.(false);

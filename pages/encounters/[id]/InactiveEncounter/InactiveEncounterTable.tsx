@@ -222,6 +222,7 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
               <th>Name</th>
               <th>Initiative</th>
               <th>HP</th>
+              <th>Temp HP</th>
               <th>AC</th>
               <th></th>
             </tr>

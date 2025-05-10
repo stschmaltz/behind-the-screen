@@ -59,6 +59,7 @@ export interface InitiativeOrderCharacter {
   armorClass?: number;
   maxHP?: number;
   currentHP?: number;
+  tempHP?: number;
   initiative?: number;
   level?: number;
   conditions: Condition[];
