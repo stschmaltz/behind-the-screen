@@ -43,7 +43,6 @@ async function deleteUserAccount(req: NextApiRequest, res: NextApiResponse) {
     logger.info(`Deleting user data for user ${userId} (auth0Id: ${auth0Id})`);
 
     const relatedCollections = [
-      'users',
       'userPreferences',
       'campaigns',
       'adventures',
@@ -52,11 +51,15 @@ async function deleteUserAccount(req: NextApiRequest, res: NextApiResponse) {
     ];
 
     for (const collection of relatedCollections) {
+      logger.info(`Deleting ${collection} data for user ${userId}`);
       await db
         .collection(collection)
         .deleteMany({ userId: new ObjectId(userId) });
+      logger.info(`Successfully deleted ${collection} data for user ${userId}`);
     }
 
+    logger.info(`Deleting user data for user ${userId}`);
+    await db.collection('users').deleteOne({ _id: new ObjectId(userId) });
     logger.info(`Successfully deleted user data for user ${userId}`);
 
     try {

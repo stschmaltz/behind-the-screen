@@ -18,9 +18,8 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const getInitialTheme = (): string => {
   try {
-    return localStorage.getItem('dme-theme') || 'cupcake';
+    return localStorage?.getItem('dme-theme') || 'cupcake';
   } catch (error) {
-    logger.error('Error reading theme from localStorage:', error);
     return 'cupcake';
   }
 };
