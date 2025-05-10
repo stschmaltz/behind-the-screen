@@ -11,6 +11,7 @@ const PUBLIC_PATHS = [
   '/api/auth/logout',
 
   '/login-required',
+  '/domain-moved',
 ];
 
 interface ProtectedLayoutProps {
@@ -49,5 +50,22 @@ export const ProtectedLayout = ({ children }: ProtectedLayoutProps) => {
   }
 
   // Either public path or authenticated user
+  if (user && !user.email_verified) {
+    return (
+      <Layout>
+        <div className="flex flex-col items-center justify-center min-h-screen">
+          <h1 className="text-2xl font-bold mb-4">Verify your email</h1>
+          <p>
+            Please verify your email address to continue. Check your inbox for a
+            verification link.
+          </p>
+          <a href="/api/auth/logout" className="btn btn-primary mt-6">
+            Log out
+          </a>
+        </div>
+      </Layout>
+    );
+  }
+
   return <Layout>{children}</Layout>;
 };
