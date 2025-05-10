@@ -5,7 +5,10 @@ const OLD_DOMAIN = 'dungeon-master-essentials.com';
 
 export function middleware(request: NextRequest) {
   const host = request.headers.get('host');
-  if (host === OLD_DOMAIN && request.nextUrl.pathname !== '/domain-moved') {
+  if (
+    host?.includes(OLD_DOMAIN) &&
+    request.nextUrl.pathname !== '/domain-moved'
+  ) {
     const url = request.nextUrl.clone();
     url.pathname = '/domain-moved';
     return NextResponse.rewrite(url);
