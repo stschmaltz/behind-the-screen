@@ -12,3 +12,8 @@ export interface Player {
 }
 
 export type NewPlayer = OmitMongoFields<Player>;
+
+export interface PlayerWithInitiative {
+  player: Player;
+  initiative: number | '';
+}

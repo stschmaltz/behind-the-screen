@@ -157,7 +157,9 @@ const ActiveEncounterTableContent: React.FC<
           </div>
           <div className="w-full flex-1">
             <AddPlayersModal
-              onAddPlayers={handleAddPlayersToActive}
+              onAddPlayers={(playersWithInitiative) => {
+                handleAddPlayersToActive(playersWithInitiative);
+              }}
               players={_}
               selectedCampaignId={encounter.campaignId.toString()}
               currentPlayerIds={encounter.players.map((p) => p._id)}

@@ -1,11 +1,11 @@
 import React from 'react';
 import { Button } from '../../../components/ui/Button';
 import { useModal } from '../../../hooks/use-modal';
-import { Player } from '../../../types/player';
+import { Player, PlayerWithInitiative } from '../../../types/player';
 
 interface Props {
   players: Player[];
-  onAddPlayers: (players: Player[]) => void;
+  onAddPlayers: (players: PlayerWithInitiative[]) => void;
   selectedCampaignId: string;
   currentPlayerIds?: string[];
   className?: string;
@@ -28,16 +28,47 @@ const AddPlayersModal: React.FC<Props> = ({
   buttonVariant = 'primary',
 }) => {
   const { closeModal, showModal } = useModal('add-players-modal');
-  const [toggledPlayers, setToggledPlayers] = React.useState<Player[]>([]);
+  const [toggledPlayers, setToggledPlayers] = React.useState<
+    PlayerWithInitiative[]
+  >([]);
 
-  // Filter players that are not already in the encounter
   const availablePlayers = players.filter(
     (player) =>
       player.campaignId === selectedCampaignId &&
       !currentPlayerIds.includes(player._id),
   );
 
+  const handleTogglePlayer = (player: Player, checked: boolean) => {
+    if (checked) {
+      setToggledPlayers([...toggledPlayers, { player, initiative: '' }]);
+    } else {
+      setToggledPlayers(
+        toggledPlayers.filter((p) => p.player._id !== player._id),
+      );
+    }
+  };
+
+  const handleInitiativeChange = (playerId: string, value: string) => {
+    setToggledPlayers((prev) =>
+      prev.map((p) =>
+        p.player._id === playerId
+          ? { ...p, initiative: value === '' ? '' : Number(value) }
+          : p,
+      ),
+    );
+  };
+
+  const canSubmit =
+    toggledPlayers.length > 0 &&
+    toggledPlayers.every(
+      (p) =>
+        typeof p.initiative === 'number' &&
+        !isNaN(p.initiative) &&
+        p.initiative > 0,
+    );
+
   const handleSubmit = () => {
+    if (!canSubmit) return;
     onAddPlayers(toggledPlayers);
     setToggledPlayers([]);
     closeModal();
@@ -63,25 +94,38 @@ const AddPlayersModal: React.FC<Props> = ({
               All campaign players are already in this encounter.
             </div>
           ) : (
-            availablePlayers.map((player, index) => (
-              <div key={index} className="mb-2 flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id={`player-${index}`}
-                  checked={toggledPlayers.includes(player)}
-                  onChange={(e) => {
-                    if (e.target.checked) {
-                      setToggledPlayers([...toggledPlayers, player]);
-                    } else {
-                      setToggledPlayers(
-                        toggledPlayers.filter((p) => p._id !== player._id),
-                      );
+            availablePlayers.map((player, index) => {
+              const toggled = toggledPlayers.find(
+                (p) => p.player._id === player._id,
+              );
+
+              return (
+                <div key={index} className="mb-2 flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id={`player-${index}`}
+                    checked={!!toggled}
+                    onChange={(e) =>
+                      handleTogglePlayer(player, e.target.checked)
                     }
-                  }}
-                />
-                <label htmlFor={`player-${index}`}>{player.name}</label>
-              </div>
-            ))
+                  />
+                  <label htmlFor={`player-${index}`}>{player.name}</label>
+                  {toggled && (
+                    <input
+                      type="number"
+                      min={1}
+                      className="input input-bordered input-sm w-24 ml-2"
+                      placeholder="Initiative"
+                      value={toggled.initiative}
+                      onChange={(e) =>
+                        handleInitiativeChange(player._id, e.target.value)
+                      }
+                      required
+                    />
+                  )}
+                </div>
+              );
+            })
           )}
 
           <div className="flex justify-end mt-4">
@@ -93,7 +137,12 @@ const AddPlayersModal: React.FC<Props> = ({
                   onClick={() =>
                     areAllPlayersSelected
                       ? setToggledPlayers([])
-                      : setToggledPlayers(availablePlayers)
+                      : setToggledPlayers(
+                          availablePlayers.map((player) => ({
+                            player,
+                            initiative: '',
+                          })),
+                        )
                   }
                 />
                 <Button
@@ -101,7 +150,7 @@ const AddPlayersModal: React.FC<Props> = ({
                   label="Add Players"
                   className="ml-4"
                   onClick={handleSubmit}
-                  disabled={toggledPlayers.length === 0}
+                  disabled={!canSubmit}
                 />
               </>
             )}

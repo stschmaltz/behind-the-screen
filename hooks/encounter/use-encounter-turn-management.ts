@@ -3,7 +3,7 @@ import {
   Encounter,
   EncounterCharacter,
 } from '../../types/encounters';
-import { Player } from '../../types/player';
+import { Player, PlayerWithInitiative } from '../../types/player';
 
 interface UseTurnManagementResult {
   currentCharacter: InitiativeOrderCharacter;
@@ -17,7 +17,7 @@ interface UseTurnManagementResult {
     initiative: number,
     type: 'enemy' | 'npc',
   ) => void;
-  handleAddPlayersToActive: (players: Player[]) => void;
+  handleAddPlayersToActive: (players: PlayerWithInitiative[]) => void;
 }
 
 export const useEncounterTurnManagement = (
@@ -120,7 +120,7 @@ export const useEncounterTurnManagement = (
 
   const toInitiativeOrderPlayer = (
     player: Player,
-    initiative?: number,
+    initiative: number,
   ): InitiativeOrderCharacter => ({
     _id: player._id,
     name: player.name,
@@ -132,16 +132,19 @@ export const useEncounterTurnManagement = (
     initiative: initiative,
   });
 
-  const handleAddPlayersToActive = (selectedPlayers: Player[]) => {
-    const newPlayerInitiativeEntries = selectedPlayers.map((player) =>
-      toInitiativeOrderPlayer(player),
+  const handleAddPlayersToActive = (
+    selectedPlayers: PlayerWithInitiative[],
+  ) => {
+    const newPlayerInitiativeEntries = selectedPlayers.map(
+      ({ player, initiative }) =>
+        toInitiativeOrderPlayer(player, Number(initiative)),
     );
 
     onSave({
       ...encounter,
       players: [
         ...encounter.players,
-        ...selectedPlayers.map((p) => ({ _id: p._id })),
+        ...selectedPlayers.map(({ player }) => ({ _id: player._id })),
       ],
       initiativeOrder: [
         ...encounter.initiativeOrder,
