@@ -4,7 +4,6 @@ interface CacheEntry {
   data: UserObject;
   timestamp: number;
 }
-// TODO: use redis
 export class UserCache {
   private cache = new Map<string, CacheEntry>();
   private ttl: number;
