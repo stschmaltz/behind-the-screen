@@ -55,10 +55,7 @@ export default class MyDocument extends Document {
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=optional"
           />
           <meta name="twitter:card" content="summary" />
-          <meta
-            name="twitter:url"
-            content="https://dungeon-master-essentials.com"
-          />
+          <meta name="twitter:url" content="https://encountermanager.com" />
           <meta name="twitter:title" content="Dungeon Master Essentials" />
           <meta
             name="twitter:description"
@@ -66,22 +63,19 @@ export default class MyDocument extends Document {
           />
           <meta
             name="twitter:image"
-            content="https://dungeon-master-essentials.com/images/profile.png"
+            content="https://encountermanager.com/images/profile.png"
           />
           <meta property="og:type" content="website" />
-          <meta property="og:title" content="dungeon-master-essentials.com" />
+          <meta property="og:title" content="encountermanager.com" />
           <meta
             property="og:description"
             content="Essential tools for dungeon masters to manage your tabletop RPG campaigns."
           />
           <meta property="og:site_name" content="Dungeon Master Essentials" />
-          <meta
-            property="og:url"
-            content="https://dungeon-master-essentials.com"
-          />
+          <meta property="og:url" content="https://encountermanager.com" />
           <meta
             property="og:image"
-            content="https://dungeon-master-essentials.com/images/profile.png"
+            content="https://encountermanager.com/images/profile.png"
           />
         </Head>
         <body>

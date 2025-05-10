@@ -79,7 +79,7 @@ export default async function handler(
           to:
             process.env.FEEDBACK_TO_EMAIL ||
             'stschmaltz+dmessentials@gmail.com',
-          from: 'feedback@dungeon-master-essentials.com',
+          from: 'feedback@encountermanager.com',
           replyTo: userEmail,
           subject: `Dungeon Master Essentials Feedback from ${name} <${userEmail}>: ${feedbackTypeLabels[feedbackType as keyof typeof feedbackTypeLabels] || feedbackType}`,
           text: `
