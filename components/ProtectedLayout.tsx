@@ -12,6 +12,9 @@ const PUBLIC_PATHS = [
 
   '/login-required',
   '/domain-moved',
+  '/404',
+  '/_offline',
+  '/_error',
 ];
 
 interface ProtectedLayoutProps {
