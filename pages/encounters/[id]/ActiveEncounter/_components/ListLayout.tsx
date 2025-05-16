@@ -65,7 +65,7 @@ export const ListLayout: React.FC<{
           id={`desktop-armorClass-${character._id}`}
           armorClass={character.armorClass}
           onChange={onUpdateArmorClass}
-          width="w-[65px]"
+          className="w-[65px]"
         />
         <CharacterHP
           currentHP={character.currentHP ?? 0}

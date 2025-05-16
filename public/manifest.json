@@ -43,5 +43,8 @@
   "background_color": "#FBFFF8",
   "start_url": "/",
   "display": "standalone",
-  "orientation": "portrait"
+  "orientation": "portrait",
+  "categories": ["education", "productivity", "entertainment", "games"],
+  "description": "Dungeon Master Essentials is a collection of tools and resources for Dungeon Masters. It features a free encounter manager for dungeons and dragons 5e.",
+  "lang": "en-US"
 }
