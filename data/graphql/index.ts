@@ -25,6 +25,33 @@ import {
   playerQueryTypeDefs,
 } from './player/player.query';
 import { playerTypeDefs } from './player/player.typedefs';
+import { campaignTypeDefs } from './campaign/campaign.typedefs';
+import {
+  campaignQueryTypeDefs,
+  campaignQueryResolver,
+} from './campaign/campaign.query';
+import {
+  campaignMutationTypeDefs,
+  campaignMutationResolver,
+} from './campaign/campaign.mutation';
+import { adventureTypeDefs } from './adventure/adventure.typedefs';
+import {
+  adventureQueryTypeDefs,
+  adventureQueryResolver,
+} from './adventure/adventure.query';
+import {
+  adventureMutationTypeDefs,
+  adventureMutationResolver,
+} from './adventure/adventure.mutation';
+import { userPreferencesTypeDefs } from './user-preferences/user-preferences.typedefs';
+import {
+  userPreferencesQueryTypeDefs,
+  userPreferencesQueryResolver,
+} from './user-preferences/user-preferences.query';
+import {
+  userPreferencesMutationTypeDefs,
+  userPreferencesMutationResolver,
+} from './user-preferences/user-preferences.mutation';
 
 const baseSchema = /* GraphQL */ `
   type Query
@@ -43,6 +70,15 @@ const typeDefs = [
   playerMutationTypeDefs,
   playerTypeDefs,
   playerQueryTypeDefs,
+  campaignTypeDefs,
+  campaignQueryTypeDefs,
+  campaignMutationTypeDefs,
+  adventureTypeDefs,
+  adventureQueryTypeDefs,
+  adventureMutationTypeDefs,
+  userPreferencesTypeDefs,
+  userPreferencesQueryTypeDefs,
+  userPreferencesMutationTypeDefs,
 ];
 
 const resolvers = [
@@ -53,6 +89,12 @@ const resolvers = [
   encounterMutationResolver,
   playerMutationResolver,
   playerQueryResolver,
+  campaignQueryResolver,
+  campaignMutationResolver,
+  adventureQueryResolver,
+  adventureMutationResolver,
+  userPreferencesQueryResolver,
+  userPreferencesMutationResolver,
 ];
 
 const schema = makeExecutableSchema({

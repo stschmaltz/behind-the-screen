@@ -1,16 +1,30 @@
+import { useMemo } from 'react';
 import { allPlayersQuery } from '../data/graphql/snippets/player';
 import { Player } from '../types/player';
 import { useQuery } from './use-async-query';
 
-function getAllPlayers(): { players: Player[]; loading: boolean } {
-  const { data, loading: playersLoading } = useQuery<Player[]>({
+const transformPlayers = (data: { allPlayers: Player[] }): Player[] =>
+  data.allPlayers;
+
+const EMPTY_PLAYERS: Player[] = [];
+
+function getAllPlayers(): {
+  players: Player[];
+  loading: boolean;
+  refresh: () => Promise<Player[] | null>;
+} {
+  const {
+    data,
+    loading: playersLoading,
+    refresh,
+  } = useQuery<Player[]>({
     query: allPlayersQuery,
-    transform: (data) => data.allPlayers,
+    transform: transformPlayers,
   });
 
-  const players = data ?? [];
+  const players = useMemo(() => data ?? EMPTY_PLAYERS, [data]);
 
-  return { players, loading: playersLoading };
+  return { players, loading: playersLoading, refresh };
 }
 
 export { getAllPlayers };

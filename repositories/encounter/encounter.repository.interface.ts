@@ -10,4 +10,9 @@ export interface EncounterRepositoryInterface {
   }): Promise<Encounter | null>;
   deleteEncounter(input: { id: string; userId: string }): Promise<boolean>;
   getAllEncounters(input: { userId: string }): Promise<Encounter[]>;
+  updateEncounterDescription(input: {
+    _id: string;
+    description: string;
+    userId: string;
+  }): Promise<Encounter | null>;
 }

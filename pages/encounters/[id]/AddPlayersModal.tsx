@@ -1,66 +1,159 @@
 import React from 'react';
-import { Button } from '../../../components/Button';
+import { Button } from '../../../components/ui/Button';
 import { useModal } from '../../../hooks/use-modal';
-import { Player } from '../../../types/player';
+import { Player, PlayerWithInitiative } from '../../../types/player';
 
 interface Props {
   players: Player[];
-  onAddPlayers: (players: Player[]) => void;
+  onAddPlayers: (players: PlayerWithInitiative[]) => void;
+  selectedCampaignId: string;
+  currentPlayerIds?: string[];
+  className?: string;
+  buttonVariant?:
+    | 'primary'
+    | 'secondary'
+    | 'accent'
+    | 'info'
+    | 'success'
+    | 'warning'
+    | 'error';
 }
 
-const AddPlayersModal: React.FC<Props> = ({ onAddPlayers, players }) => {
+const AddPlayersModal: React.FC<Props> = ({
+  onAddPlayers,
+  players,
+  selectedCampaignId,
+  currentPlayerIds = [],
+  className,
+  buttonVariant = 'primary',
+}) => {
   const { closeModal, showModal } = useModal('add-players-modal');
-  const [toggledPlayers, setToggledPlayers] = React.useState<Player[]>(players);
-  const handleSubmit = () => {
-    onAddPlayers(toggledPlayers);
+  const [toggledPlayers, setToggledPlayers] = React.useState<
+    PlayerWithInitiative[]
+  >([]);
 
+  const availablePlayers = players.filter(
+    (player) =>
+      player.campaignId === selectedCampaignId &&
+      !currentPlayerIds.includes(player._id),
+  );
+
+  const handleTogglePlayer = (player: Player, checked: boolean) => {
+    if (checked) {
+      setToggledPlayers([...toggledPlayers, { player, initiative: '' }]);
+    } else {
+      setToggledPlayers(
+        toggledPlayers.filter((p) => p.player._id !== player._id),
+      );
+    }
+  };
+
+  const handleInitiativeChange = (playerId: string, value: string) => {
+    setToggledPlayers((prev) =>
+      prev.map((p) =>
+        p.player._id === playerId
+          ? { ...p, initiative: value === '' ? '' : Number(value) }
+          : p,
+      ),
+    );
+  };
+
+  const canSubmit =
+    toggledPlayers.length > 0 &&
+    toggledPlayers.every(
+      (p) =>
+        typeof p.initiative === 'number' &&
+        !isNaN(p.initiative) &&
+        p.initiative > 0,
+    );
+
+  const handleSubmit = () => {
+    if (!canSubmit) return;
+    onAddPlayers(toggledPlayers);
     setToggledPlayers([]);
     closeModal();
   };
 
-  const areAllPlayersSelected = toggledPlayers.length === players.length;
+  const areAllPlayersSelected =
+    toggledPlayers.length === availablePlayers.length;
 
   return (
     <>
-      <Button variant="primary" label="Add Players" onClick={showModal} />
+      <Button
+        variant={buttonVariant}
+        label="Add Players"
+        onClick={showModal}
+        className={className}
+      />
       <dialog className="modal" id="add-players-modal">
         <div className="modal-box">
           <h2 className="text-2xl font-bold mb-4">Add Players</h2>
-          {players.map((player, index) => (
-            <div key={index} className="mb-2 flex items-center gap-2">
-              <input
-                type="checkbox"
-                id={`player-${index}`}
-                checked={toggledPlayers.includes(player)}
-                onChange={(e) => {
-                  if (e.target.checked) {
-                    setToggledPlayers([...toggledPlayers, player]);
-                  } else {
-                    setToggledPlayers(
-                      toggledPlayers.filter((p) => p._id !== player._id),
-                    );
-                  }
-                }}
-              />
-              <label htmlFor={`player-${index}`}>{player.name}</label>
+
+          {availablePlayers.length === 0 ? (
+            <div className="alert alert-info mb-4">
+              All campaign players are already in this encounter.
             </div>
-          ))}
-          <div className="flex justify-end">
-            <Button
-              variant="secondary"
-              label={areAllPlayersSelected ? 'Deselect All' : 'Select All'}
-              onClick={() =>
-                areAllPlayersSelected
-                  ? setToggledPlayers([])
-                  : setToggledPlayers(players)
-              }
-            />
-            <Button
-              variant="primary"
-              label="Add Players"
-              className="ml-4"
-              onClick={handleSubmit}
-            />
+          ) : (
+            availablePlayers.map((player, index) => {
+              const toggled = toggledPlayers.find(
+                (p) => p.player._id === player._id,
+              );
+
+              return (
+                <div key={index} className="mb-2 flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id={`player-${index}`}
+                    checked={!!toggled}
+                    onChange={(e) =>
+                      handleTogglePlayer(player, e.target.checked)
+                    }
+                  />
+                  <label htmlFor={`player-${index}`}>{player.name}</label>
+                  {toggled && (
+                    <input
+                      type="number"
+                      min={1}
+                      className="input input-bordered input-sm w-24 ml-2"
+                      placeholder="Initiative"
+                      value={toggled.initiative}
+                      onChange={(e) =>
+                        handleInitiativeChange(player._id, e.target.value)
+                      }
+                      required
+                    />
+                  )}
+                </div>
+              );
+            })
+          )}
+
+          <div className="flex justify-end mt-4">
+            {availablePlayers.length > 0 && (
+              <>
+                <Button
+                  variant="secondary"
+                  label={areAllPlayersSelected ? 'Deselect All' : 'Select All'}
+                  onClick={() =>
+                    areAllPlayersSelected
+                      ? setToggledPlayers([])
+                      : setToggledPlayers(
+                          availablePlayers.map((player) => ({
+                            player,
+                            initiative: '',
+                          })),
+                        )
+                  }
+                />
+                <Button
+                  variant="primary"
+                  label="Add Players"
+                  className="ml-4"
+                  onClick={handleSubmit}
+                  disabled={!canSubmit}
+                />
+              </>
+            )}
             <Button
               variant="error"
               label="Cancel"

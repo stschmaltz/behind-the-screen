@@ -1,0 +1,19 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Custom Hooks Pattern
+
+The application uses custom React hooks for complex state management operations.
+
+## Key Examples
+- [hooks/encounter/use-draft-encounter.ts](mdc:hooks/encounter/use-draft-encounter.ts): Manages encounter draft state
+- [hooks/useCharacterState.ts](mdc:hooks/useCharacterState.ts): Manages character state
+- [hooks/useEnemyState.ts](mdc:hooks/useEnemyState.ts): Manages enemy state
+
+## Hook Design Principles
+- Hooks should accept initial state and return both state and operations
+- Operations within hooks should maintain immutability patterns
+- Hooks should handle side effects like saving changes or API calls
+- Complex state transformations should be encapsulated in hooks rather than components

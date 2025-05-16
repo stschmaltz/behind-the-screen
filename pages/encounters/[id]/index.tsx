@@ -1,5 +1,6 @@
 import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 import EncounterContent from './EncounterContent';
 import { getAllPlayers } from '../../../hooks/get-all-players.hook';
 import { getEncounter } from '../../../hooks/encounter/get-encounter.hook';
@@ -57,11 +58,24 @@ const EncounterPage: NextPage<EncounterPageProps> = ({
   }
 
   return (
-    <EncounterProvider initialEncounter={encounter}>
-      <div className="min-h-screen bg-base-200">
-        <EncounterContent players={allPlayers} />
-      </div>
-    </EncounterProvider>
+    <>
+      <Head>
+        <title>Encounter Details | Combat & Encounter Management</title>
+        <meta
+          name="description"
+          content="View and manage detailed tabletop RPG encounters. Track combat, initiative, enemies, and players for D&D and other TTRPGs. Powerful encounter and combat management tools for Dungeon Masters."
+        />
+        <meta
+          name="keywords"
+          content="Encounter Details, Combat Management, Tabletop RPG, D&D, Initiative Tracker, Enemy Management, Player Management, RPG Tools, Dungeon Master, Combat Tracker"
+        />
+      </Head>
+      <EncounterProvider initialEncounter={encounter}>
+        <div className=" bg-base-200">
+          <EncounterContent players={allPlayers} />
+        </div>
+      </EncounterProvider>
+    </>
   );
 };
 

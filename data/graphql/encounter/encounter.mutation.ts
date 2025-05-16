@@ -12,6 +12,9 @@ const encounterMutationTypeDefs = /* GraphQL */ `
   extend type Mutation {
     saveEncounter(input: NewEncounterInput!): Encounter
     deleteEncounter(input: DeleteEncounterInput!): Boolean
+    updateEncounterDescription(
+      input: UpdateEncounterDescriptionInput!
+    ): Encounter # Assuming it returns the updated Encounter
   }
 `;
 
@@ -21,6 +24,13 @@ interface SaveEncounterArgs {
 interface DeleteEncounterArgs {
   input: {
     id: string;
+  };
+}
+
+interface UpdateEncounterDescriptionArgs {
+  input: {
+    _id: string;
+    description: string;
   };
 }
 
@@ -51,6 +61,8 @@ const encounterMutationResolver = {
         currentRound: input.currentRound,
         currentTurn: input.currentTurn,
         userId: context.user._id,
+        campaignId: input.campaignId,
+        adventureId: input.adventureId,
       });
     },
     async deleteEncounter(
@@ -65,6 +77,23 @@ const encounterMutationResolver = {
         id,
         userId: context.user._id,
       });
+    },
+    async updateEncounterDescription(
+      _: never,
+      { input }: UpdateEncounterDescriptionArgs,
+      context: GraphQLContext,
+    ): Promise<Encounter | null> {
+      logger.info('updateEncounterDescription mutation resolver', input);
+      isAuthorizedOrThrow(context);
+
+      const updatedEncounter =
+        await encounterRepository.updateEncounterDescription({
+          _id: input._id,
+          description: input.description,
+          userId: context.user._id,
+        });
+
+      return updatedEncounter;
     },
   },
 };

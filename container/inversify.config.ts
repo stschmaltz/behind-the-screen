@@ -10,6 +10,12 @@ import { EncounterRepositoryInterface } from '../repositories/encounter/encounte
 import { EncounterRepository } from '../repositories/encounter/encounter.repository';
 import { PlayerRepositoryInterface } from '../repositories/player/player.repository.interface';
 import { PlayerRepository } from '../repositories/player/player.repository';
+import { CampaignRepositoryInterface } from '../repositories/campaign/campaign.repository.interface';
+import { CampaignRepository } from '../repositories/campaign/campaign.repository';
+import { AdventureRepositoryInterface } from '../repositories/adventure/adventure.repository.interface';
+import { AdventureRepository } from '../repositories/adventure/adventure.repository';
+import { UserPreferencesRepositoryInterface } from '../repositories/user-preferences/user-preferences.repository.interface';
+import { UserPreferencesRepository } from '../repositories/user-preferences/user-preferences.repository';
 
 const appContainer = new Container();
 
@@ -28,5 +34,17 @@ appContainer
 appContainer
   .bind<PlayerRepositoryInterface>(TYPES.PlayerRepository)
   .toConstantValue(new PlayerRepository());
+
+appContainer
+  .bind<CampaignRepositoryInterface>(TYPES.CampaignRepository)
+  .toConstantValue(new CampaignRepository());
+
+appContainer
+  .bind<AdventureRepositoryInterface>(TYPES.AdventureRepository)
+  .toConstantValue(new AdventureRepository());
+
+appContainer
+  .bind<UserPreferencesRepositoryInterface>(TYPES.UserPreferencesRepository)
+  .toConstantValue(new UserPreferencesRepository());
 
 export { appContainer };

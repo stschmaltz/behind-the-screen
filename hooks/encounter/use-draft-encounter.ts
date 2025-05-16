@@ -22,55 +22,79 @@ export const useEncounterDraft = (
     armorClass: character.armorClass,
     maxHP: character.maxHP,
     currentHP: character.maxHP,
+    tempHP: 0,
     conditions: [],
     type,
   });
 
   useEffect(() => {
+    if (encounter.initiativeOrder.length > 0) {
+      setDraftEncounter(encounter);
+      return;
+    }
+
     const encounterPlayers = encounter.players
       .map(({ _id }) => players.find((player) => player._id === _id))
       .filter((player): player is Player => player !== undefined);
 
-    const initiativeOrder =
-      encounter.initiativeOrder.length > 0
-        ? encounter.initiativeOrder
-        : [
-            ...encounter.enemies.map((enemy) =>
-              toInitiativeOrder(enemy, 'enemy'),
-            ),
-            ...encounterPlayers.map((player) =>
-              toInitiativeOrder(player, 'player'),
-            ),
-          ];
+    const initiativeOrder = [
+      ...encounter.enemies.map((enemy) => toInitiativeOrder(enemy, 'enemy')),
+      ...encounterPlayers.map((player) => toInitiativeOrder(player, 'player')),
+    ];
 
     setDraftEncounter({ ...encounter, initiativeOrder });
   }, [encounter, players]);
 
-  const handleAddEnemy = (newEnemy: EncounterCharacter) => {
+  const handleAddCharacter = (
+    newCharacter: EncounterCharacter,
+    type: 'enemy' | 'npc',
+  ) => {
     setHasUnsavedChanges?.(true);
     setDraftEncounter((prev) => ({
       ...prev,
-      enemies: [...prev.enemies, newEnemy],
+      enemies: [...prev.enemies, newCharacter],
       initiativeOrder: [
         ...prev.initiativeOrder,
-        toInitiativeOrder(newEnemy, 'enemy'),
+        toInitiativeOrder(newCharacter, 'enemy'),
       ],
     }));
   };
 
-  const handleAddPlayers = (selectedPlayers: Player[]) => {
+  const handleAddPlayers = (
+    selectedPlayers: import('../../types/player').PlayerWithInitiative[],
+  ) => {
     setHasUnsavedChanges?.(true);
-    setDraftEncounter((prev) => ({
-      ...prev,
-      players: [
-        ...prev.players,
-        ...selectedPlayers.map((p) => ({ _id: p._id })),
-      ],
-      initiativeOrder: [
-        ...prev.initiativeOrder,
-        ...selectedPlayers.map((player) => toInitiativeOrder(player, 'player')),
-      ],
-    }));
+    setDraftEncounter((prev) => {
+      const newPlayers = selectedPlayers
+        .map((sp) => sp.player)
+        .filter(
+          (selectedPlayer) =>
+            !prev.players.some((p) => p._id === selectedPlayer._id),
+        );
+
+      if (newPlayers.length === 0) {
+        return prev;
+      }
+
+      return {
+        ...prev,
+        players: [...prev.players, ...newPlayers.map((p) => ({ _id: p._id }))],
+        initiativeOrder: [
+          ...prev.initiativeOrder,
+          ...selectedPlayers.map(({ player, initiative }) => ({
+            _id: player._id,
+            name: player.name,
+            armorClass: player.armorClass,
+            maxHP: player.maxHP,
+            currentHP: player.maxHP,
+            tempHP: 0,
+            conditions: [],
+            type: 'player' as const,
+            initiative: Number(initiative),
+          })),
+        ],
+      };
+    });
   };
 
   const handleUpdateCharacter = (character: InitiativeOrderCharacter) => {
@@ -83,20 +107,41 @@ export const useEncounterDraft = (
     }));
   };
 
-  const handleDeleteCharacter = (characterName: string) => {
+  const handleDeleteCharacter = (characterId: string) => {
     setHasUnsavedChanges?.(true);
-    setDraftEncounter((prev) => ({
-      ...prev,
-      initiativeOrder: prev.initiativeOrder.filter(
-        (c) => c.name !== characterName,
-      ),
-      enemies: prev.enemies.filter((e) => e.name !== characterName),
-    }));
+    setDraftEncounter((prev) => {
+      const characterToDelete = prev.initiativeOrder.find(
+        (c) => c._id === characterId,
+      );
+
+      if (!characterToDelete) {
+        return prev;
+      }
+
+      const newState = {
+        ...prev,
+        initiativeOrder: prev.initiativeOrder.filter(
+          (c) => c._id !== characterId,
+        ),
+      };
+
+      if (characterToDelete.type === 'enemy') {
+        newState.enemies = prev.enemies.filter((e) => e._id !== characterId);
+      }
+
+      if (characterToDelete.type === 'player') {
+        newState.players = prev.players.filter(
+          (p) => p._id !== characterToDelete._id,
+        );
+      }
+
+      return newState;
+    });
   };
 
   return {
     draftEncounter,
-    handleAddEnemy,
+    handleAddCharacter,
     handleAddPlayers,
     handleUpdateCharacter,
     handleDeleteCharacter,

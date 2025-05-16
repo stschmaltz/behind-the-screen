@@ -1,3 +1,4 @@
+import { ObjectId } from 'mongodb';
 import { OmitMongoFields } from './mongo-helpers';
 
 export type Condition =
@@ -47,26 +48,34 @@ export interface EncounterTemplate {
   notes: string[];
   enemies: EncounterCharacter[];
   status: 'active' | 'inactive' | 'completed';
+  campaignId: string;
+  adventureId?: string;
   createdAt: Date;
 }
+
 export interface InitiativeOrderCharacter {
   _id: string;
   name: string;
   armorClass?: number;
   maxHP?: number;
   currentHP?: number;
+  tempHP?: number;
   initiative?: number;
+  level?: number;
   conditions: Condition[];
   type: 'player' | 'npc' | 'enemy';
 }
 
-export interface Encounter extends EncounterTemplate {
+export interface Encounter
+  extends Omit<EncounterTemplate, 'campaignId' | 'adventureId'> {
   _id: string;
   name: string;
   description?: string;
   notes: string[];
   enemies: EncounterCharacter[];
   status: 'active' | 'inactive' | 'completed';
+  campaignId: ObjectId;
+  adventureId?: ObjectId;
   players: {
     _id: string;
   }[];
@@ -76,7 +85,10 @@ export interface Encounter extends EncounterTemplate {
   currentTurn: number;
 }
 
-export type NewEncounterTemplate = OmitMongoFields<EncounterTemplate>;
+export type NewEncounterTemplate = Omit<
+  OmitMongoFields<EncounterTemplate>,
+  'userId'
+>;
 export type NewEncounter = OmitMongoFields<Encounter>;
 
 export interface ActiveInitiativeOrderCharacter

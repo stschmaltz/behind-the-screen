@@ -10,7 +10,7 @@ export const useNewEncounter = () => {
 
   const handleFieldChange =
     (field: keyof NewEncounterTemplate) =>
-    (e: ChangeEvent<HTMLInputElement>) => {
+    (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setNewEncounter((prev) => ({ ...prev, [field]: e.target.value }));
     };
 

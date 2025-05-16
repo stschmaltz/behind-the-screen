@@ -1,0 +1,6 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Do not comment your changes ever, we only add comments when there is complex code that we can't simplify. We should always favour writing better code and we don't need random redundant comments.

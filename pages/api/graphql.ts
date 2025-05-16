@@ -1,4 +1,3 @@
-// pages/api/graphql.ts
 import { createYoga } from 'graphql-yoga';
 import { getSession } from '@auth0/nextjs-auth0';
 import type { NextApiRequest, NextApiResponse } from 'next';

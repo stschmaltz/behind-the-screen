@@ -9,14 +9,50 @@ import { logger } from '../../../lib/logger';
 
 const playerMutationTypeDefs = /* GraphQL */ `
   extend type Mutation {
-    savePlayer(input: NewPlayerInput!): Player
+    createPlayer(input: NewPlayerInput!): Player
+    updatePlayer(input: UpdatePlayerInput!): Player
     deletePlayer(id: String!): Boolean
+    updatePlayers(input: UpdatePlayersInput!): Boolean
+  }
+
+  input UpdatePlayerInput {
+    _id: String!
+    name: String
+    campaignId: String
+    armorClass: Int
+    maxHP: Int
+    level: Int
   }
 `;
 
 interface SavePlayerArgs {
   input: {
     name: string;
+    campaignId: string;
+    armorClass?: number;
+    maxHP?: number;
+    level?: number;
+  };
+}
+
+interface UpdatePlayerArgs {
+  input: {
+    _id: string;
+    name?: string;
+    campaignId?: string;
+    armorClass?: number;
+    maxHP?: number;
+    level?: number;
+  };
+}
+
+interface UpdatePlayersArgs {
+  input: {
+    campaignId: string;
+    armorClass?: number;
+    maxHP?: number;
+    level?: number;
+    levelUp?: boolean;
   };
 }
 
@@ -26,16 +62,38 @@ const playerRepository = appContainer.get<PlayerRepositoryInterface>(
 
 const playerMutationResolver = {
   Mutation: {
-    async savePlayer(
+    async createPlayer(
       _: unknown,
       { input }: SavePlayerArgs,
       context: GraphQLContext,
     ) {
-      logger.info('savePlayer', input);
+      logger.info('createPlayer', input);
       isAuthorizedOrThrow(context);
-      return playerRepository.savePlayer({
+      return playerRepository.createPlayer({
         name: input.name,
         userId: context.user._id,
+        campaignId: input.campaignId,
+        armorClass: input.armorClass,
+        maxHP: input.maxHP,
+        level: input.level || 1,
+      });
+    },
+
+    async updatePlayer(
+      _: unknown,
+      { input }: UpdatePlayerArgs,
+      context: GraphQLContext,
+    ) {
+      logger.info('updatePlayer', input);
+      isAuthorizedOrThrow(context);
+      return playerRepository.updatePlayer({
+        _id: input._id,
+        userId: context.user._id,
+        name: input.name,
+        campaignId: input.campaignId,
+        armorClass: input.armorClass,
+        maxHP: input.maxHP,
+        level: input.level,
       });
     },
 
@@ -50,6 +108,24 @@ const playerMutationResolver = {
       return playerRepository.deletePlayer({
         id,
         userId: context.user._id,
+      });
+    },
+
+    async updatePlayers(
+      _: unknown,
+      { input }: UpdatePlayersArgs,
+      context: GraphQLContext,
+    ) {
+      logger.info('updatePlayers', input);
+      isAuthorizedOrThrow(context);
+
+      return playerRepository.bulkUpdatePlayers({
+        userId: context.user._id,
+        campaignId: input.campaignId,
+        armorClass: input.armorClass,
+        maxHP: input.maxHP,
+        level: input.level,
+        levelUp: input.levelUp,
       });
     },
   },

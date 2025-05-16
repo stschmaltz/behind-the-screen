@@ -3,4 +3,7 @@ export const TYPES = {
   UserRepository: Symbol.for('UserRepository'),
   EncounterRepository: Symbol.for('EncounterRepository'),
   PlayerRepository: Symbol.for('PlayerRepository'),
+  CampaignRepository: Symbol.for('CampaignRepository'),
+  AdventureRepository: Symbol.for('AdventureRepository'),
+  UserPreferencesRepository: Symbol.for('UserPreferencesRepository'),
 };

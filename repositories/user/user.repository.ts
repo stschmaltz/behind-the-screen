@@ -16,6 +16,7 @@ const mapUserDocumentToUserObject = (doc: UserDocument): UserObject => ({
   email: doc.email,
   name: doc.name,
   picture: doc.picture,
+  emailVerified: doc.emailVerified ?? false,
 });
 
 class UserRepository implements UserRepositoryInterface {
@@ -72,6 +73,7 @@ class UserRepository implements UserRepositoryInterface {
             email: userData.email,
             name: userData.name,
             picture: userData.picture,
+            emailVerified: false,
           },
         },
         { upsert: true, returnDocument: 'after' },
@@ -82,6 +84,31 @@ class UserRepository implements UserRepositoryInterface {
     }
 
     return mapUserDocumentToUserObject(user);
+  }
+
+  public async countUsers(): Promise<number> {
+    try {
+      const { db } = await getDbClient();
+      return db.collection<UserDocument>(collectionName).countDocuments();
+    } catch (error) {
+      logger.error('Error counting users', error);
+      throw error;
+    }
+  }
+
+  public async getAllUsers(limit = 100): Promise<UserObject[]> {
+    try {
+      const { db } = await getDbClient();
+      const users = await db
+        .collection<UserDocument>(collectionName)
+        .find({})
+        .limit(limit)
+        .toArray();
+      return users.map(mapUserDocumentToUserObject);
+    } catch (error) {
+      logger.error('Error fetching all users', error);
+      throw error;
+    }
   }
 }
 

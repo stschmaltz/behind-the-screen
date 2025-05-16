@@ -1,4 +1,10 @@
 export const encounterTypeDefs = /* GraphQL */ `
+  enum EncounterStatus {
+    active
+    inactive
+    completed
+  }
+
   type EncounterCharacter {
     _id: String!
     name: String!
@@ -49,6 +55,8 @@ export const encounterTypeDefs = /* GraphQL */ `
     currentTurn: Int!
     createdAt: Date!
     userId: String!
+    campaignId: String!
+    adventureId: String
   }
 
   type EncounterPlayerId {
@@ -75,19 +83,19 @@ export const encounterTypeDefs = /* GraphQL */ `
   }
 
   input NewEncounterInput {
-    _id: String
+    _id: ID
     name: String!
     description: String
-    notes: [String!] = []
     enemies: [NewEncounterCharacterInput!]!
-    status: String = "inactive"
-    players: [EncounterPlayerIdInput!] = []
-    npcs: [NewEncounterCharacterInput!] = []
-    initiativeOrder: [InitiativeOrderInput!] = []
-    currentRound: Int = 1
-    currentTurn: Int = 1
-    createdAt: Date
-    userId: String
+    notes: [String!]!
+    campaignId: ID!
+    adventureId: ID
+    status: EncounterStatus
+    players: [EncounterPlayerIdInput!]
+    npcs: [NewEncounterCharacterInput!]
+    initiativeOrder: [InitiativeOrderInput!]
+    currentRound: Int
+    currentTurn: Int
   }
 
   input NewEncounterCharacterInput {
@@ -132,5 +140,10 @@ export const encounterTypeDefs = /* GraphQL */ `
 
   input DeleteEncounterInput {
     id: String!
+  }
+
+  input UpdateEncounterDescriptionInput {
+    _id: ID!
+    description: String!
   }
 `;

@@ -1,4 +1,3 @@
-// graphql/scalars/date.scalar.ts
 import { GraphQLScalarType, Kind } from 'graphql';
 
 export const DateScalar = new GraphQLScalarType({

@@ -1,110 +1,260 @@
-import React, { useEffect, useState } from 'react';
-import { Button } from '../../components/Button';
-import { FormInput } from '../../components/FormInput';
-import { asyncFetch } from '../../data/graphql/graphql-fetcher';
-import {
-  deletePlayerMutation,
-  savePlayerMutation,
-} from '../../data/graphql/snippets/player';
+import React from 'react';
+import { Button } from '../../components/ui/Button';
+import { FormInput } from '../../components/ui/FormInput';
 import { Player } from '../../types/player';
 import { useModal } from '../../hooks/use-modal';
+import { useActiveCampaign } from '../../context/ActiveCampaignContext';
+import PlayerCard from '../../components/PlayerCard';
+import { usePlayerManagement } from '../../hooks/usePlayerManagement';
 
 interface Props {
   startingPlayers: Player[];
+  campaignId?: string;
+  buttonClassName?: string;
 }
 
-const PlayerManagementSection: React.FC<Props> = ({ startingPlayers }) => {
-  const [players, setPlayers] = useState<Player[]>([]);
+const PlayerManagementSection: React.FC<Props> = ({
+  startingPlayers,
+  campaignId,
+  buttonClassName,
+}) => {
   const { closeModal, showModal } = useModal('player-management-modal');
-  const [newPlayerName, setNewPlayerName] = useState('');
-  useEffect(() => {
-    setPlayers(startingPlayers);
-  }, [startingPlayers]);
+  const { campaigns = [], campaignsLoading } = useActiveCampaign();
 
-  const savePlayer = async (newPlayerName: string) => {
-    const response: {
-      savePlayer: Player;
-    } = await asyncFetch(savePlayerMutation, {
-      input: {
-        name: newPlayerName,
-      },
-    });
+  const {
+    players,
+    newPlayerName,
+    newPlayerLevel,
+    newPlayerAC,
+    newPlayerHP,
+    bulkLevel,
+    selectedCampaignId,
+    createPlayer,
+    deletePlayer,
+    bulkUpdatePlayers,
+    updatePlayerField,
+    setField,
+  } = usePlayerManagement(startingPlayers, campaignId);
 
-    if (!response.savePlayer._id) return;
+  const handleCreatePlayer = async () => {
+    if (!newPlayerName || !selectedCampaignId) return;
 
-    setPlayers([
-      ...players,
-      {
-        _id: response.savePlayer._id,
-        name: response.savePlayer.name,
-        userId: response.savePlayer.userId,
-        armorClass: response.savePlayer.armorClass,
-        maxHP: response.savePlayer.maxHP,
-      },
-    ]);
-    setNewPlayerName('');
+    await createPlayer(
+      newPlayerName,
+      selectedCampaignId,
+      newPlayerLevel,
+      newPlayerAC,
+      newPlayerHP,
+    );
   };
-
-  const deletePlayer = async (playerId: string) => {
-    await asyncFetch(deletePlayerMutation, {
-      id: playerId,
-    });
-    setPlayers(players.filter((player) => player._id !== playerId));
-  };
+  const campaignsLoaded =
+    !campaignsLoading && campaigns?.length && campaigns.length > 0;
 
   return (
     <>
-      <Button label="Manage Players" onClick={showModal} />
-      <dialog
-        id="player-management-modal"
-        className="modal modal-bottom sm:modal-middle"
-      >
-        <form method="dialog" className="modal-box">
-          <h3 className="font-bold text-lg mb-4">Players</h3>
-          <div className="flex flex-col gap-2 mb-4">
-            {players.map((player, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between px-3 py-2 bg-base-200 rounded text-sm"
-              >
-                <span className="font-medium">{player.name}</span>
-                <Button
-                  label="Delete"
-                  onClick={() => {
-                    deletePlayer(player._id);
-                  }}
-                  variant="error"
+      <Button
+        variant="secondary"
+        label="Manage Players"
+        onClick={() => showModal()}
+        className={buttonClassName}
+      />
+
+      <dialog id="player-management-modal" className="modal">
+        <div className="modal-box max-w-3xl">
+          <h3 className="font-bold text-lg mb-4">Player Management</h3>
+
+          <div className="mb-6">
+            <div className="form-control w-full md:w-72">
+              {campaignsLoaded && (
+                <div className="form-control w-full">
+                  <label htmlFor="campaign-select" className="label">
+                    <span className="label-text">Campaign</span>
+                  </label>
+                  <select
+                    id="campaign-select"
+                    className="select select-bordered w-full"
+                    value={selectedCampaignId || ''}
+                    onChange={(e) =>
+                      setField('selectedCampaignId', e.target.value)
+                    }
+                  >
+                    <option value="" disabled>
+                      Select campaign
+                    </option>
+                    {campaigns?.map((campaign) => (
+                      <option key={campaign._id} value={campaign._id}>
+                        {campaign.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+            <div className="flex flex-col md:flex-row gap-4 mb-4 ">
+              <div className="form-control flex-1">
+                <FormInput
+                  id="player-name"
+                  label="Player Name"
+                  placeholder="Enter player name"
+                  value={newPlayerName}
+                  onChange={(e) => setField('newPlayerName', e.target.value)}
                 />
               </div>
-            ))}
+
+              <div className="form-control w-full md:w-16 ">
+                <FormInput
+                  id="player-level"
+                  label="Level"
+                  type="number"
+                  placeholder="1"
+                  value={newPlayerLevel}
+                  onChange={(e) =>
+                    setField('newPlayerLevel', parseInt(e.target.value) || 1)
+                  }
+                  min={1}
+                  max={20}
+                />
+              </div>
+
+              <div className="form-control w-full md:w-24">
+                <FormInput
+                  id="player-ac"
+                  label="AC (Optional)"
+                  type="number"
+                  placeholder="AC"
+                  value={newPlayerAC || ''}
+                  onChange={(e) =>
+                    setField(
+                      'newPlayerAC',
+                      e.target.value ? parseInt(e.target.value) : undefined,
+                    )
+                  }
+                />
+              </div>
+
+              <div className="form-control w-full md:w-24">
+                <FormInput
+                  id="player-hp"
+                  label="HP (Optional)"
+                  type="number"
+                  placeholder="HP"
+                  value={newPlayerHP || ''}
+                  onChange={(e) =>
+                    setField(
+                      'newPlayerHP',
+                      e.target.value ? parseInt(e.target.value) : undefined,
+                    )
+                  }
+                />
+              </div>
+
+              <div className="flex flex-col md:flex-row w-full items-end">
+                <Button
+                  label="Add Player"
+                  onClick={handleCreatePlayer}
+                  disabled={!newPlayerName || !selectedCampaignId}
+                  className="w-full "
+                />
+              </div>
+            </div>
+
+            <div className="divider"></div>
+
+            <div className="overflow-x-auto">
+              {campaignsLoaded && (
+                <div className="flex items-end gap-4">
+                  <div className="form-control">
+                    <FormInput
+                      id="bulk-level"
+                      label="Set Level For All"
+                      type="number"
+                      placeholder="New level"
+                      value={bulkLevel || ''}
+                      onChange={(e) =>
+                        setField(
+                          'bulkLevel',
+                          e.target.value ? parseInt(e.target.value) : undefined,
+                        )
+                      }
+                      min={1}
+                      max={20}
+                    />
+                  </div>
+                  <Button
+                    label="Apply"
+                    onClick={() =>
+                      selectedCampaignId &&
+                      bulkUpdatePlayers(selectedCampaignId)
+                    }
+                    disabled={
+                      !bulkLevel ||
+                      !selectedCampaignId ||
+                      players.filter((p) => p.campaignId === selectedCampaignId)
+                        .length === 0
+                    }
+                    className="btn-sm"
+                  />
+                  <Button
+                    label="Level Up All"
+                    onClick={() =>
+                      selectedCampaignId &&
+                      bulkUpdatePlayers(selectedCampaignId, true)
+                    }
+                    disabled={
+                      !selectedCampaignId ||
+                      players.filter((p) => p.campaignId === selectedCampaignId)
+                        .length === 0
+                    }
+                    className="btn-sm"
+                  />
+                </div>
+              )}
+              <div className="flex justify-between items-end mb-4">
+                <h4 className="font-semibold text-lg">Players</h4>
+              </div>
+
+              {players.length === 0 ? (
+                <p className="text-sm">No players added yet.</p>
+              ) : (
+                <table className="table table-zebra">
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>AC</th>
+                      <th>HP</th>
+                      <th>Level</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {players
+                      .filter(
+                        (player) =>
+                          !selectedCampaignId ||
+                          player.campaignId === selectedCampaignId,
+                      )
+                      .map((player) => (
+                        <PlayerCard
+                          key={player._id}
+                          player={player}
+                          onDeletePlayer={deletePlayer}
+                          onUpdatePlayerField={updatePlayerField}
+                        />
+                      ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <FormInput
-              id="newPlayer"
-              type="text"
-              placeholder="New Player Name"
-              onChange={(event) => {
-                setNewPlayerName(event.target.value);
-              }}
-              value={newPlayerName}
-              className="input input-bordered w-full"
-            />
-            <Button
-              label="Save"
-              variant="primary"
-              disabled={!newPlayerName}
-              onClick={() => {
-                if (!newPlayerName) return;
-                savePlayer(newPlayerName);
-              }}
-            />
-          </div>
+
           <div className="modal-action">
-            <Button variant="secondary" label="close" onClick={closeModal} />
+            <form method="dialog">
+              <Button label="Close" onClick={closeModal} />
+            </form>
           </div>
-        </form>
+        </div>
         <form method="dialog" className="modal-backdrop">
-          <button>close</button>
+          <button onClick={closeModal}>close</button>
         </form>
       </dialog>
     </>
