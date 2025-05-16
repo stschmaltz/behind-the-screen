@@ -3,7 +3,8 @@ import { logger } from '../../lib/logger';
 
 // Read the Mastra service BASE URL from environment variables
 const MASTRA_SERVICE_BASE_URL = process.env.MASTRA_SERVICE_BASE_URL;
-const MASTIA_AGENT_PATH = '/api/agents/lootAgent/generate';
+const MASTRA_WORKFLOW_PATH =
+  '/api/workflows/lootGenerationWorkflow/start-async';
 
 type LootItem = { coins?: string; item?: string; note?: string };
 
@@ -19,7 +20,7 @@ export default async function handler(
     });
   }
 
-  const fullMastraUrl = `${MASTRA_SERVICE_BASE_URL.replace(/\/$/, '')}${MASTIA_AGENT_PATH}`;
+  const fullMastraUrl = `${MASTRA_SERVICE_BASE_URL.replace(/\/$/, '')}${MASTRA_WORKFLOW_PATH}`;
 
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);
@@ -74,27 +75,18 @@ export default async function handler(
       .json({ error: 'Invalid context: must be a string.' });
   }
 
-  // Restore the request body to include both messages and input
+  // Build request body for workflow trigger
   const requestBody = {
-    messages: [
-      {
-        role: 'user',
-        content: 'Generate loot using the provided input parameters.',
-      },
-    ],
-    input: {
-      partyLevel,
-      srdItemCount,
-      randomItemCount,
-      context: context || undefined,
-    },
+    partyLevel,
+    srdItemCount,
+    randomItemCount,
+    context: context || undefined,
   };
 
-  logger.info(
-    '[generate-loot] Sending request to Mastra:',
-    fullMastraUrl,
-    requestBody,
-  );
+  logger.info('[generate-loot] Sending request to Mastra:', {
+    url: fullMastraUrl,
+    body: requestBody,
+  });
 
   try {
     const mastraResponse = await fetch(fullMastraUrl, {
@@ -121,11 +113,10 @@ export default async function handler(
     } else if (lootData && Array.isArray(lootData.output)) {
       lootArray = lootData.output;
     } else if (
-      lootData &&
-      lootData.results &&
-      Array.isArray(lootData.results.formatLoot)
+      lootData?.results?.formatLoot?.output &&
+      Array.isArray(lootData.results.formatLoot.output)
     ) {
-      lootArray = lootData.results.formatLoot;
+      lootArray = lootData.results.formatLoot.output;
     } else if (lootData && typeof lootData.text === 'string') {
       try {
         const inner = JSON.parse(lootData.text);
