@@ -9,7 +9,6 @@ interface FormInputProps {
   min?: number;
   max?: number;
   step?: number;
-  width?: string;
   placeholder?: string;
   className?: string;
   required?: boolean;
@@ -25,16 +24,13 @@ const FormInput: React.FC<FormInputProps> = ({
   min,
   max,
   step,
-  width,
   placeholder,
   className,
   required = false,
   labelIcon,
 }) => {
-  const widthClass = width ? width : 'w-full';
-
   return (
-    <div className={`form-control ${widthClass}`}>
+    <div className="form-control w-full">
       {label && (
         <label htmlFor={id} className="label">
           <span className="label-text flex items-center gap-2">
@@ -50,9 +46,10 @@ const FormInput: React.FC<FormInputProps> = ({
         value={value}
         onChange={onChange}
         {...(type === 'number' && { min, max, step })}
-        className={`input ${className}`}
+        className={`input input-bordered input-lg w-full placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary ${className || ''}`}
         placeholder={placeholder}
         required={required}
+        autoComplete="off"
       />
     </div>
   );
