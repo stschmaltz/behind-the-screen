@@ -14,6 +14,7 @@ interface FormInputProps {
   className?: string;
   required?: boolean;
   labelIcon?: React.ReactNode;
+  disabled?: boolean;
 }
 
 const FormInput: React.FC<FormInputProps> = ({
@@ -30,6 +31,7 @@ const FormInput: React.FC<FormInputProps> = ({
   className,
   required = false,
   labelIcon,
+  disabled = false,
 }) => {
   const widthClass = width ? width : 'w-full';
 
@@ -53,6 +55,7 @@ const FormInput: React.FC<FormInputProps> = ({
         className={`input ${className}`}
         placeholder={placeholder}
         required={required}
+        disabled={disabled}
       />
     </div>
   );

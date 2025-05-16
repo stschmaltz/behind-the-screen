@@ -1,98 +1,130 @@
 import { NextPage } from 'next';
 import { useState } from 'react';
+import { FormInput } from '../components/ui/FormInput';
+import { Button } from '../components/ui/Button';
+
+type LootItem = { coins?: string; item?: string; note?: string };
 
 const LootGeneratorPage: NextPage = () => {
   const [partyLevel, setPartyLevel] = useState<number>(3);
-  const [itemCount, setItemCount] = useState<number>(2);
+  const [srdItemCount, setSrdItemCount] = useState<number>(2);
+  const [randomItemCount, setRandomItemCount] = useState<number>(0);
   const [context, setContext] = useState<string>('');
-  const [loot, setLoot] = useState<string[] | null>(null);
+  const [loot, setLoot] = useState<LootItem[] | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Call the Mastra server
-    console.log({ partyLevel, itemCount, context });
-    // Mock loot for now
-    setLoot([
-      'Coins: 35 silver pieces',
-      "A candle that can't be lit",
-      'Mirror, steel',
-      'A petrified mouse',
-      'A sack',
-      'A tiny glass vial filled with shimmering sand that softly glows in moonlight',
-      'A carved wooden whistle shaped like a laughing frog',
-      'A delicate chain of interlinked brass leaves that tinkle faintly when moved',
-    ]);
+    setIsLoading(true);
+    setError(null);
+    setLoot(null);
+
+    try {
+      const response = await fetch('/api/generate-loot', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          partyLevel,
+          srdItemCount,
+          randomItemCount,
+          context,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setLoot(data);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || 'Failed to generate loot.');
+      } else {
+        setError('An unknown error occurred.');
+      }
+    }
+    setIsLoading(false);
   };
 
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Loot Generator</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label
-            htmlFor="partyLevel"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Party Level (1-20)
-          </label>
-          <input
-            type="number"
-            id="partyLevel"
-            value={partyLevel}
-            onChange={(e) => setPartyLevel(parseInt(e.target.value))}
-            min="1"
-            max="20"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            required
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="itemCount"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Number of SRD Items (1-10)
-          </label>
-          <input
-            type="number"
-            id="itemCount"
-            value={itemCount}
-            onChange={(e) => setItemCount(parseInt(e.target.value))}
-            min="1"
-            max="10"
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-            required
-          />
-        </div>
-        <div>
-          <label
-            htmlFor="context"
-            className="block text-sm font-medium text-gray-700"
-          >
-            Context/Theme (Optional)
-          </label>
-          <input
-            type="text"
-            id="context"
-            value={context}
-            onChange={(e) => setContext(e.target.value)}
-            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-          />
-        </div>
-        <button
+        <FormInput
+          id="partyLevel"
+          label="Party Level (1-20)"
+          type="number"
+          value={partyLevel}
+          onChange={(e) => setPartyLevel(parseInt(e.target.value))}
+          min={1}
+          max={20}
+          required
+          className=""
+          disabled={isLoading}
+        />
+        <FormInput
+          id="srdItemCount"
+          label="Number of Official Source Items (1-10)"
+          type="number"
+          value={srdItemCount}
+          onChange={(e) => setSrdItemCount(parseInt(e.target.value))}
+          min={1}
+          max={10}
+          required
+          className=""
+          disabled={isLoading}
+        />
+        <FormInput
+          id="randomItemCount"
+          label="Number of Random Items (0-10)"
+          type="number"
+          value={randomItemCount}
+          onChange={(e) => setRandomItemCount(parseInt(e.target.value))}
+          min={0}
+          max={10}
+          className=""
+          disabled={isLoading}
+        />
+        <FormInput
+          id="context"
+          label="Context/Theme (Optional)"
+          type="text"
+          value={context}
+          onChange={(e) => setContext(e.target.value)}
+          className=""
+          disabled={isLoading}
+        />
+        <Button
           type="submit"
-          className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-        >
-          Generate Loot
-        </button>
+          label={isLoading ? 'Generating...' : 'Generate Loot'}
+          variant="primary"
+          disabled={isLoading}
+          loading={isLoading}
+          className="w-full"
+        />
       </form>
+
+      {error && (
+        <div className="mt-4 p-3 bg-red-100 text-red-700 rounded-md">
+          <p>Error: {error}</p>
+        </div>
+      )}
 
       {loot && (
         <div className="mt-6">
           <h2 className="text-xl font-semibold">Generated Loot:</h2>
           <ul className="list-disc pl-5 mt-2 space-y-1">
-            {loot.map((item, index) => (
-              <li key={index}>{item}</li>
+            {loot.map((entry, index) => (
+              <li key={index}>
+                {entry.coins && <strong>Coins: {entry.coins}</strong>}
+                {entry.item && <>{entry.item}</>}
+                {entry.note && <em>Note: {entry.note}</em>}
+              </li>
             ))}
           </ul>
         </div>
