@@ -46,7 +46,7 @@ const BasicEnemyForm: React.FC<Props> = ({
           value={enemy.maxHP}
           onChange={(e) => handleManualChange('maxHP', Number(e.target.value))}
           min={1}
-          width="w-32"
+          className="w-32"
         />
         <FormInput
           label="AC"
@@ -57,7 +57,7 @@ const BasicEnemyForm: React.FC<Props> = ({
             handleManualChange('armorClass', Number(e.target.value))
           }
           min={1}
-          width="w-32"
+          className="w-32"
         />
       </div>
 
@@ -71,7 +71,7 @@ const BasicEnemyForm: React.FC<Props> = ({
               value={initiative}
               onChange={(e) => setInitiative(Number(e.target.value))}
               required
-              width="w-full sm:w-32"
+              className="w-full sm:w-32"
             />
             <button
               type="button"
