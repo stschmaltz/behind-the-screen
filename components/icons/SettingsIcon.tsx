@@ -1,8 +1,6 @@
 import React from 'react';
 
-interface IconProps {
-  className?: string;
-}
+type IconProps = React.SVGProps<SVGSVGElement>;
 
 const SettingsIcon: React.FC<IconProps> = ({ className = 'w-6 h-6' }) => (
   <svg

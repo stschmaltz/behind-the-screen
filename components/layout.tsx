@@ -104,7 +104,7 @@ function Layout({ children }: LayoutProps) {
         {isHomePage ? (
           <div className="container mx-auto px-4 py-8 ">{children}</div>
         ) : (
-          <div className="container mx-auto px-4 py-6 md:py-8 flex-grow max-w-screen-md max-w-[1000px] min-h-[80vh]">
+          <div className="container mx-auto px-4 py-6 md:py-8 flex-grow max-w-4xl min-h-[80vh]">
             {children}
           </div>
         )}
