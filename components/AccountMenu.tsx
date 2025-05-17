@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { RefObject } from 'react';
-import { ApiUser } from '../data/graphql/snippets/user';
+import type { User } from '../src/generated/graphql';
 
 type AccountMenuProps = {
-  currentUser: ApiUser | undefined;
+  currentUser: User | undefined;
   accountMenuRef: RefObject<HTMLDivElement | null>;
   isAccountMenuOpen: boolean;
   toggleAccountMenu: () => void;

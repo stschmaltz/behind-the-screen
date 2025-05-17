@@ -5,14 +5,17 @@ import {
   BulkUpdatePlayersInput,
 } from './player.repository.interface';
 import { getDbClient } from '../../data/database/mongodb';
-import { NewPlayer, Player } from '../../types/player';
+import type { NewPlayerInput, Player } from '../../src/generated/graphql';
 import { logger } from '../../lib/logger';
 
 @injectable()
 export class PlayerRepository implements PlayerRepositoryInterface {
   private collectionName = 'players';
 
-  public async createPlayer(input: NewPlayer): Promise<Player> {
+  public async createPlayer(
+    input: NewPlayerInput,
+    userId: string,
+  ): Promise<Player> {
     if (!input.campaignId) {
       throw new Error('Campaign ID is required when saving a player');
     }
@@ -20,9 +23,9 @@ export class PlayerRepository implements PlayerRepositoryInterface {
     const { db } = await getDbClient();
     const docToInsert = {
       ...input,
-      userId: new ObjectId(input.userId),
       campaignId: new ObjectId(input.campaignId),
       createdAt: new Date(),
+      userId: new ObjectId(userId),
     };
     const result = await db
       .collection(this.collectionName)
@@ -122,7 +125,7 @@ export class PlayerRepository implements PlayerRepositoryInterface {
   }
 
   public async updatePlayer(
-    input: { _id: string; userId: string } & Partial<NewPlayer>,
+    input: { _id: string; userId: string } & Partial<NewPlayerInput>,
   ): Promise<Player> {
     const { _id, userId, ...updateData } = input;
     const { db } = await getDbClient();
@@ -202,9 +205,9 @@ export class PlayerRepository implements PlayerRepositoryInterface {
       userId: doc.userId.toHexString(),
       campaignId: doc.campaignId.toHexString(),
       armorClass: doc.armorClass,
-      currentHP: doc.currentHP,
       maxHP: doc.maxHP,
       level: doc.level || 1,
+      createdAt: doc.createdAt,
     };
   }
 }

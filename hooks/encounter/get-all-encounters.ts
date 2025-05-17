@@ -2,7 +2,7 @@ import {
   allEncountersQuery,
   AllEncountersResponse,
 } from '../../data/graphql/snippets/encounter';
-import { Encounter } from '../../types/encounters';
+import type { Encounter } from '../../src/generated/graphql';
 import { useQuery } from '../use-async-query';
 import { logger } from '../../lib/logger';
 
@@ -12,12 +12,7 @@ interface GetAllEncountersOptions {
 }
 
 const transformEncounters = (data: AllEncountersResponse): Encounter[] =>
-  data.allEncounters
-    .map((encounter) => ({
-      ...encounter,
-      createdAt: new Date(encounter.createdAt),
-    }))
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  data.allEncounters;
 
 function getAllEncounters(options?: GetAllEncountersOptions): {
   encounters: Encounter[];

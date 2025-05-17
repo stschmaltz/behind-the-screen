@@ -65,7 +65,12 @@ export class EncounterRepository implements EncounterRepositoryInterface {
       .toArray();
 
     logger.info('getAllEncounters', docs);
-    return docs.map(this.mapToEncounter);
+    return docs
+      .map(this.mapToEncounter)
+      .sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
   }
 
   public async deleteEncounter(input: {

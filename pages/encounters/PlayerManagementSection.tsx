@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '../../components/ui/Button';
 import { FormInput } from '../../components/ui/FormInput';
-import { Player } from '../../types/player';
+import type { Player } from '../../src/generated/graphql';
 import { useModal } from '../../hooks/use-modal';
 import { useActiveCampaign } from '../../context/ActiveCampaignContext';
 import PlayerCard from '../../components/PlayerCard';

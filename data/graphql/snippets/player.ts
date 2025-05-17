@@ -1,5 +1,3 @@
-import { Player } from '../../../types/player';
-
 // ----------------------------------------------------------------------------
 // Fragments
 // ----------------------------------------------------------------------------
@@ -13,6 +11,7 @@ export const fullPlayer = /* GraphQL */ `
     level
     userId
     campaignId
+    createdAt
   }
 `;
 

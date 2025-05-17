@@ -4,7 +4,8 @@ import { useRouter } from 'next/router';
 import { getAllEncounters } from '../../hooks/encounter/get-all-encounters';
 import { getAllAdventures } from '../../hooks/adventure/get-all-adventures';
 import { useActiveCampaign } from '../../context/ActiveCampaignContext';
-import { Encounter, NewEncounterTemplate } from '../../types/encounters';
+import type { Encounter } from '../../src/generated/graphql';
+import type { NewEncounterTemplate } from '../../types/encounters';
 import { DocumentIcon } from '../../components/icons';
 import { useManageEncounter } from '../../hooks/encounter/use-manage-encounter';
 import EncounterList from '../../components/encounters/EncounterList';
@@ -201,7 +202,27 @@ const EncountersPage: NextPage = () => {
     const newEncounterData: NewEncounterTemplate = {
       name: newEncounterName.trim(),
       status: 'inactive',
-      enemies: encounterToCopy.enemies || [],
+      enemies: (encounterToCopy.enemies || []).map((e) => ({
+        ...e,
+        meta: e.meta ?? undefined,
+        speed: e.speed ?? undefined,
+        challenge: e.challenge ?? undefined,
+        actions: e.actions ?? undefined,
+        legendaryActions: e.legendaryActions ?? undefined,
+        img_url: e.img_url ?? undefined,
+        monsterSource: e.monsterSource ?? undefined,
+        traits: e.traits ?? undefined,
+        stats: e.stats
+          ? {
+              STR: e.stats.STR ?? 0,
+              DEX: e.stats.DEX ?? 0,
+              CON: e.stats.CON ?? 0,
+              INT: e.stats.INT ?? 0,
+              WIS: e.stats.WIS ?? 0,
+              CHA: e.stats.CHA ?? 0,
+            }
+          : undefined,
+      })),
       notes: encounterToCopy.notes || [],
       description: encounterToCopy.description || '',
       campaignId: encounterToCopy.campaignId?.toString() || '',

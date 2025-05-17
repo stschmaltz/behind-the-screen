@@ -1,19 +1,6 @@
-import { OmitMongoFields } from './mongo-helpers';
-
-export interface Player {
-  name: string;
-  _id: string;
-  userId: string;
-  campaignId: string;
-  armorClass?: number;
-  maxHP?: number;
-  currentHP?: number;
-  level?: number;
-}
-
-export type NewPlayer = OmitMongoFields<Player>;
+import type { Player as GqlPlayer } from '../src/generated/graphql';
 
 export interface PlayerWithInitiative {
-  player: Player;
+  player: GqlPlayer;
   initiative: number | '';
 }

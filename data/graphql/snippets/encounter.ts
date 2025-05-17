@@ -1,4 +1,4 @@
-import { Encounter } from '../../../types/encounters';
+import type { Encounter } from '../../../src/generated/graphql';
 
 export const fullEncounterFragment = /* GraphQL */ `
   fragment FullEncounter on Encounter {
@@ -82,10 +82,6 @@ export const saveEncounterMutation = /* GraphQL */ `
     }
   }
 `;
-
-export interface SaveEncounterMutationResponse {
-  saveEncounter: Encounter;
-}
 
 export const allEncountersQuery = /* GraphQL */ `
   ${fullEncounterFragment}

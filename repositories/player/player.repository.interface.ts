@@ -1,4 +1,8 @@
-import { Player, NewPlayer } from '../../types/player';
+import type {
+  NewPlayerInput,
+  Player,
+  UpdatePlayerInput,
+} from '../../src/generated/graphql';
 
 export interface BulkUpdatePlayersInput {
   userId: string;
@@ -10,9 +14,9 @@ export interface BulkUpdatePlayersInput {
 }
 
 export interface PlayerRepositoryInterface {
-  createPlayer(input: NewPlayer): Promise<Player>;
+  createPlayer(input: NewPlayerInput, userId: string): Promise<Player>;
   updatePlayer(
-    input: { _id: string; userId: string } & Partial<NewPlayer>,
+    input: { _id: string; userId: string } & Partial<UpdatePlayerInput>,
   ): Promise<Player>;
   deletePlayer(input: { id: string; userId: string }): Promise<boolean>;
   getPlayersByIds(input: { ids: string[]; userId: string }): Promise<Player[]>;

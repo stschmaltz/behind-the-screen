@@ -6,6 +6,11 @@ import {
 } from '../../../lib/graphql-context';
 import { PlayerRepositoryInterface } from '../../../repositories/player/player.repository.interface';
 import { logger } from '../../../lib/logger';
+import {
+  NewPlayerInput,
+  UpdatePlayerInput,
+  UpdatePlayersInput,
+} from '../../../src/generated/graphql';
 
 const playerMutationTypeDefs = /* GraphQL */ `
   extend type Mutation {
@@ -25,37 +30,6 @@ const playerMutationTypeDefs = /* GraphQL */ `
   }
 `;
 
-interface SavePlayerArgs {
-  input: {
-    name: string;
-    campaignId: string;
-    armorClass?: number;
-    maxHP?: number;
-    level?: number;
-  };
-}
-
-interface UpdatePlayerArgs {
-  input: {
-    _id: string;
-    name?: string;
-    campaignId?: string;
-    armorClass?: number;
-    maxHP?: number;
-    level?: number;
-  };
-}
-
-interface UpdatePlayersArgs {
-  input: {
-    campaignId: string;
-    armorClass?: number;
-    maxHP?: number;
-    level?: number;
-    levelUp?: boolean;
-  };
-}
-
 const playerRepository = appContainer.get<PlayerRepositoryInterface>(
   TYPES.PlayerRepository,
 );
@@ -64,24 +38,26 @@ const playerMutationResolver = {
   Mutation: {
     async createPlayer(
       _: unknown,
-      { input }: SavePlayerArgs,
+      { input }: { input: NewPlayerInput },
       context: GraphQLContext,
     ) {
       logger.info('createPlayer', input);
       isAuthorizedOrThrow(context);
-      return playerRepository.createPlayer({
-        name: input.name,
-        userId: context.user._id,
-        campaignId: input.campaignId,
-        armorClass: input.armorClass,
-        maxHP: input.maxHP,
-        level: input.level || 1,
-      });
+      return playerRepository.createPlayer(
+        {
+          name: input.name,
+          campaignId: input.campaignId,
+          armorClass: input.armorClass,
+          maxHP: input.maxHP,
+          level: input.level || 1,
+        },
+        context.user._id,
+      );
     },
 
     async updatePlayer(
       _: unknown,
-      { input }: UpdatePlayerArgs,
+      { input }: { input: UpdatePlayerInput },
       context: GraphQLContext,
     ) {
       logger.info('updatePlayer', input);
@@ -113,7 +89,7 @@ const playerMutationResolver = {
 
     async updatePlayers(
       _: unknown,
-      { input }: UpdatePlayersArgs,
+      { input }: { input: UpdatePlayersInput },
       context: GraphQLContext,
     ) {
       logger.info('updatePlayers', input);
@@ -122,10 +98,10 @@ const playerMutationResolver = {
       return playerRepository.bulkUpdatePlayers({
         userId: context.user._id,
         campaignId: input.campaignId,
-        armorClass: input.armorClass,
-        maxHP: input.maxHP,
-        level: input.level,
-        levelUp: input.levelUp,
+        armorClass: input.armorClass ?? undefined,
+        maxHP: input.maxHP ?? undefined,
+        level: input.level ?? undefined,
+        levelUp: input.levelUp ?? undefined,
       });
     },
   },

@@ -4,7 +4,7 @@ import {
   EncounterCharacter,
   InitiativeOrderCharacter,
 } from '../../types/encounters';
-import { Player } from '../../types/player';
+import type { Player } from '../../src/generated/graphql';
 
 export const useEncounterDraft = (
   encounter: Encounter,
@@ -19,9 +19,9 @@ export const useEncounterDraft = (
   ): InitiativeOrderCharacter => ({
     _id: character._id,
     name: character.name,
-    armorClass: character.armorClass,
-    maxHP: character.maxHP,
-    currentHP: character.maxHP,
+    armorClass: character.armorClass ?? undefined,
+    maxHP: character.maxHP ?? undefined,
+    currentHP: character.maxHP ?? undefined,
     tempHP: 0,
     conditions: [],
     type,
@@ -84,9 +84,9 @@ export const useEncounterDraft = (
           ...selectedPlayers.map(({ player, initiative }) => ({
             _id: player._id,
             name: player.name,
-            armorClass: player.armorClass,
-            maxHP: player.maxHP,
-            currentHP: player.maxHP,
+            armorClass: player.armorClass ?? undefined,
+            maxHP: player.maxHP ?? undefined,
+            currentHP: player.maxHP ?? undefined,
             tempHP: 0,
             conditions: [],
             type: 'player' as const,

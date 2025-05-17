@@ -4,9 +4,9 @@ import DescriptionDisplay from '../DescriptionDisplay';
 import EncounterDifficultyBadge from '../EncounterDifficultyBadge';
 import { Campaign } from '../../types/campaigns';
 import { TransformedAdventure } from '../../hooks/adventure/get-all-adventures';
-import { Player } from '../../types/player';
-import { Encounter } from '../../types/encounters';
+import type { Player } from '../../src/generated/graphql';
 import { logger } from '../../lib/logger';
+import type { Encounter } from '../../src/generated/graphql';
 
 interface EncounterCardProps {
   encounter: Encounter;
@@ -53,17 +53,19 @@ const EncounterCard: React.FC<EncounterCardProps> = ({
   onCopyClick,
   onDeleteClick,
 }) => {
+  if (!encounter) return null;
+
   const campaign = encounter.campaignId
-    ? campaigns?.find((c) => c._id === encounter.campaignId.toString())
+    ? campaigns?.find((c) => c._id === (encounter.campaignId ?? undefined))
     : null;
 
   const adventure = encounter.adventureId
-    ? adventures?.find((a) => a._id === encounter.adventureId?.toString())
+    ? adventures?.find((a) => a._id === (encounter.adventureId ?? undefined))
     : null;
 
   const campaignPlayerLevels =
     players
-      ?.filter((p) => p.campaignId === encounter.campaignId?.toString())
+      ?.filter((p) => p.campaignId === (encounter.campaignId ?? undefined))
       .map((p) => p.level || 1) || [];
 
   return (
@@ -78,7 +80,7 @@ const EncounterCard: React.FC<EncounterCardProps> = ({
               <span className="card-title">{encounter.name}</span>
               <DescriptionDisplay
                 encounterId={encounter._id.toString()}
-                description={encounter.description}
+                description={encounter.description ?? undefined}
               />
             </div>
             <div className="flex items-center gap-2 flex-shrink-0">
@@ -108,7 +110,27 @@ const EncounterCard: React.FC<EncounterCardProps> = ({
               {encounter.enemies?.length > 0 &&
                 campaignPlayerLevels.length > 0 && (
                   <EncounterDifficultyBadge
-                    enemies={encounter.enemies}
+                    enemies={encounter.enemies.map((e) => ({
+                      ...e,
+                      meta: e.meta ?? undefined,
+                      speed: e.speed ?? undefined,
+                      challenge: e.challenge ?? undefined,
+                      actions: e.actions ?? undefined,
+                      legendaryActions: e.legendaryActions ?? undefined,
+                      img_url: e.img_url ?? undefined,
+                      monsterSource: e.monsterSource ?? undefined,
+                      traits: e.traits ?? undefined,
+                      stats: e.stats
+                        ? {
+                            STR: e.stats.STR ?? 0,
+                            DEX: e.stats.DEX ?? 0,
+                            CON: e.stats.CON ?? 0,
+                            INT: e.stats.INT ?? 0,
+                            WIS: e.stats.WIS ?? 0,
+                            CHA: e.stats.CHA ?? 0,
+                          }
+                        : undefined,
+                    }))}
                     playerLevels={campaignPlayerLevels}
                     className="badge-sm"
                   />

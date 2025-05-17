@@ -3,7 +3,8 @@ import {
   Encounter,
   EncounterCharacter,
 } from '../../types/encounters';
-import { Player, PlayerWithInitiative } from '../../types/player';
+import { PlayerWithInitiative } from '../../types/player';
+import type { Player } from '../../src/generated/graphql';
 
 interface UseTurnManagementResult {
   currentCharacter: InitiativeOrderCharacter;
@@ -125,9 +126,9 @@ export const useEncounterTurnManagement = (
   ): InitiativeOrderCharacter => ({
     _id: player._id,
     name: player.name,
-    armorClass: player.armorClass,
-    maxHP: player.maxHP,
-    currentHP: player.maxHP,
+    armorClass: player.armorClass ?? undefined,
+    maxHP: player.maxHP ?? undefined,
+    currentHP: player.maxHP ?? undefined,
     tempHP: 0,
     conditions: [],
     type: 'player',

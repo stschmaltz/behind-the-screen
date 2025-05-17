@@ -1,5 +1,5 @@
 import React from 'react';
-import { Player } from '../../types/player';
+import type { Player } from '../../src/generated/graphql';
 
 interface CampaignPlayerToggleProps {
   campaignId: string | undefined;

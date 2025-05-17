@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '../../../components/ui/Button';
 import { useModal } from '../../../hooks/use-modal';
 import type { Player } from '../../../src/generated/graphql';
-import { PlayerWithInitiative } from '../../../types/player';
+import type { PlayerWithInitiative } from '../../../types/player';
 
 interface Props {
   players: Player[];

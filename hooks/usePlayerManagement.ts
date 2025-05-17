@@ -82,15 +82,7 @@ export const usePlayerManagement = (
 
     setState((prev) => ({
       ...prev,
-      players: [
-        ...prev.players,
-        {
-          ...newPlayer,
-          armorClass: newPlayer.armorClass ?? undefined,
-          maxHP: newPlayer.maxHP ?? undefined,
-          level: newPlayer.level ?? undefined,
-        },
-      ],
+      players: [...prev.players, newPlayer],
       newPlayerName: '',
       newPlayerLevel: 1,
       newPlayerAC: undefined,

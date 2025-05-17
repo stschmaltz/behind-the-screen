@@ -7,7 +7,7 @@ import {
   EncounterCharacter,
   InitiativeOrderCharacter,
 } from '../../types/encounters';
-import { Player } from '../../types/player';
+import type { Player } from '../../src/generated/graphql';
 
 interface HookProps {
   enemies: EncounterCharacter[];
