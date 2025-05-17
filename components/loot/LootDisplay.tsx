@@ -5,6 +5,7 @@ export type LootItemType = {
   level?: string;
   coins?: string;
   item?: string;
+  description?: string;
   note?: string;
   source?: 'official' | 'random';
 };
@@ -71,6 +72,11 @@ const LootDisplay: React.FC<LootDisplayProps> = ({ loot, context }) => {
                     {entry.source}
                   </span>
                 )}
+              </div>
+            )}
+            {entry.description && (
+              <div className="text-sm mt-1 text-base-content/80">
+                {entry.description}
               </div>
             )}
             {entry.note && (

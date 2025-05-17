@@ -18,13 +18,13 @@ const LootHistory: React.FC<LootHistoryProps> = ({
   const [isOpen, setIsOpen] = useState(true);
 
   return (
-    <div className="collapse collapse-arrow bg-base-200 mt-4">
-      <input
-        type="checkbox"
-        checked={isOpen}
-        onChange={(e) => setIsOpen(e.target.checked)}
-      />
-      <div className="collapse-title flex justify-between items-center">
+    <div
+      className={`collapse collapse-arrow bg-base-200 mt-4 ${isOpen ? 'collapse-open' : ''}`}
+    >
+      <div
+        className="collapse-title flex justify-between items-center"
+        onClick={() => setIsOpen(!isOpen)}
+      >
         <span className="font-medium">History</span>
         <button
           type="button"
@@ -32,7 +32,7 @@ const LootHistory: React.FC<LootHistoryProps> = ({
             e.stopPropagation();
             onClear();
           }}
-          className="btn btn-sm btn-outline btn-error"
+          className="btn btn-sm btn-outline btn-error pointer-events-auto"
         >
           Clear
         </button>
