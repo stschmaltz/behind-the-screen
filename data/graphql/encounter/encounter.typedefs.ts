@@ -69,6 +69,7 @@ export const encounterTypeDefs = /* GraphQL */ `
     armorClass: Int
     maxHP: Int
     currentHP: Int
+    tempHP: Int
     conditions: [String!]!
     initiative: Int
     type: String!
@@ -133,6 +134,7 @@ export const encounterTypeDefs = /* GraphQL */ `
     armorClass: Int
     maxHP: Int
     currentHP: Int
+    tempHP: Int
     conditions: [String!]!
     initiative: Int
     type: String!

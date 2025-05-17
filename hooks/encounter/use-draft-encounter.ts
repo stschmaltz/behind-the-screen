@@ -47,7 +47,7 @@ export const useEncounterDraft = (
 
   const handleAddCharacter = (
     newCharacter: EncounterCharacter,
-    type: 'enemy' | 'npc',
+    type: 'enemy' | 'npc' | 'player',
   ) => {
     setHasUnsavedChanges?.(true);
     setDraftEncounter((prev) => ({
@@ -55,7 +55,7 @@ export const useEncounterDraft = (
       enemies: [...prev.enemies, newCharacter],
       initiativeOrder: [
         ...prev.initiativeOrder,
-        toInitiativeOrder(newCharacter, 'enemy'),
+        toInitiativeOrder(newCharacter, type),
       ],
     }));
   };
@@ -90,7 +90,7 @@ export const useEncounterDraft = (
             tempHP: 0,
             conditions: [],
             type: 'player' as const,
-            initiative: Number(initiative),
+            initiative: initiative ? Number(initiative) : undefined,
           })),
         ],
       };

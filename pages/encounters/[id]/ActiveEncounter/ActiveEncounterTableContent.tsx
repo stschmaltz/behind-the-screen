@@ -165,6 +165,7 @@ const ActiveEncounterTableContent: React.FC<
               currentPlayerIds={encounter.players.map((p) => p._id)}
               className="btn-sm w-full"
               buttonVariant="accent"
+              requireInitiative={true}
             />
           </div>
         </div>

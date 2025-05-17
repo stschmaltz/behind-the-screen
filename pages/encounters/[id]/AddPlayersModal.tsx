@@ -17,6 +17,8 @@ interface Props {
     | 'success'
     | 'warning'
     | 'error';
+
+  requireInitiative?: boolean;
 }
 
 const AddPlayersModal: React.FC<Props> = ({
@@ -26,6 +28,7 @@ const AddPlayersModal: React.FC<Props> = ({
   currentPlayerIds = [],
   className,
   buttonVariant = 'primary',
+  requireInitiative = false,
 }) => {
   const { closeModal, showModal } = useModal('add-players-modal');
   const [toggledPlayers, setToggledPlayers] = React.useState<
@@ -58,14 +61,14 @@ const AddPlayersModal: React.FC<Props> = ({
     );
   };
 
-  const canSubmit =
-    toggledPlayers.length > 0 &&
-    toggledPlayers.every(
-      (p) =>
-        typeof p.initiative === 'number' &&
-        !isNaN(p.initiative) &&
-        p.initiative > 0,
-    );
+  const isInitiativeValid = (initiative: number | ''): initiative is number =>
+    typeof initiative === 'number' && !isNaN(initiative) && initiative > 0;
+
+  const hasValidInitiative = () =>
+    !requireInitiative ||
+    toggledPlayers.every((p) => isInitiativeValid(p.initiative));
+
+  const canSubmit = toggledPlayers.length > 0 && hasValidInitiative();
 
   const handleSubmit = () => {
     if (!canSubmit) return;
@@ -116,7 +119,7 @@ const AddPlayersModal: React.FC<Props> = ({
                       min={1}
                       className="input input-bordered input-sm w-24 ml-2"
                       placeholder="Initiative"
-                      value={toggled.initiative}
+                      value={toggled.initiative ?? ''}
                       onChange={(e) =>
                         handleInitiativeChange(player._id, e.target.value)
                       }
