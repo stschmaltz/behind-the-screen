@@ -4,18 +4,12 @@ import {
   saveCampaignMutation,
   deleteCampaignMutation,
 } from '../../data/graphql/snippets/campaign';
+import type {
+  SaveCampaignMutation,
+  DeleteCampaignMutation,
+} from '../../src/generated/graphql';
 import { Campaign, NewCampaign } from '../../types/campaigns';
 import { logger } from '../../lib/logger';
-
-interface SaveCampaignMutationResult {
-  saveCampaign: {
-    _id: string;
-  } | null;
-}
-
-interface DeleteCampaignMutationResult {
-  deleteCampaign: boolean | null;
-}
 
 type CampaignUpdatePayload = Partial<
   Omit<Campaign, '_id' | 'userId' | 'createdAt' | 'updatedAt'> & {
@@ -62,7 +56,7 @@ const useManageCampaign = () => {
         mutationInput.id = campaignId;
       }
 
-      const result = await asyncFetch<SaveCampaignMutationResult>(
+      const result = await asyncFetch<SaveCampaignMutation>(
         saveCampaignMutation,
         { input: mutationInput },
       );
@@ -88,7 +82,7 @@ const useManageCampaign = () => {
     logger.debug('Deleting campaign', { id: campaignId });
     setIsDeleting(true);
     try {
-      await asyncFetch<DeleteCampaignMutationResult>(deleteCampaignMutation, {
+      await asyncFetch<DeleteCampaignMutation>(deleteCampaignMutation, {
         input: { id: campaignId },
       });
       logger.info('Campaign deleted successfully', { id: campaignId });

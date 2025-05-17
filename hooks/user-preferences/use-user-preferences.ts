@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import {
   getUserPreferencesQuery,
-  GetUserPreferencesResponse,
   setActiveCampaignMutation,
 } from '../../data/graphql/snippets/user-preferences';
+import type {
+  GetUserPreferencesQuery,
+  SetActiveCampaignMutation,
+} from '../../src/generated/graphql';
 import { useQuery } from '../use-async-query';
 import { asyncFetch } from '../../data/graphql/graphql-fetcher';
 import { logger } from '../../lib/logger';
@@ -20,7 +23,7 @@ export function useUserPreferences(): UseUserPreferencesResult {
     string | undefined
   >();
 
-  const { data, loading } = useQuery<GetUserPreferencesResponse>({
+  const { data, loading } = useQuery<GetUserPreferencesQuery>({
     query: getUserPreferencesQuery,
   });
 
@@ -39,7 +42,9 @@ export function useUserPreferences(): UseUserPreferencesResult {
     campaignId: string | null,
   ): Promise<void> => {
     try {
-      await asyncFetch(setActiveCampaignMutation, { input: { campaignId } });
+      await asyncFetch<SetActiveCampaignMutation>(setActiveCampaignMutation, {
+        input: { campaignId },
+      });
       setActiveCampaignIdState(campaignId || undefined);
     } catch (error) {
       logger.error('Failed to set active campaign', error);

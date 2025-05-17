@@ -105,6 +105,11 @@ const ActiveEncounterCharacterRow = forwardRef<
       });
     };
 
+    const handleInitiativeChange = (value: number) => {
+      const clamped = Math.min(Math.max(0, value), 35);
+      onUpdateCharacter({ ...character, initiative: clamped });
+    };
+
     return (
       <div
         ref={ref}
@@ -133,6 +138,7 @@ const ActiveEncounterCharacterRow = forwardRef<
             onAddCondition={handleAddCondition}
             onRemoveCondition={handleRemoveCondition}
             onViewStats={monsterData ? openModal : undefined}
+            onUpdateInitiative={handleInitiativeChange}
           />
         </div>
       </div>

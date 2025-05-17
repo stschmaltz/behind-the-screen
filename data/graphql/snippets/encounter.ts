@@ -1,7 +1,7 @@
 import { Encounter } from '../../../types/encounters';
 
-export const fullEncounter = /* GraphQL */ `
-  {
+export const fullEncounterFragment = /* GraphQL */ `
+  fragment FullEncounter on Encounter {
     _id
     name
     description
@@ -60,6 +60,7 @@ export const fullEncounter = /* GraphQL */ `
       armorClass
       maxHP
       currentHP
+      tempHP
       conditions
       initiative
       type
@@ -74,8 +75,11 @@ export const fullEncounter = /* GraphQL */ `
 `;
 
 export const saveEncounterMutation = /* GraphQL */ `
+  ${fullEncounterFragment}
   mutation saveEncounter($input: NewEncounterInput!) {
-    saveEncounter(input: $input) ${fullEncounter}
+    saveEncounter(input: $input) {
+      ...FullEncounter
+    }
   }
 `;
 
@@ -84,8 +88,11 @@ export interface SaveEncounterMutationResponse {
 }
 
 export const allEncountersQuery = /* GraphQL */ `
+  ${fullEncounterFragment}
   query allEncounters {
-    allEncounters ${fullEncounter}
+    allEncounters {
+      ...FullEncounter
+    }
   }
 `;
 
@@ -94,8 +101,11 @@ export interface AllEncountersResponse {
 }
 
 export const encounterByIdQuery = /* GraphQL */ `
+  ${fullEncounterFragment}
   query encounterById($id: String!) {
-    encounterById(id: $id) ${fullEncounter}
+    encounterById(id: $id) {
+      ...FullEncounter
+    }
   }
 `;
 

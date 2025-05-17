@@ -24,6 +24,7 @@ export const ListLayout: React.FC<{
   onRemoveCondition: (condition: Condition) => void;
   onViewStats?: () => void;
   onUpdateName?: (newName: string) => void;
+  onUpdateInitiative?: (value: number) => void;
 }> = ({
   character,
   isCurrentTurn,
@@ -39,6 +40,7 @@ export const ListLayout: React.FC<{
   onRemoveCondition,
   onViewStats,
   onUpdateName,
+  onUpdateInitiative,
 }) => (
   <div className=" flex flex-row  justify-between   items-start   gap-4">
     <div className="flex flex-col min-w-0 sm:flex-1">
@@ -50,6 +52,7 @@ export const ListLayout: React.FC<{
         monsterData={monsterData}
         onViewStats={onViewStats}
         onUpdateName={onUpdateName}
+        onUpdateInitiative={onUpdateInitiative}
       />
     </div>
 

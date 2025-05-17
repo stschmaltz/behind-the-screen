@@ -7,6 +7,12 @@ import {
   updatePlayerMutation,
   updatePlayersMutation,
 } from '../data/graphql/snippets/player';
+import type {
+  CreatePlayerMutation,
+  UpdatePlayerMutation,
+  DeletePlayerMutation,
+  UpdatePlayersMutation,
+} from '../src/generated/graphql';
 import { logger } from '../lib/logger';
 
 export interface PlayerManagementState {
@@ -59,32 +65,33 @@ export const usePlayerManagement = (
       return;
     }
 
-    const response: {
-      createPlayer: Player;
-    } = await asyncFetch(createPlayerMutation, {
-      input: {
-        name: playerName,
-        campaignId: playerCampaignId,
-        level,
-        armorClass,
-        maxHP,
+    const response = await asyncFetch<CreatePlayerMutation>(
+      createPlayerMutation,
+      {
+        input: {
+          name: playerName,
+          campaignId: playerCampaignId,
+          level,
+          armorClass,
+          maxHP,
+        },
       },
-    });
-
-    if (!response.createPlayer._id) return;
+    );
+    const newPlayer = response.createPlayer;
+    if (!newPlayer || !newPlayer._id) return;
 
     setState((prev) => ({
       ...prev,
       players: [
         ...prev.players,
         {
-          _id: response.createPlayer._id,
-          name: response.createPlayer.name,
-          userId: response.createPlayer.userId,
-          campaignId: response.createPlayer.campaignId,
-          armorClass: response.createPlayer.armorClass,
-          maxHP: response.createPlayer.maxHP,
-          level: response.createPlayer.level,
+          _id: newPlayer._id,
+          name: newPlayer.name,
+          userId: newPlayer.userId,
+          campaignId: newPlayer.campaignId,
+          armorClass: newPlayer.armorClass ?? undefined,
+          maxHP: newPlayer.maxHP ?? undefined,
+          level: newPlayer.level ?? undefined,
         },
       ],
       newPlayerName: '',
@@ -95,7 +102,7 @@ export const usePlayerManagement = (
   };
 
   const deletePlayer = async (playerId: string) => {
-    await asyncFetch(deletePlayerMutation, {
+    await asyncFetch<DeletePlayerMutation>(deletePlayerMutation, {
       id: playerId,
     });
     setState((prev) => ({
@@ -110,7 +117,7 @@ export const usePlayerManagement = (
   ) => {
     if (!campaignId) return;
 
-    await asyncFetch(updatePlayersMutation, {
+    await asyncFetch<UpdatePlayersMutation>(updatePlayersMutation, {
       input: {
         campaignId,
         level: levelUp ? undefined : state.bulkLevel,
@@ -156,18 +163,19 @@ export const usePlayerManagement = (
     if (!player) return;
 
     try {
-      const response: {
-        updatePlayer: Player | null;
-      } = await asyncFetch(updatePlayerMutation, {
-        input: {
-          _id: player._id,
-          name: player.name,
-          campaignId: player.campaignId,
-          level: field === 'level' ? value : player.level,
-          armorClass: field === 'armorClass' ? value : player.armorClass,
-          maxHP: field === 'maxHP' ? value : player.maxHP,
+      const response = await asyncFetch<UpdatePlayerMutation>(
+        updatePlayerMutation,
+        {
+          input: {
+            _id: player._id,
+            name: player.name,
+            campaignId: player.campaignId,
+            level: field === 'level' ? value : player.level,
+            armorClass: field === 'armorClass' ? value : player.armorClass,
+            maxHP: field === 'maxHP' ? value : player.maxHP,
+          },
         },
-      });
+      );
 
       if (response.updatePlayer) {
         setState((prev) => ({

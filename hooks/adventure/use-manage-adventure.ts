@@ -4,19 +4,13 @@ import {
   saveAdventureMutation,
   deleteAdventureMutation,
 } from '../../data/graphql/snippets/adventure';
+import type {
+  SaveAdventureMutation,
+  DeleteAdventureMutation,
+} from '../../src/generated/graphql';
 import { Adventure, NewAdventure } from '../../types/adventures';
 import { logger } from '../../lib/logger';
 import { TransformedAdventure } from './get-all-adventures';
-
-interface SaveAdventureMutationResult {
-  saveAdventure: {
-    _id: string;
-  } | null;
-}
-
-interface DeleteAdventureMutationResult {
-  deleteAdventure: boolean | null;
-}
 
 type AdventureUpdatePayload = Partial<
   Omit<Adventure, '_id' | 'userId' | 'createdAt' | 'updatedAt'> & {
@@ -68,7 +62,7 @@ const useManageAdventure = () => {
         mutationInput.id = adventureId;
       }
 
-      const result = await asyncFetch<SaveAdventureMutationResult>(
+      const result = await asyncFetch<SaveAdventureMutation>(
         saveAdventureMutation,
         { input: mutationInput },
       );
@@ -94,7 +88,7 @@ const useManageAdventure = () => {
     logger.debug('Deleting adventure', { id: adventureId });
     setIsDeleting(true);
     try {
-      await asyncFetch<DeleteAdventureMutationResult>(deleteAdventureMutation, {
+      await asyncFetch<DeleteAdventureMutation>(deleteAdventureMutation, {
         input: { id: adventureId },
       });
       logger.info('Adventure deleted successfully', { id: adventureId });
