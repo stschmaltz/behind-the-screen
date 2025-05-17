@@ -31,6 +31,8 @@ const securityHeaders = [
 ];
 
 module.exports = withPWA({
+  reactStrictMode: true,
+  trailingSlash: true,
   async headers() {
     return [
       {
