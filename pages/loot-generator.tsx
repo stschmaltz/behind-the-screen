@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import { useUser } from '@auth0/nextjs-auth0/client';
+import { useRouter } from 'next/router';
 import {
   LootDisplay,
   LootGeneratorForm,
