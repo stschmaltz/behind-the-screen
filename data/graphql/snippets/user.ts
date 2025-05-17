@@ -6,14 +6,6 @@ export const fullUser = `{
   picture
 }`;
 
-export interface ApiUser {
-  _id: string;
-  auth0Id: string;
-  email: string;
-  name?: string;
-  picture?: string;
-}
-
 export const signInUserMutation = `
   mutation userSignIn($input: UserSignInInput!) {
     userSignIn(input: $input) {
@@ -21,12 +13,6 @@ export const signInUserMutation = `
     }
   }
 `;
-
-export interface SignInUserMutationResponse {
-  userSignIn: {
-    user: ApiUser;
-  };
-}
 
 export const getUserByIdQuery = `
   query getUserById($id: String!) {
@@ -36,10 +22,6 @@ export const getUserByIdQuery = `
   }
 `;
 
-export interface GetUserByIdResponse {
-  userById: ApiUser;
-}
-
 export const getUserByAuth0IdQuery = `
   query getUserByAuth0Id($auth0Id: String!) {
     userByAuth0Id(auth0Id: $auth0Id) {
@@ -47,7 +29,3 @@ export const getUserByAuth0IdQuery = `
     }
   }
 `;
-
-export interface GetUserByAuth0IdResponse {
-  userByAuth0Id: ApiUser;
-}

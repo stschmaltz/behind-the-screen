@@ -2,16 +2,13 @@ import { useUser } from '@auth0/nextjs-auth0/client';
 import { useEffect, useState } from 'react';
 import { useCurrentUserContext } from '../context/UserContext';
 import { asyncFetch } from '../data/graphql/graphql-fetcher';
-import {
-  ApiUser,
-  signInUserMutation,
-  SignInUserMutationResponse,
-} from '../data/graphql/snippets/user';
+import { signInUserMutation } from '../data/graphql/snippets/user';
+import type { User, UserSignInResponse } from '../src/generated/graphql';
 
 function useUserSignIn(): readonly [
   boolean,
-  ApiUser | undefined,
-  ((currentUser: ApiUser | undefined) => void) | undefined,
+  User | undefined,
+  ((currentUser: User | undefined) => void) | undefined,
 ] {
   const { user, isLoading } = useUser();
 
@@ -21,15 +18,15 @@ function useUserSignIn(): readonly [
   useEffect(() => {
     if (user) {
       setIsLoadingPlaceholders(true);
-      asyncFetch<SignInUserMutationResponse>(signInUserMutation, {
+      asyncFetch<{ userSignIn: UserSignInResponse }>(signInUserMutation, {
         input: {
           email: user.email,
           auth0Id: user.sub,
           name: user.name,
           picture: user.picture,
         },
-      }).then((data: SignInUserMutationResponse) => {
-        setCurrentUser && setCurrentUser(data.userSignIn.user);
+      }).then((data) => {
+        setCurrentUser && setCurrentUser(data.userSignIn?.user);
         setIsLoadingPlaceholders(false);
       });
     } else {

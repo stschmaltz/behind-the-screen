@@ -50,45 +50,6 @@ export const updatePlayersMutation = /* GraphQL */ `
   }
 `;
 
-export interface CreatePlayerMutationResponse {
-  createPlayer: Player;
-}
-
-export interface UpdatePlayerMutationResponse {
-  updatePlayer: Player;
-}
-
-export interface CreatePlayerMutationVariables {
-  input: {
-    name: string;
-    campaignId: string;
-    armorClass?: number;
-    maxHP?: number;
-    level?: number;
-  };
-}
-
-export interface UpdatePlayersMutationVariables {
-  input: {
-    campaignId: string;
-    armorClass?: number;
-    maxHP?: number;
-    level?: number;
-    levelUp?: boolean;
-  };
-}
-
-export interface UpdatePlayerMutationVariables {
-  input: {
-    _id: string;
-    name?: string;
-    campaignId?: string;
-    armorClass?: number;
-    maxHP?: number;
-    level?: number;
-  };
-}
-
 export const allPlayersQuery = /* GraphQL */ `
   query AllPlayers {
     allPlayers {
@@ -97,7 +58,3 @@ export const allPlayersQuery = /* GraphQL */ `
   }
   ${fullPlayer}
 `;
-
-export interface AllPlayersQueryResponse {
-  allPlayers: Player[];
-}

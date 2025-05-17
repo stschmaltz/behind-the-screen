@@ -8,14 +8,6 @@ export const getUserPreferencesQuery = /* GraphQL */ `
   }
 `;
 
-export interface GetUserPreferencesResponse {
-  getUserPreferences: {
-    _id: string;
-    activeCampaignId?: string;
-    theme?: string;
-  } | null;
-}
-
 export const setActiveCampaignMutation = /* GraphQL */ `
   mutation SetActiveCampaign($input: SetActiveCampaignInput!) {
     setActiveCampaign(input: $input) {
@@ -26,14 +18,6 @@ export const setActiveCampaignMutation = /* GraphQL */ `
   }
 `;
 
-export interface SetActiveCampaignResponse {
-  setActiveCampaign: {
-    _id: string;
-    activeCampaignId?: string;
-    theme?: string;
-  };
-}
-
 export const setThemeMutation = /* GraphQL */ `
   mutation SetTheme($input: SetThemeInput!) {
     setTheme(input: $input) {
@@ -43,11 +27,3 @@ export const setThemeMutation = /* GraphQL */ `
     }
   }
 `;
-
-export interface SetThemeResponse {
-  setTheme: {
-    _id: string;
-    activeCampaignId?: string;
-    theme: string;
-  };
-}

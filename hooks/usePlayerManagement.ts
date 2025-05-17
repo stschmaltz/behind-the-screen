@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Player } from '../types/player';
+import type { Player } from '../src/generated/graphql';
 import { asyncFetch } from '../data/graphql/graphql-fetcher';
 import {
   createPlayerMutation,
@@ -85,10 +85,7 @@ export const usePlayerManagement = (
       players: [
         ...prev.players,
         {
-          _id: newPlayer._id,
-          name: newPlayer.name,
-          userId: newPlayer.userId,
-          campaignId: newPlayer.campaignId,
+          ...newPlayer,
           armorClass: newPlayer.armorClass ?? undefined,
           maxHP: newPlayer.maxHP ?? undefined,
           level: newPlayer.level ?? undefined,
