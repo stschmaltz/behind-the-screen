@@ -1,6 +1,8 @@
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { DefaultSeo } from 'next-seo';
+import SEO from '../next-seo.config';
 
 import '../styles/global.css';
 import { AppProps } from 'next/app';
@@ -47,6 +49,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
           content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
         />
       </Head>
+      <DefaultSeo {...SEO} />
       {getLayout(<Component {...pageProps} />)}
       <Analytics />
       <SpeedInsights />

@@ -1,6 +1,6 @@
 import { NextPage } from 'next';
 import Link from 'next/link';
-import Head from 'next/head';
+import { NextSeo } from 'next-seo';
 import {
   GiftIcon,
   ShieldCheckIcon,
@@ -35,14 +35,33 @@ const HomePage: NextPage = () => {
 
   return (
     <>
-      <Head>
-        <title>DM Essentials - Home</title>
-        <meta
-          name="description"
-          content="Essential tools for Dungeon Masters: Encounter Manager, NPC Generator, Loot Generator, and more. Plan and run your tabletop campaigns."
-          key="desc"
-        />
-      </Head>
+      <NextSeo
+        title="D&D 5e Encounter Manager & Combat Tracker"
+        description="Encounter manager and combat tracker for D&D 5e, dungeons and dragons, and tabletop RPGs. Manage encounters, initiative, and combat for your campaigns."
+        canonical="https://encountermanager.com/"
+        openGraph={{
+          url: 'https://encountermanager.com/',
+          title: 'D&D 5e Encounter Manager & Combat Tracker',
+          description:
+            'Encounter manager and combat tracker for D&D 5e, dungeons and dragons, and tabletop RPGs. Manage encounters, initiative, and combat for your campaigns.',
+          images: [
+            {
+              url: 'https://encountermanager.com/images/profile.png',
+              width: 800,
+              height: 600,
+              alt: 'D&D 5e Encounter Manager',
+            },
+          ],
+          site_name: 'Dungeon Master Essentials',
+        }}
+        additionalMetaTags={[
+          {
+            name: 'keywords',
+            content:
+              'encounter manager, d&d, dnd, dungeons and dragons, 5e, d&d 5e combat manager, encounters, combat tracker, tabletop rpg, initiative tracker',
+          },
+        ]}
+      />
       <div className="bg-base-100 h-full p-4 flex flex-col items-center space-y-6">
         <h1 className="text-3xl font-bold text-center">
           Dungeon Master Essentials
