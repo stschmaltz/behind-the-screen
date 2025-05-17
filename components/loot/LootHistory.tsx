@@ -6,12 +6,14 @@ interface LootHistoryProps {
   history: GenerationEntry[];
   onSelect: (entry: GenerationEntry) => void;
   onDelete: (timestamp: number) => void;
+  onClear: () => void;
 }
 
 const LootHistory: React.FC<LootHistoryProps> = ({
   history,
   onSelect,
   onDelete,
+  onClear,
 }) => {
   const [isOpen, setIsOpen] = useState(true);
 
@@ -22,7 +24,19 @@ const LootHistory: React.FC<LootHistoryProps> = ({
         checked={isOpen}
         onChange={(e) => setIsOpen(e.target.checked)}
       />
-      <div className="collapse-title font-medium">History</div>
+      <div className="collapse-title flex justify-between items-center">
+        <span className="font-medium">History</span>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClear();
+          }}
+          className="btn btn-sm btn-outline btn-error"
+        >
+          Clear
+        </button>
+      </div>
       <div className="collapse-content">
         {history.length === 0 ? (
           <p className="text-sm text-base-content/70">No history yet.</p>

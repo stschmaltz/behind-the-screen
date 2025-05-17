@@ -6,7 +6,13 @@ const MASTRA_SERVICE_BASE_URL = process.env.MASTRA_SERVICE_BASE_URL;
 const MASTRA_WORKFLOW_PATH =
   '/api/workflows/lootGenerationWorkflow/start-async';
 
-type LootItem = { coins?: string; item?: string; note?: string };
+type LootItem = {
+  level?: string;
+  coins?: string;
+  item?: string;
+  note?: string;
+  source?: 'official' | 'random';
+};
 
 export default async function handler(
   req: NextApiRequest,

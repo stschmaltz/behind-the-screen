@@ -19,7 +19,7 @@ const LootGeneratorPage: NextPage = () => {
   const [loot, setLoot] = useState<LootItemType[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const { history, addEntry, removeEntry } = useLootHistory();
+  const { history, addEntry, removeEntry, clearHistory } = useLootHistory();
 
   function handleSelect(entry: GenerationEntry) {
     setPartyLevel(entry.partyLevel);
@@ -96,6 +96,7 @@ const LootGeneratorPage: NextPage = () => {
               history={history}
               onSelect={handleSelect}
               onDelete={removeEntry}
+              onClear={clearHistory}
             />
           </div>
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { CoinIcon, EmptyLootIcon, TreasureChestIcon } from '../icons';
 
 export type LootItemType = {
+  level?: string;
   coins?: string;
   item?: string;
   note?: string;
@@ -27,6 +28,9 @@ const LootDisplay: React.FC<LootDisplayProps> = ({ loot, context }) => {
     );
   }
 
+  const coinEntries = loot.filter((e) => e.coins);
+  const otherEntries = loot.filter((e) => !e.coins);
+
   return (
     <div className="card bg-base-100 shadow-xl overflow-hidden h-full">
       <div className="bg-primary text-primary-content p-4">
@@ -38,18 +42,25 @@ const LootDisplay: React.FC<LootDisplayProps> = ({ loot, context }) => {
       </div>
 
       <div className="card-body divide-y divide-base-300">
-        {loot.map((entry, index) => (
-          <div
-            key={index}
-            className={`py-3 ${index === 0 ? 'pt-0' : ''} ${index === loot.length - 1 ? 'pb-0' : ''}`}
-          >
-            {entry.coins && (
-              <div className="flex items-center gap-2 font-bold text-accent mb-1">
-                <CoinIcon className="w-5 h-5" />
-                {entry.coins}
+        {coinEntries.length > 0 && (
+          <div className="py-3 flex justify-around items-center">
+            {coinEntries.map((entry, idx) => (
+              <div key={idx} className="flex flex-col items-center">
+                {entry.level && (
+                  <span className="text-sm text-base-content/70 capitalize">
+                    {entry.level}
+                  </span>
+                )}
+                <div className="flex items-center gap-1 font-bold text-accent">
+                  <CoinIcon className="w-5 h-5" />
+                  <span>{entry.coins}</span>
+                </div>
               </div>
-            )}
-
+            ))}
+          </div>
+        )}
+        {otherEntries.map((entry, index) => (
+          <div key={index} className="py-3">
             {entry.item && (
               <div className="flex items-start">
                 <div className="flex-grow">{entry.item}</div>
@@ -62,7 +73,6 @@ const LootDisplay: React.FC<LootDisplayProps> = ({ loot, context }) => {
                 )}
               </div>
             )}
-
             {entry.note && (
               <div className="text-sm italic mt-1 text-base-content/70">
                 {entry.note}

@@ -29,5 +29,9 @@ export function useLootHistory() {
     setHistory((prev) => prev.filter((e) => e.timestamp !== timestamp));
   }
 
-  return { history, addEntry, removeEntry };
+  function clearHistory() {
+    setHistory([]);
+  }
+
+  return { history, addEntry, removeEntry, clearHistory };
 }
