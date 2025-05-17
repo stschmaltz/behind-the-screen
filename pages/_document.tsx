@@ -25,7 +25,11 @@ export default class MyDocument extends Document {
           />
           <meta
             name="description"
-            content="Essential tools for dungeon masters to manage your tabletop RPG campaigns."
+            content="Encounter manager and combat tracker for D&D 5e, dungeons and dragons, and tabletop RPGs. Manage encounters, initiative, and combat for your campaigns."
+          />
+          <meta
+            name="keywords"
+            content="encounter manager, d&d, dnd, dungeons and dragons, 5e, d&d 5e combat manager, encounters, combat tracker, tabletop rpg, initiative tracker"
           />
           <meta name="format-detection" content="telephone=no" />
           <meta name="mobile-web-app-capable" content="yes" />
@@ -56,20 +60,26 @@ export default class MyDocument extends Document {
           />
           <meta name="twitter:card" content="summary" />
           <meta name="twitter:url" content="https://encountermanager.com" />
-          <meta name="twitter:title" content="Dungeon Master Essentials" />
+          <meta
+            name="twitter:title"
+            content="D&D 5e Encounter Manager & Combat Tracker"
+          />
           <meta
             name="twitter:description"
-            content="Essential tools for dungeon masters to manage your tabletop RPG campaigns."
+            content="The best encounter manager and combat tracker for D&D 5e, dungeons and dragons, and tabletop RPGs. Manage encounters, initiative, and combat for your campaigns."
           />
           <meta
             name="twitter:image"
             content="https://encountermanager.com/images/profile.png"
           />
           <meta property="og:type" content="website" />
-          <meta property="og:title" content="encountermanager.com" />
+          <meta
+            property="og:title"
+            content="D&D 5e Encounter Manager & Combat Tracker"
+          />
           <meta
             property="og:description"
-            content="Essential tools for dungeon masters to manage your tabletop RPG campaigns."
+            content="The best encounter manager and combat tracker for D&D 5e, dungeons and dragons, and tabletop RPGs. Manage encounters, initiative, and combat for your campaigns."
           />
           <meta property="og:site_name" content="Dungeon Master Essentials" />
           <meta property="og:url" content="https://encountermanager.com" />
