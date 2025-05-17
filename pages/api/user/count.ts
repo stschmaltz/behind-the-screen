@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { getSession, withApiAuthRequired } from '@auth0/nextjs-auth0';
 import { UserRepository } from '../../../repositories/user/user.repository';
 import { logger } from '../../../lib/logger';
+import { isFeatureEnabled } from '../../../lib/featureFlags';
 
 export default withApiAuthRequired(async function handler(
   req: NextApiRequest,
@@ -9,7 +10,7 @@ export default withApiAuthRequired(async function handler(
 ) {
   const session = await getSession(req, res);
   const user = session?.user;
-  if (!user || user.email !== 'stschmaltz@gmail.com') {
+  if (!user || !isFeatureEnabled(user.email)) {
     return res.status(403).json({ error: 'Forbidden' });
   }
   try {

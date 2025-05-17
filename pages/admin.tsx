@@ -2,6 +2,7 @@ import { useUser } from '@auth0/nextjs-auth0/client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { UserObject } from '../types/user';
+import { isFeatureEnabled } from '../lib/featureFlags';
 
 interface Feedback {
   name: string;
@@ -19,10 +20,10 @@ function AdminPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && user && user.email !== 'stschmaltz@gmail.com') {
+    if (!isLoading && user && !isFeatureEnabled(user.email)) {
       router.replace('/404');
     }
-    if (!isLoading && user && user.email === 'stschmaltz@gmail.com') {
+    if (!isLoading && user && isFeatureEnabled(user.email)) {
       fetch('/api/user/list')
         .then((res) => res.json())
         .then((data) => setUsers(data.users))
@@ -34,7 +35,7 @@ function AdminPage() {
     }
   }, [user, isLoading, router]);
 
-  if (isLoading || (user && user.email !== 'stschmaltz@gmail.com')) {
+  if (isLoading || (user && !isFeatureEnabled(user.email))) {
     return null;
   }
 

@@ -2,19 +2,19 @@ import { UserProvider } from '@auth0/nextjs-auth0/client';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { DefaultSeo } from 'next-seo';
-import SEO from '../next-seo.config';
-
-import '../styles/global.css';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import React, { ReactElement, ReactNode } from 'react';
 import { NextPage } from 'next';
+
+import SEO from '../next-seo.config';
 import { CurrentUserProvider } from '../context/UserContext';
 import { usePWASetup } from '../hooks/use-pwa-setup.hook';
 import { ProtectedLayout } from '../components/ProtectedLayout';
 import { ActiveCampaignProvider } from '../context/ActiveCampaignContext';
 import { ThemeProvider } from '../context/ThemeContext';
 import { SpellsProvider } from '../context/SpellsContext';
+import '../styles/global.css';
 
 type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactNode;

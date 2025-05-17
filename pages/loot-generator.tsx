@@ -1,5 +1,6 @@
 import { NextPage } from 'next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useUser } from '@auth0/nextjs-auth0/client';
 import {
   LootDisplay,
   LootGeneratorForm,
@@ -10,16 +11,33 @@ import {
   useLootHistory,
 } from '../hooks/use-loot-history.hook';
 import LootHistory from '../components/loot/LootHistory';
+import { isFeatureEnabled } from '../lib/featureFlags';
 
 const LootGeneratorPage: NextPage = () => {
+  const router = useRouter();
+  const { user, isLoading } = useUser();
   const [partyLevel, setPartyLevel] = useState<number>(3);
   const [srdItemCount, setSrdItemCount] = useState<number>(4);
   const [randomItemCount, setRandomItemCount] = useState<number>(4);
   const [context, setContext] = useState<string>('');
   const [loot, setLoot] = useState<LootItemType[] | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [formLoading, setFormLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { history, addEntry, removeEntry, clearHistory } = useLootHistory();
+
+  useEffect(() => {
+    if (!isLoading && user && !isFeatureEnabled(user.email)) {
+      router.replace('/404');
+    }
+  }, [isLoading, user, router]);
+
+  if (isLoading || (user && !isFeatureEnabled(user.email))) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
 
   function handleSelect(entry: GenerationEntry) {
     setPartyLevel(entry.partyLevel);
@@ -32,7 +50,7 @@ const LootGeneratorPage: NextPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
+    setFormLoading(true);
     setError(null);
     setLoot(null);
 
@@ -71,7 +89,7 @@ const LootGeneratorPage: NextPage = () => {
         setError('An unknown error occurred.');
       }
     }
-    setIsLoading(false);
+    setFormLoading(false);
   };
 
   return (
@@ -88,7 +106,7 @@ const LootGeneratorPage: NextPage = () => {
               setRandomItemCount={setRandomItemCount}
               context={context}
               setContext={setContext}
-              isLoading={isLoading}
+              isLoading={formLoading}
               handleSubmit={handleSubmit}
               error={error}
             />
