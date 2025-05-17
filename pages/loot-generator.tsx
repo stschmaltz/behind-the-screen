@@ -5,6 +5,11 @@ import {
   LootGeneratorForm,
   LootItemType,
 } from '../components/loot';
+import {
+  GenerationEntry,
+  useLootHistory,
+} from '../hooks/use-loot-history.hook';
+import LootHistory from '../components/loot/LootHistory';
 
 const LootGeneratorPage: NextPage = () => {
   const [partyLevel, setPartyLevel] = useState<number>(3);
@@ -14,6 +19,16 @@ const LootGeneratorPage: NextPage = () => {
   const [loot, setLoot] = useState<LootItemType[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const { history, addEntry, removeEntry } = useLootHistory();
+
+  function handleSelect(entry: GenerationEntry) {
+    setPartyLevel(entry.partyLevel);
+    setSrdItemCount(entry.srdItemCount);
+    setRandomItemCount(entry.randomItemCount);
+    setContext(entry.context);
+    setLoot(entry.loot);
+    setError(null);
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,6 +57,13 @@ const LootGeneratorPage: NextPage = () => {
 
       const data = await response.json();
       setLoot(data);
+      addEntry({
+        partyLevel,
+        srdItemCount,
+        randomItemCount,
+        context,
+        loot: data,
+      });
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message || 'Failed to generate loot.');
@@ -69,6 +91,11 @@ const LootGeneratorPage: NextPage = () => {
               isLoading={isLoading}
               handleSubmit={handleSubmit}
               error={error}
+            />
+            <LootHistory
+              history={history}
+              onSelect={handleSelect}
+              onDelete={removeEntry}
             />
           </div>
 
