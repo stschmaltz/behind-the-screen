@@ -24,9 +24,17 @@ export interface TransformedAdventure {
 const transformAdventuresByCampaign = (
   data: AdventuresByCampaignResponse,
 ): TransformedAdventure[] =>
-  data.getAdventuresByCampaign
+  (data.getAdventuresByCampaign ?? [])
+    .filter(
+      (adventure): adventure is NonNullable<typeof adventure> =>
+        adventure !== null,
+    )
     .map((adventure) => ({
-      ...adventure,
+      _id: adventure._id ?? '',
+      campaignId: adventure.campaignId ?? '',
+      name: adventure.name ?? '',
+      description: adventure.description ?? undefined,
+      status: adventure.status ?? 'active',
       createdAt: new Date(adventure.createdAt),
       updatedAt: new Date(adventure.updatedAt),
     }))
@@ -35,9 +43,17 @@ const transformAdventuresByCampaign = (
 const transformAllAdventures = (
   data: AllAdventuresResponse,
 ): TransformedAdventure[] =>
-  data.getAdventures
+  (data.getAdventures ?? [])
+    .filter(
+      (adventure): adventure is NonNullable<typeof adventure> =>
+        adventure !== null,
+    )
     .map((adventure) => ({
-      ...adventure,
+      _id: adventure._id ?? '',
+      campaignId: adventure.campaignId ?? '',
+      name: adventure.name ?? '',
+      description: adventure.description ?? undefined,
+      status: adventure.status ?? 'active',
       createdAt: new Date(adventure.createdAt),
       updatedAt: new Date(adventure.updatedAt),
     }))

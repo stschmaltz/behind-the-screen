@@ -1,31 +1,37 @@
-export const fullUser = `{
-  _id
-  auth0Id
-  email
-  name
-  picture
-}`;
+export const userQuery = /* GraphQL */ `
+  query User($id: ID!) {
+    getUser(id: $id) {
+      _id
+      name
+      email
+      createdAt
+      updatedAt
+    }
+  }
+`;
 
-export const signInUserMutation = `
+export const updateUserMutation = /* GraphQL */ `
+  mutation UpdateUser($input: UpdateUserInput!) {
+    updateUser(input: $input) {
+      _id
+      name
+      email
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
+export const signInUserMutation = /* GraphQL */ `
   mutation userSignIn($input: UserSignInInput!) {
     userSignIn(input: $input) {
-      user ${fullUser}
-    }
-  }
-`;
-
-export const getUserByIdQuery = `
-  query getUserById($id: String!) {
-    userById(id: $id) {
-      ${fullUser}
-    }
-  }
-`;
-
-export const getUserByAuth0IdQuery = `
-  query getUserByAuth0Id($auth0Id: String!) {
-    userByAuth0Id(auth0Id: $auth0Id) {
-      ${fullUser}
+      user {
+        _id
+        name
+        email
+        auth0Id
+        picture
+      }
     }
   }
 `;

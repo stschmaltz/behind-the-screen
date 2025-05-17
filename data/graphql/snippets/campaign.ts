@@ -1,3 +1,11 @@
+import type {
+  AllCampaignsQuery,
+  CampaignByIdQuery,
+  SaveCampaignMutation,
+  DeleteCampaignMutation,
+  Campaign,
+} from '../../../src/generated/graphql';
+
 export const allCampaignsQuery = /* GraphQL */ `
   query AllCampaigns {
     getCampaigns {
@@ -10,15 +18,7 @@ export const allCampaignsQuery = /* GraphQL */ `
   }
 `;
 
-export interface AllCampaignsResponse {
-  getCampaigns: {
-    _id: string;
-    name: string;
-    status: string;
-    createdAt: string;
-    updatedAt: string;
-  }[];
-}
+export type AllCampaignsResponse = AllCampaignsQuery;
 
 export const campaignByIdQuery = /* GraphQL */ `
   query CampaignById($id: ID!) {
@@ -32,15 +32,7 @@ export const campaignByIdQuery = /* GraphQL */ `
   }
 `;
 
-export interface CampaignByIdResponse {
-  getCampaign: {
-    _id: string;
-    name: string;
-    status: string;
-    createdAt: string;
-    updatedAt: string;
-  };
-}
+export type CampaignByIdResponse = CampaignByIdQuery;
 
 export const saveCampaignMutation = /* GraphQL */ `
   mutation SaveCampaign($input: NewCampaignInput!) {
@@ -54,8 +46,12 @@ export const saveCampaignMutation = /* GraphQL */ `
   }
 `;
 
+export type SaveCampaignMutationResponse = SaveCampaignMutation;
+
 export const deleteCampaignMutation = /* GraphQL */ `
   mutation DeleteCampaign($input: DeleteCampaignInput!) {
     deleteCampaign(input: $input)
   }
 `;
+
+export type DeleteCampaignMutationResponse = DeleteCampaignMutation;

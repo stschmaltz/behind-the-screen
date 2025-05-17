@@ -1,54 +1,40 @@
+import type {
+  AllAdventuresQuery,
+  AdventureByIdQuery,
+  SaveAdventureMutation,
+  DeleteAdventureMutation,
+  Adventure,
+} from '../../../src/generated/graphql';
+
 export const allAdventuresQuery = /* GraphQL */ `
   query AllAdventures {
     getAdventures {
       _id
-      campaignId
       name
-      description
       status
       createdAt
       updatedAt
+      campaignId
     }
   }
 `;
 
-export interface AllAdventuresResponse {
-  getAdventures: {
-    _id: string;
-    campaignId: string;
-    name: string;
-    description?: string;
-    status: string;
-    createdAt: string;
-    updatedAt: string;
-  }[];
-}
+export type AllAdventuresResponse = AllAdventuresQuery;
 
 export const adventureByIdQuery = /* GraphQL */ `
   query AdventureById($id: ID!) {
     getAdventure(id: $id) {
       _id
-      campaignId
       name
-      description
       status
       createdAt
       updatedAt
+      campaignId
     }
   }
 `;
 
-export interface AdventureByIdResponse {
-  getAdventure: {
-    _id: string;
-    campaignId: string;
-    name: string;
-    description?: string;
-    status: string;
-    createdAt: string;
-    updatedAt: string;
-  };
-}
+export type AdventureByIdResponse = AdventureByIdQuery;
 
 export const adventuresByCampaignQuery = /* GraphQL */ `
   query AdventuresByCampaign($campaignId: ID!) {
@@ -80,18 +66,21 @@ export const saveAdventureMutation = /* GraphQL */ `
   mutation SaveAdventure($input: NewAdventureInput!) {
     saveAdventure(input: $input) {
       _id
-      campaignId
       name
-      description
       status
       createdAt
       updatedAt
+      campaignId
     }
   }
 `;
+
+export type SaveAdventureMutationResponse = SaveAdventureMutation;
 
 export const deleteAdventureMutation = /* GraphQL */ `
   mutation DeleteAdventure($input: DeleteAdventureInput!) {
     deleteAdventure(input: $input)
   }
 `;
+
+export type DeleteAdventureMutationResponse = DeleteAdventureMutation;

@@ -12,12 +12,20 @@ interface TransformedCampaign {
   updatedAt: Date;
 }
 
+const isNonNullCampaign = (
+  campaign: any,
+): campaign is NonNullable<typeof campaign> =>
+  campaign !== null && campaign !== undefined;
+
 const transformCampaigns = (
   data: AllCampaignsResponse,
 ): TransformedCampaign[] =>
-  data.getCampaigns
+  (data.getCampaigns ?? [])
+    .filter(isNonNullCampaign)
     .map((campaign) => ({
-      ...campaign,
+      _id: campaign._id ?? '',
+      name: campaign.name ?? '',
+      status: campaign.status ?? 'active',
       createdAt: campaign.createdAt ? new Date(campaign.createdAt) : new Date(),
       updatedAt: campaign.updatedAt ? new Date(campaign.updatedAt) : new Date(),
     }))

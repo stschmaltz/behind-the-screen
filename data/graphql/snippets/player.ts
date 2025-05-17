@@ -1,3 +1,12 @@
+import type {
+  AllPlayersQuery,
+  CreatePlayerMutation,
+  UpdatePlayerMutation,
+  DeletePlayerMutation,
+  UpdatePlayersMutation,
+  Player,
+} from '../../../src/generated/graphql';
+
 // ----------------------------------------------------------------------------
 // Fragments
 // ----------------------------------------------------------------------------
@@ -57,3 +66,9 @@ export const allPlayersQuery = /* GraphQL */ `
   }
   ${fullPlayer}
 `;
+
+export type AllPlayersResponse = AllPlayersQuery;
+export type CreatePlayerMutationResponse = CreatePlayerMutation;
+export type UpdatePlayerMutationResponse = UpdatePlayerMutation;
+export type DeletePlayerMutationResponse = DeletePlayerMutation;
+export type UpdatePlayersMutationResponse = UpdatePlayersMutation;

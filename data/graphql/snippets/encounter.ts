@@ -1,4 +1,11 @@
-import type { Encounter } from '../../../src/generated/graphql';
+import type {
+  AllEncountersQuery,
+  EncounterByIdQuery,
+  SaveEncounterMutation,
+  DeleteEncounterMutation,
+  UpdateEncounterDescriptionMutation,
+  Encounter,
+} from '../../../src/generated/graphql';
 
 export const fullEncounterFragment = /* GraphQL */ `
   fragment FullEncounter on Encounter {
@@ -92,9 +99,7 @@ export const allEncountersQuery = /* GraphQL */ `
   }
 `;
 
-export interface AllEncountersResponse {
-  allEncounters: Encounter[];
-}
+export type AllEncountersResponse = AllEncountersQuery;
 
 export const encounterByIdQuery = /* GraphQL */ `
   ${fullEncounterFragment}
@@ -105,9 +110,7 @@ export const encounterByIdQuery = /* GraphQL */ `
   }
 `;
 
-export interface EncounterByIdResponse {
-  encounterById: Encounter | null;
-}
+export type EncounterByIdResponse = EncounterByIdQuery;
 
 export const deleteEncounterMutation = /* GraphQL */ `
   mutation deleteEncounter($input: DeleteEncounterInput!) {
@@ -115,9 +118,7 @@ export const deleteEncounterMutation = /* GraphQL */ `
   }
 `;
 
-export interface DeleteEncounterMutationResponse {
-  deleteEncounter: boolean;
-}
+export type DeleteEncounterMutationResponse = DeleteEncounterMutation;
 
 export const updateEncounterDescriptionMutation = /* GraphQL */ `
   mutation updateEncounterDescription(
@@ -130,9 +131,5 @@ export const updateEncounterDescriptionMutation = /* GraphQL */ `
   }
 `;
 
-export interface UpdateEncounterDescriptionResponse {
-  updateEncounterDescription: {
-    _id: string;
-    description: string;
-  };
-}
+export type UpdateEncounterDescriptionResponse =
+  UpdateEncounterDescriptionMutation;

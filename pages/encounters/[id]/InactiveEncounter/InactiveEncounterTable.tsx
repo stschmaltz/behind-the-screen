@@ -245,7 +245,7 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
             className="w-full"
           />
           <Button
-            variant="primary"
+            variant="success"
             label="Start Encounter"
             disabled={!isAllInitiativeSet}
             className="w-full"
