@@ -1,5 +1,5 @@
 import { NextPage } from 'next';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/router';
 import { getAllEncounters } from '../../hooks/encounter/get-all-encounters';
 import { getAllAdventures } from '../../hooks/adventure/get-all-adventures';
@@ -74,10 +74,8 @@ const EncountersPage: NextPage = () => {
     const newEncounterName = router.query.newEncounterName
       ? decodeURIComponent(router.query.newEncounterName as string)
       : undefined;
-    let campaignToSet = queryCampaignId;
-    if (!campaignToSet && !selectedCampaignId) {
-      campaignToSet = activeCampaignId;
-    }
+    const campaignToSet =
+      queryCampaignId ?? (!selectedCampaignId ? activeCampaignId : undefined);
     if (campaignToSet) {
       setSelectedCampaignId(campaignToSet);
     }
@@ -128,12 +126,13 @@ const EncountersPage: NextPage = () => {
     campaignsLoading ||
     adventuresLoading;
 
-  const newEncounterParams = new URLSearchParams();
-  if (selectedCampaignId)
-    newEncounterParams.append('campaignId', selectedCampaignId);
-  if (selectedAdventureId)
-    newEncounterParams.append('adventureId', selectedAdventureId);
-  const newEncounterUrl = `/encounters/new?${newEncounterParams.toString()}`;
+  const newEncounterUrl = useMemo(() => {
+    const params = new URLSearchParams();
+    if (selectedCampaignId) params.append('campaignId', selectedCampaignId);
+    if (selectedAdventureId) params.append('adventureId', selectedAdventureId);
+
+    return `/encounters/new?${params.toString()}`;
+  }, [selectedCampaignId, selectedAdventureId]);
 
   const handleCampaignChange = useCallback((id: string | undefined) => {
     setSelectedCampaignId(id);
@@ -144,7 +143,7 @@ const EncountersPage: NextPage = () => {
     setSelectedAdventureId(id);
   }, []);
 
-  const handleDeleteClick = (encounterId: string) =>
+  const onDeleteClick = (encounterId: string) =>
     setEncounterToDelete(encounterId);
 
   const handleDeleteConfirm = useCallback(async () => {
@@ -153,11 +152,10 @@ const EncountersPage: NextPage = () => {
     if (success) {
       logger.info('Encounter deleted successfully, refreshing...');
       await refreshEncounters();
-      setEncounterToDelete(null);
     } else {
       logger.error('Failed to delete encounter.');
-      setEncounterToDelete(null);
     }
+    setEncounterToDelete(null);
   }, [encounterToDelete, isDeleting, deleteEncounter, refreshEncounters]);
 
   const handleDeleteCancel = () => {
@@ -165,7 +163,7 @@ const EncountersPage: NextPage = () => {
     setEncounterToDelete(null);
   };
 
-  const handleCopyClick = (encounter: Encounter) => {
+  const onCopyClick = (encounter: Encounter) => {
     setNewEncounterName(`${encounter.name} (Copy)`);
     setEncounterToCopy(encounter);
   };
@@ -236,6 +234,13 @@ const EncountersPage: NextPage = () => {
     setNewEncounterName('');
   };
 
+  const readyEncountersName = useMemo(() => {
+    if (!encounterToDelete) return 'this encounter';
+    const found = encounters?.find((e) => e._id === encounterToDelete);
+
+    return found?.name || 'this encounter';
+  }, [encounterToDelete, encounters]);
+
   const renderContent = () => {
     if (!selectedCampaignId) return <NoCampaignSelectedState />;
     if (loading) return <LoadingState />;
@@ -250,8 +255,8 @@ const EncountersPage: NextPage = () => {
         isSaving={isSaving}
         isDeleting={isDeleting}
         encounterToDelete={encounterToDelete}
-        onCopyClick={handleCopyClick}
-        onDeleteClick={handleDeleteClick}
+        onCopyClick={onCopyClick}
+        onDeleteClick={onDeleteClick}
       />
     );
   };
@@ -272,7 +277,7 @@ const EncountersPage: NextPage = () => {
         onClose={handleDeleteCancel}
         onConfirm={handleDeleteConfirm}
         title="Delete Encounter?"
-        message={`Are you sure you want to delete the encounter "${encounters?.find((e) => e._id === encounterToDelete)?.name || 'this encounter'}"? This action cannot be undone.`}
+        message={`Are you sure you want to delete the encounter "${readyEncountersName}"? This action cannot be undone.`}
         isProcessing={isDeleting}
       />
       <CopyConfirmationModal
