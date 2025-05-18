@@ -22,7 +22,7 @@ const LootGeneratorPage: NextPage = () => {
   const [randomItemCount, setRandomItemCount] = useState<number>(4);
   const [context, setContext] = useState<string>('');
   const [loot, setLoot] = useState<LootItemType[] | null>(null);
-  const [formLoading, setFormLoading] = useState<boolean>(false);
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const { history, addEntry, removeEntry, clearHistory } = useLootHistory();
 
@@ -51,7 +51,7 @@ const LootGeneratorPage: NextPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormLoading(true);
+    setIsGenerating(true);
     setError(null);
     setLoot(null);
 
@@ -90,14 +90,14 @@ const LootGeneratorPage: NextPage = () => {
         setError('An unknown error occurred.');
       }
     }
-    setFormLoading(false);
+    setIsGenerating(false);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-base-200 to-base-300">
       <div className="p-4 sm:p-6 md:p-8">
         <div className="flex flex-col lg:flex-row gap-6">
-          <div className="lg:flex-shrink-0">
+          <div className="">
             <LootGeneratorForm
               partyLevel={partyLevel}
               setPartyLevel={setPartyLevel}
@@ -107,7 +107,7 @@ const LootGeneratorPage: NextPage = () => {
               setRandomItemCount={setRandomItemCount}
               context={context}
               setContext={setContext}
-              isLoading={formLoading}
+              isLoading={isGenerating}
               handleSubmit={handleSubmit}
               error={error}
             />
@@ -120,7 +120,11 @@ const LootGeneratorPage: NextPage = () => {
           </div>
 
           <div className="flex-grow h-fit min-w-0">
-            <LootDisplay loot={loot} context={context} />
+            <LootDisplay
+              loot={loot}
+              context={context}
+              isGenerating={isGenerating}
+            />
           </div>
         </div>
       </div>

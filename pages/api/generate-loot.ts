@@ -51,13 +51,13 @@ export default async function handler(
   }
   if (
     typeof srdItemCount !== 'number' ||
-    srdItemCount < 1 ||
+    srdItemCount < 0 ||
     srdItemCount > 10
   ) {
     logger.warn('[generate-loot] Invalid srdItemCount:', srdItemCount);
 
     return res.status(400).json({
-      error: 'Invalid srdItemCount: must be a number between 1 and 10.',
+      error: 'Invalid srdItemCount: must be a number between 0 and 10.',
     });
   }
   if (

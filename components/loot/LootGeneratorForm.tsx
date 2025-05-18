@@ -58,11 +58,11 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
             <div className="form-control">
               <FormInput
                 id="srdItemCount"
-                label="Number of Official Source Items (1-10)"
+                label="Number of Official Source Items (0-10)"
                 type="number"
                 value={srdItemCount}
                 onChange={(e) => setSrdItemCount(parseInt(e.target.value))}
-                min={1}
+                min={0}
                 max={10}
                 required
                 className="input-bordered w-full"

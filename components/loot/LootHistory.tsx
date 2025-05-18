@@ -41,26 +41,33 @@ const LootHistory: React.FC<LootHistoryProps> = ({
         {history.length === 0 ? (
           <p className="text-sm text-base-content/70">No history yet.</p>
         ) : (
-          <ul className="space-y-1 max-h-64 overflow-y-auto">
+          <ul className="space-y-1 max-h-64 overflow-y-auto ">
             {history.map((entry) => (
-              <li
-                key={entry.timestamp}
-                className="flex items-center justify-between"
-              >
+              <li key={entry.timestamp} className="flex items-center w-full">
                 <button
                   type="button"
                   onClick={() => onSelect(entry)}
-                  className="btn btn-sm btn-outline flex-1 text-left"
+                  className="btn btn-sm btn-outline flex-1 text-left max-h-16 h-auto md:h-auto w-full px-6"
                 >
-                  <div className="flex justify-between">
-                    <span>
+                  <div className="flex justify-between max-h-8 w-full">
+                    <span className="overflow-hidden text-ellipsis max-w-[450px]">
                       Lv {entry.partyLevel}, SRD {entry.srdItemCount}, Rand{' '}
-                      {entry.randomItemCount}
-                      {entry.context && ` (${entry.context})`}
+                      {entry.randomItemCount} {entry.context}
                     </span>
-                    <span className="text-xs opacity-70 ml-2">
-                      {new Date(entry.timestamp).toLocaleString()}
-                    </span>
+                    <div className="flex flex-col ml-2">
+                      <span className="text-xs opacity-70 whitespace-nowrap">
+                        {new Date(entry.timestamp).toLocaleDateString([], {
+                          month: 'short',
+                          day: 'numeric',
+                        })}{' '}
+                      </span>
+                      <span className="text-xs opacity-70 whitespace-nowrap">
+                        {new Date(entry.timestamp).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                    </div>
                   </div>
                 </button>
                 <button
