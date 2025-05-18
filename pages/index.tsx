@@ -6,8 +6,11 @@ import {
   ShieldCheckIcon,
   UsersIcon,
 } from '@heroicons/react/24/outline';
+import { useUser } from '@auth0/nextjs-auth0/client';
 
 const HomePage: NextPage = () => {
+  const { user } = useUser();
+
   const primaryFeature = {
     href: '/encounters',
     label: 'Encounter Manager',
@@ -113,12 +116,30 @@ const HomePage: NextPage = () => {
             here!
           </Link>
         </p>
-        {/* <div className="flex items-center gap-4 mb-6">
-          <KofiButton
-            buttonClassName="btn btn-primary btn-sm"
-            text="Buy Me a Coffee"
-          />
-        </div> */}
+        {user?.email === 'stschmaltz@gmail.com' && (
+          <Link
+            href="/admin"
+            className="flex items-center justify-center mx-auto mt-2 w-fit btn btn-accent btn-xs rounded-full gap-2 shadow-sm hover:scale-105 transition-transform"
+            style={{ letterSpacing: '0.05em' }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 11c0-1.104.896-2 2-2s2 .896 2 2-.896 2-2 2-2-.896-2-2zm0 0V7m0 4v4m0 0c0 1.104-.896 2-2 2s-2-.896-2-2 .896-2 2-2 2 .896 2 2z"
+              />
+            </svg>
+            Admin
+          </Link>
+        )}
+
         <div className="mt-10 w-full max-w-3xl">
           <h2 className="text-xl font-semibold mb-4">Coming Soon</h2>
           <div className="grid gap-4 sm:grid-cols-2">
