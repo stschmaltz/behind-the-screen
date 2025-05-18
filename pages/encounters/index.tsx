@@ -75,7 +75,7 @@ const EncountersPage: NextPage = () => {
       ? decodeURIComponent(router.query.newEncounterName as string)
       : undefined;
     const campaignToSet =
-      queryCampaignId ?? (!selectedCampaignId ? activeCampaignId : undefined);
+      queryCampaignId ?? activeCampaignId ?? selectedCampaignId;
     if (campaignToSet) {
       setSelectedCampaignId(campaignToSet);
     }
