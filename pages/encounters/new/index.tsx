@@ -54,15 +54,10 @@ const NewEncounterPage: NextPage = () => {
     const queryCampaignId = router.query.campaignId as string | undefined;
     const queryAdventureId = router.query.adventureId as string | undefined;
 
-    if (queryCampaignId) {
-      setCampaignId(queryCampaignId);
-    } else if (activeCampaignId) {
-      setCampaignId(activeCampaignId);
-    }
+    const campaignToSet = queryCampaignId ?? activeCampaignId;
+    if (campaignToSet) setCampaignId(campaignToSet);
 
-    if (queryAdventureId) {
-      setAdventureId(queryAdventureId);
-    }
+    if (queryAdventureId) setAdventureId(queryAdventureId);
   }, [router.query, activeCampaignId]);
 
   const hasCampaigns = !campaignsLoading && campaigns && campaigns.length > 0;
