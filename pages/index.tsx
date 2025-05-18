@@ -52,7 +52,7 @@ const HomePage: NextPage = () => {
               alt: 'D&D 5e Encounter Manager',
             },
           ],
-          site_name: 'Dungeon Master Essentials',
+          site_name: 'Encounter Manager',
         }}
         additionalMetaTags={[
           {
@@ -72,7 +72,7 @@ const HomePage: NextPage = () => {
           D&amp;D.
         </p>
         <p className="text-center max-w-xl text-base-content opacity-90">
-          Start streamlining your combat with the beta{' '}
+          Start streamlining your combat with the{' '}
           <Link
             href="/encounters"
             className="font-bold text-primary hover:underline"
@@ -90,9 +90,6 @@ const HomePage: NextPage = () => {
           <div className="flex flex-col md:flex-row items-center gap-0 md:gap-2">
             <span className="text-2xl font-semibold text-center mb-0">
               {primaryFeature.label}
-            </span>
-            <span className="badge badge-warning badge-sm whitespace-nowrap mt-1 md:mt-2">
-              In Beta
             </span>
           </div>
           <span className="text-center opacity-80">

@@ -13,7 +13,7 @@ export default class MyDocument extends Document {
     return (
       <Html lang="en">
         <Head>
-          <meta name="application-name" content="Dungeon Master Essentials" />
+          <meta name="application-name" content="D&D 5e Encounter Manager" />
           <meta name="apple-mobile-web-app-capable" content="yes" />
           <meta
             name="apple-mobile-web-app-status-bar-style"
@@ -21,7 +21,7 @@ export default class MyDocument extends Document {
           />
           <meta
             name="apple-mobile-web-app-title"
-            content="Dungeon Master Essentials"
+            content="D&D 5e Encounter Manager"
           />
           <meta
             name="description"
@@ -81,7 +81,7 @@ export default class MyDocument extends Document {
             property="og:description"
             content="The best encounter manager and combat tracker for D&D 5e, dungeons and dragons, and tabletop RPGs. Manage encounters, initiative, and combat for your campaigns."
           />
-          <meta property="og:site_name" content="Dungeon Master Essentials" />
+          <meta property="og:site_name" content="D&D 5e Encounter Manager" />
           <meta property="og:url" content="https://encountermanager.com" />
           <meta
             property="og:image"
