@@ -7,9 +7,17 @@ import {
 import type {
   SaveCampaignMutation,
   DeleteCampaignMutation,
+  UserPreferences,
+  GetUserPreferencesQuery,
+  SetActiveCampaignMutation,
 } from '../../src/generated/graphql';
 import { Campaign, NewCampaign } from '../../types/campaigns';
 import { logger } from '../../lib/logger';
+import {
+  getUserPreferencesQuery,
+  setActiveCampaignMutation,
+} from '../../data/graphql/snippets/user-preferences';
+import { useQuery } from '../use-async-query';
 
 type CampaignUpdatePayload = Partial<
   Omit<Campaign, '_id' | 'userId' | 'createdAt' | 'updatedAt'> & {
@@ -85,6 +93,18 @@ const useManageCampaign = () => {
       await asyncFetch<DeleteCampaignMutation>(deleteCampaignMutation, {
         input: { id: campaignId },
       });
+      const userPreferences = await asyncFetch<GetUserPreferencesQuery>(
+        getUserPreferencesQuery,
+      );
+
+      if (
+        userPreferences?.getUserPreferences?.activeCampaignId === campaignId
+      ) {
+        await asyncFetch<SetActiveCampaignMutation>(setActiveCampaignMutation, {
+          input: { id: null },
+        });
+      }
+
       logger.info('Campaign deleted successfully', { id: campaignId });
       setIsDeleting(false);
       return true;

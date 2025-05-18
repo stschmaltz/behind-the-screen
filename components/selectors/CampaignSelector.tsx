@@ -1,11 +1,11 @@
 import { useCallback, useRef, useState } from 'react';
+import { useRouter } from 'next/router';
 import { getAllCampaigns } from '../../hooks/campaign/get-all-campaigns';
 import { useUserPreferences } from '../../hooks/user-preferences/use-user-preferences';
 import { asyncFetch } from '../../data/graphql/graphql-fetcher';
 import { saveCampaignMutation } from '../../data/graphql/snippets/campaign';
 import { logger } from '../../lib/logger';
 import { useActiveCampaign } from '../../context/ActiveCampaignContext';
-
 interface CampaignSelectorProps {
   onCampaignChange: (campaignId: string | undefined) => void;
   selectedCampaignId?: string;
@@ -29,6 +29,7 @@ const CampaignSelector = ({
     loading: campaignsLoading,
     refresh: refreshCampaigns,
   } = getAllCampaigns();
+  const router = useRouter();
   const { setActiveCampaign } = useUserPreferences();
   const { setActiveCampaignId } = useActiveCampaign();
   const [isCreatingCampaign, setIsCreatingCampaign] = useState(false);
@@ -51,8 +52,13 @@ const CampaignSelector = ({
       await setActiveCampaign(value || null);
       setActiveCampaignId(value || null);
       onCampaignChange(value || undefined);
+
+      // clear query params
+      router.query.campaignId = undefined;
+      router.query.adventureId = undefined;
+      router.push(router.pathname);
     },
-    [setActiveCampaign, setActiveCampaignId, onCampaignChange],
+    [setActiveCampaign, setActiveCampaignId, onCampaignChange, router],
   );
 
   const handleCreateCampaign = useCallback(async () => {

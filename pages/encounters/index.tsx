@@ -4,8 +4,6 @@ import { useRouter } from 'next/router';
 import { getAllEncounters } from '../../hooks/encounter/get-all-encounters';
 import { getAllAdventures } from '../../hooks/adventure/get-all-adventures';
 import { useActiveCampaign } from '../../context/ActiveCampaignContext';
-import type { Encounter } from '../../src/generated/graphql';
-import type { NewEncounterTemplate } from '../../types/encounters';
 import { DocumentIcon } from '../../components/icons';
 import { useManageEncounter } from '../../hooks/encounter/use-manage-encounter';
 import EncounterList from '../../components/encounters/EncounterList';
@@ -13,6 +11,30 @@ import EncounterPageHeader from '../../components/encounters/EncounterPageHeader
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import CopyConfirmationModal from '../../components/modals/CopyConfirmationModal';
 import { logger } from '../../lib/logger';
+import type { Encounter } from '../../src/generated/graphql';
+import type { NewEncounterTemplate } from '../../types/encounters';
+
+const LoadingState = () => (
+  <div className="bg-base-100 flex items-center justify-center min-h-[40vh]">
+    <p>Loading...</p>
+  </div>
+);
+
+const EmptyState = () => (
+  <div className="flex items-center justify-center text-base-content opacity-80 min-h-[40vh]">
+    No encounters found
+  </div>
+);
+
+const NoCampaignSelectedState = () => (
+  <div className="flex flex-col items-center justify-center text-base-content opacity-80 p-8 bg-base-200 rounded-lg min-h-[40vh]">
+    <DocumentIcon className="w-12 h-12 mb-4 opacity-50" />
+    <p className="text-xl font-semibold mb-2">Select a Campaign</p>
+    <p className="text-center mb-2">
+      Please select or create a campaign to manage its encounters.
+    </p>
+  </div>
+);
 
 const EncountersPage: NextPage = () => {
   const router = useRouter();
@@ -30,14 +52,12 @@ const EncountersPage: NextPage = () => {
   const [selectedAdventureId, setSelectedAdventureId] = useState<
     string | undefined
   >(undefined);
-
   const {
     handleSave: performSaveEncounter,
     isSaving,
     deleteEncounter,
     isDeleting,
   } = useManageEncounter();
-
   const [encounterToDelete, setEncounterToDelete] = useState<string | null>(
     null,
   );
@@ -48,14 +68,12 @@ const EncountersPage: NextPage = () => {
 
   useEffect(() => {
     if (!router.isReady) return;
-
     const queryCampaignId = router.query.campaignId as string | undefined;
     const queryAdventureId = router.query.adventureId as string | undefined;
     const newEncounterCreated = router.query.newEncounterCreated === 'true';
     const newEncounterName = router.query.newEncounterName
       ? decodeURIComponent(router.query.newEncounterName as string)
       : undefined;
-
     let campaignToSet = queryCampaignId;
     if (!campaignToSet && !selectedCampaignId) {
       campaignToSet = activeCampaignId;
@@ -63,36 +81,22 @@ const EncountersPage: NextPage = () => {
     if (campaignToSet) {
       setSelectedCampaignId(campaignToSet);
     }
-
     const currentOrQueryCampaignId = campaignToSet || selectedCampaignId;
     if (currentOrQueryCampaignId && queryAdventureId) {
       setSelectedAdventureId(queryAdventureId);
     }
-
-    // Handle scrolling to a newly created encounter
     if (newEncounterCreated && newEncounterName) {
-      // Remove the query parameters after we've processed them
       const {
         newEncounterCreated: _newEncounterCreated,
         newEncounterName: _newEncounterName,
         ...restQuery
       } = router.query;
-
-      // Wait for encounters to load, then scroll to the Ready Encounters section
       setTimeout(() => {
-        const readyEncountersSection =
-          document.getElementById('ready-encounters');
-        if (readyEncountersSection) {
-          readyEncountersSection.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-          });
-        }
+        document
+          .getElementById('ready-encounters')
+          ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         router.replace(
-          {
-            pathname: router.pathname,
-            query: restQuery,
-          },
+          { pathname: router.pathname, query: restQuery },
           undefined,
           { shallow: true },
         );
@@ -115,33 +119,9 @@ const EncountersPage: NextPage = () => {
     campaignId: selectedCampaignId,
     adventureId: selectedAdventureId,
   });
-
   const { adventures, loading: adventuresLoading } = getAllAdventures({
     campaignId: selectedCampaignId,
   });
-
-  const loadingState = (
-    <div className="bg-base-100 flex items-center justify-center min-h-[40vh]">
-      <p>Loading...</p>
-    </div>
-  );
-
-  const emptyState = (
-    <div className="flex items-center justify-center text-base-content opacity-80 min-h-[40vh]">
-      No encounters found
-    </div>
-  );
-
-  const noCampaignSelectedState = (
-    <div className="flex flex-col items-center justify-center text-base-content opacity-80 p-8 bg-base-200 rounded-lg min-h-[40vh]">
-      <DocumentIcon className="w-12 h-12 mb-4 opacity-50" />
-      <p className="text-xl font-semibold mb-2">Select a Campaign</p>
-      <p className="text-center mb-2">
-        Please select or create a campaign to manage its encounters.
-      </p>
-    </div>
-  );
-
   const loading =
     encountersLoading ||
     playersLoading ||
@@ -149,12 +129,10 @@ const EncountersPage: NextPage = () => {
     adventuresLoading;
 
   const newEncounterParams = new URLSearchParams();
-  if (selectedCampaignId) {
+  if (selectedCampaignId)
     newEncounterParams.append('campaignId', selectedCampaignId);
-  }
-  if (selectedAdventureId) {
+  if (selectedAdventureId)
     newEncounterParams.append('adventureId', selectedAdventureId);
-  }
   const newEncounterUrl = `/encounters/new?${newEncounterParams.toString()}`;
 
   const handleCampaignChange = useCallback((id: string | undefined) => {
@@ -166,13 +144,11 @@ const EncountersPage: NextPage = () => {
     setSelectedAdventureId(id);
   }, []);
 
-  const handleDeleteClick = (encounterId: string) => {
+  const handleDeleteClick = (encounterId: string) =>
     setEncounterToDelete(encounterId);
-  };
 
-  const handleDeleteConfirm = async () => {
+  const handleDeleteConfirm = useCallback(async () => {
     if (!encounterToDelete || isDeleting) return;
-
     const success = await deleteEncounter(encounterToDelete);
     if (success) {
       logger.info('Encounter deleted successfully, refreshing...');
@@ -182,7 +158,7 @@ const EncountersPage: NextPage = () => {
       logger.error('Failed to delete encounter.');
       setEncounterToDelete(null);
     }
-  };
+  }, [encounterToDelete, isDeleting, deleteEncounter, refreshEncounters]);
 
   const handleDeleteCancel = () => {
     if (isDeleting) return;
@@ -194,11 +170,9 @@ const EncountersPage: NextPage = () => {
     setEncounterToCopy(encounter);
   };
 
-  const handleCopyConfirm = async () => {
+  const handleCopyConfirm = useCallback(async () => {
     if (!encounterToCopy || isSaving || !newEncounterName.trim()) return;
-
     logger.debug('Original encounter ID for copy:', encounterToCopy._id);
-
     const newEncounterData: NewEncounterTemplate = {
       name: newEncounterName.trim(),
       status: 'inactive',
@@ -228,29 +202,19 @@ const EncountersPage: NextPage = () => {
       campaignId: encounterToCopy.campaignId?.toString() || '',
       adventureId: encounterToCopy.adventureId?.toString(),
     };
-
     logger.debug('Attempting to save cloned data:', newEncounterData);
-
     const success = await performSaveEncounter(newEncounterData);
-
     setEncounterToCopy(null);
     setNewEncounterName('');
-
     if (success) {
       logger.info('Save reported success. Refreshing encounters list...');
       try {
         await refreshEncounters();
         logger.info('Encounter list refresh completed.');
-
         setTimeout(() => {
-          const readyEncountersSection =
-            document.getElementById('ready-encounters');
-          if (readyEncountersSection) {
-            readyEncountersSection.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start',
-            });
-          }
+          document
+            .getElementById('ready-encounters')
+            ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 500);
       } catch (refreshError) {
         logger.error('Error during encounter list refresh:', refreshError);
@@ -258,7 +222,13 @@ const EncountersPage: NextPage = () => {
     } else {
       logger.error('Save reported failure.');
     }
-  };
+  }, [
+    encounterToCopy,
+    isSaving,
+    newEncounterName,
+    performSaveEncounter,
+    refreshEncounters,
+  ]);
 
   const handleCopyCancel = () => {
     if (isSaving) return;
@@ -267,17 +237,9 @@ const EncountersPage: NextPage = () => {
   };
 
   const renderContent = () => {
-    if (!selectedCampaignId) {
-      return noCampaignSelectedState;
-    }
-
-    if (loading) {
-      return loadingState;
-    }
-
-    if (!encounters?.length) {
-      return emptyState;
-    }
+    if (!selectedCampaignId) return <NoCampaignSelectedState />;
+    if (loading) return <LoadingState />;
+    if (!encounters?.length) return <EmptyState />;
 
     return (
       <EncounterList
@@ -304,7 +266,6 @@ const EncountersPage: NextPage = () => {
         handleAdventureChange={handleAdventureChange}
         newEncounterUrl={newEncounterUrl}
       />
-
       <div className="w-full">{renderContent()}</div>
       <ConfirmationModal
         isOpen={!!encounterToDelete}

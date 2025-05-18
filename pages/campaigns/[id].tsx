@@ -1,7 +1,7 @@
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { ChangeEvent, FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useMemo, useState } from 'react';
 import { useGetCampaign } from '../../hooks/campaign/get-campaign.hook';
 import {
   getAllAdventures,
@@ -9,60 +9,24 @@ import {
 } from '../../hooks/adventure/get-all-adventures';
 import { useManageAdventure } from '../../hooks/adventure/use-manage-adventure';
 import { logger } from '../../lib/logger';
-import PlayerManagementSection from '../encounters/PlayerManagementSection';
 import { getAllPlayers } from '../../hooks/get-all-players.hook';
-
-const ConfirmationModal = ({
-  isOpen,
-  onClose,
-  onConfirm,
-  title,
-  message,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: () => void;
-  title: string;
-  message: string;
-}) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="modal-box">
-        <h3 className="font-bold text-lg">{title}</h3>
-        <p className="py-4">{message}</p>
-        <div className="modal-action">
-          <button className="btn" onClick={onClose}>
-            Cancel
-          </button>
-          <button className="btn btn-error" onClick={onConfirm}>
-            Confirm Delete
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+import CampaignHeader from '../../components/campaigns/CampaignHeader';
+import AdventureList from '../../components/campaigns/AdventureList';
+import ConfirmationModal from '../../components/modals/ConfirmationModal';
 
 const CampaignDetailPage: NextPage = () => {
   const router = useRouter();
   const { id } = router.query;
-
   const campaignId = typeof id === 'string' && id.length > 0 ? id : undefined;
-
   const { campaign, loading: campaignLoading } = useGetCampaign(campaignId);
   const {
     adventures,
     loading: adventuresLoading,
     refresh: refreshAdventures,
-  } = getAllAdventures({
-    campaignId: campaignId,
-  });
+  } = getAllAdventures({ campaignId });
   const { handleSave, deleteAdventure, isSaving, isDeleting } =
     useManageAdventure();
   const { players, loading: playersLoading } = getAllPlayers();
-
   const [newAdventureName, setNewAdventureName] = useState('');
   const [renamingAdventureId, setRenamingAdventureId] = useState<string | null>(
     null,
@@ -70,7 +34,6 @@ const CampaignDetailPage: NextPage = () => {
   const [adventureToDelete, setAdventureToDelete] = useState<string | null>(
     null,
   );
-  const [adventureRenameValue, setAdventureRenameValue] = useState('');
 
   const sortedAdventures = useMemo(() => {
     if (!adventures) return [];
@@ -98,13 +61,11 @@ const CampaignDetailPage: NextPage = () => {
 
       return;
     }
-
     const success = await handleSave({
       name: newAdventureName.trim(),
       status: 'active',
       campaignId,
     });
-
     if (success) {
       setNewAdventureName('');
       refreshAdventures();
@@ -113,57 +74,33 @@ const CampaignDetailPage: NextPage = () => {
     }
   };
 
-  const handleRenameStart = (adventure: { _id: string; name: string }) => {
-    setRenamingAdventureId(adventure._id);
-    setAdventureRenameValue(adventure.name);
-  };
-
-  const handleRenameCancel = () => {
-    setRenamingAdventureId(null);
-    setAdventureRenameValue('');
-  };
-
-  const handleRenameSubmit = async (
-    e: FormEvent,
-    adventure: TransformedAdventure,
-  ) => {
-    e.preventDefault();
-    if (!renamingAdventureId || !adventureRenameValue.trim() || !campaignId) {
-      logger.warn(
-        'Attempted to rename adventure without campaignId or rename info',
-      );
-
-      return;
-    }
-
+  const handleRename = async (adventureId: string, newName: string) => {
+    const adventure = adventures?.find((a) => a._id === adventureId);
+    if (!adventure || !campaignId) return;
+    setRenamingAdventureId(adventureId);
     const updatePayload = {
       _id: adventure._id,
-      name: adventureRenameValue.trim(),
+      name: newName.trim(),
       description: adventure.description,
       status: adventure.status as 'active' | 'completed' | 'archived',
-      campaignId: campaignId,
+      campaignId,
     };
-
     const success = await handleSave(updatePayload);
     if (success) {
       refreshAdventures();
-      handleRenameCancel();
+      setRenamingAdventureId(null);
     } else {
       logger.error('Failed to rename adventure');
+      setRenamingAdventureId(null);
     }
   };
 
-  const handleDeleteClick = (adventureId: string) => {
+  const handleDelete = (adventureId: string) => {
     setAdventureToDelete(adventureId);
-  };
-
-  const handleDeleteCancel = () => {
-    setAdventureToDelete(null);
   };
 
   const handleDeleteConfirm = async () => {
     if (!adventureToDelete) return;
-
     const success = await deleteAdventure(adventureToDelete);
     if (success) {
       refreshAdventures();
@@ -177,15 +114,11 @@ const CampaignDetailPage: NextPage = () => {
   const handleMarkAdventureComplete = async (
     adventure: TransformedAdventure,
   ) => {
-    if (!campaignId) {
-      logger.warn('Attempted to complete adventure without campaignId');
-
-      return;
-    }
+    if (!campaignId) return;
     const updatePayload = {
       ...adventure,
       status: 'completed' as const,
-      campaignId: campaignId,
+      campaignId,
     };
     const success = await handleSave(updatePayload);
     if (success) {
@@ -219,173 +152,34 @@ const CampaignDetailPage: NextPage = () => {
 
   return (
     <div className="container mx-auto p-4 max-w-3xl">
-      <div className="bg-base-200 rounded-lg p-6 mb-8 shadow-sm">
-        <h1 className="text-3xl font-bold mb-2">{campaign.name}</h1>
-        <div className="flex items-center gap-3 mb-2">
-          <div
-            className={`badge ${campaign.status === 'active' ? 'badge-outline badge-success' : 'badge-ghost'}`}
-          >
-            {campaign.status === 'active' ? 'Active' : 'Completed'}
-          </div>
-        </div>
-        <div className="mt-4">
-          {campaignId && (
-            <PlayerManagementSection
-              startingPlayers={players ?? []}
-              campaignId={campaignId}
-              buttonClassName="btn-sm"
-            />
-          )}
-        </div>
-      </div>
-
+      <CampaignHeader
+        campaign={campaign}
+        players={players ?? []}
+        campaignId={campaignId}
+      />
       <div className="mb-8">
         <h2 className="text-2xl font-bold mb-4">Adventures</h2>
-
-        <form onSubmit={handleCreateAdventure} className="mb-4 flex gap-2">
-          <input
-            type="text"
-            placeholder="New adventure name"
-            className="input input-bordered flex-grow"
-            value={newAdventureName}
-            onChange={(e) => setNewAdventureName(e.target.value)}
-            required
-          />
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={isSaving || !newAdventureName.trim()}
-          >
-            {isSaving ? (
-              <span className="loading loading-spinner loading-xs"></span>
-            ) : (
-              'Create Adventure'
-            )}
-          </button>
-        </form>
-
-        {sortedAdventures && sortedAdventures.length > 0 ? (
-          <div className="space-y-4">
-            {sortedAdventures.map((adventure) => (
-              <div
-                key={adventure._id}
-                className={`p-4 bg-base-200 border border-base-300 rounded shadow-sm ${adventure.status === 'completed' ? 'opacity-60' : ''}`}
-              >
-                {renamingAdventureId === adventure._id ? (
-                  <form
-                    onSubmit={(e) => handleRenameSubmit(e, adventure)}
-                    className="flex gap-2 items-center"
-                  >
-                    <input
-                      type="text"
-                      value={adventureRenameValue}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        setAdventureRenameValue(e.target.value)
-                      }
-                      className="input input-bordered input-sm flex-grow"
-                      autoFocus
-                    />
-                    <button
-                      type="submit"
-                      className="btn btn-xs btn-success"
-                      disabled={isSaving || !adventureRenameValue.trim()}
-                    >
-                      {isSaving ? (
-                        <span className="loading loading-spinner loading-xs"></span>
-                      ) : (
-                        'Save'
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      className="btn btn-xs btn-ghost"
-                      onClick={handleRenameCancel}
-                      disabled={isSaving}
-                    >
-                      Cancel
-                    </button>
-                  </form>
-                ) : (
-                  <div className="flex flex-col gap-2">
-                    <div className="flex justify-between items-center">
-                      <Link
-                        href={`/encounters?adventureId=${adventure._id}`}
-                        className={`text-lg font-semibold hover:underline ${adventure.status === 'completed' ? 'line-through' : ''}`}
-                      >
-                        {adventure.name}
-                      </Link>
-                      <div className="flex items-center gap-2">
-                        <button
-                          className="btn btn-xs btn-ghost"
-                          onClick={() => handleRenameStart(adventure)}
-                          disabled={isDeleting}
-                        >
-                          Rename
-                        </button>
-                        <button
-                          className="btn btn-xs btn-error btn-ghost"
-                          onClick={() => handleDeleteClick(adventure._id)}
-                          disabled={
-                            renamingAdventureId === adventure._id || isDeleting
-                          }
-                        >
-                          {isDeleting && adventureToDelete === adventure._id ? (
-                            <span className="loading loading-spinner loading-xs"></span>
-                          ) : (
-                            'Delete'
-                          )}
-                        </button>
-                        {adventure.status === 'active' && (
-                          <button
-                            className="btn btn-xs btn-secondary btn-outline"
-                            onClick={() =>
-                              handleMarkAdventureComplete(adventure)
-                            }
-                            disabled={
-                              isSaving || isDeleting || !!renamingAdventureId
-                            }
-                          >
-                            Mark Complete
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-center text-sm">
-                      <div className="flex items-center gap-2">
-                        <div className="text-sm opacity-80"></div>
-                        <div
-                          className={`badge ${adventure.status === 'active' ? 'badge-outline badge-success' : 'badge-ghost'}`}
-                        >
-                          {adventure.status === 'active'
-                            ? 'Active'
-                            : adventure.status === 'completed'
-                              ? 'Completed'
-                              : 'Archived'}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-8 bg-base-200 rounded-lg">
-            <p className="text-base-content opacity-70">
-              No adventures yet. Create your first one!
-            </p>
-          </div>
-        )}
+        <AdventureList
+          adventures={sortedAdventures}
+          onCreate={handleCreateAdventure}
+          onRename={handleRename}
+          onDelete={handleDelete}
+          onMarkComplete={handleMarkAdventureComplete}
+          isSaving={isSaving}
+          isDeleting={isDeleting}
+          renamingAdventureId={renamingAdventureId}
+          adventureToDeleteId={adventureToDelete}
+          newAdventureName={newAdventureName}
+          setNewAdventureName={setNewAdventureName}
+        />
       </div>
-
       <ConfirmationModal
         isOpen={!!adventureToDelete}
-        onClose={handleDeleteCancel}
+        onClose={() => setAdventureToDelete(null)}
         onConfirm={handleDeleteConfirm}
         title="Delete Adventure?"
-        message={`Are you sure you want to delete the adventure${adventures?.find((a) => a._id === adventureToDelete)?.name ? ` "${adventures.find((a) => a._id === adventureToDelete)?.name}"` : ''}? This action cannot be undone.
-        
-⚠️ WARNING: Deleting an adventure will also permanently delete any encounters, NPCs, and player records linked to it. This data cannot be recovered.`}
+        message={`Are you sure you want to delete the adventure${adventures?.find((a) => a._id === adventureToDelete)?.name ? ` \"${adventures.find((a) => a._id === adventureToDelete)?.name}\"` : ''}? This action cannot be undone.\n\n⚠️ WARNING: Deleting an adventure will also permanently delete any encounters, NPCs, and player records linked to it. This data cannot be recovered.`}
+        isProcessing={isDeleting}
       />
     </div>
   );

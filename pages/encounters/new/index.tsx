@@ -98,9 +98,7 @@ const NewEncounterPage: NextPage = () => {
     });
     if (success) {
       setHasUnsavedChanges(false);
-      if (campaignId !== activeCampaignId) {
-        await setActiveCampaign(campaignId);
-      }
+      await setActiveCampaign(campaignId);
       showDaisyToast('success', 'Encounter saved');
       router.push({
         pathname: '/encounters',
@@ -121,7 +119,6 @@ const NewEncounterPage: NextPage = () => {
     adventureId,
     handleSave,
     router,
-    activeCampaignId,
     setActiveCampaign,
   ]);
 
@@ -184,6 +181,7 @@ const NewEncounterPage: NextPage = () => {
                 />
                 <AdventureSelector
                   selectedAdventureId={adventureId}
+                  selectedCampaignId={campaignId ?? activeCampaignId ?? ''}
                   onAdventureChange={handleAdventureChange}
                 />
               </div>

@@ -3,11 +3,11 @@ import { getAllAdventures } from '../../hooks/adventure/get-all-adventures';
 import { asyncFetch } from '../../data/graphql/graphql-fetcher';
 import { saveAdventureMutation } from '../../data/graphql/snippets/adventure';
 import { logger } from '../../lib/logger';
-import { useActiveCampaign } from '../../context/ActiveCampaignContext';
 
 interface AdventureSelectorProps {
   onAdventureChange: (adventureId: string | undefined) => void;
   selectedAdventureId?: string;
+  selectedCampaignId: string;
 }
 
 interface SaveAdventureResponse {
@@ -22,8 +22,8 @@ interface SaveAdventureResponse {
 const AdventureSelector: React.FC<AdventureSelectorProps> = ({
   onAdventureChange,
   selectedAdventureId,
+  selectedCampaignId: campaignId,
 }) => {
-  const { activeCampaignId: campaignId } = useActiveCampaign();
   const {
     adventures,
     loading: adventuresLoading,

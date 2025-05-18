@@ -6,7 +6,7 @@ import {
 import { Campaign } from '../../types/campaigns';
 import { useQuery } from '../use-async-query';
 
-interface TransformedCampaignData
+export interface TransformedCampaignData
   extends Omit<Campaign, 'createdAt' | 'updatedAt' | 'userId'> {
   userId?: string;
   createdAt: Date;

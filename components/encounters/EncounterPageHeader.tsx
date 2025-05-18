@@ -43,6 +43,7 @@ const EncounterPageHeader = ({
       {selectedCampaignId && (
         <div className="w-full mb-4">
           <AdventureSelector
+            selectedCampaignId={selectedCampaignId}
             selectedAdventureId={selectedAdventureId}
             onAdventureChange={handleAdventureChange}
           />
