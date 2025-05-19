@@ -23,7 +23,7 @@ const LootDisplay: React.FC<LootDisplayProps> = ({
 }) => {
   if (!loot) {
     return (
-      <div className="card bg-base-100 shadow-xl h-full flex items-center justify-center p-8">
+      <div className="card bg-base-100 shadow-xl h-full flex items-center justify-center p-8 max-w-xl max-h-96">
         <div className="text-center space-y-4">
           {isGenerating ? (
             <>
@@ -72,6 +72,15 @@ const LootDisplay: React.FC<LootDisplayProps> = ({
   const coinEntries = loot.filter((e) => e.coins);
   const otherEntries = loot.filter((e) => !e.coins);
 
+  // Pre-defined ordering for typical loot tiers. Anything unrecognised will follow in original order.
+  const levelOrder = ['low', 'mid', 'high'];
+  const sortedCoinEntries = [...coinEntries].sort((a, b) => {
+    const aIndex = levelOrder.indexOf((a.level || '').toLowerCase());
+    const bIndex = levelOrder.indexOf((b.level || '').toLowerCase());
+
+    return (aIndex === -1 ? 99 : aIndex) - (bIndex === -1 ? 99 : bIndex);
+  });
+
   const getCoinColor = (coinString: string): string => {
     if (coinString.includes('cp')) return 'text-amber-600';
     if (coinString.includes('sp')) return 'text-gray-400';
@@ -80,6 +89,13 @@ const LootDisplay: React.FC<LootDisplayProps> = ({
     if (coinString.includes('pp')) return 'text-blue-500';
 
     return 'text-accent';
+  };
+
+  const sourceToDisplay = (source: string): string => {
+    if (source === 'official') return 'Official';
+    if (source === 'random') return 'AI Gen';
+
+    return source;
   };
 
   return (
@@ -92,57 +108,62 @@ const LootDisplay: React.FC<LootDisplayProps> = ({
         {context && <p className="text-sm opacity-80 mt-1">Theme: {context}</p>}
       </div>
 
-      <div className="card-body divide-y divide-base-300">
-        {coinEntries.length > 0 && (
-          <div className="py-3 flex justify-around items-center">
-            {coinEntries.map((entry, idx) => (
-              <div key={idx} className="flex flex-col items-center">
-                {entry.level && (
-                  <span className="text-sm text-base-content/70 capitalize">
-                    {entry.level}
-                  </span>
-                )}
-                <div className="flex items-center gap-1 font-bold">
-                  <CoinIcon
-                    className={`w-5 h-5 ${getCoinColor(entry.coins || '')}`}
-                  />
-                  <span className={getCoinColor(entry.coins || '')}>
-                    {entry.coins}
-                  </span>
+      <div className="card-body divide-y divide-base-300 max-h-[60vh] overflow-y-auto">
+        {sortedCoinEntries.length > 0 && (
+          <div className="py-1">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
+              {sortedCoinEntries.map((entry, idx) => (
+                <div key={idx} className="space-y-1">
+                  {entry.level && (
+                    <span className="text-xs sm:text-sm text-base-content/70 uppercase tracking-wide">
+                      {entry.level}
+                    </span>
+                  )}
+                  <div className="flex justify-center items-center gap-1 font-bold text-base sm:text-lg">
+                    <CoinIcon
+                      className={`w-5 h-5 ${getCoinColor(entry.coins || '')}`}
+                    />
+                    <span className={getCoinColor(entry.coins || '')}>
+                      {entry.coins}
+                    </span>
+                  </div>
                 </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {otherEntries.length > 0 && (
+          <div className="pt-4 flex flex-col gap-4">
+            {otherEntries.map((entry, index) => (
+              <div key={index} className="">
+                <div className="flex items-start">
+                  <div className="flex-grow">
+                    <span className="font-medium mr-2">{index + 1}.</span>
+                    {entry.item}
+                  </div>
+                  {entry.source && (
+                    <span
+                      className={`badge badge-outline whitespace-nowrap ${entry.source === 'official' ? 'badge-info' : 'badge-secondary'} ml-2`}
+                    >
+                      {sourceToDisplay(entry.source)}
+                    </span>
+                  )}
+                </div>
+                {entry.description && (
+                  <div className="text-sm mt-1 text-base-content/80 ml-6">
+                    {entry.description}
+                  </div>
+                )}
+                {entry.note && (
+                  <div className="text-sm italic mt-1 text-base-content/70 ml-6">
+                    {entry.note}
+                  </div>
+                )}
               </div>
             ))}
           </div>
         )}
-        {otherEntries.map((entry, index) => (
-          <div key={index} className="py-3">
-            {entry.item && (
-              <div className="flex items-start">
-                <div className="flex-grow">
-                  <span className="font-medium mr-2">{index + 1}.</span>
-                  {entry.item}
-                </div>
-                {entry.source && (
-                  <span
-                    className={`badge ${entry.source === 'official' ? 'badge-info' : 'badge-secondary'} ml-2`}
-                  >
-                    {entry.source}
-                  </span>
-                )}
-              </div>
-            )}
-            {entry.description && (
-              <div className="text-sm mt-1 text-base-content/80 ml-6">
-                {entry.description}
-              </div>
-            )}
-            {entry.note && (
-              <div className="text-sm italic mt-1 text-base-content/70 ml-6">
-                {entry.note}
-              </div>
-            )}
-          </div>
-        ))}
       </div>
     </div>
   );

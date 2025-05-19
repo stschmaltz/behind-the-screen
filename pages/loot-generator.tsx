@@ -94,39 +94,40 @@ const LootGeneratorPage: NextPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-base-200 to-base-300">
-      <div className="p-4 sm:p-6 md:p-8">
-        <div className="flex flex-col lg:flex-row gap-6">
-          <div className="">
-            <LootGeneratorForm
-              partyLevel={partyLevel}
-              setPartyLevel={setPartyLevel}
-              srdItemCount={srdItemCount}
-              setSrdItemCount={setSrdItemCount}
-              randomItemCount={randomItemCount}
-              setRandomItemCount={setRandomItemCount}
-              context={context}
-              setContext={setContext}
-              isLoading={isGenerating}
-              handleSubmit={handleSubmit}
-              error={error}
-            />
-            <LootHistory
-              history={history}
-              onSelect={handleSelect}
-              onDelete={removeEntry}
-              onClear={clearHistory}
-            />
-          </div>
-
-          <div className="flex-grow h-fit min-w-0">
-            <LootDisplay
-              loot={loot}
-              context={context}
-              isGenerating={isGenerating}
-            />
-          </div>
+    <div className="min-h-screen h-full px-4 py-6 md:px-8 lg:px-12">
+      <div className="max-w-6xl mx-auto flex flex-col gap-6 md:flex-row">
+        <div className="md:w-1/3 w-full">
+          <LootGeneratorForm
+            partyLevel={partyLevel}
+            setPartyLevel={setPartyLevel}
+            srdItemCount={srdItemCount}
+            setSrdItemCount={setSrdItemCount}
+            randomItemCount={randomItemCount}
+            setRandomItemCount={setRandomItemCount}
+            context={context}
+            setContext={setContext}
+            isLoading={isGenerating}
+            handleSubmit={handleSubmit}
+            error={error}
+          />
         </div>
+
+        <div className="flex-grow w-full md:w-2/3 h-fit min-w-0">
+          <LootDisplay
+            loot={loot}
+            context={context}
+            isGenerating={isGenerating}
+          />
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto mt-6">
+        <LootHistory
+          history={history}
+          onSelect={handleSelect}
+          onDelete={removeEntry}
+          onClear={clearHistory}
+        />
       </div>
     </div>
   );

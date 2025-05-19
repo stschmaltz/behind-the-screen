@@ -49,9 +49,9 @@ const LootHistory: React.FC<LootHistoryProps> = ({
                   onClick={() => onSelect(entry)}
                   className="btn btn-sm btn-outline flex-1 text-left max-h-16 h-auto md:h-auto w-full px-6"
                 >
-                  <div className="flex justify-between max-h-8 w-full">
+                  <div className="flex justify-between max-h-8 w-full items-center">
                     <span className="overflow-hidden text-ellipsis max-w-[450px]">
-                      Lv {entry.partyLevel}, SRD {entry.srdItemCount}, Rand{' '}
+                      Lv {entry.partyLevel}, SRD {entry.srdItemCount}, AI{' '}
                       {entry.randomItemCount} {entry.context}
                     </span>
                     <div className="flex flex-col ml-2">

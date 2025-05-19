@@ -58,7 +58,7 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
             <div className="form-control">
               <FormInput
                 id="srdItemCount"
-                label="Number of Official Source Items (0-10)"
+                label="# of Official Source Items"
                 type="number"
                 value={srdItemCount}
                 onChange={(e) => setSrdItemCount(parseInt(e.target.value))}
@@ -73,7 +73,7 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
             <div className="form-control">
               <FormInput
                 id="randomItemCount"
-                label="Number of Random Items (0-10)"
+                label="# of AI Generated Items"
                 type="number"
                 value={randomItemCount}
                 onChange={(e) => setRandomItemCount(parseInt(e.target.value))}
