@@ -4,7 +4,7 @@ import type {
   SaveAdventureMutation,
   DeleteAdventureMutation,
   Adventure,
-} from '../../../src/generated/graphql';
+} from '../../../generated/graphql';
 
 export const allAdventuresQuery = /* GraphQL */ `
   query AllAdventures {

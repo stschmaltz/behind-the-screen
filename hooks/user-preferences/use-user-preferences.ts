@@ -6,7 +6,7 @@ import {
 import type {
   GetUserPreferencesQuery,
   SetActiveCampaignMutation,
-} from '../../src/generated/graphql';
+} from '../../generated/graphql';
 import { useQuery } from '../use-async-query';
 import { asyncFetch } from '../../data/graphql/graphql-fetcher';
 import { logger } from '../../lib/logger';

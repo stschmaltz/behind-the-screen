@@ -2,7 +2,7 @@ import {
   allEncountersQuery,
   AllEncountersResponse,
 } from '../../data/graphql/snippets/encounter';
-import type { Encounter } from '../../src/generated/graphql';
+import type { Encounter } from '../../generated/graphql';
 import { useQuery } from '../use-async-query';
 import { logger } from '../../lib/logger';
 

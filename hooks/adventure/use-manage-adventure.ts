@@ -7,7 +7,7 @@ import {
 import type {
   SaveAdventureMutation,
   DeleteAdventureMutation,
-} from '../../src/generated/graphql';
+} from '../../generated/graphql';
 import { Adventure, NewAdventure } from '../../types/adventures';
 import { logger } from '../../lib/logger';
 import { TransformedAdventure } from './get-all-adventures';

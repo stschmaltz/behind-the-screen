@@ -11,7 +11,7 @@ import EncounterPageHeader from '../../components/encounters/EncounterPageHeader
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import CopyConfirmationModal from '../../components/modals/CopyConfirmationModal';
 import { logger } from '../../lib/logger';
-import type { Encounter } from '../../src/generated/graphql';
+import type { Encounter } from '../../generated/graphql';
 import type { NewEncounterTemplate } from '../../types/encounters';
 
 const LoadingState = () => (

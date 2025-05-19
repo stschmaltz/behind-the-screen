@@ -3,7 +3,7 @@ import CampaignSelector from '../selectors/CampaignSelector';
 import AdventureSelector from '../selectors/AdventureSelector';
 import PlayerManagementSection from '../../pages/encounters/PlayerManagementSection';
 import { SettingsIcon } from '../icons';
-import type { Player } from '../../src/generated/graphql';
+import type { Player } from '../../generated/graphql';
 
 interface EncounterPageHeaderProps {
   selectedCampaignId: string | undefined;

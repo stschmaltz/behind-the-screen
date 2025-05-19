@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { allPlayersQuery } from '../data/graphql/snippets/player';
-import type { AllPlayersQuery } from '../src/generated/graphql';
+import type { AllPlayersQuery } from '../generated/graphql';
 import { useQuery } from './use-async-query';
 
 const EMPTY_PLAYERS: AllPlayersQuery['allPlayers'] = [];

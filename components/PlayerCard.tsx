@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Player } from '../src/generated/graphql';
+import type { Player } from '../generated/graphql';
 
 interface PlayerCardProps {
   player: Player;

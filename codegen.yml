@@ -4,7 +4,7 @@ documents:
   - 'components/**/*.{ts,tsx}'
   - 'data/graphql/snippets/**/*.ts'
 generates:
-  src/generated/graphql.ts:
+  generated/graphql.ts:
     plugins:
       - typescript
       - typescript-operations

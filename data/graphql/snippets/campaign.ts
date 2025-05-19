@@ -4,7 +4,7 @@ import type {
   SaveCampaignMutation,
   DeleteCampaignMutation,
   Campaign,
-} from '../../../src/generated/graphql';
+} from '../../../generated/graphql';
 
 export const allCampaignsQuery = /* GraphQL */ `
   query AllCampaigns {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { Player } from '../src/generated/graphql';
+import type { Player } from '../generated/graphql';
 import { asyncFetch } from '../data/graphql/graphql-fetcher';
 import {
   createPlayerMutation,
@@ -12,7 +12,7 @@ import type {
   UpdatePlayerMutation,
   DeletePlayerMutation,
   UpdatePlayersMutation,
-} from '../src/generated/graphql';
+} from '../generated/graphql';
 import { logger } from '../lib/logger';
 
 export interface PlayerManagementState {

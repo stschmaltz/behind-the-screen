@@ -4,7 +4,7 @@ import {
   EncounterCharacter,
 } from '../../types/encounters';
 import { PlayerWithInitiative } from '../../types/player';
-import type { Player } from '../../src/generated/graphql';
+import type { Player } from '../../generated/graphql';
 
 interface UseTurnManagementResult {
   currentCharacter: InitiativeOrderCharacter;

@@ -2,7 +2,7 @@ import React from 'react';
 import DiceIcon from '../icons/DiceIcon';
 import { getAbilityModifier, rollInitiative } from '../../lib/random';
 import { InitiativeOrderCharacter } from '../../types/encounters';
-import type { Player } from '../../src/generated/graphql';
+import type { Player } from '../../generated/graphql';
 
 type InitiativeRollerProps = {
   characters: InitiativeOrderCharacter[];

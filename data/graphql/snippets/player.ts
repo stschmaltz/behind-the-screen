@@ -5,7 +5,7 @@ import type {
   DeletePlayerMutation,
   UpdatePlayersMutation,
   Player,
-} from '../../../src/generated/graphql';
+} from '../../../generated/graphql';
 
 // ----------------------------------------------------------------------------
 // Fragments

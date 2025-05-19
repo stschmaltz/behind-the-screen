@@ -10,7 +10,7 @@ import {
   InitiativeOrderCharacter,
 } from '../../types/encounters';
 import { getEncounterDifficulty } from '../../lib/encounterUtils';
-import type { Player } from '../../src/generated/graphql';
+import type { Player } from '../../generated/graphql';
 
 interface CondensedDifficultyCalculatorProps {
   enemies: EncounterCharacter[];

@@ -2,7 +2,7 @@ import type {
   NewPlayerInput,
   Player,
   UpdatePlayerInput,
-} from '../../src/generated/graphql';
+} from '../../generated/graphql';
 
 export interface BulkUpdatePlayersInput {
   userId: string;

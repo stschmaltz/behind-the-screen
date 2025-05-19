@@ -10,7 +10,7 @@ import {
   NewPlayerInput,
   UpdatePlayerInput,
   UpdatePlayersInput,
-} from '../../../src/generated/graphql';
+} from '../../../generated/graphql';
 
 const playerMutationTypeDefs = /* GraphQL */ `
   extend type Mutation {

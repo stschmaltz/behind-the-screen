@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import EncounterCard from './EncounterCard';
-import type { Encounter } from '../../src/generated/graphql';
+import type { Encounter } from '../../generated/graphql';
 import { Campaign } from '../../types/campaigns';
 import { TransformedAdventure } from '../../hooks/adventure/get-all-adventures';
-import type { Player } from '../../src/generated/graphql';
+import type { Player } from '../../generated/graphql';
 
 interface EncounterListProps {
   encounters: Encounter[];

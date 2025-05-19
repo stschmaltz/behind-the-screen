@@ -10,7 +10,7 @@ import type {
   UserPreferences,
   GetUserPreferencesQuery,
   SetActiveCampaignMutation,
-} from '../../src/generated/graphql';
+} from '../../generated/graphql';
 import { Campaign, NewCampaign } from '../../types/campaigns';
 import { logger } from '../../lib/logger';
 import {

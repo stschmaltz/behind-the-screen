@@ -13,7 +13,7 @@ import {
   EncounterCharacter,
   InitiativeOrderCharacter,
 } from '../../types/encounters';
-import type { Player } from '../../src/generated/graphql';
+import type { Player } from '../../generated/graphql';
 
 interface EncounterDifficultyProps {
   enemies: EncounterCharacter[];

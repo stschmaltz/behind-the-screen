@@ -1,6 +1,6 @@
 import React from 'react';
 import PlayerManagementSection from '../../pages/encounters/PlayerManagementSection';
-import { Player } from '../../src/generated/graphql';
+import { Player } from '../../generated/graphql';
 import { TransformedCampaignData } from '../../hooks/campaign/get-campaign.hook';
 
 const CampaignHeader = ({

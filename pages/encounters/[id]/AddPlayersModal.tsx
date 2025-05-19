@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '../../../components/ui/Button';
 import { useModal } from '../../../hooks/use-modal';
-import type { Player } from '../../../src/generated/graphql';
+import type { Player } from '../../../generated/graphql';
 import type { PlayerWithInitiative } from '../../../types/player';
 
 interface Props {

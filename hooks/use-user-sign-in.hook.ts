@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useCurrentUserContext } from '../context/UserContext';
 import { asyncFetch } from '../data/graphql/graphql-fetcher';
 import { signInUserMutation } from '../data/graphql/snippets/user';
-import type { User, UserSignInResponse } from '../src/generated/graphql';
+import type { User, UserSignInResponse } from '../generated/graphql';
 
 function useUserSignIn(): readonly [
   boolean,

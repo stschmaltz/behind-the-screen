@@ -5,7 +5,7 @@ import type {
   DeleteEncounterMutation,
   UpdateEncounterDescriptionMutation,
   Encounter,
-} from '../../../src/generated/graphql';
+} from '../../../generated/graphql';
 
 export const fullEncounterFragment = /* GraphQL */ `
   fragment FullEncounter on Encounter {

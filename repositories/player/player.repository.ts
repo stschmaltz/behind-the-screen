@@ -5,7 +5,7 @@ import {
   BulkUpdatePlayersInput,
 } from './player.repository.interface';
 import { getDbClient } from '../../data/database/mongodb';
-import type { NewPlayerInput, Player } from '../../src/generated/graphql';
+import type { NewPlayerInput, Player } from '../../generated/graphql';
 import { logger } from '../../lib/logger';
 
 @injectable()

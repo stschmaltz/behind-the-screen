@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import ActiveEncounterCharacterRow from './ActiveEncounterCharacterRow';
 import DeadCharacterRow from './DeadCharacterRow';
 import { Button } from '../../../../components/ui/Button';
-import type { Player } from '../../../../src/generated/graphql';
+import type { Player } from '../../../../generated/graphql';
 import { useEncounterContext } from '../../../../context/EncounterContext';
 import { showDaisyToast } from '../../../../lib/daisy-toast';
 import { useEncounterTurnManagement } from '../../../../hooks/encounter/use-encounter-turn-management';

@@ -10,7 +10,7 @@ import {
   EncounterCharacter,
   InitiativeOrderCharacter,
 } from '../../../../types/encounters';
-import type { Player } from '../../../../src/generated/graphql';
+import type { Player } from '../../../../generated/graphql';
 import { showDaisyToast } from '../../../../lib/daisy-toast';
 import { useEncounterContext } from '../../../../context/EncounterContext';
 import { logger } from '../../../../lib/logger';

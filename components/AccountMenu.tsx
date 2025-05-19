@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { RefObject } from 'react';
-import type { User } from '../src/generated/graphql';
+import type { User } from '../generated/graphql';
 
 type AccountMenuProps = {
   currentUser: User | undefined;

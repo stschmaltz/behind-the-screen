@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import ActiveEncounterTable from './ActiveEncounter/ActiveEncounterTable';
 import InactiveEncounterTable from './InactiveEncounter/InactiveEncounterTable';
 import { useEncounterContext } from '../../../context/EncounterContext';
-import type { Player } from '../../../src/generated/graphql';
+import type { Player } from '../../../generated/graphql';
 import { Button } from '../../../components/ui/Button';
 import { useModal } from '../../../hooks/use-modal';
 import ConfirmationModal from '../../../components/modals/ConfirmationModal';

@@ -1,5 +1,5 @@
 import { createContext, ReactElement, useContext, useState } from 'react';
-import type { User } from '../src/generated/graphql';
+import type { User } from '../generated/graphql';
 
 const CurrentUserContext = createContext<{
   currentUser?: User;

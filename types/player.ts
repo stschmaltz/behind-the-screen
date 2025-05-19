@@ -1,4 +1,4 @@
-import type { Player as GqlPlayer } from '../src/generated/graphql';
+import type { Player as GqlPlayer } from '../generated/graphql';
 
 export interface PlayerWithInitiative {
   player: GqlPlayer;

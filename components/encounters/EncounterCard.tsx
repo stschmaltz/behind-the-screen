@@ -4,9 +4,9 @@ import DescriptionDisplay from '../DescriptionDisplay';
 import EncounterDifficultyBadge from '../EncounterDifficultyBadge';
 import { Campaign } from '../../types/campaigns';
 import { TransformedAdventure } from '../../hooks/adventure/get-all-adventures';
-import type { Player } from '../../src/generated/graphql';
+import type { Player } from '../../generated/graphql';
 import { logger } from '../../lib/logger';
-import type { Encounter } from '../../src/generated/graphql';
+import type { Encounter } from '../../generated/graphql';
 
 interface EncounterCardProps {
   encounter: Encounter;
