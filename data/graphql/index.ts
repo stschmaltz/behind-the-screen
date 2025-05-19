@@ -52,6 +52,10 @@ import {
   userPreferencesMutationTypeDefs,
   userPreferencesMutationResolver,
 } from './user-preferences/user-preferences.mutation';
+import {
+  generateLootMutationTypeDefs,
+  generateLootMutationResolver,
+} from './generation/generate-loot.mutation';
 
 const baseSchema = /* GraphQL */ `
   type Query
@@ -79,6 +83,7 @@ const typeDefs = [
   userPreferencesTypeDefs,
   userPreferencesQueryTypeDefs,
   userPreferencesMutationTypeDefs,
+  generateLootMutationTypeDefs,
 ];
 
 const resolvers = [
@@ -95,6 +100,7 @@ const resolvers = [
   adventureMutationResolver,
   userPreferencesQueryResolver,
   userPreferencesMutationResolver,
+  generateLootMutationResolver,
 ];
 
 const schema = makeExecutableSchema({

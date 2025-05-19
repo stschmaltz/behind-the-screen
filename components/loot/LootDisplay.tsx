@@ -23,10 +23,10 @@ const LootDisplay: React.FC<LootDisplayProps> = ({
 }) => {
   if (!loot) {
     return (
-      <div className="card bg-base-100 shadow-xl h-full flex items-center justify-center p-8 max-w-xl max-h-96">
+      <div className="card bg-base-100 shadow-xl h-full flex items-center justify-center p-8 max-w-xl max-h-96  ">
         <div className="text-center space-y-4">
           {isGenerating ? (
-            <>
+            <div className="flex flex-col items-center justify-center h-full min-h-96">
               <div className="relative">
                 <TreasureChestIcon className="w-20 h-20 mx-auto text-primary animate-pulse" />
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -55,14 +55,14 @@ const LootDisplay: React.FC<LootDisplayProps> = ({
                   style={{ animationDelay: '300ms' }}
                 ></div>
               </div>
-            </>
+            </div>
           ) : (
-            <>
+            <div className="flex flex-col items-center justify-center h-full min-h-96">
               <EmptyLootIcon className="w-16 h-16 mx-auto text-base-300" />
-              <p className="text-xl text-base-content/70">
+              <p className="text-xl text-base-content/70 ">
                 Fill in the parameters and generate your loot!
               </p>
-            </>
+            </div>
           )}
         </div>
       </div>
@@ -103,7 +103,7 @@ const LootDisplay: React.FC<LootDisplayProps> = ({
       <div className="bg-primary text-primary-content p-4">
         <h2 className="text-2xl font-bold flex items-center gap-2">
           <TreasureChestIcon className="w-6 h-6" />
-          Generated Loot
+          Generated Loot Table
         </h2>
         {context && <p className="text-sm opacity-80 mt-1">Theme: {context}</p>}
       </div>
@@ -135,33 +135,35 @@ const LootDisplay: React.FC<LootDisplayProps> = ({
 
         {otherEntries.length > 0 && (
           <div className="pt-4 flex flex-col gap-4">
-            {otherEntries.map((entry, index) => (
-              <div key={index} className="">
-                <div className="flex items-start">
-                  <div className="flex-grow">
-                    <span className="font-medium mr-2">{index + 1}.</span>
-                    {entry.item}
+            {otherEntries
+              .filter((e) => e.item)
+              .map((entry, index) => (
+                <div key={index} className="">
+                  <div className="flex items-start">
+                    <div className="flex-grow">
+                      <span className="font-medium mr-2">{index + 1}.</span>
+                      {entry.item}
+                    </div>
+                    {entry.source && (
+                      <span
+                        className={`badge badge-outline whitespace-nowrap ${entry.source === 'official' ? 'badge-info' : 'badge-secondary'} ml-2`}
+                      >
+                        {sourceToDisplay(entry.source)}
+                      </span>
+                    )}
                   </div>
-                  {entry.source && (
-                    <span
-                      className={`badge badge-outline whitespace-nowrap ${entry.source === 'official' ? 'badge-info' : 'badge-secondary'} ml-2`}
-                    >
-                      {sourceToDisplay(entry.source)}
-                    </span>
+                  {entry.description && (
+                    <div className="text-sm mt-1 text-base-content/80 ml-6">
+                      {entry.description}
+                    </div>
+                  )}
+                  {entry.note && (
+                    <div className="text-sm italic mt-1 text-base-content/70 ml-6">
+                      {entry.note}
+                    </div>
                   )}
                 </div>
-                {entry.description && (
-                  <div className="text-sm mt-1 text-base-content/80 ml-6">
-                    {entry.description}
-                  </div>
-                )}
-                {entry.note && (
-                  <div className="text-sm italic mt-1 text-base-content/70 ml-6">
-                    {entry.note}
-                  </div>
-                )}
-              </div>
-            ))}
+              ))}
           </div>
         )}
       </div>

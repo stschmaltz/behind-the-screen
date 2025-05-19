@@ -35,7 +35,7 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
       <div className="card-body">
         <h1 className="card-title text-3xl font-bold text-center mb-6 flex items-center justify-center gap-3">
           <TreasureChestIcon className="w-8 h-8 text-primary" />
-          Loot Generator
+          Loot Table Generator
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">

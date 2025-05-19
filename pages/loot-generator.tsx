@@ -13,6 +13,25 @@ import {
 } from '../hooks/use-loot-history.hook';
 import LootHistory from '../components/loot/LootHistory';
 import { isFeatureEnabled } from '../lib/featureFlags';
+import { asyncFetch } from '../data/graphql/graphql-fetcher';
+
+const GENERATE_LOOT_MUTATION = `
+  mutation GenerateLoot($partyLevel: Int!, $srdItemCount: Int!, $randomItemCount: Int!, $context: String) {
+    generateLoot(
+      partyLevel: $partyLevel
+      srdItemCount: $srdItemCount
+      randomItemCount: $randomItemCount
+      context: $context
+    ) {
+      level
+      coins
+      item
+      description
+      note
+      source
+    }
+  }
+`;
 
 const LootGeneratorPage: NextPage = () => {
   const router = useRouter();
@@ -56,32 +75,22 @@ const LootGeneratorPage: NextPage = () => {
     setLoot(null);
 
     try {
-      const response = await fetch('/api/generate-loot', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const data = await asyncFetch<{ generateLoot: LootItemType[] }>(
+        GENERATE_LOOT_MUTATION,
+        {
           partyLevel,
           srdItemCount,
           randomItemCount,
           context,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Error: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setLoot(data);
+        },
+      );
+      setLoot(data.generateLoot);
       addEntry({
         partyLevel,
         srdItemCount,
         randomItemCount,
         context,
-        loot: data,
+        loot: data.generateLoot,
       });
     } catch (err: unknown) {
       if (err instanceof Error) {

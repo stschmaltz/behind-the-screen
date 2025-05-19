@@ -14,6 +14,8 @@ import { AdventureRepositoryInterface } from '../repositories/adventure/adventur
 import { AdventureRepository } from '../repositories/adventure/adventure.repository';
 import { UserPreferencesRepositoryInterface } from '../repositories/user-preferences/user-preferences.repository.interface';
 import { UserPreferencesRepository } from '../repositories/user-preferences/user-preferences.repository';
+import { LootGenerationRepository } from '../repositories/generation/loot-generation.repository';
+import { LootGenerationRepositoryInterface } from '../repositories/generation/loot-generation.repository.interface';
 
 const appContainer = new Container();
 
@@ -40,5 +42,9 @@ appContainer
 appContainer
   .bind<UserPreferencesRepositoryInterface>(TYPES.UserPreferencesRepository)
   .toConstantValue(new UserPreferencesRepository());
+
+appContainer
+  .bind<LootGenerationRepositoryInterface>(TYPES.LootGenerationRepository)
+  .to(LootGenerationRepository);
 
 export { appContainer };

@@ -52,7 +52,6 @@ const transformAllAdventures = (
       _id: adventure._id ?? '',
       campaignId: adventure.campaignId ?? '',
       name: adventure.name ?? '',
-      description: adventure.description ?? undefined,
       status: adventure.status ?? 'active',
       createdAt: new Date(adventure.createdAt),
       updatedAt: new Date(adventure.updatedAt),

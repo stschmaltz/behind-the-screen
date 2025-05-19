@@ -6,4 +6,5 @@ export const TYPES = {
   CampaignRepository: Symbol.for('CampaignRepository'),
   AdventureRepository: Symbol.for('AdventureRepository'),
   UserPreferencesRepository: Symbol.for('UserPreferencesRepository'),
+  LootGenerationRepository: Symbol.for('LootGenerationRepository'),
 };

@@ -1,31 +1,18 @@
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = {
-  [K in keyof T]: T[K];
-};
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]?: Maybe<T[SubKey]>;
-};
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & {
-  [SubKey in K]: Maybe<T[SubKey]>;
-};
-export type MakeEmpty<
-  T extends { [key: string]: unknown },
-  K extends keyof T,
-> = { [_ in K]?: never };
-export type Incremental<T> =
-  | T
-  | {
-      [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never;
-    };
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-  ID: { input: string; output: string };
-  String: { input: string; output: string };
-  Boolean: { input: boolean; output: boolean };
-  Int: { input: number; output: number };
-  Float: { input: number; output: number };
-  Date: { input: any; output: any };
+  ID: { input: string; output: string; }
+  String: { input: string; output: string; }
+  Boolean: { input: boolean; output: boolean; }
+  Int: { input: number; output: number; }
+  Float: { input: number; output: number; }
+  Date: { input: any; output: any; }
 };
 
 export type Adventure = {
@@ -42,7 +29,7 @@ export type Adventure = {
 export enum AdventureStatus {
   Active = 'active',
   Archived = 'archived',
-  Completed = 'completed',
+  Completed = 'completed'
 }
 
 export type Campaign = {
@@ -57,7 +44,7 @@ export type Campaign = {
 export enum CampaignStatus {
   Active = 'active',
   Archived = 'archived',
-  Completed = 'completed',
+  Completed = 'completed'
 }
 
 export type DeleteAdventureInput = {
@@ -120,7 +107,7 @@ export type EncounterPlayerIdInput = {
 export enum EncounterStatus {
   Active = 'active',
   Completed = 'completed',
-  Inactive = 'inactive',
+  Inactive = 'inactive'
 }
 
 export type EncounterTemplate = {
@@ -160,6 +147,16 @@ export type InitiativeOrderInput = {
   type: Scalars['String']['input'];
 };
 
+export type LootItem = {
+  __typename?: 'LootItem';
+  coins: Maybe<Scalars['String']['output']>;
+  description: Maybe<Scalars['String']['output']>;
+  item: Maybe<Scalars['String']['output']>;
+  level: Maybe<Scalars['String']['output']>;
+  note: Maybe<Scalars['String']['output']>;
+  source: Maybe<Scalars['String']['output']>;
+};
+
 export type MonsterStats = {
   __typename?: 'MonsterStats';
   CHA: Maybe<Scalars['Int']['output']>;
@@ -186,6 +183,7 @@ export type Mutation = {
   deleteCampaign: Maybe<Scalars['Boolean']['output']>;
   deleteEncounter: Maybe<Scalars['Boolean']['output']>;
   deletePlayer: Maybe<Scalars['Boolean']['output']>;
+  generateLoot: Array<LootItem>;
   saveAdventure: Maybe<Adventure>;
   saveCampaign: Maybe<Campaign>;
   saveEncounter: Maybe<Encounter>;
@@ -197,57 +195,79 @@ export type Mutation = {
   userSignIn: Maybe<UserSignInResponse>;
 };
 
+
 export type MutationCreatePlayerArgs = {
   input: NewPlayerInput;
 };
+
 
 export type MutationDeleteAdventureArgs = {
   input: DeleteAdventureInput;
 };
 
+
 export type MutationDeleteCampaignArgs = {
   input: DeleteCampaignInput;
 };
+
 
 export type MutationDeleteEncounterArgs = {
   input: DeleteEncounterInput;
 };
 
+
 export type MutationDeletePlayerArgs = {
   id: Scalars['String']['input'];
 };
+
+
+export type MutationGenerateLootArgs = {
+  context: InputMaybe<Scalars['String']['input']>;
+  partyLevel: Scalars['Int']['input'];
+  randomItemCount: Scalars['Int']['input'];
+  srdItemCount: Scalars['Int']['input'];
+};
+
 
 export type MutationSaveAdventureArgs = {
   input: NewAdventureInput;
 };
 
+
 export type MutationSaveCampaignArgs = {
   input: NewCampaignInput;
 };
+
 
 export type MutationSaveEncounterArgs = {
   input: NewEncounterInput;
 };
 
+
 export type MutationSetActiveCampaignArgs = {
   input: SetActiveCampaignInput;
 };
+
 
 export type MutationSetThemeArgs = {
   input: SetThemeInput;
 };
 
+
 export type MutationUpdateEncounterDescriptionArgs = {
   input: UpdateEncounterDescriptionInput;
 };
+
 
 export type MutationUpdatePlayerArgs = {
   input: UpdatePlayerInput;
 };
 
+
 export type MutationUpdatePlayersArgs = {
   input: UpdatePlayersInput;
 };
+
 
 export type MutationUserSignInArgs = {
   input: UserSignInInput;
@@ -342,21 +362,26 @@ export type Query = {
   playersByIds: Array<Player>;
 };
 
+
 export type QueryEncounterByIdArgs = {
   id: Scalars['String']['input'];
 };
+
 
 export type QueryGetAdventureArgs = {
   id: Scalars['ID']['input'];
 };
 
+
 export type QueryGetAdventuresByCampaignArgs = {
   campaignId: Scalars['ID']['input'];
 };
 
+
 export type QueryGetCampaignArgs = {
   id: Scalars['ID']['input'];
 };
+
 
 export type QueryPlayersByIdsArgs = {
   ids: Array<Scalars['String']['input']>;
@@ -420,606 +445,157 @@ export type UserSignInResponse = {
   user: User;
 };
 
-export type AllAdventuresQueryVariables = Exact<{ [key: string]: never }>;
+export type AllAdventuresQueryVariables = Exact<{ [key: string]: never; }>;
 
-export type AllAdventuresQuery = {
-  __typename?: 'Query';
-  getAdventures: Array<{
-    __typename?: 'Adventure';
-    _id: string;
-    campaignId: string;
-    name: string;
-    description: string | null;
-    status: AdventureStatus;
-    createdAt: string;
-    updatedAt: string;
-  } | null> | null;
-};
+
+export type AllAdventuresQuery = { __typename?: 'Query', getAdventures: Array<{ __typename?: 'Adventure', _id: string, name: string, status: AdventureStatus, createdAt: string, updatedAt: string, campaignId: string } | null> | null };
 
 export type AdventureByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
-export type AdventureByIdQuery = {
-  __typename?: 'Query';
-  getAdventure: {
-    __typename?: 'Adventure';
-    _id: string;
-    campaignId: string;
-    name: string;
-    description: string | null;
-    status: AdventureStatus;
-    createdAt: string;
-    updatedAt: string;
-  } | null;
-};
+
+export type AdventureByIdQuery = { __typename?: 'Query', getAdventure: { __typename?: 'Adventure', _id: string, name: string, status: AdventureStatus, createdAt: string, updatedAt: string, campaignId: string } | null };
 
 export type AdventuresByCampaignQueryVariables = Exact<{
   campaignId: Scalars['ID']['input'];
 }>;
 
-export type AdventuresByCampaignQuery = {
-  __typename?: 'Query';
-  getAdventuresByCampaign: Array<{
-    __typename?: 'Adventure';
-    _id: string;
-    campaignId: string;
-    name: string;
-    description: string | null;
-    status: AdventureStatus;
-    createdAt: string;
-    updatedAt: string;
-  } | null> | null;
-};
+
+export type AdventuresByCampaignQuery = { __typename?: 'Query', getAdventuresByCampaign: Array<{ __typename?: 'Adventure', _id: string, campaignId: string, name: string, description: string | null, status: AdventureStatus, createdAt: string, updatedAt: string } | null> | null };
 
 export type SaveAdventureMutationVariables = Exact<{
   input: NewAdventureInput;
 }>;
 
-export type SaveAdventureMutation = {
-  __typename?: 'Mutation';
-  saveAdventure: {
-    __typename?: 'Adventure';
-    _id: string;
-    campaignId: string;
-    name: string;
-    description: string | null;
-    status: AdventureStatus;
-    createdAt: string;
-    updatedAt: string;
-  } | null;
-};
+
+export type SaveAdventureMutation = { __typename?: 'Mutation', saveAdventure: { __typename?: 'Adventure', _id: string, name: string, status: AdventureStatus, createdAt: string, updatedAt: string, campaignId: string } | null };
 
 export type DeleteAdventureMutationVariables = Exact<{
   input: DeleteAdventureInput;
 }>;
 
-export type DeleteAdventureMutation = {
-  __typename?: 'Mutation';
-  deleteAdventure: boolean | null;
-};
 
-export type AllCampaignsQueryVariables = Exact<{ [key: string]: never }>;
+export type DeleteAdventureMutation = { __typename?: 'Mutation', deleteAdventure: boolean | null };
 
-export type AllCampaignsQuery = {
-  __typename?: 'Query';
-  getCampaigns: Array<{
-    __typename?: 'Campaign';
-    _id: string;
-    name: string;
-    status: CampaignStatus | null;
-    createdAt: string;
-    updatedAt: string;
-  } | null> | null;
-};
+export type AllCampaignsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AllCampaignsQuery = { __typename?: 'Query', getCampaigns: Array<{ __typename?: 'Campaign', _id: string, name: string, status: CampaignStatus | null, createdAt: string, updatedAt: string } | null> | null };
 
 export type CampaignByIdQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
 
-export type CampaignByIdQuery = {
-  __typename?: 'Query';
-  getCampaign: {
-    __typename?: 'Campaign';
-    _id: string;
-    name: string;
-    status: CampaignStatus | null;
-    createdAt: string;
-    updatedAt: string;
-  } | null;
-};
+
+export type CampaignByIdQuery = { __typename?: 'Query', getCampaign: { __typename?: 'Campaign', _id: string, name: string, status: CampaignStatus | null, createdAt: string, updatedAt: string } | null };
 
 export type SaveCampaignMutationVariables = Exact<{
   input: NewCampaignInput;
 }>;
 
-export type SaveCampaignMutation = {
-  __typename?: 'Mutation';
-  saveCampaign: {
-    __typename?: 'Campaign';
-    _id: string;
-    name: string;
-    status: CampaignStatus | null;
-    createdAt: string;
-    updatedAt: string;
-  } | null;
-};
+
+export type SaveCampaignMutation = { __typename?: 'Mutation', saveCampaign: { __typename?: 'Campaign', _id: string, name: string, status: CampaignStatus | null, createdAt: string, updatedAt: string } | null };
 
 export type DeleteCampaignMutationVariables = Exact<{
   input: DeleteCampaignInput;
 }>;
 
-export type DeleteCampaignMutation = {
-  __typename?: 'Mutation';
-  deleteCampaign: boolean | null;
-};
 
-export type FullEncounterFragment = {
-  __typename?: 'Encounter';
-  _id: string;
-  name: string;
-  description: string | null;
-  notes: Array<string>;
-  status: string;
-  currentRound: number;
-  currentTurn: number;
-  createdAt: any;
-  userId: string;
-  campaignId: string;
-  adventureId: string | null;
-  enemies: Array<{
-    __typename?: 'EncounterCharacter';
-    _id: string;
-    name: string;
-    maxHP: number;
-    armorClass: number;
-    meta: string | null;
-    speed: string | null;
-    challenge: string | null;
-    traits: string | null;
-    actions: string | null;
-    legendaryActions: string | null;
-    img_url: string | null;
-    monsterSource: string | null;
-    stats: {
-      __typename?: 'MonsterStats';
-      STR: number | null;
-      DEX: number | null;
-      CON: number | null;
-      INT: number | null;
-      WIS: number | null;
-      CHA: number | null;
-    } | null;
-  }>;
-  players: Array<{ __typename?: 'EncounterPlayerId'; _id: string }>;
-  npcs: Array<{
-    __typename?: 'EncounterCharacter';
-    _id: string;
-    name: string;
-    maxHP: number;
-    armorClass: number;
-    meta: string | null;
-    speed: string | null;
-    challenge: string | null;
-    traits: string | null;
-    actions: string | null;
-    legendaryActions: string | null;
-    img_url: string | null;
-    monsterSource: string | null;
-    stats: {
-      __typename?: 'MonsterStats';
-      STR: number | null;
-      DEX: number | null;
-      CON: number | null;
-      INT: number | null;
-      WIS: number | null;
-      CHA: number | null;
-    } | null;
-  }>;
-  initiativeOrder: Array<{
-    __typename?: 'InitiativeOrder';
-    _id: string;
-    name: string;
-    armorClass: number | null;
-    maxHP: number | null;
-    currentHP: number | null;
-    tempHP: number | null;
-    conditions: Array<string>;
-    initiative: number | null;
-    type: string;
-  }>;
-};
+export type DeleteCampaignMutation = { __typename?: 'Mutation', deleteCampaign: boolean | null };
+
+export type FullEncounterFragment = { __typename?: 'Encounter', _id: string, name: string, description: string | null, notes: Array<string>, status: string, currentRound: number, currentTurn: number, createdAt: any, userId: string, campaignId: string, adventureId: string | null, enemies: Array<{ __typename?: 'EncounterCharacter', _id: string, name: string, maxHP: number, armorClass: number, meta: string | null, speed: string | null, challenge: string | null, traits: string | null, actions: string | null, legendaryActions: string | null, img_url: string | null, monsterSource: string | null, stats: { __typename?: 'MonsterStats', STR: number | null, DEX: number | null, CON: number | null, INT: number | null, WIS: number | null, CHA: number | null } | null }>, players: Array<{ __typename?: 'EncounterPlayerId', _id: string }>, npcs: Array<{ __typename?: 'EncounterCharacter', _id: string, name: string, maxHP: number, armorClass: number, meta: string | null, speed: string | null, challenge: string | null, traits: string | null, actions: string | null, legendaryActions: string | null, img_url: string | null, monsterSource: string | null, stats: { __typename?: 'MonsterStats', STR: number | null, DEX: number | null, CON: number | null, INT: number | null, WIS: number | null, CHA: number | null } | null }>, initiativeOrder: Array<{ __typename?: 'InitiativeOrder', _id: string, name: string, armorClass: number | null, maxHP: number | null, currentHP: number | null, tempHP: number | null, conditions: Array<string>, initiative: number | null, type: string }> };
 
 export type SaveEncounterMutationVariables = Exact<{
   input: NewEncounterInput;
 }>;
 
-export type SaveEncounterMutation = {
-  __typename?: 'Mutation';
-  saveEncounter: {
-    __typename?: 'Encounter';
-    _id: string;
-    name: string;
-    description: string | null;
-    notes: Array<string>;
-    status: string;
-    currentRound: number;
-    currentTurn: number;
-    createdAt: any;
-    userId: string;
-    campaignId: string;
-    adventureId: string | null;
-    enemies: Array<{
-      __typename?: 'EncounterCharacter';
-      _id: string;
-      name: string;
-      maxHP: number;
-      armorClass: number;
-      meta: string | null;
-      speed: string | null;
-      challenge: string | null;
-      traits: string | null;
-      actions: string | null;
-      legendaryActions: string | null;
-      img_url: string | null;
-      monsterSource: string | null;
-      stats: {
-        __typename?: 'MonsterStats';
-        STR: number | null;
-        DEX: number | null;
-        CON: number | null;
-        INT: number | null;
-        WIS: number | null;
-        CHA: number | null;
-      } | null;
-    }>;
-    players: Array<{ __typename?: 'EncounterPlayerId'; _id: string }>;
-    npcs: Array<{
-      __typename?: 'EncounterCharacter';
-      _id: string;
-      name: string;
-      maxHP: number;
-      armorClass: number;
-      meta: string | null;
-      speed: string | null;
-      challenge: string | null;
-      traits: string | null;
-      actions: string | null;
-      legendaryActions: string | null;
-      img_url: string | null;
-      monsterSource: string | null;
-      stats: {
-        __typename?: 'MonsterStats';
-        STR: number | null;
-        DEX: number | null;
-        CON: number | null;
-        INT: number | null;
-        WIS: number | null;
-        CHA: number | null;
-      } | null;
-    }>;
-    initiativeOrder: Array<{
-      __typename?: 'InitiativeOrder';
-      _id: string;
-      name: string;
-      armorClass: number | null;
-      maxHP: number | null;
-      currentHP: number | null;
-      tempHP: number | null;
-      conditions: Array<string>;
-      initiative: number | null;
-      type: string;
-    }>;
-  } | null;
-};
 
-export type AllEncountersQueryVariables = Exact<{ [key: string]: never }>;
+export type SaveEncounterMutation = { __typename?: 'Mutation', saveEncounter: { __typename?: 'Encounter', _id: string, name: string, description: string | null, notes: Array<string>, status: string, currentRound: number, currentTurn: number, createdAt: any, userId: string, campaignId: string, adventureId: string | null, enemies: Array<{ __typename?: 'EncounterCharacter', _id: string, name: string, maxHP: number, armorClass: number, meta: string | null, speed: string | null, challenge: string | null, traits: string | null, actions: string | null, legendaryActions: string | null, img_url: string | null, monsterSource: string | null, stats: { __typename?: 'MonsterStats', STR: number | null, DEX: number | null, CON: number | null, INT: number | null, WIS: number | null, CHA: number | null } | null }>, players: Array<{ __typename?: 'EncounterPlayerId', _id: string }>, npcs: Array<{ __typename?: 'EncounterCharacter', _id: string, name: string, maxHP: number, armorClass: number, meta: string | null, speed: string | null, challenge: string | null, traits: string | null, actions: string | null, legendaryActions: string | null, img_url: string | null, monsterSource: string | null, stats: { __typename?: 'MonsterStats', STR: number | null, DEX: number | null, CON: number | null, INT: number | null, WIS: number | null, CHA: number | null } | null }>, initiativeOrder: Array<{ __typename?: 'InitiativeOrder', _id: string, name: string, armorClass: number | null, maxHP: number | null, currentHP: number | null, tempHP: number | null, conditions: Array<string>, initiative: number | null, type: string }> } | null };
 
-export type AllEncountersQuery = {
-  __typename?: 'Query';
-  allEncounters: Array<{
-    __typename?: 'Encounter';
-    _id: string;
-    name: string;
-    description: string | null;
-    notes: Array<string>;
-    status: string;
-    currentRound: number;
-    currentTurn: number;
-    createdAt: any;
-    userId: string;
-    campaignId: string;
-    adventureId: string | null;
-    enemies: Array<{
-      __typename?: 'EncounterCharacter';
-      _id: string;
-      name: string;
-      maxHP: number;
-      armorClass: number;
-      meta: string | null;
-      speed: string | null;
-      challenge: string | null;
-      traits: string | null;
-      actions: string | null;
-      legendaryActions: string | null;
-      img_url: string | null;
-      monsterSource: string | null;
-      stats: {
-        __typename?: 'MonsterStats';
-        STR: number | null;
-        DEX: number | null;
-        CON: number | null;
-        INT: number | null;
-        WIS: number | null;
-        CHA: number | null;
-      } | null;
-    }>;
-    players: Array<{ __typename?: 'EncounterPlayerId'; _id: string }>;
-    npcs: Array<{
-      __typename?: 'EncounterCharacter';
-      _id: string;
-      name: string;
-      maxHP: number;
-      armorClass: number;
-      meta: string | null;
-      speed: string | null;
-      challenge: string | null;
-      traits: string | null;
-      actions: string | null;
-      legendaryActions: string | null;
-      img_url: string | null;
-      monsterSource: string | null;
-      stats: {
-        __typename?: 'MonsterStats';
-        STR: number | null;
-        DEX: number | null;
-        CON: number | null;
-        INT: number | null;
-        WIS: number | null;
-        CHA: number | null;
-      } | null;
-    }>;
-    initiativeOrder: Array<{
-      __typename?: 'InitiativeOrder';
-      _id: string;
-      name: string;
-      armorClass: number | null;
-      maxHP: number | null;
-      currentHP: number | null;
-      tempHP: number | null;
-      conditions: Array<string>;
-      initiative: number | null;
-      type: string;
-    }>;
-  }>;
-};
+export type AllEncountersQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AllEncountersQuery = { __typename?: 'Query', allEncounters: Array<{ __typename?: 'Encounter', _id: string, name: string, description: string | null, notes: Array<string>, status: string, currentRound: number, currentTurn: number, createdAt: any, userId: string, campaignId: string, adventureId: string | null, enemies: Array<{ __typename?: 'EncounterCharacter', _id: string, name: string, maxHP: number, armorClass: number, meta: string | null, speed: string | null, challenge: string | null, traits: string | null, actions: string | null, legendaryActions: string | null, img_url: string | null, monsterSource: string | null, stats: { __typename?: 'MonsterStats', STR: number | null, DEX: number | null, CON: number | null, INT: number | null, WIS: number | null, CHA: number | null } | null }>, players: Array<{ __typename?: 'EncounterPlayerId', _id: string }>, npcs: Array<{ __typename?: 'EncounterCharacter', _id: string, name: string, maxHP: number, armorClass: number, meta: string | null, speed: string | null, challenge: string | null, traits: string | null, actions: string | null, legendaryActions: string | null, img_url: string | null, monsterSource: string | null, stats: { __typename?: 'MonsterStats', STR: number | null, DEX: number | null, CON: number | null, INT: number | null, WIS: number | null, CHA: number | null } | null }>, initiativeOrder: Array<{ __typename?: 'InitiativeOrder', _id: string, name: string, armorClass: number | null, maxHP: number | null, currentHP: number | null, tempHP: number | null, conditions: Array<string>, initiative: number | null, type: string }> }> };
 
 export type EncounterByIdQueryVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
-export type EncounterByIdQuery = {
-  __typename?: 'Query';
-  encounterById: {
-    __typename?: 'Encounter';
-    _id: string;
-    name: string;
-    description: string | null;
-    notes: Array<string>;
-    status: string;
-    currentRound: number;
-    currentTurn: number;
-    createdAt: any;
-    userId: string;
-    campaignId: string;
-    adventureId: string | null;
-    enemies: Array<{
-      __typename?: 'EncounterCharacter';
-      _id: string;
-      name: string;
-      maxHP: number;
-      armorClass: number;
-      meta: string | null;
-      speed: string | null;
-      challenge: string | null;
-      traits: string | null;
-      actions: string | null;
-      legendaryActions: string | null;
-      img_url: string | null;
-      monsterSource: string | null;
-      stats: {
-        __typename?: 'MonsterStats';
-        STR: number | null;
-        DEX: number | null;
-        CON: number | null;
-        INT: number | null;
-        WIS: number | null;
-        CHA: number | null;
-      } | null;
-    }>;
-    players: Array<{ __typename?: 'EncounterPlayerId'; _id: string }>;
-    npcs: Array<{
-      __typename?: 'EncounterCharacter';
-      _id: string;
-      name: string;
-      maxHP: number;
-      armorClass: number;
-      meta: string | null;
-      speed: string | null;
-      challenge: string | null;
-      traits: string | null;
-      actions: string | null;
-      legendaryActions: string | null;
-      img_url: string | null;
-      monsterSource: string | null;
-      stats: {
-        __typename?: 'MonsterStats';
-        STR: number | null;
-        DEX: number | null;
-        CON: number | null;
-        INT: number | null;
-        WIS: number | null;
-        CHA: number | null;
-      } | null;
-    }>;
-    initiativeOrder: Array<{
-      __typename?: 'InitiativeOrder';
-      _id: string;
-      name: string;
-      armorClass: number | null;
-      maxHP: number | null;
-      currentHP: number | null;
-      tempHP: number | null;
-      conditions: Array<string>;
-      initiative: number | null;
-      type: string;
-    }>;
-  } | null;
-};
+
+export type EncounterByIdQuery = { __typename?: 'Query', encounterById: { __typename?: 'Encounter', _id: string, name: string, description: string | null, notes: Array<string>, status: string, currentRound: number, currentTurn: number, createdAt: any, userId: string, campaignId: string, adventureId: string | null, enemies: Array<{ __typename?: 'EncounterCharacter', _id: string, name: string, maxHP: number, armorClass: number, meta: string | null, speed: string | null, challenge: string | null, traits: string | null, actions: string | null, legendaryActions: string | null, img_url: string | null, monsterSource: string | null, stats: { __typename?: 'MonsterStats', STR: number | null, DEX: number | null, CON: number | null, INT: number | null, WIS: number | null, CHA: number | null } | null }>, players: Array<{ __typename?: 'EncounterPlayerId', _id: string }>, npcs: Array<{ __typename?: 'EncounterCharacter', _id: string, name: string, maxHP: number, armorClass: number, meta: string | null, speed: string | null, challenge: string | null, traits: string | null, actions: string | null, legendaryActions: string | null, img_url: string | null, monsterSource: string | null, stats: { __typename?: 'MonsterStats', STR: number | null, DEX: number | null, CON: number | null, INT: number | null, WIS: number | null, CHA: number | null } | null }>, initiativeOrder: Array<{ __typename?: 'InitiativeOrder', _id: string, name: string, armorClass: number | null, maxHP: number | null, currentHP: number | null, tempHP: number | null, conditions: Array<string>, initiative: number | null, type: string }> } | null };
 
 export type DeleteEncounterMutationVariables = Exact<{
   input: DeleteEncounterInput;
 }>;
 
-export type DeleteEncounterMutation = {
-  __typename?: 'Mutation';
-  deleteEncounter: boolean | null;
-};
+
+export type DeleteEncounterMutation = { __typename?: 'Mutation', deleteEncounter: boolean | null };
 
 export type UpdateEncounterDescriptionMutationVariables = Exact<{
   input: UpdateEncounterDescriptionInput;
 }>;
 
-export type UpdateEncounterDescriptionMutation = {
-  __typename?: 'Mutation';
-  updateEncounterDescription: {
-    __typename?: 'Encounter';
-    _id: string;
-    description: string | null;
-  } | null;
-};
 
-export type FullPlayerFragment = {
-  __typename?: 'Player';
-  _id: string;
-  name: string;
-  armorClass: number | null;
-  maxHP: number | null;
-  level: number | null;
-  userId: string;
-  campaignId: string;
-  createdAt: any;
-};
+export type UpdateEncounterDescriptionMutation = { __typename?: 'Mutation', updateEncounterDescription: { __typename?: 'Encounter', _id: string, description: string | null } | null };
+
+export type FullPlayerFragment = { __typename?: 'Player', _id: string, name: string, armorClass: number | null, maxHP: number | null, level: number | null, userId: string, campaignId: string, createdAt: any };
 
 export type CreatePlayerMutationVariables = Exact<{
   input: NewPlayerInput;
 }>;
 
-export type CreatePlayerMutation = {
-  __typename?: 'Mutation';
-  createPlayer: {
-    __typename?: 'Player';
-    _id: string;
-    name: string;
-    armorClass: number | null;
-    maxHP: number | null;
-    level: number | null;
-    userId: string;
-    campaignId: string;
-    createdAt: any;
-  } | null;
-};
+
+export type CreatePlayerMutation = { __typename?: 'Mutation', createPlayer: { __typename?: 'Player', _id: string, name: string, armorClass: number | null, maxHP: number | null, level: number | null, userId: string, campaignId: string, createdAt: any } | null };
 
 export type UpdatePlayerMutationVariables = Exact<{
   input: UpdatePlayerInput;
 }>;
 
-export type UpdatePlayerMutation = {
-  __typename?: 'Mutation';
-  updatePlayer: {
-    __typename?: 'Player';
-    _id: string;
-    name: string;
-    armorClass: number | null;
-    maxHP: number | null;
-    level: number | null;
-    userId: string;
-    campaignId: string;
-    createdAt: any;
-  } | null;
-};
+
+export type UpdatePlayerMutation = { __typename?: 'Mutation', updatePlayer: { __typename?: 'Player', _id: string, name: string, armorClass: number | null, maxHP: number | null, level: number | null, userId: string, campaignId: string, createdAt: any } | null };
 
 export type DeletePlayerMutationVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
-export type DeletePlayerMutation = {
-  __typename?: 'Mutation';
-  deletePlayer: boolean | null;
-};
+
+export type DeletePlayerMutation = { __typename?: 'Mutation', deletePlayer: boolean | null };
 
 export type UpdatePlayersMutationVariables = Exact<{
   input: UpdatePlayersInput;
 }>;
 
-export type UpdatePlayersMutation = {
-  __typename?: 'Mutation';
-  updatePlayers: boolean | null;
-};
 
-export type AllPlayersQueryVariables = Exact<{ [key: string]: never }>;
+export type UpdatePlayersMutation = { __typename?: 'Mutation', updatePlayers: boolean | null };
 
-export type AllPlayersQuery = {
-  __typename?: 'Query';
-  allPlayers: Array<{
-    __typename?: 'Player';
-    _id: string;
-    name: string;
-    armorClass: number | null;
-    maxHP: number | null;
-    level: number | null;
-    userId: string;
-    campaignId: string;
-    createdAt: any;
-  }>;
-};
+export type AllPlayersQueryVariables = Exact<{ [key: string]: never; }>;
 
-export type GetUserPreferencesQueryVariables = Exact<{ [key: string]: never }>;
 
-export type GetUserPreferencesQuery = {
-  __typename?: 'Query';
-  getUserPreferences: {
-    __typename?: 'UserPreferences';
-    _id: string;
-    activeCampaignId: string | null;
-    theme: string | null;
-  } | null;
-};
+export type AllPlayersQuery = { __typename?: 'Query', allPlayers: Array<{ __typename?: 'Player', _id: string, name: string, armorClass: number | null, maxHP: number | null, level: number | null, userId: string, campaignId: string, createdAt: any }> };
+
+export type GetUserPreferencesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetUserPreferencesQuery = { __typename?: 'Query', getUserPreferences: { __typename?: 'UserPreferences', _id: string, activeCampaignId: string | null, theme: string | null } | null };
 
 export type SetActiveCampaignMutationVariables = Exact<{
   input: SetActiveCampaignInput;
 }>;
 
-export type SetActiveCampaignMutation = {
-  __typename?: 'Mutation';
-  setActiveCampaign: {
-    __typename?: 'UserPreferences';
-    _id: string;
-    activeCampaignId: string | null;
-    theme: string | null;
-  } | null;
-};
+
+export type SetActiveCampaignMutation = { __typename?: 'Mutation', setActiveCampaign: { __typename?: 'UserPreferences', _id: string, activeCampaignId: string | null, theme: string | null } | null };
 
 export type SetThemeMutationVariables = Exact<{
   input: SetThemeInput;
 }>;
 
-export type SetThemeMutation = {
-  __typename?: 'Mutation';
-  setTheme: {
-    __typename?: 'UserPreferences';
-    _id: string;
-    activeCampaignId: string | null;
-    theme: string | null;
-  } | null;
-};
+
+export type SetThemeMutation = { __typename?: 'Mutation', setTheme: { __typename?: 'UserPreferences', _id: string, activeCampaignId: string | null, theme: string | null } | null };
+
+export type UserSignInMutationVariables = Exact<{
+  input: UserSignInInput;
+}>;
+
+
+export type UserSignInMutation = { __typename?: 'Mutation', userSignIn: { __typename?: 'UserSignInResponse', user: { __typename?: 'User', _id: string, name: string | null, email: string, auth0Id: string, picture: string | null } } | null };
