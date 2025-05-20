@@ -16,6 +16,7 @@ import { useEncounterContext } from '../../../../context/EncounterContext';
 import { logger } from '../../../../lib/logger';
 import { CondensedDifficultyCalculator } from '../../../../components/encounter-difficulty/CondensedDifficultyCalculator';
 import InitiativeRoller from '../../../../components/encounter/InitiativeRoller';
+import { generateMongoId } from '../../../../lib/mongo';
 
 interface Props {
   encounter: Encounter;
@@ -100,9 +101,13 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
 
       return;
     }
-
+    const duplicatedCharacter = {
+      ...fullCharacterData,
+      _id: generateMongoId(),
+      name: `${fullCharacterData.name}`,
+    };
     handleAddCharacter(
-      fullCharacterData,
+      duplicatedCharacter,
       characterToDuplicate.type === 'npc' ? 'npc' : 'enemy',
     );
     showDaisyToast('success', `Duplicated ${characterToDuplicate.name}`);
