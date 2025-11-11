@@ -99,24 +99,12 @@ const MonsterCombobox: React.FC<MonsterComboboxProps> = ({
         dialog.removeEventListener('close', handleDialogClose);
       };
     }
-
-    return () => {
-      userClickedRef.current = false;
-      setIsOpen(false);
-    };
-  }, []);
-
-  useEffect(() => {
-    setIsOpen(false);
-    userClickedRef.current = false;
   }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value;
     setSearchTerm(term);
-    if (userClickedRef.current) {
-      setIsOpen(true);
-    }
+    setIsOpen(true);
   };
 
   const handleOptionSelect = (optionName: string) => {
