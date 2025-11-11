@@ -56,6 +56,10 @@ import {
   generateLootMutationTypeDefs,
   generateLootMutationResolver,
 } from './generation/generate-loot.mutation';
+import {
+  generateNpcMutationTypeDefs,
+  generateNpcMutationResolver,
+} from './generation/generate-npc.mutation';
 
 const baseSchema = /* GraphQL */ `
   type Query
@@ -84,6 +88,7 @@ const typeDefs = [
   userPreferencesQueryTypeDefs,
   userPreferencesMutationTypeDefs,
   generateLootMutationTypeDefs,
+  generateNpcMutationTypeDefs,
 ];
 
 const resolvers = [
@@ -101,6 +106,7 @@ const resolvers = [
   userPreferencesQueryResolver,
   userPreferencesMutationResolver,
   generateLootMutationResolver,
+  generateNpcMutationResolver,
 ];
 
 const schema = makeExecutableSchema({

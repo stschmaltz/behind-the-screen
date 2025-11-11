@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CheckIcon, ChevronDownIcon } from './icons';
+import { findParentDialog, useClickOutside } from '../hooks/useClickOutside';
 
 interface MonsterOption {
   _id: string;
@@ -32,6 +33,16 @@ const MonsterCombobox: React.FC<MonsterComboboxProps> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const userClickedRef = useRef(false);
 
+  const parentDialog = useMemo(() => findParentDialog(dropdownRef.current), []);
+
+  useClickOutside(dropdownRef, () => setIsOpen(false), {
+    enabled: true,
+    parentDialog,
+    onDialogClose: () => {
+      userClickedRef.current = false;
+    },
+  });
+
   useEffect(() => {
     if (!searchTerm.trim()) {
       setFilteredOptions(options);
@@ -54,52 +65,6 @@ const MonsterCombobox: React.FC<MonsterComboboxProps> = ({
       setSearchTerm('');
     }
   }, [value, options]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
-        setIsOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
-
-  useEffect(() => {
-    const findParentDialog = () => {
-      let parent = dropdownRef.current?.parentElement;
-      while (parent) {
-        if (parent.tagName === 'DIALOG') {
-          return parent as HTMLDialogElement;
-        }
-        parent = parent.parentElement;
-      }
-
-      return null;
-    };
-
-    const dialog = findParentDialog();
-
-    if (dialog) {
-      const handleDialogClose = () => {
-        userClickedRef.current = false;
-        setIsOpen(false);
-      };
-
-      dialog.addEventListener('close', handleDialogClose);
-
-      return () => {
-        dialog.removeEventListener('close', handleDialogClose);
-      };
-    }
-  }, []);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const term = e.target.value;

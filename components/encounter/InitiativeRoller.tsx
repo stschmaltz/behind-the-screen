@@ -17,7 +17,7 @@ type InitiativeRollerProps = {
 const InitiativeRoller: React.FC<InitiativeRollerProps> = ({
   characters,
   type,
-  players = [],
+  players: _players = [],
   onUpdateInitiative,
   disabled = false,
   className = '',
@@ -36,12 +36,8 @@ const InitiativeRoller: React.FC<InitiativeRollerProps> = ({
           modifier = getAbilityModifier(stats.DEX);
         }
       }
-      if (type === 'player') {
-        const player = players.find((p) => p._id === c._id);
-        if (player && typeof player.level === 'number') {
-          modifier = 0;
-        }
-      }
+      // Players currently don't use ability modifiers for initiative
+      // This could be enhanced in the future to use DEX modifier from player stats
 
       return {
         ...c,

@@ -6,3 +6,4 @@ export { default as SettingsIcon } from './SettingsIcon';
 export { default as DocumentIcon } from './DocumentIcon';
 export { default as ChevronDownIcon } from './ChevronDownIcon';
 export { default as CheckIcon } from './CheckIcon';
+export { default as UserIcon } from './UserIcon';
