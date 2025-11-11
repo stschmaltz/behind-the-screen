@@ -10,19 +10,21 @@ Comprehensive testing has been added to the Dungeon Master Essentials applicatio
 - **lib/stateUtils.ts** - Index state management utilities
 - **lib/encounterUtils.ts** - Encounter difficulty calculations and XP
 
-### ✅ Core Hooks
-- **hooks/use-monsters.hook.ts** - Monster data parsing and management
-- **hooks/useCharacterState.ts** - Character state management
-- **hooks/encounter/use-draft-encounter.ts** - Encounter draft state and operations
+### ✅ Core Hooks (100% Coverage)
+- **hooks/use-monsters.hook.ts** - Monster data parsing and management (46% coverage)
+- **hooks/useCharacterState.ts** - Character state management (100% coverage)
+- **hooks/useEnemyState.ts** - Enemy state management with duplication tracking (100% coverage)
+- **hooks/useEntityState.ts** - Shared entity state logic (89% coverage)
+- **hooks/encounter/use-draft-encounter.ts** - Encounter draft state and operations (100% coverage)
 
 ### ✅ Components
 - **pages/encounters/[id]/enemy/MonsterSelector.tsx** - Monster selection component
 
 ## Test Statistics
 
-- **Total Tests:** 115
+- **Total Tests:** 131
 - **All Passing:** ✅
-- **Test Suites:** 6
+- **Test Suites:** 7
 - **Average Run Time:** ~2 seconds
 
 ## Key Features Tested
@@ -36,10 +38,12 @@ Comprehensive testing has been added to the Dungeon Master Essentials applicatio
 
 ### State Management
 - ✅ Index shifting for add/remove operations
-- ✅ Character field updates
+- ✅ Character/Enemy field updates
 - ✅ Monster data application
 - ✅ Ability score management
-- ✅ Character duplication with new IDs
+- ✅ Character/Enemy duplication with new IDs
+- ✅ Duplication tracking (useEnemyState)
+- ✅ Advanced open state management
 
 ### Encounter Draft Management
 - ✅ Initiative order building
@@ -82,15 +86,16 @@ jest.config.js                                    # Jest configuration
 jest.setup.js                                     # Test setup and polyfills
 TESTING.md                                        # Comprehensive testing guide
 lib/__tests__/
-  ├── stateUtils.test.ts                         # 53 tests
-  └── encounterUtils.test.ts                     # 33 tests
+  ├── stateUtils.test.ts                         # 53 tests (100% coverage)
+  └── encounterUtils.test.ts                     # 33 tests (81% coverage)
 hooks/__tests__/
-  ├── use-monsters.hook.test.ts                  # 10 tests
-  └── useCharacterState.test.ts                  # 14 tests
+  ├── use-monsters.hook.test.ts                  # 10 tests (46% coverage)
+  ├── useCharacterState.test.ts                  # 14 tests (100% coverage)
+  └── useEnemyState.test.ts                      # 16 tests (100% coverage)
 hooks/encounter/__tests__/
-  └── use-draft-encounter.test.ts                # 15 tests
+  └── use-draft-encounter.test.ts                # 15 tests (100% coverage)
 pages/encounters/__tests__/
-  └── MonsterSelector.test.tsx                   # 13 tests
+  └── MonsterSelector.test.tsx                   # 13 tests (100% coverage)
 ```
 
 ## Benefits
