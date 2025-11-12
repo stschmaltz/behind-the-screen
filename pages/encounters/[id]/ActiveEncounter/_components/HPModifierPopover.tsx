@@ -31,7 +31,7 @@ export const HPModifierPopover = React.forwardRef<
     const { setIsScrollLockActive } = usePopoverContext();
 
     const popoverClasses =
-      'z-50 p-3 card bg-base-200 shadow-xl w-56 overflow-hidden';
+      'z-50 p-3 card bg-base-200 shadow-xl w-56 overflow-hidden !transition-none';
 
     const handleInputFocus = () => {
       setIsScrollLockActive(true);
