@@ -52,21 +52,21 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
   onRequestMoreUses,
 }) => {
   const randomizeRace = () => {
-    if (!isLoading && useAiEnhanced) {
+    if (!isLoading) {
       const randomIndex = Math.floor(Math.random() * RACE_OPTIONS.length);
       setRace(RACE_OPTIONS[randomIndex].value);
     }
   };
 
   const randomizeOccupation = () => {
-    if (!isLoading && useAiEnhanced) {
+    if (!isLoading) {
       const randomIndex = Math.floor(Math.random() * OCCUPATION_OPTIONS.length);
       setOccupation(OCCUPATION_OPTIONS[randomIndex].value);
     }
   };
 
   const randomizeContext = () => {
-    if (!isLoading && useAiEnhanced) {
+    if (!isLoading) {
       const randomIndex = Math.floor(Math.random() * SETTING_OPTIONS.length);
       setContext(SETTING_OPTIONS[randomIndex].value);
     }
@@ -115,7 +115,7 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
               <button
                 type="button"
                 onClick={randomizeRace}
-                disabled={isLoading || !useAiEnhanced}
+                disabled={isLoading}
                 className="btn btn-square btn-outline"
                 title="Randomize Race"
               >
@@ -137,7 +137,7 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
               <button
                 type="button"
                 onClick={randomizeOccupation}
-                disabled={isLoading || !useAiEnhanced}
+                disabled={isLoading}
                 className="btn btn-square btn-outline"
                 title="Randomize Occupation"
               >
@@ -159,7 +159,7 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
               <button
                 type="button"
                 onClick={randomizeContext}
-                disabled={isLoading || !useAiEnhanced}
+                disabled={isLoading}
                 className="btn btn-square btn-outline"
                 title="Randomize Setting"
               >
