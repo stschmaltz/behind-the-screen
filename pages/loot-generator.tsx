@@ -53,7 +53,10 @@ const LootGeneratorPage: NextPage = () => {
   const {
     remainingUses,
     hasAvailableUses,
+    resetDate,
+    hasRequestedMoreUses,
     incrementUsage,
+    requestMoreUses,
     isLoading: isLoadingUsage,
   } = useGenerationUsage();
 
@@ -179,6 +182,9 @@ const LootGeneratorPage: NextPage = () => {
               setUseAiEnhanced={setUseAiEnhanced}
               remainingAiUses={remainingUses}
               hasAvailableAiUses={hasAvailableUses}
+              resetDate={resetDate}
+              hasRequestedMoreUses={hasRequestedMoreUses}
+              onRequestMoreUses={requestMoreUses}
             />
           </div>
 

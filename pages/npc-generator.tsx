@@ -56,7 +56,10 @@ const NpcGeneratorPage: NextPage = () => {
   const {
     remainingUses,
     hasAvailableUses,
+    resetDate,
+    hasRequestedMoreUses,
     incrementUsage,
+    requestMoreUses,
     isLoading: isLoadingUsage,
   } = useGenerationUsage();
 
@@ -192,6 +195,9 @@ const NpcGeneratorPage: NextPage = () => {
               setUseAiEnhanced={setUseAiEnhanced}
               remainingAiUses={remainingUses}
               hasAvailableAiUses={hasAvailableUses}
+              resetDate={resetDate}
+              hasRequestedMoreUses={hasRequestedMoreUses}
+              onRequestMoreUses={requestMoreUses}
             />
           </div>
 

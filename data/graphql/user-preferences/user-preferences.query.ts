@@ -43,6 +43,8 @@ const userPreferencesQueryResolver = {
       usageCount: number;
       limit: number;
       resetDate?: string;
+      loginCount?: number;
+      lastLoginDate?: string;
     }>> {
       logger.info('getAllUsageStats');
       isAuthorizedOrThrow(context);

@@ -17,6 +17,9 @@ interface UserWithUsage {
   usageCount: number;
   limit: number;
   resetDate?: string;
+  hasRequestedMoreUses?: boolean;
+  loginCount?: number;
+  lastLoginDate?: string;
 }
 
 const GET_ALL_USAGE_STATS_QUERY = `
@@ -26,6 +29,9 @@ const GET_ALL_USAGE_STATS_QUERY = `
       usageCount
       limit
       resetDate
+      hasRequestedMoreUses
+      loginCount
+      lastLoginDate
     }
   }
 `;
@@ -87,10 +93,12 @@ function AdminPage() {
                 <thead>
                   <tr>
                     <th>Email</th>
-                    <th>Usage</th>
-                    <th>Limit</th>
-                    <th>Remaining</th>
-                    <th>Reset Date</th>
+                    <th>AI Usage</th>
+                    <th>AI Limit</th>
+                    <th>AI Remaining</th>
+                    <th>AI Reset Date</th>
+                    <th>Login Count</th>
+                    <th>Last Login</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -116,6 +124,12 @@ function AdminPage() {
                           {remaining}
                         </td>
                         <td>{nextResetDate}</td>
+                        <td>{stat.loginCount ?? 0}</td>
+                        <td>
+                          {stat.lastLoginDate
+                            ? new Date(stat.lastLoginDate).toLocaleString()
+                            : 'Never'}
+                        </td>
                       </tr>
                     );
                   })}

@@ -26,6 +26,9 @@ interface NpcGeneratorFormProps {
   setUseAiEnhanced: (value: boolean) => void;
   remainingAiUses: number;
   hasAvailableAiUses: boolean;
+  resetDate: Date | null;
+  hasRequestedMoreUses: boolean;
+  onRequestMoreUses: () => void;
 }
 
 const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
@@ -46,7 +49,16 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
   setUseAiEnhanced,
   remainingAiUses,
   hasAvailableAiUses,
+  resetDate,
+  hasRequestedMoreUses,
+  onRequestMoreUses,
 }) => {
+  const getResetDateText = () => {
+    if (!resetDate) return null;
+    const nextReset = new Date(resetDate.getTime() + 7 * 24 * 60 * 60 * 1000);
+
+    return `Resets ${nextReset.toLocaleDateString()}`;
+  };
   const randomizeRace = () => {
     if (!isLoading && useAiEnhanced) {
       const randomIndex = Math.floor(Math.random() * RACE_OPTIONS.length);
@@ -200,15 +212,30 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
                   className="toggle toggle-primary"
                   disabled={isLoading || !hasAvailableAiUses}
                 />
-                <div className="flex flex-col">
+                <div className="flex flex-col flex-1">
                   <span className="label-text font-semibold">
                     AI Enhanced Mode
                   </span>
                   <span className="label-text-alt text-xs">
                     {hasAvailableAiUses
-                      ? `${remainingAiUses} of 25 uses remaining this week`
-                      : 'No uses remaining - resets weekly'}
+                      ? `${remainingAiUses} of 25 uses remaining`
+                      : 'No uses remaining'}
+                    {resetDate && ` • ${getResetDateText()}`}
                   </span>
+                  {!hasAvailableAiUses && !hasRequestedMoreUses && (
+                    <button
+                      type="button"
+                      onClick={onRequestMoreUses}
+                      className="btn btn-xs btn-ghost mt-1 self-start"
+                    >
+                      Request More Uses
+                    </button>
+                  )}
+                  {hasRequestedMoreUses && (
+                    <span className="text-xs text-success mt-1">
+                      ✓ Request submitted
+                    </span>
+                  )}
                 </div>
               </label>
             </div>

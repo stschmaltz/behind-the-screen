@@ -14,6 +14,8 @@ export interface UserDocument {
   aiUsageCount?: number;
   aiUsageResetDate?: Date;
   aiWeeklyLimit?: number;
+  loginCount?: number;
+  lastLoginDate?: Date;
 }
 
 /**

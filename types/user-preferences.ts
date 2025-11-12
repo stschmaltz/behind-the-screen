@@ -7,6 +7,7 @@ export interface UserPreferences {
   theme?: string;
   aiGenerationUsageCount?: number;
   aiUsageResetDate?: Date;
+  hasRequestedMoreUses?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

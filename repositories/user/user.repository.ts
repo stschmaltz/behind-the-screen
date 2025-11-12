@@ -20,6 +20,8 @@ const mapUserDocumentToUserObject = (doc: UserDocument): UserObject => ({
   aiUsageCount: doc.aiUsageCount ?? 0,
   aiUsageResetDate: doc.aiUsageResetDate,
   aiWeeklyLimit: doc.aiWeeklyLimit ?? 25,
+  loginCount: doc.loginCount ?? 0,
+  lastLoginDate: doc.lastLoginDate,
 });
 
 class UserRepository implements UserRepositoryInterface {
@@ -77,6 +79,10 @@ class UserRepository implements UserRepositoryInterface {
             name: userData.name,
             picture: userData.picture,
             emailVerified: false,
+            lastLoginDate: new Date(),
+          },
+          $inc: {
+            loginCount: 1,
           },
         },
         { upsert: true, returnDocument: 'after' },

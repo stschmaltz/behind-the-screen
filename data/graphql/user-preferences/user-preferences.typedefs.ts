@@ -14,6 +14,8 @@ const userPreferencesTypeDefs = /* GraphQL */ `
     limit: Int!
     resetDate: String
     hasRequestedMoreUses: Boolean
+    loginCount: Int
+    lastLoginDate: String
   }
 `;
 

@@ -8,4 +8,6 @@ export interface UserObject {
   aiUsageCount?: number;
   aiUsageResetDate?: Date;
   aiWeeklyLimit?: number;
+  loginCount?: number;
+  lastLoginDate?: Date;
 }

@@ -225,6 +225,8 @@ export class UserPreferencesRepository
       limit: number;
       resetDate?: string;
       hasRequestedMoreUses?: boolean;
+      loginCount?: number;
+      lastLoginDate?: string;
     }>
   > {
     try {
@@ -246,6 +248,8 @@ export class UserPreferencesRepository
             limit: 25,
             resetDate: prefs?.aiUsageResetDate?.toISOString(),
             hasRequestedMoreUses: prefs?.hasRequestedMoreUses || false,
+            loginCount: user.loginCount || 0,
+            lastLoginDate: user.lastLoginDate?.toISOString(),
           };
         }),
       );
