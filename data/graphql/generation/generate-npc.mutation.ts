@@ -2,19 +2,8 @@ import {
   GraphQLContext,
   isAuthorizedOrThrow,
 } from '../../../lib/graphql-context';
-import {
-  RACES,
-  GENDERS,
-  NAMES_BY_RACE_AND_GENDER,
-  OCCUPATIONS,
-  AGE_RANGES,
-  PERSONALITY_TRAITS,
-  APPEARANCE_TRAITS,
-  QUIRKS,
-  MOTIVATIONS,
-  SECRETS,
-  BACKGROUNDS,
-} from '../../npc-data';
+import { logger } from '../../../lib/logger';
+import fetch from 'node-fetch';
 
 const generateNpcMutationTypeDefs = /* GraphQL */ `
   type Npc {
@@ -42,20 +31,50 @@ const generateNpcMutationTypeDefs = /* GraphQL */ `
   }
 `;
 
-function randomChoice<T>(array: T[]): T {
-  return array[Math.floor(Math.random() * array.length)];
+const MASTRA_SERVICE_BASE_URL = process.env.MASTRA_SERVICE_BASE_URL;
+const MASTRA_WORKFLOW_PATH = '/api/workflows/npcGenerationWorkflow/start-async';
+
+function buildMastraUrl() {
+  if (!MASTRA_SERVICE_BASE_URL) {
+    throw new Error('Mastra service base URL not set.');
+  }
+  return `${MASTRA_SERVICE_BASE_URL.replace(/\/$/, '')}${MASTRA_WORKFLOW_PATH}`;
 }
 
-function generateName(race: string, gender: string): string {
-  const raceNames =
-    NAMES_BY_RACE_AND_GENDER[race] || NAMES_BY_RACE_AND_GENDER.Human;
-  const names = raceNames[gender] || raceNames.Male;
-  return randomChoice(names);
+async function sendMastraRequest(url: string, body: any) {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const text = await res.clone().text();
+  return { res, text };
 }
 
-function generateAge(race: string): string {
-  const ageOptions = AGE_RANGES[race] || AGE_RANGES.Human;
-  return randomChoice(ageOptions);
+function parseNpcData(responseText: string) {
+  const data = JSON.parse(responseText);
+  if (data && typeof data === 'object' && data.name) return data;
+  if (data?.output && typeof data.output === 'object' && data.output.name)
+    return data.output;
+  if (
+    data?.results?.formatNpc?.output &&
+    typeof data.results.formatNpc.output === 'object' &&
+    data.results.formatNpc.output.name
+  )
+    return data.results.formatNpc.output;
+  if (data && typeof data.text === 'string') {
+    try {
+      const inner = JSON.parse(data.text);
+      if (inner && typeof inner === 'object' && inner.name) return inner;
+      if (
+        inner?.output &&
+        typeof inner.output === 'object' &&
+        inner.output.name
+      )
+        return inner.output;
+    } catch {}
+  }
+  return null;
 }
 
 const generateNpcMutationResolver = {
@@ -79,25 +98,38 @@ const generateNpcMutationResolver = {
     ) {
       isAuthorizedOrThrow(contextObj);
 
-      const selectedRace = race || randomChoice(RACES);
-      const selectedGender = randomChoice(GENDERS);
-      const selectedOccupation = occupation || randomChoice(OCCUPATIONS);
-
-      const npc = {
-        name: generateName(selectedRace, selectedGender),
-        race: selectedRace,
-        gender: selectedGender,
-        age: generateAge(selectedRace),
-        occupation: selectedOccupation,
-        personality: randomChoice(PERSONALITY_TRAITS),
-        appearance: randomChoice(APPEARANCE_TRAITS),
-        quirk: randomChoice(QUIRKS),
-        motivation: randomChoice(MOTIVATIONS),
-        secret: includeSecret ? randomChoice(SECRETS) : undefined,
-        background: includeBackground ? randomChoice(BACKGROUNDS) : undefined,
+      const fullMastraUrl = buildMastraUrl();
+      const requestBody = {
+        race: race || undefined,
+        occupation: occupation || undefined,
+        context: context || undefined,
+        includeSecret,
+        includeBackground,
       };
 
-      return npc;
+      logger.info('[generateNpc] Sending request to Mastra:', {
+        url: fullMastraUrl,
+        body: requestBody,
+      });
+
+      const { res: mastraResponse, text: responseText } =
+        await sendMastraRequest(fullMastraUrl, requestBody);
+
+      logger.info('[generateNpc] Raw response from Mastra:', responseText);
+
+      if (!mastraResponse.ok) {
+        throw new Error(
+          `Mastra service error: ${mastraResponse.status} - ${responseText || mastraResponse.statusText}`,
+        );
+      }
+
+      const npcData = parseNpcData(responseText);
+
+      if (!npcData || !npcData.name) {
+        throw new Error('Mastra service did not return valid NPC data.');
+      }
+
+      return npcData;
     },
   },
 };
