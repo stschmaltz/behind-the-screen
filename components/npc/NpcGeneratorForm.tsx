@@ -1,6 +1,6 @@
 import React from 'react';
-import { FormInput } from '../ui/FormInput';
 import { Button } from '../ui/Button';
+import { Combobox } from '../ui/Combobox';
 import { ErrorIcon, UserIcon } from '../icons';
 
 interface NpcGeneratorFormProps {
@@ -18,6 +18,77 @@ interface NpcGeneratorFormProps {
   handleSubmit: (e: React.FormEvent) => Promise<void>;
   error: string | null;
 }
+
+const RACE_OPTIONS = [
+  { value: 'Human', label: 'Human' },
+  { value: 'Elf', label: 'Elf' },
+  { value: 'Dwarf', label: 'Dwarf' },
+  { value: 'Halfling', label: 'Halfling' },
+  { value: 'Gnome', label: 'Gnome' },
+  { value: 'Half-Elf', label: 'Half-Elf' },
+  { value: 'Half-Orc', label: 'Half-Orc' },
+  { value: 'Tiefling', label: 'Tiefling' },
+  { value: 'Dragonborn', label: 'Dragonborn' },
+  { value: 'Aasimar', label: 'Aasimar' },
+  { value: 'Genasi', label: 'Genasi' },
+  { value: 'Goliath', label: 'Goliath' },
+  { value: 'Tabaxi', label: 'Tabaxi' },
+  { value: 'Firbolg', label: 'Firbolg' },
+  { value: 'Kenku', label: 'Kenku' },
+  { value: 'Goblin', label: 'Goblin' },
+  { value: 'Kobold', label: 'Kobold' },
+];
+
+const OCCUPATION_OPTIONS = [
+  { value: 'Merchant', label: 'Merchant' },
+  { value: 'Guard', label: 'Guard' },
+  { value: 'Innkeeper', label: 'Innkeeper' },
+  { value: 'Blacksmith', label: 'Blacksmith' },
+  { value: 'Farmer', label: 'Farmer' },
+  { value: 'Scholar', label: 'Scholar' },
+  { value: 'Priest', label: 'Priest' },
+  { value: 'Baker', label: 'Baker' },
+  { value: 'Fisherman', label: 'Fisherman' },
+  { value: 'Tailor', label: 'Tailor' },
+  { value: 'Carpenter', label: 'Carpenter' },
+  { value: 'Alchemist', label: 'Alchemist' },
+  { value: 'Herbalist', label: 'Herbalist' },
+  { value: 'Town Crier', label: 'Town Crier' },
+  { value: 'Stable Hand', label: 'Stable Hand' },
+  { value: 'Cook', label: 'Cook' },
+  { value: 'Bard', label: 'Bard' },
+  { value: 'Apothecary', label: 'Apothecary' },
+  { value: 'Librarian', label: 'Librarian' },
+  { value: 'Street Performer', label: 'Street Performer' },
+  { value: 'Miner', label: 'Miner' },
+  { value: 'Sailor', label: 'Sailor' },
+  { value: 'Hunter', label: 'Hunter' },
+  { value: 'Scribe', label: 'Scribe' },
+  { value: 'Jeweler', label: 'Jeweler' },
+];
+
+const SETTING_OPTIONS = [
+  { value: 'Tavern', label: 'Tavern' },
+  { value: 'Market', label: 'Market' },
+  { value: 'Temple', label: 'Temple' },
+  { value: 'Royal Court', label: 'Royal Court' },
+  { value: 'Village', label: 'Village' },
+  { value: 'City', label: 'City' },
+  { value: 'Forest', label: 'Forest' },
+  { value: 'Mountain', label: 'Mountain' },
+  { value: 'Coast', label: 'Coast' },
+  { value: 'Dungeon', label: 'Dungeon' },
+  { value: 'Guild Hall', label: 'Guild Hall' },
+  { value: 'Docks', label: 'Docks' },
+  { value: 'Slums', label: 'Slums' },
+  { value: 'Noble District', label: 'Noble District' },
+  { value: 'Wilderness', label: 'Wilderness' },
+  { value: 'Ruins', label: 'Ruins' },
+  { value: 'Prison', label: 'Prison' },
+  { value: 'Library', label: 'Library' },
+  { value: 'Academy', label: 'Academy' },
+  { value: 'Bazaar', label: 'Bazaar' },
+];
 
 const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
   race,
@@ -44,44 +115,32 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 gap-6">
-            <div className="form-control">
-              <FormInput
-                id="race"
-                label="Race (Optional)"
-                type="text"
-                value={race}
-                onChange={(e) => setRace(e.target.value)}
-                className="input-bordered w-full"
-                placeholder="e.g., Human, Elf, Dwarf, or leave blank"
-                disabled={isLoading}
-              />
-            </div>
+            <Combobox
+              options={RACE_OPTIONS}
+              value={race}
+              onChange={setRace}
+              placeholder="Type or select a race..."
+              label="Race (Optional)"
+              disabled={isLoading}
+            />
 
-            <div className="form-control">
-              <FormInput
-                id="occupation"
-                label="Occupation (Optional)"
-                type="text"
-                value={occupation}
-                onChange={(e) => setOccupation(e.target.value)}
-                className="input-bordered w-full"
-                placeholder="e.g., Merchant, Guard, Innkeeper"
-                disabled={isLoading}
-              />
-            </div>
+            <Combobox
+              options={OCCUPATION_OPTIONS}
+              value={occupation}
+              onChange={setOccupation}
+              placeholder="Type or select an occupation..."
+              label="Occupation (Optional)"
+              disabled={isLoading}
+            />
 
-            <div className="form-control">
-              <FormInput
-                id="context"
-                label="Setting/Context (Optional)"
-                type="text"
-                value={context}
-                onChange={(e) => setContext(e.target.value)}
-                className="input-bordered w-full"
-                placeholder="e.g., tavern, royal court, village"
-                disabled={isLoading}
-              />
-            </div>
+            <Combobox
+              options={SETTING_OPTIONS}
+              value={context}
+              onChange={setContext}
+              placeholder="Type or select a setting..."
+              label="Setting/Context (Optional)"
+              disabled={isLoading}
+            />
 
             <div className="form-control">
               <label className="label cursor-pointer justify-start gap-4">
