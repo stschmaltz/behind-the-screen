@@ -1,7 +1,6 @@
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import { UserObject } from '../types/user';
 import { isFeatureEnabled } from '../lib/featureFlags';
 import { asyncFetch } from '../data/graphql/graphql-fetcher';
 
@@ -13,7 +12,7 @@ interface Feedback {
   timestamp: string;
 }
 
-interface AiUsageStat {
+interface UserWithUsage {
   email: string;
   usageCount: number;
   limit: number;
@@ -33,9 +32,10 @@ const GET_ALL_USAGE_STATS_QUERY = `
 
 function AdminPage() {
   const { user, isLoading } = useUser();
-  const [users, setUsers] = useState<UserObject[] | null>(null);
+  const [usersWithUsage, setUsersWithUsage] = useState<UserWithUsage[] | null>(
+    null,
+  );
   const [feedback, setFeedback] = useState<Feedback[] | null>(null);
-  const [aiUsageStats, setAiUsageStats] = useState<AiUsageStat[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
@@ -44,20 +44,16 @@ function AdminPage() {
       router.replace('/404');
     }
     if (!isLoading && user && isFeatureEnabled(user.email)) {
-      fetch('/api/user/list')
-        .then((res) => res.json())
-        .then((data) => setUsers(data.users))
-        .catch(() => setError('Failed to fetch users'));
+      asyncFetch<{ getAllUsageStats: UserWithUsage[] }>(
+        GET_ALL_USAGE_STATS_QUERY,
+        {},
+      )
+        .then((data) => setUsersWithUsage(data.getAllUsageStats))
+        .catch(() => setError('Failed to fetch users and usage stats'));
       fetch('/api/feedback/list')
         .then((res) => res.json())
         .then((data) => setFeedback(data.feedback))
         .catch(() => setError('Failed to fetch feedback'));
-      asyncFetch<{ getAllUsageStats: AiUsageStat[] }>(
-        GET_ALL_USAGE_STATS_QUERY,
-        {},
-      )
-        .then((data) => setAiUsageStats(data.getAllUsageStats))
-        .catch(() => setError('Failed to fetch AI usage stats'));
     }
   }, [user, isLoading, router]);
 
@@ -75,41 +71,15 @@ function AdminPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-base-200 p-4 gap-8">
-      <div className="card w-full max-w-2xl bg-base-100 shadow-xl">
+      <div className="card w-full max-w-4xl bg-base-100 shadow-xl">
         <div className="card-body items-center text-center">
           <h2 className="card-title">Admin Dashboard</h2>
-          <p className="text-lg">User List</p>
+          <p className="text-lg">
+            Users & AI Usage (Weekly Limit: 25 generations)
+          </p>
           {error ? (
             <span className="text-error">{error}</span>
-          ) : users === null ? (
-            <span className="loading loading-spinner loading-md"></span>
-          ) : (
-            <div className="overflow-x-auto w-full">
-              <table className="table w-full">
-                <thead>
-                  <tr>
-                    <th>Email</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {users.map((u) => (
-                    <tr key={u._id}>
-                      <td>{u.email}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="card w-full max-w-2xl bg-base-100 shadow-xl">
-        <div className="card-body items-center text-center">
-          <h2 className="card-title">AI Usage Statistics</h2>
-          <p className="text-lg">Weekly Limit: 25 generations per user</p>
-          {error ? (
-            <span className="text-error">{error}</span>
-          ) : aiUsageStats === null ? (
+          ) : usersWithUsage === null ? (
             <span className="loading loading-spinner loading-md"></span>
           ) : (
             <div className="overflow-x-auto w-full">
@@ -124,7 +94,7 @@ function AdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {aiUsageStats.map((stat, i) => {
+                  {usersWithUsage.map((stat, i) => {
                     const remaining = stat.limit - stat.usageCount;
                     const nextResetDate = stat.resetDate
                       ? new Date(
@@ -155,7 +125,7 @@ function AdminPage() {
           )}
         </div>
       </div>
-      <div className="card w-full max-w-2xl bg-base-100 shadow-xl">
+      <div className="card w-full max-w-4xl bg-base-100 shadow-xl">
         <div className="card-body items-center text-center">
           <h2 className="card-title">Feedback</h2>
           {error ? (

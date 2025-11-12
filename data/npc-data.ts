@@ -1648,16 +1648,7 @@ export const NAMES_BY_RACE_AND_GENDER: Record<
       'Prakka',
       'Sakka',
     ],
-    'Non-binary': [
-      'Brok',
-      'Dak',
-      'Grak',
-      'Krek',
-      'Mak',
-      'Prak',
-      'Sak',
-      'Vek',
-    ],
+    'Non-binary': ['Brok', 'Dak', 'Grak', 'Krek', 'Mak', 'Prak', 'Sak', 'Vek'],
   },
   Grung: {
     Male: [
@@ -1684,16 +1675,7 @@ export const NAMES_BY_RACE_AND_GENDER: Record<
       'Rikka',
       'Tikka',
     ],
-    'Non-binary': [
-      'Bik',
-      'Crik',
-      'Dik',
-      'Grik',
-      'Hik',
-      'Krik',
-      'Pik',
-      'Tik',
-    ],
+    'Non-binary': ['Bik', 'Crik', 'Dik', 'Grik', 'Hik', 'Krik', 'Pik', 'Tik'],
   },
   'Simic Hybrid': {
     Male: [

@@ -26,43 +26,43 @@ const LootDisplay: React.FC<LootDisplayProps> = ({
 }) => {
   if (!loot) {
     return (
-      <div className="card bg-base-100 shadow-xl h-full flex items-center justify-center p-8 max-w-xl max-h-96  ">
-        <div className="text-center space-y-4">
+      <div className="card bg-base-100 shadow-xl h-full flex items-center justify-center">
+        <div className="card-body text-center py-20">
           {isGenerating ? (
-            <div className="flex flex-col items-center justify-center h-full min-h-96">
+            <div className="flex flex-col items-center justify-center space-y-6">
               <div className="relative">
-                <TreasureChestIcon className="w-20 h-20 mx-auto text-primary animate-pulse" />
+                <TreasureChestIcon className="w-24 h-24 mx-auto text-primary animate-pulse" />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
                 </div>
               </div>
-              <div className="space-y-2">
-                <p className="text-xl font-medium text-primary">
+              <div className="space-y-3">
+                <p className="text-2xl font-semibold text-primary">
                   Generating loot...
                 </p>
-                <p className="text-sm text-base-content/70">
+                <p className="text-base text-base-content/60">
                   Searching for treasures worthy of your adventure
                 </p>
               </div>
-              <div className="flex justify-center space-x-1 mt-2">
+              <div className="flex justify-center space-x-2 mt-4">
                 <div
-                  className="w-2 h-2 rounded-full bg-primary animate-bounce"
+                  className="w-3 h-3 rounded-full bg-primary animate-bounce"
                   style={{ animationDelay: '0ms' }}
                 ></div>
                 <div
-                  className="w-2 h-2 rounded-full bg-primary animate-bounce"
+                  className="w-3 h-3 rounded-full bg-primary animate-bounce"
                   style={{ animationDelay: '150ms' }}
                 ></div>
                 <div
-                  className="w-2 h-2 rounded-full bg-primary animate-bounce"
+                  className="w-3 h-3 rounded-full bg-primary animate-bounce"
                   style={{ animationDelay: '300ms' }}
                 ></div>
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full min-h-96">
-              <EmptyLootIcon className="w-16 h-16 mx-auto text-base-300" />
-              <p className="text-xl text-base-content/70 ">
+            <div className="flex flex-col items-center justify-center space-y-4">
+              <EmptyLootIcon className="w-20 h-20 mx-auto text-base-300" />
+              <p className="text-xl text-base-content/60">
                 Fill in the parameters and generate your loot!
               </p>
             </div>
@@ -130,33 +130,33 @@ const LootDisplay: React.FC<LootDisplayProps> = ({
 
   return (
     <div className="card bg-base-100 shadow-xl overflow-hidden h-full">
-      <div className="bg-primary text-primary-content p-4">
-        <h2 className="text-2xl font-bold flex items-center gap-2">
-          <TreasureChestIcon className="w-6 h-6" />
+      <div className="bg-primary text-primary-content p-6">
+        <h2 className="text-2xl font-bold flex items-center gap-3">
+          <TreasureChestIcon className="w-7 h-7" />
           Generated Loot Table
         </h2>
-        {context && <p className="text-sm opacity-80 mt-1">Theme: {context}</p>}
+        {context && <p className="text-sm opacity-90 mt-2">Theme: {context}</p>}
         {hasJackpot && (
-          <div className="mt-2 px-3 py-1 bg-warning text-warning-content rounded-lg text-sm font-semibold animate-pulse">
+          <div className="mt-3 px-4 py-2 bg-warning text-warning-content rounded-lg text-sm font-semibold animate-pulse">
             ✨ JACKPOT! You found rare treasure! ✨
           </div>
         )}
       </div>
 
-      <div className="card-body divide-y divide-base-300 max-h-[60vh] overflow-y-auto">
+      <div className="card-body divide-y divide-base-300 max-h-[65vh] overflow-y-auto">
         {sortedCoinEntries.length > 0 && (
-          <div className="py-1">
-            <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
+          <div className="py-4">
+            <div className="grid grid-cols-3 gap-4 sm:gap-6 text-center">
               {sortedCoinEntries.map((entry, idx) => (
-                <div key={idx} className="space-y-1">
+                <div key={idx} className="space-y-2">
                   {entry.level && (
-                    <span className="text-xs sm:text-sm text-base-content/70 uppercase tracking-wide">
+                    <span className="text-xs sm:text-sm text-base-content/70 uppercase tracking-wider font-medium">
                       {entry.level}
                     </span>
                   )}
-                  <div className="flex justify-center items-center gap-1 font-bold text-base sm:text-lg">
+                  <div className="flex justify-center items-center gap-2 font-bold text-lg sm:text-xl">
                     <CoinIcon
-                      className={`w-5 h-5 ${getCoinColor(entry.coins || '')}`}
+                      className={`w-6 h-6 ${getCoinColor(entry.coins || '')}`}
                     />
                     <span className={getCoinColor(entry.coins || '')}>
                       {entry.coins}
@@ -169,27 +169,29 @@ const LootDisplay: React.FC<LootDisplayProps> = ({
         )}
 
         {otherEntries.length > 0 && (
-          <div className="pt-4 flex flex-col gap-4">
+          <div className="pt-6 flex flex-col gap-5">
             {otherEntries
               .filter((e) => e.item)
               .map((entry, index) => (
-                <div key={index} className="">
-                  <div className="flex items-start">
+                <div key={index} className="pb-1">
+                  <div className="flex items-start gap-3">
                     <div className="flex-grow">
-                      <span className="font-medium mr-2">{index + 1}.</span>
-                      {entry.item}
+                      <span className="font-semibold mr-2 text-base-content/60">
+                        {index + 1}.
+                      </span>
+                      <span className="font-medium">{entry.item}</span>
                     </div>
-                    <div className="flex gap-2 ml-2 flex-shrink-0">
+                    <div className="flex gap-2 flex-shrink-0">
                       {entry.rarity && (
                         <span
-                          className={`badge ${getRarityColor(entry.rarity)} whitespace-nowrap`}
+                          className={`badge badge-lg ${getRarityColor(entry.rarity)} whitespace-nowrap`}
                         >
                           {getRarityLabel(entry.rarity)}
                         </span>
                       )}
                       {entry.source && (
                         <span
-                          className={`badge badge-outline whitespace-nowrap ${entry.source === 'official' ? 'badge-info' : 'badge-secondary'}`}
+                          className={`badge badge-lg badge-outline whitespace-nowrap ${entry.source === 'official' ? 'badge-info' : 'badge-secondary'}`}
                         >
                           {sourceToDisplay(entry.source)}
                         </span>
@@ -197,12 +199,12 @@ const LootDisplay: React.FC<LootDisplayProps> = ({
                     </div>
                   </div>
                   {entry.description && (
-                    <div className="text-sm mt-1 text-base-content/80 ml-6">
+                    <div className="text-sm mt-2 text-base-content/75 ml-7 leading-relaxed">
                       {entry.description}
                     </div>
                   )}
                   {entry.note && (
-                    <div className="text-sm italic mt-1 text-base-content/70 ml-6">
+                    <div className="text-sm italic mt-2 text-base-content/60 ml-7">
                       {entry.note}
                     </div>
                   )}

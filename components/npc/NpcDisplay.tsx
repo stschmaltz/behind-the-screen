@@ -11,10 +11,17 @@ const NpcDisplay: React.FC<NpcDisplayProps> = ({ npc, isGenerating }) => {
   if (isGenerating) {
     return (
       <div className="card bg-base-100 shadow-xl h-fit">
-        <div className="card-body">
-          <div className="flex flex-col items-center justify-center py-12">
-            <span className="loading loading-spinner loading-lg text-primary mb-4"></span>
-            <p className="text-lg">Generating your NPC...</p>
+        <div className="card-body py-20">
+          <div className="flex flex-col items-center justify-center space-y-6">
+            <span className="loading loading-spinner loading-lg text-primary"></span>
+            <div className="space-y-2 text-center">
+              <p className="text-2xl font-semibold text-primary">
+                Generating your NPC...
+              </p>
+              <p className="text-base text-base-content/60">
+                Creating a unique character
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -24,10 +31,10 @@ const NpcDisplay: React.FC<NpcDisplayProps> = ({ npc, isGenerating }) => {
   if (!npc) {
     return (
       <div className="card bg-base-100 shadow-xl h-fit">
-        <div className="card-body">
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <UserIcon className="w-16 h-16 text-base-300 mb-4" />
-            <p className="text-lg text-base-content/70">
+        <div className="card-body py-20">
+          <div className="flex flex-col items-center justify-center text-center space-y-4">
+            <UserIcon className="w-20 h-20 text-base-300" />
+            <p className="text-xl text-base-content/60">
               Generate an NPC to see the results here
             </p>
           </div>
@@ -38,90 +45,90 @@ const NpcDisplay: React.FC<NpcDisplayProps> = ({ npc, isGenerating }) => {
 
   return (
     <div className="card bg-base-100 shadow-xl h-fit">
-      <div className="card-body">
-        <div className="flex items-center gap-3 mb-4">
-          <UserIcon className="w-8 h-8 text-primary" />
-          <h2 className="card-title text-2xl">{npc.name}</h2>
+      <div className="card-body p-8">
+        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-base-300">
+          <UserIcon className="w-10 h-10 text-primary" />
+          <h2 className="card-title text-3xl font-bold">{npc.name}</h2>
         </div>
 
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 gap-6">
             <div>
-              <h3 className="font-semibold text-sm text-base-content/70">
+              <h3 className="font-semibold text-sm text-base-content/60 uppercase tracking-wide mb-1">
                 Race
               </h3>
-              <p className="text-base">{npc.race}</p>
+              <p className="text-base font-medium">{npc.race}</p>
             </div>
             <div>
-              <h3 className="font-semibold text-sm text-base-content/70">
+              <h3 className="font-semibold text-sm text-base-content/60 uppercase tracking-wide mb-1">
                 Gender
               </h3>
-              <p className="text-base">{npc.gender}</p>
+              <p className="text-base font-medium">{npc.gender}</p>
             </div>
             <div>
-              <h3 className="font-semibold text-sm text-base-content/70">
+              <h3 className="font-semibold text-sm text-base-content/60 uppercase tracking-wide mb-1">
                 Age
               </h3>
-              <p className="text-base">{npc.age}</p>
+              <p className="text-base font-medium">{npc.age}</p>
             </div>
             <div>
-              <h3 className="font-semibold text-sm text-base-content/70">
+              <h3 className="font-semibold text-sm text-base-content/60 uppercase tracking-wide mb-1">
                 Occupation
               </h3>
-              <p className="text-base">{npc.occupation}</p>
+              <p className="text-base font-medium">{npc.occupation}</p>
             </div>
           </div>
 
-          <div className="divider"></div>
+          <div className="divider my-6"></div>
 
           <div>
-            <h3 className="font-semibold text-sm text-base-content/70 mb-2">
+            <h3 className="font-semibold text-base text-base-content/80 mb-3">
               Appearance
             </h3>
-            <p className="text-base">{npc.appearance}</p>
+            <p className="text-base leading-relaxed">{npc.appearance}</p>
           </div>
 
           <div>
-            <h3 className="font-semibold text-sm text-base-content/70 mb-2">
+            <h3 className="font-semibold text-base text-base-content/80 mb-3">
               Personality
             </h3>
-            <p className="text-base">{npc.personality}</p>
+            <p className="text-base leading-relaxed">{npc.personality}</p>
           </div>
 
           <div>
-            <h3 className="font-semibold text-sm text-base-content/70 mb-2">
+            <h3 className="font-semibold text-base text-base-content/80 mb-3">
               Quirk
             </h3>
-            <p className="text-base">{npc.quirk}</p>
+            <p className="text-base leading-relaxed">{npc.quirk}</p>
           </div>
 
           <div>
-            <h3 className="font-semibold text-sm text-base-content/70 mb-2">
+            <h3 className="font-semibold text-base text-base-content/80 mb-3">
               Motivation
             </h3>
-            <p className="text-base">{npc.motivation}</p>
+            <p className="text-base leading-relaxed">{npc.motivation}</p>
           </div>
 
           {npc.secret && (
             <>
-              <div className="divider"></div>
-              <div className="bg-warning/10 p-4 rounded-lg">
-                <h3 className="font-semibold text-sm text-warning mb-2">
-                  Secret
+              <div className="divider my-6"></div>
+              <div className="bg-warning/10 p-5 rounded-lg border border-warning/20">
+                <h3 className="font-semibold text-base text-warning mb-3 flex items-center gap-2">
+                  <span>Secret</span>
                 </h3>
-                <p className="text-base">{npc.secret}</p>
+                <p className="text-base leading-relaxed">{npc.secret}</p>
               </div>
             </>
           )}
 
           {npc.background && (
             <>
-              <div className="divider"></div>
-              <div className="bg-info/10 p-4 rounded-lg">
-                <h3 className="font-semibold text-sm text-info mb-2">
-                  Background
+              <div className="divider my-6"></div>
+              <div className="bg-info/10 p-5 rounded-lg border border-info/20">
+                <h3 className="font-semibold text-base text-info mb-3 flex items-center gap-2">
+                  <span>Background</span>
                 </h3>
-                <p className="text-base">{npc.background}</p>
+                <p className="text-base leading-relaxed">{npc.background}</p>
               </div>
             </>
           )}

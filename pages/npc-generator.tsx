@@ -1,7 +1,8 @@
 import { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import { useUser } from '@auth0/nextjs-auth0/client';
-import { useRouter } from 'next/router';
+import Link from 'next/link';
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import {
   NpcDisplay,
   NpcGeneratorForm,
@@ -14,7 +15,6 @@ import {
 } from '../hooks/use-npc-history.hook';
 import { asyncFetch } from '../data/graphql/graphql-fetcher';
 import { useGenerationUsage } from '../hooks/use-generation-usage';
-import { isFeatureEnabled } from '../lib/featureFlags';
 
 const GENERATE_NPC_MUTATION = `
   mutation GenerateNpc($race: String, $occupation: String, $context: String, $includeSecret: Boolean!, $includeBackground: Boolean!) {
@@ -41,8 +41,7 @@ const GENERATE_NPC_MUTATION = `
 `;
 
 const NpcGeneratorPage: NextPage = () => {
-  const router = useRouter();
-  const { user, isLoading } = useUser();
+  const { isLoading } = useUser();
   const [race, setRace] = useState<string>('');
   const [occupation, setOccupation] = useState<string>('');
   const [context, setContext] = useState<string>('');
@@ -52,6 +51,7 @@ const NpcGeneratorPage: NextPage = () => {
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [useAiEnhanced, setUseAiEnhanced] = useState<boolean>(true);
+  const [isFormCollapsed, setIsFormCollapsed] = useState<boolean>(false);
   const { history, addEntry, removeEntry, clearHistory } = useNpcHistory();
   const {
     remainingUses,
@@ -61,18 +61,12 @@ const NpcGeneratorPage: NextPage = () => {
   } = useGenerationUsage();
 
   useEffect(() => {
-    if (!isLoading && user && !isFeatureEnabled(user.email)) {
-      router.replace('/404');
-    }
-  }, [isLoading, user, router]);
-
-  useEffect(() => {
     if (!hasAvailableUses) {
       setUseAiEnhanced(false);
     }
   }, [hasAvailableUses]);
 
-  if (isLoading || isLoadingUsage || (user && !isFeatureEnabled(user.email))) {
+  if (isLoading || isLoadingUsage) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <span className="loading loading-spinner loading-lg"></span>
@@ -88,6 +82,7 @@ const NpcGeneratorPage: NextPage = () => {
     setIncludeBackground(entry.includeBackground);
     setNpc(entry.npc);
     setError(null);
+    setIsFormCollapsed(false);
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -135,6 +130,7 @@ const NpcGeneratorPage: NextPage = () => {
         includeBackground: actualIncludeBackground,
         npc: data.generateNpc,
       });
+      setIsFormCollapsed(true);
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message || 'Failed to generate NPC.');
@@ -146,42 +142,87 @@ const NpcGeneratorPage: NextPage = () => {
   };
 
   return (
-    <div className="min-h-screen h-full px-4 py-6 md:px-8 lg:px-12">
-      <div className="max-w-6xl mx-auto flex flex-col gap-6 md:flex-row">
-        <div className="md:w-1/3 w-full">
-          <NpcGeneratorForm
-            race={race}
-            setRace={setRace}
-            occupation={occupation}
-            setOccupation={setOccupation}
-            context={context}
-            setContext={setContext}
-            includeSecret={includeSecret}
-            setIncludeSecret={setIncludeSecret}
-            includeBackground={includeBackground}
-            setIncludeBackground={setIncludeBackground}
-            isLoading={isGenerating}
-            handleSubmit={handleSubmit}
-            error={error}
-            useAiEnhanced={useAiEnhanced}
-            setUseAiEnhanced={setUseAiEnhanced}
-            remainingAiUses={remainingUses}
-            hasAvailableAiUses={hasAvailableUses}
+    <div className="min-h-screen h-full bg-base-200/30 px-4 py-8 md:px-8 lg:px-12">
+      <div className="max-w-6xl mx-auto space-y-6">
+        <div className="alert alert-info">
+          <div className="flex-1">
+            <p>
+              🎭 <strong>Beta Feature:</strong> This NPC Generator is in beta.
+              Have feedback or ideas?
+              <Link href="/feedback" className="link link-primary ml-1">
+                Let us know!
+              </Link>
+            </p>
+          </div>
+        </div>
+
+        <div className="relative">
+          {npc && !isGenerating && (
+            <button
+              onClick={() => setIsFormCollapsed(!isFormCollapsed)}
+              className="absolute top-4 right-4 z-10 btn btn-sm btn-circle btn-ghost"
+              title={isFormCollapsed ? 'Expand form' : 'Collapse form'}
+            >
+              {isFormCollapsed ? (
+                <ChevronDownIcon className="w-5 h-5" />
+              ) : (
+                <ChevronUpIcon className="w-5 h-5" />
+              )}
+            </button>
+          )}
+
+          <div
+            className={`transition-all duration-300 ${isFormCollapsed ? 'max-h-0 overflow-hidden opacity-0' : 'max-h-[2000px] opacity-100'}`}
+          >
+            <NpcGeneratorForm
+              race={race}
+              setRace={setRace}
+              occupation={occupation}
+              setOccupation={setOccupation}
+              context={context}
+              setContext={setContext}
+              includeSecret={includeSecret}
+              setIncludeSecret={setIncludeSecret}
+              includeBackground={includeBackground}
+              setIncludeBackground={setIncludeBackground}
+              isLoading={isGenerating}
+              handleSubmit={handleSubmit}
+              error={error}
+              useAiEnhanced={useAiEnhanced}
+              setUseAiEnhanced={setUseAiEnhanced}
+              remainingAiUses={remainingUses}
+              hasAvailableAiUses={hasAvailableUses}
+            />
+          </div>
+
+          {isFormCollapsed && npc && (
+            <div className="card bg-base-100 shadow-lg">
+              <div className="card-body py-3 px-6">
+                <p className="text-sm text-base-content/70">
+                  {race || 'Random'} {occupation || 'Random'}
+                  {context && ` • ${context}`}
+                  {includeSecret && ' • Secret'}
+                  {includeBackground && ' • Background'}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {(npc || isGenerating) && (
+          <div className="w-full">
+            <NpcDisplay npc={npc} isGenerating={isGenerating} />
+          </div>
+        )}
+
+        <div className="w-full">
+          <NpcHistory
+            history={history}
+            onSelect={handleSelect}
+            onDelete={removeEntry}
+            onClear={clearHistory}
           />
         </div>
-
-        <div className="flex-grow w-full md:w-2/3 h-fit min-w-0">
-          <NpcDisplay npc={npc} isGenerating={isGenerating} />
-        </div>
-      </div>
-
-      <div className="max-w-6xl mx-auto mt-6">
-        <NpcHistory
-          history={history}
-          onSelect={handleSelect}
-          onDelete={removeEntry}
-          onClear={clearHistory}
-        />
       </div>
     </div>
   );

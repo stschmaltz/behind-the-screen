@@ -5,6 +5,8 @@ export const getUserPreferencesQuery = /* GraphQL */ `
       activeCampaignId
       theme
       aiGenerationUsageCount
+      aiUsageResetDate
+      hasRequestedMoreUses
     }
   }
 `;
@@ -25,6 +27,15 @@ export const incrementAiGenerationUsageMutation = /* GraphQL */ `
     incrementAiGenerationUsage {
       _id
       aiGenerationUsageCount
+    }
+  }
+`;
+
+export const requestMoreUsesMutation = /* GraphQL */ `
+  mutation RequestMoreUses {
+    requestMoreUses {
+      _id
+      hasRequestedMoreUses
     }
   }
 `;

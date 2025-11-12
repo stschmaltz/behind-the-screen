@@ -22,6 +22,9 @@ export interface UserPreferencesRepositoryInterface {
       usageCount: number;
       limit: number;
       resetDate?: string;
+      hasRequestedMoreUses?: boolean;
     }>
   >;
+
+  requestMoreUses(userId: string): Promise<UserPreferences>;
 }

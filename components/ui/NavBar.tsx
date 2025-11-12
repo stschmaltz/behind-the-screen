@@ -11,8 +11,9 @@ const NavBar: React.FC<Props> = ({ router }) => {
 
   const navItems = [
     { path: '/encounters', label: 'Encounter Manager', enabled: true },
-    { path: '/npc-generator', label: 'NPC Generator', enabled: false },
-    { path: '/loot-generator', label: 'Loot', enabled: false },
+    { path: '/npc-generator', label: 'NPC Generator', enabled: true },
+    { path: '/loot-generator', label: 'Loot', enabled: true },
+    { path: '/feedback', label: 'Feedback', enabled: true },
   ];
 
   return (

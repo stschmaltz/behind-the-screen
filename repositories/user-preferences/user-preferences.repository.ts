@@ -224,6 +224,7 @@ export class UserPreferencesRepository
       usageCount: number;
       limit: number;
       resetDate?: string;
+      hasRequestedMoreUses?: boolean;
     }>
   > {
     try {
@@ -231,19 +232,20 @@ export class UserPreferencesRepository
       const userPrefsCollection = db.collection(this.collectionName);
       const usersCollection = db.collection('users');
 
-      const userPrefs = await userPrefsCollection.find({}).toArray();
+      const allUsers = await usersCollection.find({}).toArray();
 
       const stats = await Promise.all(
-        userPrefs.map(async (pref) => {
-          const user = await usersCollection.findOne({
-            _id: pref.userId,
+        allUsers.map(async (user) => {
+          const prefs = await userPrefsCollection.findOne({
+            userId: user._id,
           });
 
           return {
-            email: user?.email || 'Unknown',
-            usageCount: pref.aiGenerationUsageCount || 0,
+            email: user.email || 'Unknown',
+            usageCount: prefs?.aiGenerationUsageCount || 0,
             limit: 25,
-            resetDate: pref.aiUsageResetDate?.toISOString(),
+            resetDate: prefs?.aiUsageResetDate?.toISOString(),
+            hasRequestedMoreUses: prefs?.hasRequestedMoreUses || false,
           };
         }),
       );
@@ -251,6 +253,53 @@ export class UserPreferencesRepository
       return stats;
     } catch (error) {
       logger.error('Error fetching all usage stats', error);
+      throw error;
+    }
+  }
+
+  public async requestMoreUses(userId: string): Promise<UserPreferences> {
+    try {
+      const { db } = await getDbClient();
+      const now = new Date();
+
+      const existingPrefs = await this.getUserPreferences(userId);
+
+      if (existingPrefs) {
+        const result = await db.collection(this.collectionName).findOneAndUpdate(
+          { _id: new ObjectId(existingPrefs._id), userId: new ObjectId(userId) },
+          {
+            $set: {
+              hasRequestedMoreUses: true,
+              updatedAt: now,
+            },
+          },
+          { returnDocument: 'after' },
+        );
+
+        if (!result) {
+          throw new Error('Failed to update request');
+        }
+
+        return this.mapToUserPreferences(result);
+      } else {
+        const newPrefs = {
+          userId: new ObjectId(userId),
+          hasRequestedMoreUses: true,
+          createdAt: now,
+          updatedAt: now,
+        };
+
+        const insertResult = await db
+          .collection(this.collectionName)
+          .insertOne(newPrefs);
+
+        return this.mapToUserPreferences({
+          ...newPrefs,
+          _id: insertResult.insertedId,
+        });
+      }
+    } catch (error) {
+      logger.error('Error requesting more uses', error);
       throw error;
     }
   }
@@ -264,6 +313,7 @@ export class UserPreferencesRepository
       theme: doc.theme,
       aiGenerationUsageCount: doc.aiGenerationUsageCount || 0,
       aiUsageResetDate: doc.aiUsageResetDate,
+      hasRequestedMoreUses: doc.hasRequestedMoreUses || false,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };

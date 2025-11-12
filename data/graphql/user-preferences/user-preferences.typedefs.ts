@@ -4,6 +4,8 @@ const userPreferencesTypeDefs = /* GraphQL */ `
     activeCampaignId: ID
     theme: String
     aiGenerationUsageCount: Int
+    aiUsageResetDate: String
+    hasRequestedMoreUses: Boolean
   }
 
   type AiUsageStat {
@@ -11,6 +13,7 @@ const userPreferencesTypeDefs = /* GraphQL */ `
     usageCount: Int!
     limit: Int!
     resetDate: String
+    hasRequestedMoreUses: Boolean
   }
 `;
 

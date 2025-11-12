@@ -19,13 +19,13 @@ const NpcHistory: React.FC<NpcHistoryProps> = ({
 
   return (
     <div
-      className={`collapse collapse-arrow bg-base-200 mt-4 ${isOpen ? 'collapse-open' : ''}`}
+      className={`collapse collapse-arrow bg-base-100 shadow-lg rounded-box ${isOpen ? 'collapse-open' : ''}`}
     >
       <div
-        className="collapse-title flex justify-between items-center"
+        className="collapse-title flex justify-between items-center cursor-pointer hover:bg-base-200/50 transition-colors py-5"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className="font-medium">History</span>
+        <span className="font-semibold text-lg">Generation History</span>
         <button
           type="button"
           onClick={(e) => {
@@ -39,27 +39,31 @@ const NpcHistory: React.FC<NpcHistoryProps> = ({
       </div>
       <div className="collapse-content">
         {history.length === 0 ? (
-          <p className="text-sm text-base-content/70">No history yet.</p>
+          <div className="py-8 text-center">
+            <p className="text-base text-base-content/50">
+              No history yet. Generate some NPCs to get started!
+            </p>
+          </div>
         ) : (
-          <ul className="space-y-1 max-h-64 overflow-y-auto ">
+          <ul className="space-y-2 max-h-96 overflow-y-auto py-2">
             {history.map((entry) => (
-              <li key={entry.timestamp} className="flex items-center w-full">
+              <li key={entry.timestamp} className="flex items-stretch gap-2">
                 <button
                   type="button"
                   onClick={() => onSelect(entry)}
-                  className="btn btn-sm btn-outline flex-1 text-left max-h-16 h-auto md:h-auto w-full px-6"
+                  className="btn btn-ghost flex-1 text-left h-auto min-h-[3rem] py-3 px-4 justify-start hover:bg-base-200"
                 >
-                  <div className="flex justify-between max-h-8 w-full items-center">
-                    <span className="overflow-hidden text-ellipsis max-w-[450px]">
-                      {entry.npc.name} - {entry.npc.race} {entry.npc.occupation}
-                      {entry.context && ` (${entry.context})`}
+                  <div className="flex justify-between w-full items-center gap-4">
+                    <span className="overflow-hidden text-ellipsis line-clamp-2 flex-1">
+                      {entry.npc.name} • {entry.npc.race} {entry.npc.occupation}
+                      {entry.context && ` • ${entry.context}`}
                     </span>
-                    <div className="flex flex-col ml-2">
+                    <div className="flex flex-col items-end flex-shrink-0">
                       <span className="text-xs opacity-70 whitespace-nowrap">
                         {new Date(entry.timestamp).toLocaleDateString([], {
                           month: 'short',
                           day: 'numeric',
-                        })}{' '}
+                        })}
                       </span>
                       <span className="text-xs opacity-70 whitespace-nowrap">
                         {new Date(entry.timestamp).toLocaleTimeString([], {
@@ -73,9 +77,9 @@ const NpcHistory: React.FC<NpcHistoryProps> = ({
                 <button
                   type="button"
                   onClick={() => onDelete(entry.timestamp)}
-                  className="btn btn-sm btn-square btn-error ml-2 bg-error/25 border-error/40"
+                  className="btn btn-square btn-ghost hover:btn-error flex-shrink-0"
                 >
-                  <TrashIcon className="w-4 h-4 text-white" />
+                  <TrashIcon className="w-5 h-5" />
                 </button>
               </li>
             ))}

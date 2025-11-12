@@ -83,6 +83,17 @@ const userPreferencesMutationResolver = {
         context.user._id,
       );
     },
+
+    async requestMoreUses(
+      _: any,
+      __: any,
+      context: GraphQLContext,
+    ): Promise<UserPreferences | null> {
+      logger.info('requestMoreUses');
+      isAuthorizedOrThrow(context);
+
+      return userPreferencesRepository.requestMoreUses(context.user._id);
+    },
   },
 };
 
