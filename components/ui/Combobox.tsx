@@ -153,31 +153,25 @@ const Combobox: React.FC<ComboboxProps> = ({
             <ChevronDownIcon className="h-5 w-5 text-gray-400" />
           </div>
         </div>
-        {isOpen && (
+        {isOpen && filteredOptions.length > 0 && (
           <div className="absolute z-10 mt-1 w-full bg-base-100 shadow-lg max-h-60 rounded-md py-1 text-base overflow-auto focus:outline-none sm:text-sm border border-base-300">
-            {filteredOptions.length === 0 ? (
-              <div className="px-4 py-2 text-sm text-gray-500">
-                No matches found. Press Enter to use &quot;{searchTerm}&quot;
+            {filteredOptions.map((option) => (
+              <div
+                key={option.value}
+                className="combobox-option cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-base-200 focus:bg-base-200 focus:outline-none"
+                onClick={() => handleOptionSelect(option.value)}
+                tabIndex={0}
+                role="option"
+                aria-selected={value === option.value}
+              >
+                <span className="block truncate">{option.label}</span>
+                {value === option.value && (
+                  <span className="absolute inset-y-0 right-0 flex items-center pr-4">
+                    <CheckIcon className="h-5 w-5" />
+                  </span>
+                )}
               </div>
-            ) : (
-              filteredOptions.map((option) => (
-                <div
-                  key={option.value}
-                  className="combobox-option cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-base-200 focus:bg-base-200 focus:outline-none"
-                  onClick={() => handleOptionSelect(option.value)}
-                  tabIndex={0}
-                  role="option"
-                  aria-selected={value === option.value}
-                >
-                  <span className="block truncate">{option.label}</span>
-                  {value === option.value && (
-                    <span className="absolute inset-y-0 right-0 flex items-center pr-4">
-                      <CheckIcon className="h-5 w-5" />
-                    </span>
-                  )}
-                </div>
-              ))
-            )}
+            ))}
           </div>
         )}
       </div>

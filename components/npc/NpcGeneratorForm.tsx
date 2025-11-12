@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from '../ui/Button';
 import { Combobox } from '../ui/Combobox';
-import { ErrorIcon, UserIcon } from '../icons';
+import { DiceIcon, ErrorIcon, UserIcon } from '../icons';
 import {
   OCCUPATION_OPTIONS,
   RACE_OPTIONS,
@@ -47,6 +47,27 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
   remainingAiUses,
   hasAvailableAiUses,
 }) => {
+  const randomizeRace = () => {
+    if (!isLoading && useAiEnhanced) {
+      const randomIndex = Math.floor(Math.random() * RACE_OPTIONS.length);
+      setRace(RACE_OPTIONS[randomIndex].value);
+    }
+  };
+
+  const randomizeOccupation = () => {
+    if (!isLoading && useAiEnhanced) {
+      const randomIndex = Math.floor(Math.random() * OCCUPATION_OPTIONS.length);
+      setOccupation(OCCUPATION_OPTIONS[randomIndex].value);
+    }
+  };
+
+  const randomizeContext = () => {
+    if (!isLoading && useAiEnhanced) {
+      const randomIndex = Math.floor(Math.random() * SETTING_OPTIONS.length);
+      setContext(SETTING_OPTIONS[randomIndex].value);
+    }
+  };
+
   return (
     <div className="card bg-base-100 shadow-xl h-fit min-w-[250px]">
       <div className="card-body">
@@ -57,32 +78,71 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 gap-6">
-            <Combobox
-              options={RACE_OPTIONS}
-              value={race}
-              onChange={setRace}
-              placeholder="Type or select a race..."
-              label="Race (Optional)"
-              disabled={isLoading || !useAiEnhanced}
-            />
+            <div className="flex gap-2 items-end">
+              <div className="flex-1">
+                <Combobox
+                  options={RACE_OPTIONS}
+                  value={race}
+                  onChange={setRace}
+                  placeholder="Type or select a race..."
+                  label="Race (Optional)"
+                  disabled={isLoading || !useAiEnhanced}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={randomizeRace}
+                disabled={isLoading || !useAiEnhanced}
+                className="btn btn-square btn-outline"
+                title="Randomize Race"
+              >
+                <DiceIcon className="w-5 h-5" />
+              </button>
+            </div>
 
-            <Combobox
-              options={OCCUPATION_OPTIONS}
-              value={occupation}
-              onChange={setOccupation}
-              placeholder="Type or select an occupation..."
-              label="Occupation (Optional)"
-              disabled={isLoading || !useAiEnhanced}
-            />
+            <div className="flex gap-2 items-end">
+              <div className="flex-1">
+                <Combobox
+                  options={OCCUPATION_OPTIONS}
+                  value={occupation}
+                  onChange={setOccupation}
+                  placeholder="Type or select an occupation..."
+                  label="Occupation (Optional)"
+                  disabled={isLoading || !useAiEnhanced}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={randomizeOccupation}
+                disabled={isLoading || !useAiEnhanced}
+                className="btn btn-square btn-outline"
+                title="Randomize Occupation"
+              >
+                <DiceIcon className="w-5 h-5" />
+              </button>
+            </div>
 
-            <Combobox
-              options={SETTING_OPTIONS}
-              value={context}
-              onChange={setContext}
-              placeholder="Type or select a setting..."
-              label="Setting/Context (Optional)"
-              disabled={isLoading || !useAiEnhanced}
-            />
+            <div className="flex gap-2 items-end">
+              <div className="flex-1">
+                <Combobox
+                  options={SETTING_OPTIONS}
+                  value={context}
+                  onChange={setContext}
+                  placeholder="Type or select a setting..."
+                  label="Setting/Context (Optional)"
+                  disabled={isLoading || !useAiEnhanced}
+                />
+              </div>
+              <button
+                type="button"
+                onClick={randomizeContext}
+                disabled={isLoading || !useAiEnhanced}
+                className="btn btn-square btn-outline"
+                title="Randomize Setting"
+              >
+                <DiceIcon className="w-5 h-5" />
+              </button>
+            </div>
 
             <div className="form-control">
               <label className="label cursor-pointer justify-start gap-4">
