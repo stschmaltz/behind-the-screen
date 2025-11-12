@@ -145,10 +145,7 @@ const HomePage: NextPage = () => {
           <h2 className="text-xl font-semibold mb-4">Coming Soon</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {comingSoon.map((feature) => {
-              if (
-                feature.href === '/loot-generator' &&
-                isFeatureEnabled(user?.email)
-              ) {
+              if (isFeatureEnabled(user?.email ?? null)) {
                 return (
                   <Link
                     key={feature.href}
