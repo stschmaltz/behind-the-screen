@@ -54,6 +54,7 @@ async function sendMastraRequest(url: string, body: any) {
 function parseLootArray(responseText: string) {
   const lootData = JSON.parse(responseText);
   if (Array.isArray(lootData)) return lootData;
+  if (lootData && Array.isArray(lootData.result)) return lootData.result;
   if (lootData && Array.isArray(lootData.output)) return lootData.output;
   if (
     lootData?.results?.formatLoot?.output &&

@@ -54,6 +54,8 @@ async function sendMastraRequest(url: string, body: any) {
 function parseNpcData(responseText: string) {
   const data = JSON.parse(responseText);
   if (data && typeof data === 'object' && data.name) return data;
+  if (data?.result && typeof data.result === 'object' && data.result.name)
+    return data.result;
   if (data?.output && typeof data.output === 'object' && data.output.name)
     return data.output;
   if (
