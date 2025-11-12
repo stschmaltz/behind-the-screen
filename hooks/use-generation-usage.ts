@@ -31,6 +31,7 @@ export function useGenerationUsage(): UseGenerationUsageResult {
 
   const { data: countData, loading: countLoading, refresh } = useQuery<{ getAiGenerationCount: number }>({
     query: getAiGenerationCountQuery,
+    skipCache: true,
   });
 
   useEffect(() => {
@@ -46,6 +47,17 @@ export function useGenerationUsage(): UseGenerationUsageResult {
       setUsageCount(countData.getAiGenerationCount);
     }
   }, [countData]);
+
+  useEffect(() => {
+    const handleFocus = () => {
+      refresh();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [refresh]);
 
   const requestMoreUsesHandler = async (): Promise<void> => {
     try {
