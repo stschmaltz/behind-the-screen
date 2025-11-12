@@ -10,7 +10,7 @@ import fetch from 'node-fetch';
 
 const MASTRA_SERVICE_BASE_URL = process.env.MASTRA_SERVICE_BASE_URL;
 const MASTRA_WORKFLOW_PATH =
-  '/api/workflows/loot-generation-workflow/start-async';
+  '/api/workflows/lootGenerationWorkflow/start-async';
 
 const generateLootMutationTypeDefs = /* GraphQL */ `
   type LootItem {
