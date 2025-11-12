@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { NextPage } from 'next';
 import Head from 'next/head';
+import posthog from 'posthog-js';
 import { useCurrentUserContext } from '../context/UserContext';
 import { useTheme } from '../context/ThemeContext';
 import { darkThemes, themeDisplayNames } from '../components/theme-options';
@@ -46,6 +47,14 @@ const AccountSettingsPage: NextPage = () => {
     return nameA.localeCompare(nameB);
   });
 
+  const handleThemeChange = (theme: string) => {
+    setTheme(theme);
+    posthog.capture('theme_changed', {
+      new_theme: theme,
+      is_dark: darkThemes.has(theme),
+    });
+  };
+
   const handleOpenDeleteModal = () => {
     setShowDeleteConfirmation(true);
     setConfirmValue('');
@@ -81,15 +90,22 @@ const AccountSettingsPage: NextPage = () => {
         throw new Error(errorData.error || 'Failed to delete account');
       }
 
+      // Track account deletion event (before logout)
+      posthog.capture('account_deleted', {
+        source: 'client',
+      });
+
       setSuccess('Account deleted successfully. Logging out...');
 
       setTimeout(() => {
+        posthog.reset(); // Reset PostHog before logout
         router.push('/api/auth/logout');
       }, 2000);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'An unknown error occurred',
       );
+      posthog.captureException(err as Error);
       setIsDeleting(false);
     }
   };
@@ -125,7 +141,7 @@ const AccountSettingsPage: NextPage = () => {
                 {commonThemes.map((theme) => (
                   <button
                     key={theme}
-                    onClick={() => setTheme(theme)}
+                    onClick={() => handleThemeChange(theme)}
                     className={`btn btn-xs font-medium items-center justify-start text-left border-2 focus:ring-2 focus:ring-primary/30 hover:ring-2 hover:ring-primary/20 transition-colors duration-100 ${
                       currentTheme === theme
                         ? 'bg-primary text-primary-content border-primary'
@@ -154,7 +170,7 @@ const AccountSettingsPage: NextPage = () => {
                     {additionalThemes.map((theme) => (
                       <button
                         key={theme}
-                        onClick={() => setTheme(theme)}
+                        onClick={() => handleThemeChange(theme)}
                         className={`btn btn-xs font-medium items-center justify-start text-left border-2 focus:ring-2 focus:ring-primary/30 hover:ring-2 hover:ring-primary/20 transition-colors duration-100 ${
                           currentTheme === theme
                             ? 'bg-primary text-primary-content border-primary'

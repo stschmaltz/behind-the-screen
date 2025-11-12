@@ -7,6 +7,7 @@ import { TYPES } from '../../../container/types';
 import { UserRepositoryInterface } from '../../../repositories/user/user.repository.interface';
 import { getDbClient } from '../../../data/database/mongodb';
 import { logger } from '../../../lib/logger';
+import { getPostHogClient } from '../../../lib/posthog-server';
 
 const userRepository = appContainer.get<UserRepositoryInterface>(
   TYPES.UserRepository,
@@ -41,6 +42,18 @@ async function deleteUserAccount(req: NextApiRequest, res: NextApiResponse) {
     const { db } = await getDbClient();
 
     logger.info(`Deleting user data for user ${userId} (auth0Id: ${auth0Id})`);
+
+    // Track server-side account deletion event before deleting data
+    const posthog = getPostHogClient();
+    posthog.capture({
+      distinctId: auth0Id,
+      event: 'account_deleted',
+      properties: {
+        source: 'server',
+        user_id: userId,
+      },
+    });
+    await posthog.shutdown();
 
     const relatedCollections = [
       'userPreferences',

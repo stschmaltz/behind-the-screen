@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
 import { useState } from 'react';
 import Link from 'next/link';
+import posthog from 'posthog-js';
 import { logger } from '../lib/logger';
 
 const FeedbackPage: NextPage = () => {
@@ -32,6 +33,13 @@ const FeedbackPage: NextPage = () => {
       });
 
       if (response.ok) {
+        // Track feedback submitted event
+        posthog.capture('feedback_submitted', {
+          feedback_type: feedbackType,
+          allows_contact: allowContact,
+          message_length: message.length,
+        });
+
         setIsSubmitted(true);
         setName('');
         setAllowContact(false);
@@ -44,6 +52,7 @@ const FeedbackPage: NextPage = () => {
     } catch (err) {
       setError('Failed to send feedback. Please try again later.');
       logger.error('Feedback submission error:', err);
+      posthog.captureException(err as Error);
     } finally {
       setIsSubmitting(false);
     }

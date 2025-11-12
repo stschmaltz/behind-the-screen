@@ -1,5 +1,6 @@
 import { useUser } from '@auth0/nextjs-auth0/client';
 import { useEffect, useState } from 'react';
+import posthog from 'posthog-js';
 import { useCurrentUserContext } from '../context/UserContext';
 import { asyncFetch } from '../data/graphql/graphql-fetcher';
 import { signInUserMutation } from '../data/graphql/snippets/user';
@@ -28,6 +29,15 @@ function useUserSignIn(): readonly [
       }).then((data) => {
         setCurrentUser && setCurrentUser(data.userSignIn?.user);
         setIsLoadingPlaceholders(false);
+
+        // Identify user in PostHog
+        if (data.userSignIn?.user) {
+          posthog.identify(user.sub, {
+            email: user.email,
+            name: user.name,
+            auth0Id: user.sub,
+          });
+        }
       });
     } else {
       setIsLoadingPlaceholders(false);

@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
+import posthog from 'posthog-js';
 import NewEnemiesSection from './NewEnemiesSection';
 import { useNewEncounter } from '../../../hooks/encounter/use-new-encounter';
 import { NewEncounterTemplate } from '../../../types/encounters';
@@ -95,6 +96,16 @@ const NewEncounterPage: NextPage = () => {
       setHasUnsavedChanges(false);
       await setActiveCampaign(campaignId);
       showDaisyToast('success', 'Encounter saved');
+
+      // Track encounter created event
+      posthog.capture('encounter_created', {
+        encounter_name: newEncounter.name,
+        enemy_count: newEncounter.enemies.length,
+        has_description: !!newEncounter.description,
+        campaign_id: campaignId,
+        adventure_id: adventureId,
+      });
+
       router.push({
         pathname: '/encounters',
         query: {

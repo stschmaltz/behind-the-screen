@@ -2,6 +2,7 @@ import { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
+import posthog from 'posthog-js';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import {
   LootDisplay,
@@ -122,6 +123,18 @@ const LootGeneratorPage: NextPage = () => {
 
       setLoot(generatedLoot);
 
+      // Track loot generated event
+      posthog.capture('loot_generated', {
+        use_ai_enhanced: useAiEnhanced,
+        party_level: partyLevel,
+        srd_item_count: srdItemCount,
+        random_item_count: randomItemCount,
+        has_context: !!context,
+        loot_quality: lootQuality,
+        is_using_ai_features: isUsingAiFeatures,
+        total_items: generatedLoot.length,
+      });
+
       addEntry({
         partyLevel,
         srdItemCount,
@@ -133,6 +146,7 @@ const LootGeneratorPage: NextPage = () => {
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message || 'Failed to generate loot.');
+        posthog.captureException(err);
       } else {
         setError('An unknown error occurred.');
       }

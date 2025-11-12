@@ -2,6 +2,7 @@ import { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
+import posthog from 'posthog-js';
 import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline';
 import {
   NpcDisplay,
@@ -139,6 +140,17 @@ const NpcGeneratorPage: NextPage = () => {
 
       setNpc(generatedNpc);
 
+      // Track NPC generated event
+      posthog.capture('npc_generated', {
+        use_ai_enhanced: useAiEnhanced,
+        has_race: !!race,
+        has_occupation: !!occupation,
+        has_context: !!context,
+        include_secret: includeSecret,
+        include_background: includeBackground,
+        is_using_ai_features: isUsingAiFeatures,
+      });
+
       addEntry({
         race: useAiEnhanced ? race : '',
         occupation: useAiEnhanced ? occupation : '',
@@ -151,6 +163,7 @@ const NpcGeneratorPage: NextPage = () => {
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message || 'Failed to generate NPC.');
+        posthog.captureException(err);
       } else {
         setError('An unknown error occurred.');
       }

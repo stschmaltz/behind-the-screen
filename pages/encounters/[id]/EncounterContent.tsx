@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import posthog from 'posthog-js';
 import ActiveEncounterTable from './ActiveEncounter/ActiveEncounterTable';
 import InactiveEncounterTable from './InactiveEncounter/InactiveEncounterTable';
 import { useEncounterContext } from '../../../context/EncounterContext';
@@ -59,6 +60,16 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
     closeDeleteModalAndSetState();
     setIsDeleting(false);
     if (result) {
+      // Track encounter deleted event
+      posthog.capture('encounter_deleted', {
+        encounter_name: encounter.name,
+        encounter_status: encounter.status,
+        enemy_count: encounter.enemies.length,
+        player_count: encounter.initiativeOrder.filter(
+          (c) => c.type === 'player',
+        ).length,
+      });
+
       router.push('/encounters');
     } else {
       logger.error('Failed to delete encounter.');
@@ -75,12 +86,23 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
       };
       const success = await handleSave(finishedEncounter);
       if (success) {
+        // Track encounter completed event
+        posthog.capture('encounter_completed', {
+          encounter_name: encounter.name,
+          enemy_count: encounter.enemies.length,
+          player_count: encounter.initiativeOrder.filter(
+            (c) => c.type === 'player',
+          ).length,
+          rounds_completed: encounter.currentRound || 1,
+        });
+
         router.push('/encounters');
       } else {
         logger.error('Failed to finish encounter.');
       }
     } catch (error) {
       logger.error('Error finishing encounter:', error);
+      posthog.captureException(error as Error);
     } finally {
       setIsFinishingEncounter(false);
     }

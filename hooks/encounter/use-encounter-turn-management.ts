@@ -1,3 +1,4 @@
+import posthog from 'posthog-js';
 import {
   InitiativeOrderCharacter,
   Encounter,
@@ -52,10 +53,19 @@ export const useEncounterTurnManagement = (
     if (sortedCharacters.length === 0) return;
 
     const isLastTurn = encounter.currentTurn === sortedCharacters.length;
-    updateEncounter(
-      isLastTurn ? 1 : encounter.currentTurn + 1,
-      isLastTurn ? encounter.currentRound + 1 : encounter.currentRound,
-    );
+    const newTurn = isLastTurn ? 1 : encounter.currentTurn + 1;
+    const newRound = isLastTurn ? encounter.currentRound + 1 : encounter.currentRound;
+
+    // Track turn advanced event
+    posthog.capture('turn_advanced', {
+      encounter_id: encounter._id,
+      current_round: encounter.currentRound,
+      new_round: newRound,
+      is_new_round: isLastTurn,
+      active_character_count: sortedCharacters.length,
+    });
+
+    updateEncounter(newTurn, newRound);
   };
 
   const handlePreviousTurn = () => {

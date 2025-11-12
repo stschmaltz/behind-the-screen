@@ -1,6 +1,7 @@
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { FormEvent, useState } from 'react';
+import posthog from 'posthog-js';
 import { useManageCampaign } from '../../hooks/campaign/use-manage-campaign';
 import { logger } from '../../lib/logger';
 
@@ -20,6 +21,11 @@ const NewCampaignPage: NextPage = () => {
       });
 
       if (newCampaignId) {
+        // Track campaign created event
+        posthog.capture('campaign_created', {
+          campaign_name: campaignName.trim(),
+        });
+
         router.push(`/campaigns/${newCampaignId}`);
       } else {
         logger.error(
@@ -28,6 +34,7 @@ const NewCampaignPage: NextPage = () => {
       }
     } catch (error) {
       logger.error('Failed to create new campaign (exception caught)', error);
+      posthog.captureException(error as Error);
     }
   };
 

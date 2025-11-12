@@ -1,0 +1,72 @@
+[
+  {
+    "eventName": "encounter_created",
+    "description": "User successfully creates a new encounter",
+    "filePath": "pages/encounters/new/index.tsx"
+  },
+  {
+    "eventName": "encounter_started",
+    "description": "User starts an encounter (inactive to active)",
+    "filePath": "pages/encounters/[id]/InactiveEncounter/InactiveEncounterTable.tsx"
+  },
+  {
+    "eventName": "encounter_completed",
+    "description": "User marks an encounter as completed",
+    "filePath": "pages/encounters/[id]/EncounterContent.tsx"
+  },
+  {
+    "eventName": "encounter_deleted",
+    "description": "User deletes an encounter",
+    "filePath": "pages/encounters/[id]/EncounterContent.tsx"
+  },
+  {
+    "eventName": "campaign_created",
+    "description": "User creates a new campaign",
+    "filePath": "pages/campaigns/new.tsx"
+  },
+  {
+    "eventName": "npc_generated",
+    "description": "User generates an NPC (AI-enhanced or free)",
+    "filePath": "pages/npc-generator.tsx"
+  },
+  {
+    "eventName": "loot_generated",
+    "description": "User generates loot (AI-enhanced or free)",
+    "filePath": "pages/loot-generator.tsx"
+  },
+  {
+    "eventName": "feedback_submitted",
+    "description": "User submits feedback",
+    "filePath": "pages/feedback.tsx"
+  },
+  {
+    "eventName": "account_deleted",
+    "description": "User deletes their account",
+    "filePath": "pages/api/user/delete.ts"
+  },
+  {
+    "eventName": "theme_changed",
+    "description": "User changes their theme preference",
+    "filePath": "pages/account-settings.tsx"
+  },
+  {
+    "eventName": "turn_advanced",
+    "description": "User advances to the next turn in an active encounter",
+    "filePath": "hooks/encounter/use-encounter-turn-management.ts"
+  },
+  {
+    "eventName": "character_hp_modified",
+    "description": "User modifies a character's HP during combat",
+    "filePath": "pages/encounters/[id]/ActiveEncounter/_components/HPModifierPopover.tsx"
+  },
+  {
+    "eventName": "enemy_added_to_encounter",
+    "description": "User adds an enemy to an encounter",
+    "filePath": "pages/encounters/[id]/enemy/NewEnemyModal.tsx"
+  },
+  {
+    "eventName": "generation_limit_reached",
+    "description": "User hits AI generation usage limit and requests more",
+    "filePath": "hooks/use-generation-usage.ts"
+  }
+]

@@ -26,13 +26,26 @@ const securityHeaders = [
   {
     key: 'Content-Security-Policy',
     // Adjust this policy based on your specific needs
-    value: `default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' storage.ko-fi.com va.vercel-scripts.com js.stripe.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com storage.ko-fi.com rsms.me; font-src 'self' fonts.gstatic.com; img-src 'self' d205bpvrqc9yn1.cloudfront.net media-waterdeep.cursecdn.com data: storage.ko-fi.com; frame-src ko-fi.com js.stripe.com; object-src 'none'; frame-ancestors 'none'; connect-src 'self' https://api.sendgrid.com;`,
+    value: `default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' storage.ko-fi.com va.vercel-scripts.com js.stripe.com us-assets.i.posthog.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com storage.ko-fi.com rsms.me; font-src 'self' fonts.gstatic.com; img-src 'self' d205bpvrqc9yn1.cloudfront.net media-waterdeep.cursecdn.com data: storage.ko-fi.com; frame-src ko-fi.com js.stripe.com; object-src 'none'; frame-ancestors 'none'; connect-src 'self' https://api.sendgrid.com us.i.posthog.com us-assets.i.posthog.com;`,
   },
 ];
 
 module.exports = withPWA({
   reactStrictMode: true,
   trailingSlash: true,
+  skipTrailingSlashRedirect: true,
+  async rewrites() {
+    return [
+      {
+        source: '/ingest/static/:path*',
+        destination: 'https://us-assets.i.posthog.com/static/:path*',
+      },
+      {
+        source: '/ingest/:path*',
+        destination: 'https://us.i.posthog.com/:path*',
+      },
+    ];
+  },
   async headers() {
     return [
       {
