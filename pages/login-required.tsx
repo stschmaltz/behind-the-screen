@@ -30,10 +30,10 @@ const LoginRequiredPage: NextPage = () => {
           <h1 className="text-2xl font-bold mb-4">Login Required</h1>
 
           <p className="text-center mb-6">
-            The page you&apos;re trying to access requires you to be signed in.
-            Please log in to continue. It&apos;s totally free and you won&apos;t
-            be contacted whatsoever. I just need to save your encounters to your
-            account.
+            You&apos;re one step away from unlocking this feature! Sign in to
+            save your encounters, track your campaigns, and pick up right where
+            you left off. It&apos;s free, takes seconds, and your inbox stays
+            peaceful - we never send emails and we don&apos;t sell your data.
           </p>
 
           <div className="flex flex-col w-full gap-3">
