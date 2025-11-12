@@ -97,6 +97,7 @@ function AdminPage() {
                     <th>AI Limit</th>
                     <th>AI Remaining</th>
                     <th>AI Reset Date</th>
+                    <th>Requested More</th>
                     <th>Login Count</th>
                     <th>Last Login</th>
                   </tr>
@@ -124,6 +125,13 @@ function AdminPage() {
                           {remaining}
                         </td>
                         <td>{nextResetDate}</td>
+                        <td>
+                          {stat.hasRequestedMoreUses ? (
+                            <span className="badge badge-warning">Yes</span>
+                          ) : (
+                            <span className="text-base-content/50">-</span>
+                          )}
+                        </td>
                         <td>{stat.loginCount ?? 0}</td>
                         <td>
                           {stat.lastLoginDate

@@ -13,6 +13,7 @@ const userPreferencesMutationTypeDefs = /* GraphQL */ `
     setActiveCampaign(input: SetActiveCampaignInput!): UserPreferences
     setTheme(input: SetThemeInput!): UserPreferences
     incrementAiGenerationUsage: UserPreferences
+    requestMoreUses: UserPreferences
   }
 
   input SetActiveCampaignInput {
