@@ -27,7 +27,7 @@ export function useGenerationUsage(): UseGenerationUsageResult {
   });
 
   useEffect(() => {
-    if (data?.getUserPreferences?.aiGenerationUsageCount !== undefined) {
+    if (data?.getUserPreferences?.aiGenerationUsageCount !== undefined && data.getUserPreferences.aiGenerationUsageCount !== null) {
       setUsageCount(data.getUserPreferences.aiGenerationUsageCount);
     }
   }, [data]);
