@@ -15,10 +15,7 @@ const customJestConfig = {
     '^@/types/(.*)$': '<rootDir>/types/$1',
     '^@/context/(.*)$': '<rootDir>/context/$1',
   },
-  testMatch: [
-    '**/__tests__/**/*.test.[jt]s?(x)',
-    '**/*.test.[jt]s?(x)',
-  ],
+  testMatch: ['**/__tests__/**/*.test.[jt]s?(x)', '**/*.test.[jt]s?(x)'],
   collectCoverageFrom: [
     'components/**/*.{js,jsx,ts,tsx}',
     'hooks/**/*.{js,jsx,ts,tsx}',
@@ -33,4 +30,3 @@ const customJestConfig = {
 };
 
 module.exports = createJestConfig(customJestConfig);
-

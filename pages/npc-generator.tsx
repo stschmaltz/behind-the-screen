@@ -166,7 +166,10 @@ const NpcGeneratorPage: NextPage = () => {
             <p>
               🎭 <strong>Beta Feature:</strong> This NPC Generator is in beta.
               Have feedback or ideas?
-              <Link href="/feedback" className="link link-primary ml-1">
+              <Link
+                href="/feedback"
+                className="text-white underline hover:text-base-100 font-semibold ml-1"
+              >
                 Let us know!
               </Link>
             </p>

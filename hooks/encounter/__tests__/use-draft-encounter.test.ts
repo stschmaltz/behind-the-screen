@@ -42,10 +42,7 @@ describe('useEncounterDraft', () => {
     ...overrides,
   });
 
-  const createMockEnemy = (
-    id: string,
-    name: string,
-  ): EncounterCharacter => ({
+  const createMockEnemy = (id: string, name: string): EncounterCharacter => ({
     _id: id,
     name,
     maxHP: 20,
@@ -110,9 +107,10 @@ describe('useEncounterDraft', () => {
         useEncounterDraft(encounter, mockPlayers),
       );
 
-      const playerCharacters = result.current.draftEncounter.initiativeOrder.filter(
-        (c) => c.type === 'player',
-      );
+      const playerCharacters =
+        result.current.draftEncounter.initiativeOrder.filter(
+          (c) => c.type === 'player',
+        );
       expect(playerCharacters).toHaveLength(1);
       expect(playerCharacters[0]._id).toBe('player-1');
     });
@@ -499,4 +497,3 @@ describe('useEncounterDraft', () => {
     });
   });
 });
-

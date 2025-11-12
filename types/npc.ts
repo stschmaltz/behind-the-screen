@@ -19,4 +19,3 @@ export interface NpcGenerationParams {
   includeSecret: boolean;
   includeBackground: boolean;
 }
-

@@ -15,4 +15,3 @@ if (typeof structuredClone === 'undefined') {
 beforeEach(() => {
   jest.clearAllMocks();
 });
-

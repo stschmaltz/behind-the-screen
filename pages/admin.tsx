@@ -103,44 +103,55 @@ function AdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {usersWithUsage.map((stat, i) => {
-                    const remaining = stat.limit - stat.usageCount;
-                    const nextResetDate = stat.resetDate
-                      ? new Date(
-                          new Date(stat.resetDate).getTime() +
-                            7 * 24 * 60 * 60 * 1000,
-                        ).toLocaleDateString()
-                      : 'Not set';
+                  {[...usersWithUsage]
+                    .sort((a, b) => {
+                      if (!a.lastLoginDate && !b.lastLoginDate) return 0;
+                      if (!a.lastLoginDate) return 1;
+                      if (!b.lastLoginDate) return -1;
 
-                    return (
-                      <tr key={i}>
-                        <td>{stat.email}</td>
-                        <td>{stat.usageCount}</td>
-                        <td>{stat.limit}</td>
-                        <td
-                          className={
-                            remaining === 0 ? 'text-error font-bold' : ''
-                          }
-                        >
-                          {remaining}
-                        </td>
-                        <td>{nextResetDate}</td>
-                        <td>
-                          {stat.hasRequestedMoreUses ? (
-                            <span className="badge badge-warning">Yes</span>
-                          ) : (
-                            <span className="text-base-content/50">-</span>
-                          )}
-                        </td>
-                        <td>{stat.loginCount ?? 0}</td>
-                        <td>
-                          {stat.lastLoginDate
-                            ? new Date(stat.lastLoginDate).toLocaleString()
-                            : 'Never'}
-                        </td>
-                      </tr>
-                    );
-                  })}
+                      return (
+                        new Date(b.lastLoginDate).getTime() -
+                        new Date(a.lastLoginDate).getTime()
+                      );
+                    })
+                    .map((stat, i) => {
+                      const remaining = stat.limit - stat.usageCount;
+                      const nextResetDate = stat.resetDate
+                        ? new Date(
+                            new Date(stat.resetDate).getTime() +
+                              7 * 24 * 60 * 60 * 1000,
+                          ).toLocaleDateString()
+                        : 'Not set';
+
+                      return (
+                        <tr key={i}>
+                          <td>{stat.email}</td>
+                          <td>{stat.usageCount}</td>
+                          <td>{stat.limit}</td>
+                          <td
+                            className={
+                              remaining === 0 ? 'text-error font-bold' : ''
+                            }
+                          >
+                            {remaining}
+                          </td>
+                          <td>{nextResetDate}</td>
+                          <td>
+                            {stat.hasRequestedMoreUses ? (
+                              <span className="badge badge-warning">Yes</span>
+                            ) : (
+                              <span className="text-base-content/50">-</span>
+                            )}
+                          </td>
+                          <td>{stat.loginCount ?? 0}</td>
+                          <td>
+                            {stat.lastLoginDate
+                              ? new Date(stat.lastLoginDate).toLocaleString()
+                              : 'Never'}
+                          </td>
+                        </tr>
+                      );
+                    })}
                 </tbody>
               </table>
             </div>

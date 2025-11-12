@@ -90,10 +90,12 @@ import { useCharacterState } from '../useCharacterState';
 describe('useCharacterState', () => {
   it('should update character name', () => {
     const mockOnChange = jest.fn();
-    const characters = [{ _id: '1', name: 'Old Name', maxHP: 20, armorClass: 15 }];
+    const characters = [
+      { _id: '1', name: 'Old Name', maxHP: 20, armorClass: 15 },
+    ];
 
     const { result } = renderHook(() =>
-      useCharacterState(characters, mockOnChange)
+      useCharacterState(characters, mockOnChange),
     );
 
     act(() => {
@@ -101,7 +103,7 @@ describe('useCharacterState', () => {
     });
 
     expect(mockOnChange).toHaveBeenCalledWith([
-      expect.objectContaining({ name: 'New Name' })
+      expect.objectContaining({ name: 'New Name' }),
     ]);
   });
 });
@@ -199,7 +201,7 @@ it('should update character HP', () => {
   });
 
   expect(mockOnChange).toHaveBeenCalledWith([
-    expect.objectContaining({ maxHP: 50 })
+    expect.objectContaining({ maxHP: 50 }),
   ]);
 });
 ```
@@ -313,4 +315,3 @@ import { functionToTest } from './module';
 ## Support
 
 If you have questions about testing, ask the team or create an issue in the repository.
-

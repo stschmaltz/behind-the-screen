@@ -31,7 +31,9 @@ const LoginRequiredPage: NextPage = () => {
 
           <p className="text-center mb-6">
             The page you&apos;re trying to access requires you to be signed in.
-            Please log in to continue.
+            Please log in to continue. It&apos;s totally free and you won&apos;t
+            be contacted whatsoever. I just need to save your encounters to your
+            account.
           </p>
 
           <div className="flex flex-col w-full gap-3">

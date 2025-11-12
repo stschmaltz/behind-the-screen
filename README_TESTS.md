@@ -7,10 +7,12 @@ Comprehensive testing has been added to the Dungeon Master Essentials applicatio
 ## Test Coverage
 
 ### ✅ Utility Functions (100% Coverage)
+
 - **lib/stateUtils.ts** - Index state management utilities
 - **lib/encounterUtils.ts** - Encounter difficulty calculations and XP
 
 ### ✅ Core Hooks (100% Coverage)
+
 - **hooks/use-monsters.hook.ts** - Monster data parsing and management (46% coverage)
 - **hooks/useCharacterState.ts** - Character state management (100% coverage)
 - **hooks/useEnemyState.ts** - Enemy state management with duplication tracking (100% coverage)
@@ -18,6 +20,7 @@ Comprehensive testing has been added to the Dungeon Master Essentials applicatio
 - **hooks/encounter/use-draft-encounter.ts** - Encounter draft state and operations (100% coverage)
 
 ### ✅ Components
+
 - **pages/encounters/[id]/enemy/MonsterSelector.tsx** - Monster selection component
 
 ## Test Statistics
@@ -30,13 +33,15 @@ Comprehensive testing has been added to the Dungeon Master Essentials applicatio
 ## Key Features Tested
 
 ### Encounter Utilities
+
 - ✅ Challenge rating to XP conversion (including fractional CRs)
 - ✅ Encounter multiplier calculations
-- ✅ Party threshold calculations  
+- ✅ Party threshold calculations
 - ✅ Encounter difficulty determination
 - ✅ Edge cases and boundary conditions
 
 ### State Management
+
 - ✅ Index shifting for add/remove operations
 - ✅ Character/Enemy field updates
 - ✅ Monster data application
@@ -46,6 +51,7 @@ Comprehensive testing has been added to the Dungeon Master Essentials applicatio
 - ✅ Advanced open state management
 
 ### Encounter Draft Management
+
 - ✅ Initiative order building
 - ✅ Adding characters (enemies, NPCs, players)
 - ✅ Updating character HP, conditions, and stats
@@ -53,6 +59,7 @@ Comprehensive testing has been added to the Dungeon Master Essentials applicatio
 - ✅ Unsaved changes tracking
 
 ### Monster Selection
+
 - ✅ Loading and error states
 - ✅ Monster data application
 - ✅ Selection change handling
@@ -107,6 +114,7 @@ hooks/encounter/__tests__/
 ## Next Steps
 
 Consider adding tests for:
+
 - Additional complex hooks (usePlayerManagement)
 - More UI components (encounter tables, character cards)
 - API routes and GraphQL resolvers
@@ -115,6 +123,7 @@ Consider adding tests for:
 ## Coverage Goals
 
 Target coverage by file type:
+
 - **Utility Functions:** 100% ✅
 - **Critical Hooks:** >90% ⚠️ (partial)
 - **Components:** >80% ⚠️ (partial)
@@ -125,9 +134,9 @@ The current low overall coverage is expected as we focused on the most critical,
 ## Documentation
 
 See [TESTING.md](./TESTING.md) for:
+
 - Detailed testing guide
 - Best practices
 - Examples for different scenarios
 - Common issues and solutions
 - Tips for writing new tests
-

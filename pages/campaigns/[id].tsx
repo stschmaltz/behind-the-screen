@@ -61,14 +61,16 @@ const CampaignDetailPage: NextPage = () => {
 
       return;
     }
-    const success = await handleSave({
+    const adventureId = await handleSave({
       name: newAdventureName.trim(),
       status: 'active',
       campaignId,
     });
-    if (success) {
+    if (adventureId) {
       setNewAdventureName('');
-      refreshAdventures();
+      router.push(
+        `/encounters?campaignId=${campaignId}&adventureId=${adventureId}`,
+      );
     } else {
       logger.error('Failed to create adventure');
     }

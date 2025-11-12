@@ -25,4 +25,3 @@ export interface NpcGeneration {
 }
 
 export type NewNpcGeneration = Omit<NpcGeneration, '_id'>;
-

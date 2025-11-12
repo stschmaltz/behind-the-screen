@@ -34,7 +34,9 @@ const ActiveEncounterCharacterRow = forwardRef<
     >('damage');
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const isMonster = character.type === 'enemy' && Boolean(monsterData);
+    const isMonster =
+      (character.type === 'enemy' || character.type === 'npc') &&
+      Boolean(monsterData);
     const currentHP = character.currentHP ?? 0;
 
     const openModal = () => setIsModalOpen(true);
@@ -110,6 +112,10 @@ const ActiveEncounterCharacterRow = forwardRef<
       onUpdateCharacter({ ...character, initiative: clamped });
     };
 
+    const handleNameChange = (newName: string) => {
+      onUpdateCharacter({ ...character, name: newName });
+    };
+
     return (
       <div
         ref={ref}
@@ -139,6 +145,7 @@ const ActiveEncounterCharacterRow = forwardRef<
             onRemoveCondition={handleRemoveCondition}
             onViewStats={monsterData ? openModal : undefined}
             onUpdateInitiative={handleInitiativeChange}
+            onUpdateName={isMonster ? handleNameChange : undefined}
           />
         </div>
       </div>

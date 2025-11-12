@@ -238,4 +238,3 @@ describe('use-monsters.hook', () => {
     });
   });
 });
-

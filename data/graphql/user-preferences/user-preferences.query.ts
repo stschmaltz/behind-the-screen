@@ -49,14 +49,16 @@ const userPreferencesQueryResolver = {
       _: any,
       __: any,
       context: GraphQLContext,
-    ): Promise<Array<{
-      email: string;
-      usageCount: number;
-      limit: number;
-      resetDate?: string;
-      loginCount?: number;
-      lastLoginDate?: string;
-    }>> {
+    ): Promise<
+      Array<{
+        email: string;
+        usageCount: number;
+        limit: number;
+        resetDate?: string;
+        loginCount?: number;
+        lastLoginDate?: string;
+      }>
+    > {
       logger.info('getAllUsageStats');
       isAuthorizedOrThrow(context);
 

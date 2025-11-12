@@ -22,7 +22,8 @@ const LoadingState = () => (
 
 const EmptyState = () => (
   <div className="flex items-center justify-center text-base-content opacity-80 min-h-[40vh]">
-    No encounters found
+    No encounters found, click the &quot;New Encounter&quot; button to create
+    your first encounter for this campaign + adventure.
   </div>
 );
 

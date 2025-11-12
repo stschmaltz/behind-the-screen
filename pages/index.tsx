@@ -7,7 +7,6 @@ import {
   UsersIcon,
 } from '@heroicons/react/24/outline';
 import { useUser } from '@auth0/nextjs-auth0/client';
-import { isFeatureEnabled } from '../lib/featureFlags';
 
 const HomePage: NextPage = () => {
   const { user } = useUser();
@@ -20,7 +19,7 @@ const HomePage: NextPage = () => {
     icon: UsersIcon,
   } as const;
 
-  const comingSoon = [
+  const newFeatures = [
     {
       href: '/npc-generator',
       label: 'NPC Generator',
@@ -142,44 +141,24 @@ const HomePage: NextPage = () => {
         )}
 
         <div className="mt-10 w-full max-w-3xl">
-          <h2 className="text-xl font-semibold mb-4">Coming Soon</h2>
+          <h2 className="text-xl font-semibold mb-4">New Features</h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            {comingSoon.map((feature) => {
-              if (isFeatureEnabled(user?.email ?? null)) {
-                return (
-                  <Link
-                    key={feature.href}
-                    href={feature.href}
-                    className="flex flex-col gap-1 p-4 rounded-lg border border-base-300 bg-base-200 hover:bg-base-300 transition-colors cursor-pointer"
-                  >
-                    <feature.icon className="w-8 h-8 text-primary mb-1" />
-                    <span className="text-lg font-semibold flex items-center gap-2">
-                      {feature.label}
-                      <span className="badge badge-accent badge-sm">Beta</span>
-                    </span>
-                    <span className="text-sm opacity-80">
-                      {feature.description}
-                    </span>
-                  </Link>
-                );
-              }
-
+            {newFeatures.map((feature) => {
               return (
-                <div
+                <Link
                   key={feature.href}
-                  className="flex flex-col gap-1 p-4 rounded-lg border border-base-300 bg-base-200 opacity-60 cursor-not-allowed"
+                  href={feature.href}
+                  className="flex flex-col gap-1 p-4 rounded-lg border border-base-300 bg-base-200 hover:bg-base-300 transition-colors cursor-pointer"
                 >
                   <feature.icon className="w-8 h-8 text-primary mb-1" />
                   <span className="text-lg font-semibold flex items-center gap-2">
                     {feature.label}
-                    <span className="badge badge-outline badge-sm">
-                      Coming Soon
-                    </span>
+                    <span className="badge badge-accent badge-sm">Beta</span>
                   </span>
                   <span className="text-sm opacity-80">
                     {feature.description}
                   </span>
-                </div>
+                </Link>
               );
             })}
           </div>

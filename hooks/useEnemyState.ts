@@ -25,7 +25,9 @@ export const useEnemyState = (
     duplicateEntity,
     isEntityDuplicated,
     setAdvancedOpenState,
-  } = useEntityState(initialEnemies, onEnemiesChange, { trackDuplication: true });
+  } = useEntityState(initialEnemies, onEnemiesChange, {
+    trackDuplication: true,
+  });
 
   return {
     monsters,

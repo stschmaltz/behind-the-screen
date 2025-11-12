@@ -23,21 +23,32 @@ interface UseGenerationUsageResult {
 
 export function useGenerationUsage(): UseGenerationUsageResult {
   const [usageCount, setUsageCount] = useState<number>(0);
-  const [hasRequestedMoreUses, setHasRequestedMoreUses] = useState<boolean>(false);
+  const [hasRequestedMoreUses, setHasRequestedMoreUses] =
+    useState<boolean>(false);
 
-  const { data: prefsData, loading: prefsLoading } = useQuery<GetUserPreferencesQuery>({
-    query: getUserPreferencesQuery,
-  });
+  const { data: prefsData, loading: prefsLoading } =
+    useQuery<GetUserPreferencesQuery>({
+      query: getUserPreferencesQuery,
+    });
 
-  const { data: countData, loading: countLoading, refresh } = useQuery<{ getAiGenerationCount: number }>({
+  const {
+    data: countData,
+    loading: countLoading,
+    refresh,
+  } = useQuery<{ getAiGenerationCount: number }>({
     query: getAiGenerationCountQuery,
     skipCache: true,
   });
 
   useEffect(() => {
     if (prefsData?.getUserPreferences) {
-      if (prefsData.getUserPreferences.hasRequestedMoreUses !== undefined && prefsData.getUserPreferences.hasRequestedMoreUses !== null) {
-        setHasRequestedMoreUses(prefsData.getUserPreferences.hasRequestedMoreUses);
+      if (
+        prefsData.getUserPreferences.hasRequestedMoreUses !== undefined &&
+        prefsData.getUserPreferences.hasRequestedMoreUses !== null
+      ) {
+        setHasRequestedMoreUses(
+          prefsData.getUserPreferences.hasRequestedMoreUses,
+        );
       }
     }
   }, [prefsData]);
@@ -86,4 +97,3 @@ export function useGenerationUsage(): UseGenerationUsageResult {
     requestMoreUses: requestMoreUsesHandler,
   };
 }
-

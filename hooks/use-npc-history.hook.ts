@@ -36,4 +36,3 @@ export function useNpcHistory() {
 
   return { history, addEntry, removeEntry, clearHistory };
 }
-

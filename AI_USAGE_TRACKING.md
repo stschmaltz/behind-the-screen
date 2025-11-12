@@ -1,11 +1,13 @@
 # AI Usage Tracking System
 
 ## Overview
+
 This system tracks AI generation usage per user with a weekly limit of 25 generations. The limit automatically resets every 7 days.
 
 ## Features
 
 ### 1. User Limits
+
 - **Weekly Limit**: 25 AI generations per user
 - **Auto-Reset**: Usage count resets automatically after 7 days
 - **Cost**: ~2.5 cents per user per week (25 generations × ~0.1 cent each)
@@ -13,9 +15,11 @@ This system tracks AI generation usage per user with a weekly limit of 25 genera
 ### 2. API Endpoints
 
 #### `/api/ai-usage/check` (GET)
+
 Check current user's AI usage status.
 
 **Response:**
+
 ```json
 {
   "canUse": true,
@@ -26,9 +30,11 @@ Check current user's AI usage status.
 ```
 
 #### `/api/ai-usage/track` (POST)
+
 Track/increment AI usage for the current user.
 
 **Success Response:**
+
 ```json
 {
   "success": true,
@@ -39,6 +45,7 @@ Track/increment AI usage for the current user.
 ```
 
 **Error Response (429 - Limit Reached):**
+
 ```json
 {
   "error": "AI usage limit reached",
@@ -49,9 +56,11 @@ Track/increment AI usage for the current user.
 ```
 
 #### `/api/ai-usage/stats` (GET) - Admin Only
+
 Get AI usage statistics for all users.
 
 **Response:**
+
 ```json
 {
   "stats": [
@@ -66,7 +75,9 @@ Get AI usage statistics for all users.
 ```
 
 ### 3. Admin Dashboard
+
 The admin page now displays:
+
 - User email
 - Current usage count
 - Weekly limit
@@ -111,7 +122,9 @@ function MyComponent() {
 ## Implementation Details
 
 ### Database Schema
+
 The `users` collection includes:
+
 ```typescript
 {
   aiUsageCount?: number;        // Current usage count
@@ -121,6 +134,7 @@ The `users` collection includes:
 ```
 
 ### Weekly Reset Logic
+
 - Reset occurs automatically when checking or tracking usage
 - If `aiUsageResetDate` is more than 7 days old, the counter resets to 0 or 1
 - Reset date is updated to the current date
@@ -130,11 +144,13 @@ The `users` collection includes:
 To integrate AI usage tracking into your AI generation flow:
 
 1. **Import the hook:**
+
 ```typescript
 import { useAiUsage } from '../hooks/use-ai-usage';
 ```
 
 2. **Check usage before generation:**
+
 ```typescript
 const { trackUsage } = useAiUsage();
 
@@ -147,6 +163,7 @@ try {
 ```
 
 3. **Show remaining usage to user:**
+
 ```typescript
 const { usageStatus, checkUsage } = useAiUsage();
 
@@ -158,8 +175,8 @@ useEffect(() => {
 ```
 
 ## Cost Analysis
+
 - GPT-5-mini pricing: $0.25/1M input tokens, $2.00/1M output tokens
 - Estimated cost per generation: ~0.1-0.12 cents
 - 25 generations per user per week: ~2.5-3 cents per user
 - For 100 active users: ~$2.50-$3.00 per week
-

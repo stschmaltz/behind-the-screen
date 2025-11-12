@@ -159,7 +159,6 @@ export class UserPreferencesRepository
     }
   }
 
-
   public async getAllUsageStats(): Promise<
     Array<{
       email: string;
@@ -229,16 +228,21 @@ export class UserPreferencesRepository
       const existingPrefs = await this.getUserPreferences(userId);
 
       if (existingPrefs) {
-        const result = await db.collection(this.collectionName).findOneAndUpdate(
-          { _id: new ObjectId(existingPrefs._id), userId: new ObjectId(userId) },
-          {
-            $set: {
-              hasRequestedMoreUses: true,
-              updatedAt: now,
+        const result = await db
+          .collection(this.collectionName)
+          .findOneAndUpdate(
+            {
+              _id: new ObjectId(existingPrefs._id),
+              userId: new ObjectId(userId),
             },
-          },
-          { returnDocument: 'after' },
-        );
+            {
+              $set: {
+                hasRequestedMoreUses: true,
+                updatedAt: now,
+              },
+            },
+            { returnDocument: 'after' },
+          );
 
         if (!result) {
           throw new Error('Failed to update request');

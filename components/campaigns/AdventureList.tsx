@@ -1,4 +1,5 @@
 import React, { FormEvent } from 'react';
+import { PlusIcon } from '@heroicons/react/24/outline';
 import AdventureListItem from './AdventureListItem';
 import { Button } from '../ui/Button';
 import { TransformedAdventure } from '../../hooks/adventure/get-all-adventures';
@@ -29,23 +30,32 @@ const AdventureList = ({
   setNewAdventureName: (val: string) => void;
 }) => (
   <div>
-    <form onSubmit={onCreate} className="mb-4 flex gap-2">
-      <input
-        type="text"
-        placeholder="New adventure name"
-        className="input input-bordered flex-grow"
-        value={newAdventureName}
-        onChange={(e) => setNewAdventureName(e.target.value)}
-        required
-      />
-      <Button
-        type="submit"
-        label={isSaving ? '' : 'Create Adventure'}
-        loading={isSaving}
-        disabled={isSaving || !newAdventureName.trim()}
-        className="btn-primary"
-      />
-    </form>
+    <div className="card bg-base-100 shadow-md mb-6 border-2 border-primary/20">
+      <div className="card-body p-4">
+        <h3 className="font-semibold text-lg flex items-center gap-2 mb-2">
+          <PlusIcon className="w-5 h-5 text-primary" />
+          Create New Adventure
+        </h3>
+        <form onSubmit={onCreate} className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Enter adventure name..."
+            className="input input-bordered flex-grow"
+            value={newAdventureName}
+            onChange={(e) => setNewAdventureName(e.target.value)}
+            required
+            autoFocus
+          />
+          <Button
+            type="submit"
+            label={isSaving ? '' : 'Create'}
+            loading={isSaving}
+            disabled={isSaving || !newAdventureName.trim()}
+            className="btn-primary"
+          />
+        </form>
+      </div>
+    </div>
     {adventures && adventures.length > 0 ? (
       <div className="space-y-4">
         {adventures.map((adventure) => (
@@ -63,9 +73,9 @@ const AdventureList = ({
         ))}
       </div>
     ) : (
-      <div className="text-center py-8 bg-base-200 rounded-lg">
-        <p className="text-base-content opacity-70">
-          No adventures yet. Create your first one!
+      <div className="text-center py-12 bg-base-200 rounded-lg">
+        <p className="text-base-content opacity-70 text-lg">
+          No adventures yet. Create your first one above! ⬆️
         </p>
       </div>
     )}
