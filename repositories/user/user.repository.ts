@@ -7,6 +7,7 @@ import {
 import { getDbClient } from '../../data/database/mongodb';
 import { UserObject } from '../../types/user';
 import { logger } from '../../lib/logger';
+import { isExemptUser } from '../../lib/ai-usage-config';
 
 const collectionName = 'users';
 
@@ -192,6 +193,15 @@ class UserRepository implements UserRepositoryInterface {
 
       if (!user) {
         throw new Error('User not found');
+      }
+
+      if (isExemptUser(user.email)) {
+        return {
+          canUse: true,
+          remaining: 999999,
+          limit: 999999,
+          resetDate: now,
+        };
       }
 
       const resetDate = user.aiUsageResetDate || new Date(0);

@@ -4,6 +4,25 @@
 
 This system tracks AI generation usage per user with a weekly limit of 25 generations. The limit automatically resets every 7 days.
 
+### Exempt Users
+
+Certain users can be exempted from AI usage limits by adding their email addresses to the exempt list in `lib/ai-usage-config.ts`. Exempt users have unlimited AI generations.
+
+To add an exempt user:
+
+1. Open `lib/ai-usage-config.ts`
+2. Add the user's email address to the `AI_EXEMPT_USERS` array
+3. Email addresses are case-insensitive
+
+Example:
+
+```typescript
+export const AI_EXEMPT_USERS: string[] = [
+  'admin@yourdomain.com',
+  'power-user@example.com',
+];
+```
+
 ## Features
 
 ### 1. User Limits
