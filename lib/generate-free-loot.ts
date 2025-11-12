@@ -109,7 +109,7 @@ export function generateFreeLoot(
     item: 'Coins',
     description: 'Currency found on the creature or in the area',
     note: '',
-    source: 'Free',
+    source: 'random',
     rarity: 'Common',
   });
 
