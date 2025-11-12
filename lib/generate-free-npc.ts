@@ -30,9 +30,8 @@ export function generateFreeNpc(
 
   const gender = getRandomElement(GENDERS);
 
-  const nameKey = `${race}-${gender}`;
-  const namesList = NAMES_BY_RACE_AND_GENDER[nameKey] ||
-    NAMES_BY_RACE_AND_GENDER['Human-Male'] || ['Unknown'];
+  const namesList = NAMES_BY_RACE_AND_GENDER[race]?.[gender] ||
+    NAMES_BY_RACE_AND_GENDER['Human']?.['Male'] || ['Unknown'];
   const name = getRandomElement(namesList);
 
   const occupation =
