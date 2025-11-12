@@ -68,7 +68,7 @@ class UserRepository implements UserRepositoryInterface {
 
     const { db } = await getDbClient();
     const now = new Date();
-    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
 
     const existingUser = await db
       .collection<UserDocument>(collectionName)
@@ -77,7 +77,7 @@ class UserRepository implements UserRepositoryInterface {
     const shouldIncrementLoginCount =
       !existingUser ||
       !existingUser.lastLoginDate ||
-      existingUser.lastLoginDate < oneHourAgo;
+      existingUser.lastLoginDate < twentyFourHoursAgo;
 
     const updateOperation: any = {
       $set: {
@@ -96,11 +96,10 @@ class UserRepository implements UserRepositoryInterface {
 
     const user = await db
       .collection<UserDocument>(collectionName)
-      .findOneAndUpdate(
-        { auth0Id: userData.auth0Id },
-        updateOperation,
-        { upsert: true, returnDocument: 'after' },
-      );
+      .findOneAndUpdate({ auth0Id: userData.auth0Id }, updateOperation, {
+        upsert: true,
+        returnDocument: 'after',
+      });
 
     if (!user) {
       throw new Error('User not found');
