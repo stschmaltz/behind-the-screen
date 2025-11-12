@@ -67,24 +67,38 @@ class UserRepository implements UserRepositoryInterface {
     logger.info('handleUserSignIn', userData);
 
     const { db } = await getDbClient();
+    const now = new Date();
+    const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+
+    const existingUser = await db
+      .collection<UserDocument>(collectionName)
+      .findOne({ auth0Id: userData.auth0Id });
+
+    const shouldIncrementLoginCount =
+      !existingUser ||
+      !existingUser.lastLoginDate ||
+      existingUser.lastLoginDate < oneHourAgo;
+
+    const updateOperation: any = {
+      $set: {
+        auth0Id: userData.auth0Id,
+        email: userData.email,
+        name: userData.name,
+        picture: userData.picture,
+        emailVerified: false,
+        lastLoginDate: now,
+      },
+    };
+
+    if (shouldIncrementLoginCount) {
+      updateOperation.$inc = { loginCount: 1 };
+    }
 
     const user = await db
       .collection<UserDocument>(collectionName)
       .findOneAndUpdate(
         { auth0Id: userData.auth0Id },
-        {
-          $set: {
-            auth0Id: userData.auth0Id,
-            email: userData.email,
-            name: userData.name,
-            picture: userData.picture,
-            emailVerified: false,
-            lastLoginDate: new Date(),
-          },
-          $inc: {
-            loginCount: 1,
-          },
-        },
+        updateOperation,
         { upsert: true, returnDocument: 'after' },
       );
 
