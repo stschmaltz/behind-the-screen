@@ -172,7 +172,9 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
                   </span>
                   <span className="label-text-alt text-xs">
                     {hasAvailableAiUses
-                      ? `${remainingAiUses} of 25 AI generations remaining (rolling 7-day window)`
+                      ? remainingAiUses > 1000
+                        ? 'Unlimited AI generations'
+                        : `${remainingAiUses} of 25 AI generations remaining (rolling 7-day window)`
                       : 'No AI generations remaining (rolling 7-day window)'}
                   </span>
                   {!hasAvailableAiUses && !hasRequestedMoreUses && (

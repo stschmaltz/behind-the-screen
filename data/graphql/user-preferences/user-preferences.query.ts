@@ -10,6 +10,7 @@ import {
   isAuthorizedOrThrow,
 } from '../../../lib/graphql-context';
 import { isFeatureEnabled } from '../../../lib/featureFlags';
+import { isExemptUser } from '../../../lib/ai-usage-config';
 
 const userPreferencesQueryTypeDefs = /* GraphQL */ `
   extend type Query {
@@ -76,6 +77,10 @@ const userPreferencesQueryResolver = {
     ): Promise<number> {
       logger.info('getAiGenerationCount');
       isAuthorizedOrThrow(context);
+
+      if (isExemptUser(context.user.email)) {
+        return -999999;
+      }
 
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
