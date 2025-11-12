@@ -7,10 +7,12 @@ import {
   GraphQLContext,
   isAuthorizedOrThrow,
 } from '../../../lib/graphql-context';
+import { isFeatureEnabled } from '../../../lib/featureFlags';
 
 const userPreferencesQueryTypeDefs = /* GraphQL */ `
   extend type Query {
     getUserPreferences: UserPreferences
+    getAllUsageStats: [AiUsageStat!]!
   }
 `;
 
@@ -30,6 +32,26 @@ const userPreferencesQueryResolver = {
       isAuthorizedOrThrow(context);
 
       return userPreferencesRepository.getUserPreferences(context.user._id);
+    },
+
+    async getAllUsageStats(
+      _: any,
+      __: any,
+      context: GraphQLContext,
+    ): Promise<Array<{
+      email: string;
+      usageCount: number;
+      limit: number;
+      resetDate?: string;
+    }>> {
+      logger.info('getAllUsageStats');
+      isAuthorizedOrThrow(context);
+
+      if (!isFeatureEnabled(context.user.email)) {
+        throw new Error('Unauthorized');
+      }
+
+      return userPreferencesRepository.getAllUsageStats();
     },
   },
 };

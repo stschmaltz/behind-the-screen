@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { UserObject } from '../types/user';
 import { isFeatureEnabled } from '../lib/featureFlags';
+import { asyncFetch } from '../data/graphql/graphql-fetcher';
 
 interface Feedback {
   name: string;
@@ -18,6 +19,17 @@ interface AiUsageStat {
   limit: number;
   resetDate?: string;
 }
+
+const GET_ALL_USAGE_STATS_QUERY = `
+  query GetAllUsageStats {
+    getAllUsageStats {
+      email
+      usageCount
+      limit
+      resetDate
+    }
+  }
+`;
 
 function AdminPage() {
   const { user, isLoading } = useUser();
@@ -40,9 +52,11 @@ function AdminPage() {
         .then((res) => res.json())
         .then((data) => setFeedback(data.feedback))
         .catch(() => setError('Failed to fetch feedback'));
-      fetch('/api/ai-usage/stats')
-        .then((res) => res.json())
-        .then((data) => setAiUsageStats(data.stats))
+      asyncFetch<{ getAllUsageStats: AiUsageStat[] }>(
+        GET_ALL_USAGE_STATS_QUERY,
+        {},
+      )
+        .then((data) => setAiUsageStats(data.getAllUsageStats))
         .catch(() => setError('Failed to fetch AI usage stats'));
     }
   }, [user, isLoading, router]);

@@ -218,6 +218,43 @@ export class UserPreferencesRepository
     }
   }
 
+  public async getAllUsageStats(): Promise<
+    Array<{
+      email: string;
+      usageCount: number;
+      limit: number;
+      resetDate?: string;
+    }>
+  > {
+    try {
+      const { db } = await getDbClient();
+      const userPrefsCollection = db.collection(this.collectionName);
+      const usersCollection = db.collection('users');
+
+      const userPrefs = await userPrefsCollection.find({}).toArray();
+
+      const stats = await Promise.all(
+        userPrefs.map(async (pref) => {
+          const user = await usersCollection.findOne({
+            _id: pref.userId,
+          });
+
+          return {
+            email: user?.email || 'Unknown',
+            usageCount: pref.aiGenerationUsageCount || 0,
+            limit: 25,
+            resetDate: pref.aiUsageResetDate?.toISOString(),
+          };
+        }),
+      );
+
+      return stats;
+    } catch (error) {
+      logger.error('Error fetching all usage stats', error);
+      throw error;
+    }
+  }
+
   private mapToUserPreferences(doc: any): UserPreferences {
     return {
       _id: doc._id?.toString() || doc._id,
