@@ -53,6 +53,7 @@ export function useGenerationUsage(): UseGenerationUsageResult {
       }>(incrementAiGenerationUsageMutation, {});
 
       setUsageCount(result.incrementAiGenerationUsage.aiGenerationUsageCount);
+      refresh();
     } catch (error) {
       logger.error('Failed to increment AI generation usage', error);
       throw error;
@@ -66,6 +67,7 @@ export function useGenerationUsage(): UseGenerationUsageResult {
       }>(requestMoreUsesMutation, {});
 
       setHasRequestedMoreUses(result.requestMoreUses.hasRequestedMoreUses);
+      refresh();
     } catch (error) {
       logger.error('Failed to request more uses', error);
       throw error;
