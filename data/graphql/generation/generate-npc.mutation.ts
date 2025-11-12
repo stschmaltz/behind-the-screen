@@ -32,7 +32,7 @@ const generateNpcMutationTypeDefs = /* GraphQL */ `
 `;
 
 const MASTRA_SERVICE_BASE_URL = process.env.MASTRA_SERVICE_BASE_URL;
-const MASTRA_WORKFLOW_PATH = '/api/workflows/npcGenerationWorkflow/start-async';
+const MASTRA_WORKFLOW_PATH = '/api/workflows/npc-generation-workflow/start-async';
 
 function buildMastraUrl() {
   if (!MASTRA_SERVICE_BASE_URL) {
