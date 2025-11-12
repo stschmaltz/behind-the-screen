@@ -15,6 +15,7 @@ import {
 } from '../hooks/use-npc-history.hook';
 import { asyncFetch } from '../data/graphql/graphql-fetcher';
 import { useGenerationUsage } from '../hooks/use-generation-usage';
+import { generateFreeNpc } from '../lib/generate-free-npc';
 
 const GENERATE_NPC_MUTATION = `
   mutation GenerateNpc($race: String, $occupation: String, $context: String, $includeSecret: Boolean!, $includeBackground: Boolean!) {
@@ -102,35 +103,49 @@ const NpcGeneratorPage: NextPage = () => {
         includeBackground);
 
     try {
-      const actualRace = useAiEnhanced ? race : '';
-      const actualOccupation = useAiEnhanced ? occupation : '';
-      const actualContext = useAiEnhanced ? context : '';
-      const actualIncludeSecret = useAiEnhanced ? includeSecret : false;
-      const actualIncludeBackground = useAiEnhanced ? includeBackground : false;
+      let generatedNpc: NpcType;
 
-      const data = await asyncFetch<{ generateNpc: NpcType }>(
-        GENERATE_NPC_MUTATION,
-        {
-          race: actualRace || null,
-          occupation: actualOccupation || null,
-          context: actualContext || null,
-          includeSecret: actualIncludeSecret,
-          includeBackground: actualIncludeBackground,
-        },
-      );
+      if (useAiEnhanced) {
+        const actualRace = race;
+        const actualOccupation = occupation;
+        const actualContext = context;
+        const actualIncludeSecret = includeSecret;
+        const actualIncludeBackground = includeBackground;
 
-      setNpc(data.generateNpc);
+        const data = await asyncFetch<{ generateNpc: NpcType }>(
+          GENERATE_NPC_MUTATION,
+          {
+            race: actualRace || null,
+            occupation: actualOccupation || null,
+            context: actualContext || null,
+            includeSecret: actualIncludeSecret,
+            includeBackground: actualIncludeBackground,
+          },
+        );
 
-      if (isUsingAiFeatures) {
-        refetchUsage();
+        generatedNpc = data.generateNpc;
+
+        if (isUsingAiFeatures) {
+          refetchUsage();
+        }
+      } else {
+        generatedNpc = generateFreeNpc(
+          race,
+          occupation,
+          includeSecret,
+          includeBackground,
+        );
       }
+
+      setNpc(generatedNpc);
+
       addEntry({
-        race: actualRace,
-        occupation: actualOccupation,
-        context: actualContext,
-        includeSecret: actualIncludeSecret,
-        includeBackground: actualIncludeBackground,
-        npc: data.generateNpc,
+        race: useAiEnhanced ? race : '',
+        occupation: useAiEnhanced ? occupation : '',
+        context: useAiEnhanced ? context : '',
+        includeSecret: useAiEnhanced ? includeSecret : false,
+        includeBackground: useAiEnhanced ? includeBackground : false,
+        npc: generatedNpc,
       });
       setIsFormCollapsed(true);
     } catch (err: unknown) {

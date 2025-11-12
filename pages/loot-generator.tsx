@@ -16,6 +16,7 @@ import {
 import LootHistory from '../components/loot/LootHistory';
 import { asyncFetch } from '../data/graphql/graphql-fetcher';
 import { useGenerationUsage } from '../hooks/use-generation-usage';
+import { generateFreeLoot } from '../lib/generate-free-loot';
 
 const GENERATE_LOOT_MUTATION = `
   mutation GenerateLoot($partyLevel: Int!, $srdItemCount: Int!, $randomItemCount: Int!, $context: String, $lootQuality: String) {
@@ -93,31 +94,40 @@ const LootGeneratorPage: NextPage = () => {
       useAiEnhanced && (randomItemCount > 0 || context.trim().length > 0);
 
     try {
-      const actualRandomItemCount = useAiEnhanced ? randomItemCount : 0;
-      const actualContext = useAiEnhanced ? context : '';
+      let generatedLoot: LootItemType[];
 
-      const data = await asyncFetch<{ generateLoot: LootItemType[] }>(
-        GENERATE_LOOT_MUTATION,
-        {
-          partyLevel,
-          srdItemCount,
-          randomItemCount: actualRandomItemCount,
-          context: actualContext,
-          lootQuality: useAiEnhanced ? lootQuality : 'standard',
-        },
-      );
+      if (useAiEnhanced) {
+        const actualRandomItemCount = randomItemCount;
+        const actualContext = context;
 
-      setLoot(data.generateLoot);
+        const data = await asyncFetch<{ generateLoot: LootItemType[] }>(
+          GENERATE_LOOT_MUTATION,
+          {
+            partyLevel,
+            srdItemCount,
+            randomItemCount: actualRandomItemCount,
+            context: actualContext,
+            lootQuality: lootQuality,
+          },
+        );
 
-      if (isUsingAiFeatures) {
-        refetchUsage();
+        generatedLoot = data.generateLoot;
+
+        if (isUsingAiFeatures) {
+          refetchUsage();
+        }
+      } else {
+        generatedLoot = generateFreeLoot(partyLevel, srdItemCount);
       }
+
+      setLoot(generatedLoot);
+
       addEntry({
         partyLevel,
         srdItemCount,
-        randomItemCount: actualRandomItemCount,
-        context: actualContext,
-        loot: data.generateLoot,
+        randomItemCount: useAiEnhanced ? randomItemCount : 0,
+        context: useAiEnhanced ? context : '',
+        loot: generatedLoot,
       });
       setIsFormCollapsed(true);
     } catch (err: unknown) {
