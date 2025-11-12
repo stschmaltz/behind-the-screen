@@ -184,6 +184,8 @@ export type Mutation = {
   deleteEncounter: Maybe<Scalars['Boolean']['output']>;
   deletePlayer: Maybe<Scalars['Boolean']['output']>;
   generateLoot: Array<LootItem>;
+  generateNpc: Npc;
+  incrementAiGenerationUsage: Maybe<UserPreferences>;
   saveAdventure: Maybe<Adventure>;
   saveCampaign: Maybe<Campaign>;
   saveEncounter: Maybe<Encounter>;
@@ -226,6 +228,15 @@ export type MutationGenerateLootArgs = {
   partyLevel: Scalars['Int']['input'];
   randomItemCount: Scalars['Int']['input'];
   srdItemCount: Scalars['Int']['input'];
+};
+
+
+export type MutationGenerateNpcArgs = {
+  context: InputMaybe<Scalars['String']['input']>;
+  includeBackground: Scalars['Boolean']['input'];
+  includeSecret: Scalars['Boolean']['input'];
+  occupation: InputMaybe<Scalars['String']['input']>;
+  race: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -335,6 +346,21 @@ export type NewPlayerInput = {
   name: Scalars['String']['input'];
 };
 
+export type Npc = {
+  __typename?: 'Npc';
+  age: Scalars['String']['output'];
+  appearance: Scalars['String']['output'];
+  background: Maybe<Scalars['String']['output']>;
+  gender: Scalars['String']['output'];
+  motivation: Scalars['String']['output'];
+  name: Scalars['String']['output'];
+  occupation: Scalars['String']['output'];
+  personality: Scalars['String']['output'];
+  quirk: Scalars['String']['output'];
+  race: Scalars['String']['output'];
+  secret: Maybe<Scalars['String']['output']>;
+};
+
 export type Player = {
   __typename?: 'Player';
   _id: Scalars['ID']['output'];
@@ -430,6 +456,7 @@ export type UserPreferences = {
   __typename?: 'UserPreferences';
   _id: Scalars['ID']['output'];
   activeCampaignId: Maybe<Scalars['ID']['output']>;
+  aiGenerationUsageCount: Maybe<Scalars['Int']['output']>;
   theme: Maybe<Scalars['String']['output']>;
 };
 
@@ -577,14 +604,19 @@ export type AllPlayersQuery = { __typename?: 'Query', allPlayers: Array<{ __type
 export type GetUserPreferencesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserPreferencesQuery = { __typename?: 'Query', getUserPreferences: { __typename?: 'UserPreferences', _id: string, activeCampaignId: string | null, theme: string | null } | null };
+export type GetUserPreferencesQuery = { __typename?: 'Query', getUserPreferences: { __typename?: 'UserPreferences', _id: string, activeCampaignId: string | null, theme: string | null, aiGenerationUsageCount: number | null } | null };
 
 export type SetActiveCampaignMutationVariables = Exact<{
   input: SetActiveCampaignInput;
 }>;
 
 
-export type SetActiveCampaignMutation = { __typename?: 'Mutation', setActiveCampaign: { __typename?: 'UserPreferences', _id: string, activeCampaignId: string | null, theme: string | null } | null };
+export type SetActiveCampaignMutation = { __typename?: 'Mutation', setActiveCampaign: { __typename?: 'UserPreferences', _id: string, activeCampaignId: string | null, theme: string | null, aiGenerationUsageCount: number | null } | null };
+
+export type IncrementAiGenerationUsageMutationVariables = Exact<{ [key: string]: never; }>;
+
+
+export type IncrementAiGenerationUsageMutation = { __typename?: 'Mutation', incrementAiGenerationUsage: { __typename?: 'UserPreferences', _id: string, aiGenerationUsageCount: number | null } | null };
 
 export type SetThemeMutationVariables = Exact<{
   input: SetThemeInput;
