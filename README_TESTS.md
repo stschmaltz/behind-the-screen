@@ -60,8 +60,10 @@ Comprehensive testing has been added to the Dungeon Master Essentials applicatio
 
 ## Running Tests
 
+### Unit & Integration Tests
+
 ```bash
-# Run all tests
+# Run all unit tests
 npm test
 
 # Run tests in watch mode (for development)
@@ -70,6 +72,24 @@ npm run test:watch
 # Run tests with coverage report
 npm run test:coverage
 ```
+
+### End-to-End Tests
+
+```bash
+# Run E2E tests
+npm run test:e2e
+
+# Run E2E tests with UI (interactive, recommended)
+npm run test:e2e:ui
+
+# Run E2E tests in headed mode (see browser)
+npm run test:e2e:headed
+
+# Debug a specific test
+npm run test:e2e:debug
+```
+
+See [E2E_TESTING.md](./E2E_TESTING.md) for complete E2E testing guide.
 
 ## Test Configuration
 
@@ -81,6 +101,7 @@ npm run test:coverage
 
 ## Files Added
 
+### Unit & Integration Tests
 ```
 jest.config.js                                    # Jest configuration
 jest.setup.js                                     # Test setup and polyfills
@@ -98,6 +119,17 @@ pages/encounters/__tests__/
   └── MonsterSelector.test.tsx                   # 13 tests (100% coverage)
 ```
 
+### End-to-End Tests
+```
+playwright.config.ts                              # Playwright configuration
+E2E_TESTING.md                                    # Complete E2E testing guide
+.env.test.example                                 # Test credentials template
+e2e/
+  ├── README.md                                   # Quick start guide
+  ├── example.spec.ts                             # Basic navigation tests
+  └── encounter-full-flow.spec.ts                 # Complete encounter workflow
+```
+
 ## Benefits
 
 1. **Refactor Confidence:** Make changes knowing tests will catch breaks
@@ -108,12 +140,18 @@ pages/encounters/__tests__/
 
 ## Next Steps
 
+### Unit Tests
 Consider adding tests for:
-- Additional complex hooks (usePlayerManagement, encounter management)
+- Additional complex hooks (usePlayerManagement)
 - More UI components (encounter tables, character cards)
 - API routes and GraphQL resolvers
-- Integration tests for critical user flows
-- End-to-end tests for complete feature workflows
+
+### E2E Tests (Playwright)
+✅ Framework configured and ready
+- Add more user flow tests
+- Test error scenarios
+- Test with different user roles
+- Add visual regression testing
 
 ## Coverage Goals
 

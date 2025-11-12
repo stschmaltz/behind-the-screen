@@ -31,25 +31,25 @@ const AdventureListItem = ({
     >
       <div className="flex flex-col gap-2">
         <div className="flex justify-between items-center">
-          <Link
-            href={`/encounters?campaignId=${adventure.campaignId}&adventureId=${adventure._id}`}
-            className={`text-lg font-semibold hover:underline ${adventure.status === 'completed' ? 'line-through' : ''}`}
-          >
-            {editing ? (
-              <InlineEditableText
-                initialValue={adventure.name}
-                onSave={(val) => {
-                  onRename(val);
-                  setEditing(false);
-                }}
-                isSaving={isSaving}
-                inputClassName="input input-bordered input-sm flex-grow"
-                displayClassName=""
-              />
-            ) : (
-              adventure.name
-            )}
-          </Link>
+          {editing ? (
+            <InlineEditableText
+              initialValue={adventure.name}
+              onSave={(val) => {
+                onRename(val);
+                setEditing(false);
+              }}
+              isSaving={isSaving}
+              inputClassName="input input-bordered input-sm flex-grow"
+              displayClassName=""
+            />
+          ) : (
+            <Link
+              href={`/encounters?campaignId=${adventure.campaignId}&adventureId=${adventure._id}`}
+              className={`text-lg font-semibold hover:underline ${adventure.status === 'completed' ? 'line-through' : ''}`}
+            >
+              {adventure.name}
+            </Link>
+          )}
           <div className="flex items-center gap-2">
             <Button
               label="Rename"
