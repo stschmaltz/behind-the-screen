@@ -35,7 +35,7 @@ export function useGenerationUsage(): UseGenerationUsageResult {
 
   useEffect(() => {
     if (prefsData?.getUserPreferences) {
-      if (prefsData.getUserPreferences.hasRequestedMoreUses !== undefined) {
+      if (prefsData.getUserPreferences.hasRequestedMoreUses !== undefined && prefsData.getUserPreferences.hasRequestedMoreUses !== null) {
         setHasRequestedMoreUses(prefsData.getUserPreferences.hasRequestedMoreUses);
       }
     }
