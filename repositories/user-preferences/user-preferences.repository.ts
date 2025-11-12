@@ -163,6 +163,7 @@ export class UserPreferencesRepository
     Array<{
       email: string;
       usageCount: number;
+      totalUsageEver: number;
       limit: number;
       resetDate?: string;
       hasRequestedMoreUses?: boolean;
@@ -174,8 +175,8 @@ export class UserPreferencesRepository
       const { db } = await getDbClient();
       const userPrefsCollection = db.collection(this.collectionName);
       const usersCollection = db.collection('users');
-      const lootGenerationsCollection = db.collection('lootGenerations');
-      const npcGenerationsCollection = db.collection('npcGenerations');
+      const lootGenerationsCollection = db.collection('loot_generations');
+      const npcGenerationsCollection = db.collection('npc_generations');
 
       const allUsers = await usersCollection.find({}).toArray();
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
@@ -186,24 +187,43 @@ export class UserPreferencesRepository
             userId: user._id,
           });
 
-          const [lootCount, npcCount] = await Promise.all([
-            lootGenerationsCollection.countDocuments({
-              userId: user._id,
-              createdAt: { $gte: sevenDaysAgo },
-              useAi: true,
-            }),
-            npcGenerationsCollection.countDocuments({
-              userId: user._id,
-              createdAt: { $gte: sevenDaysAgo },
-              useAi: true,
-            }),
-          ]);
+          const [lootCount, npcCount, lootTotalCount, npcTotalCount] =
+            await Promise.all([
+              lootGenerationsCollection.countDocuments({
+                userId: user._id,
+                timestamp: { $gte: sevenDaysAgo.getTime() },
+                randomItemCount: { $gt: 0 },
+              }),
+              npcGenerationsCollection.countDocuments({
+                userId: user._id,
+                timestamp: { $gte: sevenDaysAgo.getTime() },
+                $or: [
+                  { race: { $exists: true, $ne: '' } },
+                  { occupation: { $exists: true, $ne: '' } },
+                  { context: { $exists: true, $ne: '' } },
+                ],
+              }),
+              lootGenerationsCollection.countDocuments({
+                userId: user._id,
+                randomItemCount: { $gt: 0 },
+              }),
+              npcGenerationsCollection.countDocuments({
+                userId: user._id,
+                $or: [
+                  { race: { $exists: true, $ne: '' } },
+                  { occupation: { $exists: true, $ne: '' } },
+                  { context: { $exists: true, $ne: '' } },
+                ],
+              }),
+            ]);
 
           const totalUsageCount = lootCount + npcCount;
+          const totalUsageEver = lootTotalCount + npcTotalCount;
 
           return {
             email: user.email || 'Unknown',
             usageCount: totalUsageCount,
+            totalUsageEver: totalUsageEver,
             limit: 25,
             resetDate: sevenDaysAgo.toISOString(),
             hasRequestedMoreUses: prefs?.hasRequestedMoreUses || false,

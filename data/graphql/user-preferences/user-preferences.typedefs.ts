@@ -9,6 +9,7 @@ const userPreferencesTypeDefs = /* GraphQL */ `
   type AiUsageStat {
     email: String!
     usageCount: Int!
+    totalUsageEver: Int!
     limit: Int!
     resetDate: String
     hasRequestedMoreUses: Boolean

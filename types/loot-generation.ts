@@ -5,6 +5,8 @@ export interface LootItemType {
   description?: string;
   note?: string;
   source?: 'official' | 'random';
+  rarity?: string;
+  effects?: string;
 }
 
 export interface LootGeneration {

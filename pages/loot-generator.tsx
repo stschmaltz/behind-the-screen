@@ -20,13 +20,14 @@ import { useGenerationUsage } from '../hooks/use-generation-usage';
 import { generateFreeLoot } from '../lib/generate-free-loot';
 
 const GENERATE_LOOT_MUTATION = `
-  mutation GenerateLoot($partyLevel: Int!, $srdItemCount: Int!, $randomItemCount: Int!, $context: String, $lootQuality: String) {
+  mutation GenerateLoot($partyLevel: Int!, $srdItemCount: Int!, $randomItemCount: Int!, $context: String, $lootQuality: String, $includeEffects: Boolean) {
     generateLoot(
       partyLevel: $partyLevel
       srdItemCount: $srdItemCount
       randomItemCount: $randomItemCount
       context: $context
       lootQuality: $lootQuality
+      includeEffects: $includeEffects
     ) {
       level
       coins
@@ -35,6 +36,7 @@ const GENERATE_LOOT_MUTATION = `
       note
       source
       rarity
+      effects
     }
   }
 `;
@@ -46,6 +48,7 @@ const LootGeneratorPage: NextPage = () => {
   const [randomItemCount, setRandomItemCount] = useState<number>(3);
   const [context, setContext] = useState<string>('');
   const [lootQuality, setLootQuality] = useState<LootQuality>('standard');
+  const [includeEffects, setIncludeEffects] = useState<boolean>(true);
   const [loot, setLoot] = useState<LootItemType[] | null>(null);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -109,6 +112,7 @@ const LootGeneratorPage: NextPage = () => {
             randomItemCount: actualRandomItemCount,
             context: actualContext,
             lootQuality: lootQuality,
+            includeEffects: includeEffects,
           },
         );
 
@@ -201,6 +205,8 @@ const LootGeneratorPage: NextPage = () => {
               setContext={setContext}
               lootQuality={lootQuality}
               setLootQuality={setLootQuality}
+              includeEffects={includeEffects}
+              setIncludeEffects={setIncludeEffects}
               isLoading={isGenerating}
               handleSubmit={handleSubmit}
               error={error}

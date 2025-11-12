@@ -21,6 +21,7 @@ const generateLootMutationTypeDefs = /* GraphQL */ `
     note: String
     source: String
     rarity: String
+    effects: String
   }
 
   extend type Mutation {
@@ -30,6 +31,7 @@ const generateLootMutationTypeDefs = /* GraphQL */ `
       randomItemCount: Int!
       context: String
       lootQuality: String
+      includeEffects: Boolean
     ): [LootItem!]!
   }
 `;
@@ -98,7 +100,14 @@ const generateLootMutationResolver = {
   Mutation: {
     async generateLoot(
       _: any,
-      { partyLevel, srdItemCount, randomItemCount, context, lootQuality }: any,
+      {
+        partyLevel,
+        srdItemCount,
+        randomItemCount,
+        context,
+        lootQuality,
+        includeEffects,
+      }: any,
       contextObj: GraphQLContext,
     ) {
       isAuthorizedOrThrow(contextObj);
@@ -110,6 +119,7 @@ const generateLootMutationResolver = {
           randomItemCount,
           context: context || undefined,
           lootQuality: lootQuality || 'standard',
+          includeEffects: includeEffects !== undefined ? includeEffects : true,
         },
       };
       logger.info('[generateLoot] Sending request to Mastra:', {

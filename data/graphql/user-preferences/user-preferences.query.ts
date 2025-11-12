@@ -54,6 +54,7 @@ const userPreferencesQueryResolver = {
       Array<{
         email: string;
         usageCount: number;
+        totalUsageEver: number;
         limit: number;
         resetDate?: string;
         loginCount?: number;

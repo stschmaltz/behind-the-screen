@@ -15,6 +15,7 @@ interface Feedback {
 interface UserWithUsage {
   email: string;
   usageCount: number;
+  totalUsageEver: number;
   limit: number;
   resetDate?: string;
   hasRequestedMoreUses?: boolean;
@@ -27,6 +28,7 @@ const GET_ALL_USAGE_STATS_QUERY = `
     getAllUsageStats {
       email
       usageCount
+      totalUsageEver
       limit
       resetDate
       hasRequestedMoreUses
@@ -93,7 +95,8 @@ function AdminPage() {
                 <thead>
                   <tr>
                     <th>Email</th>
-                    <th>AI Usage</th>
+                    <th>AI Usage (7d)</th>
+                    <th>Total Ever</th>
                     <th>AI Limit</th>
                     <th>AI Remaining</th>
                     <th>AI Reset Date</th>
@@ -127,6 +130,9 @@ function AdminPage() {
                         <tr key={i}>
                           <td>{stat.email}</td>
                           <td>{stat.usageCount}</td>
+                          <td className="font-semibold">
+                            {stat.totalUsageEver}
+                          </td>
                           <td>{stat.limit}</td>
                           <td
                             className={

@@ -18,6 +18,7 @@ export interface UserPreferencesRepositoryInterface {
     Array<{
       email: string;
       usageCount: number;
+      totalUsageEver: number;
       limit: number;
       resetDate?: string;
       hasRequestedMoreUses?: boolean;

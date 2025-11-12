@@ -11,6 +11,7 @@ export type LootItemType = {
   note?: string;
   source?: 'official' | 'random';
   rarity?: Rarity;
+  effects?: string;
 };
 
 interface LootDisplayProps {
@@ -201,6 +202,16 @@ const LootDisplay: React.FC<LootDisplayProps> = ({
                   {entry.description && (
                     <div className="text-sm mt-2 text-base-content/75 ml-7 leading-relaxed">
                       {entry.description}
+                    </div>
+                  )}
+                  {entry.effects && (
+                    <div className="text-sm mt-2 ml-7 p-2 bg-primary/10 rounded border-l-2 border-primary">
+                      <span className="font-semibold text-primary text-xs uppercase tracking-wide">
+                        Effects:
+                      </span>{' '}
+                      <span className="text-base-content/80">
+                        {entry.effects}
+                      </span>
                     </div>
                   )}
                   {entry.note && (

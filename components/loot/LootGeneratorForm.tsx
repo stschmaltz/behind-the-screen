@@ -16,6 +16,8 @@ interface LootGeneratorFormProps {
   setContext: (value: string) => void;
   lootQuality: LootQuality;
   setLootQuality: (value: LootQuality) => void;
+  includeEffects: boolean;
+  setIncludeEffects: (value: boolean) => void;
   isLoading: boolean;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
   error: string | null;
@@ -38,6 +40,8 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
   setContext,
   lootQuality,
   setLootQuality,
+  includeEffects,
+  setIncludeEffects,
   isLoading,
   handleSubmit,
   error,
@@ -67,25 +71,25 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
 
   return (
     <div className="card bg-base-100 shadow-xl h-fit min-w-[250px]">
-      <div className="card-body">
-        <h1 className="card-title text-3xl font-bold text-center mb-6 flex items-center justify-center gap-3">
-          <TreasureChestIcon className="w-8 h-8 text-primary" />
+      <div className="card-body p-4 sm:p-6">
+        <h1 className="card-title text-2xl font-bold text-center mb-3 flex items-center justify-center gap-2">
+          <TreasureChestIcon className="w-6 h-6 text-primary" />
           Loot Table Generator
         </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 gap-6">
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="form-control">
               <FormInput
                 id="partyLevel"
-                label="Party Level (1-20)"
+                label="Party Level"
                 type="number"
                 value={partyLevel}
                 onChange={(e) => setPartyLevel(parseInt(e.target.value))}
                 min={1}
                 max={20}
                 required
-                className="input-bordered w-full"
+                className="input-bordered w-full input-sm"
                 disabled={isLoading}
               />
             </div>
@@ -93,14 +97,14 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
             <div className="form-control">
               <FormInput
                 id="srdItemCount"
-                label="# of Official Source Items"
+                label="Official Source Items"
                 type="number"
                 value={srdItemCount}
                 onChange={(e) => setSrdItemCount(parseInt(e.target.value))}
                 min={0}
                 max={10}
                 required
-                className="input-bordered w-full"
+                className="input-bordered w-full input-sm"
                 disabled={isLoading}
               />
             </div>
@@ -108,80 +112,135 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
             <div className="form-control">
               <FormInput
                 id="randomItemCount"
-                label="# of AI Generated Items"
+                label="AI Generated Items"
                 type="number"
                 value={randomItemCount}
                 onChange={(e) => setRandomItemCount(parseInt(e.target.value))}
                 min={0}
                 max={5}
-                className="input-bordered w-full"
+                className="input-bordered w-full input-sm"
                 disabled={isLoading || !useAiEnhanced}
               />
             </div>
+          </div>
 
+          <div className="grid grid-cols-1 gap-3">
             <div className="form-control">
               <FormInput
                 id="context"
-                label="Context/Theme (Optional)"
+                label="Location (Optional)"
                 type="text"
                 value={context}
                 onChange={(e) => setContext(e.target.value)}
-                className="input-bordered w-full"
-                placeholder="e.g., forest, dungeon, underwater"
+                className="input-bordered w-full input-sm"
+                placeholder="e.g., ancient tomb, dragon's hoard, enchanted forest"
                 disabled={isLoading || !useAiEnhanced}
               />
             </div>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Loot Quality</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="form-control">
+                <label className="label py-1">
+                  <span className="label-text font-medium text-sm">
+                    Loot Quality
+                  </span>
+                </label>
+                <select
+                  className="select select-bordered select-sm w-full"
+                  value={lootQuality}
+                  onChange={(e) =>
+                    setLootQuality(e.target.value as LootQuality)
+                  }
+                  disabled={isLoading || !useAiEnhanced}
+                >
+                  <option value="basic">Basic</option>
+                  <option value="standard">Standard</option>
+                  <option value="good">Good</option>
+                  <option value="major">Major</option>
+                  <option value="legendary">Legendary</option>
+                </select>
+                <label className="label py-0">
+                  <span className="label-text-alt text-xs">
+                    {getLootQualityDescription(lootQuality)}
+                  </span>
+                </label>
+              </div>
+
+              <div className="form-control">
+                <label className="label py-1">
+                  <span className="label-text font-medium text-sm">
+                    Item Effects
+                  </span>
+                </label>
+                <label className="label cursor-pointer justify-start gap-2 border border-base-300 rounded-lg px-3 py-2 bg-base-200">
+                  <input
+                    type="checkbox"
+                    checked={includeEffects}
+                    onChange={(e) => setIncludeEffects(e.target.checked)}
+                    className="checkbox checkbox-sm checkbox-primary"
+                    disabled={isLoading || !useAiEnhanced}
+                  />
+                  <span className="label-text text-xs">
+                    Include effects when applicable
+                  </span>
+                </label>
+                <label className="label py-0">
+                  <span className="label-text-alt text-xs">
+                    Mechanical or flavor effects
+                  </span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div className="divider my-2"></div>
+
+          <div className="grid grid-cols-1 gap-3">
+            <div className="form-control hidden">
+              <label className="label py-1">
+                <span className="label-text font-medium text-sm">
+                  Loot Quality (old)
+                </span>
               </label>
               <select
-                className="select select-bordered w-full"
+                className="select select-bordered select-sm w-full hidden"
                 value={lootQuality}
                 onChange={(e) => setLootQuality(e.target.value as LootQuality)}
                 disabled={isLoading || !useAiEnhanced}
               >
-                <option value="basic">Basic - Trinkets & Common Items</option>
-                <option value="standard">Standard - Normal Mix</option>
-                <option value="good">Good - Better Items</option>
-                <option value="major">Major - Rare Treasure</option>
-                <option value="legendary">Legendary - Jackpot!</option>
+                <option value="basic">Basic</option>
+                <option value="standard">Standard</option>
+                <option value="good">Good</option>
+                <option value="major">Major</option>
+                <option value="legendary">Legendary</option>
               </select>
-              <label className="label">
-                <span className="label-text-alt">
-                  {getLootQualityDescription(lootQuality)}
-                </span>
-              </label>
             </div>
 
-            <div className="divider"></div>
-
             <div className="form-control">
-              <label className="label cursor-pointer justify-start gap-4">
+              <label className="label cursor-pointer justify-start gap-3 py-1">
                 <input
                   type="checkbox"
                   checked={useAiEnhanced}
                   onChange={(e) => setUseAiEnhanced(e.target.checked)}
-                  className="toggle toggle-primary"
+                  className="toggle toggle-primary toggle-sm"
                   disabled={isLoading || !hasAvailableAiUses}
                 />
                 <div className="flex flex-col flex-1">
-                  <span className="label-text font-semibold">
+                  <span className="label-text font-semibold text-sm">
                     AI Enhanced Mode
                   </span>
                   <span className="label-text-alt text-xs">
                     {hasAvailableAiUses
                       ? remainingAiUses > 1000
-                        ? 'Unlimited AI generations'
-                        : `${remainingAiUses} of 25 AI generations remaining (rolling 7-day window)`
-                      : 'No AI generations remaining (rolling 7-day window)'}
+                        ? 'Unlimited'
+                        : `${remainingAiUses}/25 remaining (7-day window)`
+                      : 'No generations remaining'}
                   </span>
                   {!hasAvailableAiUses && !hasRequestedMoreUses && (
                     <button
                       type="button"
                       onClick={onRequestMoreUses}
-                      className="btn btn-xs btn-ghost mt-1 self-start"
+                      className="btn btn-xs btn-ghost mt-1 self-start p-0 h-auto min-h-0"
                     >
                       Request More Uses
                     </button>
@@ -196,20 +255,20 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
             </div>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-4">
             <Button
               type="submit"
-              label={isLoading ? 'Generating Treasure...' : 'Generate Loot'}
+              label={isLoading ? 'Generating...' : 'Generate Loot'}
               variant="primary"
               disabled={isLoading}
               loading={isLoading}
-              className="w-full py-3 text-lg"
+              className="w-full py-2"
             />
           </div>
         </form>
 
         {error && (
-          <div className="mt-6 alert alert-error shadow-lg">
+          <div className="mt-3 alert alert-error shadow-lg text-sm">
             <div>
               <ErrorIcon className="stroke-current flex-shrink-0 h-6 w-6" />
               <span>Error: {error}</span>
