@@ -38,14 +38,14 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
   };
 
   return (
-    <tr className="hover">
+    <tr className="hover transition-colors duration-200">
       <td className="font-semibold">{player.name}</td>
       <td>
         {editing === 'armorClass' ? (
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 slide-down">
             <input
               type="number"
-              className="input input-bordered input-sm w-16"
+              className="input input-bordered input-sm w-16 focus:ring-2 focus:ring-primary/50 transition-all duration-200"
               value={editValue}
               onChange={(e) => setEditValue(parseInt(e.target.value, 10) || 0)}
               autoFocus
@@ -54,16 +54,22 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
                 if (e.key === 'Escape') cancelEdit();
               }}
             />
-            <button className="btn btn-xs btn-primary" onClick={submitEdit}>
+            <button
+              className="btn btn-xs btn-primary hover:scale-105 transition-transform duration-200"
+              onClick={submitEdit}
+            >
               Save
             </button>
-            <button className="btn btn-xs" onClick={cancelEdit}>
+            <button
+              className="btn btn-xs hover:scale-105 transition-transform duration-200"
+              onClick={cancelEdit}
+            >
               Cancel
             </button>
           </div>
         ) : (
           <div
-            className="cursor-pointer hover:text-primary"
+            className="cursor-pointer hover:text-primary transition-all duration-200 hover:scale-110 inline-block"
             onClick={() => startEditing('armorClass')}
             title="Click to edit AC"
           >
@@ -73,10 +79,10 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
       </td>
       <td>
         {editing === 'maxHP' ? (
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 slide-down">
             <input
               type="number"
-              className="input input-bordered input-sm w-16"
+              className="input input-bordered input-sm w-16 focus:ring-2 focus:ring-primary/50 transition-all duration-200"
               value={editValue}
               onChange={(e) => setEditValue(parseInt(e.target.value, 10) || 0)}
               autoFocus
@@ -85,16 +91,22 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
                 if (e.key === 'Escape') cancelEdit();
               }}
             />
-            <button className="btn btn-xs btn-primary" onClick={submitEdit}>
+            <button
+              className="btn btn-xs btn-primary hover:scale-105 transition-transform duration-200"
+              onClick={submitEdit}
+            >
               Save
             </button>
-            <button className="btn btn-xs" onClick={cancelEdit}>
+            <button
+              className="btn btn-xs hover:scale-105 transition-transform duration-200"
+              onClick={cancelEdit}
+            >
               Cancel
             </button>
           </div>
         ) : (
           <div
-            className="cursor-pointer hover:text-primary"
+            className="cursor-pointer hover:text-primary transition-all duration-200 hover:scale-110 inline-block"
             onClick={() => startEditing('maxHP')}
             title="Click to edit HP"
           >
@@ -104,10 +116,10 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
       </td>
       <td>
         {editing === 'level' ? (
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 slide-down">
             <input
               type="number"
-              className="input input-bordered input-sm w-16"
+              className="input input-bordered input-sm w-16 focus:ring-2 focus:ring-primary/50 transition-all duration-200"
               value={editValue}
               min={1}
               max={20}
@@ -118,16 +130,22 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
                 if (e.key === 'Escape') cancelEdit();
               }}
             />
-            <button className="btn btn-xs btn-primary" onClick={submitEdit}>
+            <button
+              className="btn btn-xs btn-primary hover:scale-105 transition-transform duration-200"
+              onClick={submitEdit}
+            >
               Save
             </button>
-            <button className="btn btn-xs" onClick={cancelEdit}>
+            <button
+              className="btn btn-xs hover:scale-105 transition-transform duration-200"
+              onClick={cancelEdit}
+            >
               Cancel
             </button>
           </div>
         ) : (
           <div
-            className="cursor-pointer hover:text-primary"
+            className="cursor-pointer hover:text-primary transition-all duration-200 hover:scale-110 inline-block"
             onClick={() => startEditing('level')}
             title="Click to edit Level"
           >
@@ -137,7 +155,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
       </td>
       <td>
         <button
-          className="btn btn-xs btn-ghost text-error"
+          className="btn btn-xs btn-ghost text-error hover:scale-105 hover:bg-error/10 transition-all duration-200 active:scale-95"
           onClick={() => onDeletePlayer(player._id)}
         >
           Remove

@@ -7,6 +7,45 @@
   -webkit-font-smoothing: antialiased;
 }
 
+@layer utilities {
+  .smooth-transition {
+    transition: all 0.2s ease-in-out;
+  }
+  
+  .hover-lift {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+  
+  .hover-scale {
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .hover-scale:hover {
+    transform: scale(1.02);
+  }
+  
+  .fade-in {
+    animation: fadeIn 0.4s ease-in-out;
+  }
+  
+  .slide-up {
+    animation: slideUp 0.3s ease-out;
+  }
+  
+  .slide-down {
+    animation: slideDown 0.3s ease-out;
+  }
+  
+  .bounce-subtle {
+    animation: bounceSubtle 0.5s ease-in-out;
+  }
+}
+
 .flash-outline {
   animation: flash-bg 1s ease;
 }
@@ -21,4 +60,106 @@
   100% {
     background-color: transparent;
   }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounceSubtle {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.btn {
+  transition: all 0.15s ease-in-out;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.card {
+  transition: all 0.2s ease-in-out;
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pulse-slow {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.input:focus,
+.textarea:focus,
+.select:focus {
+  outline: 2px solid hsl(var(--p) / 0.5);
+  outline-offset: 2px;
+  transition: all 0.2s ease-in-out;
+}
+
+.input,
+.textarea,
+.select {
+  transition: all 0.2s ease-in-out;
+}
+
+.link {
+  transition: all 0.2s ease-in-out;
+}
+
+.badge {
+  transition: all 0.2s ease-in-out;
 }

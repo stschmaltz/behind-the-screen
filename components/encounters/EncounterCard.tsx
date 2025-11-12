@@ -69,12 +69,12 @@ const EncounterCard: React.FC<EncounterCardProps> = ({
       .map((p) => p.level || 1) || [];
 
   return (
-    <div key={encounter._id.toString()} className="encounter-card">
+    <div key={encounter._id.toString()} className="encounter-card fade-in">
       <Link
         href={`/encounters/${encounter._id.toString()}`}
         className="block w-full"
       >
-        <div className="p-4 bg-base-200 border border-base-300 rounded shadow-sm hover:bg-base-300 transition-colors">
+        <div className="p-4 bg-base-200 border-2 border-base-300 rounded-lg shadow-sm hover:bg-base-300 hover:border-primary hover:shadow-md transition-all duration-300 hover-lift">
           <div className="flex justify-between items-start">
             <div className="text-lg font-semibold flex items-center gap-2 flex-grow mr-4">
               <span className="card-title">{encounter.name}</span>
@@ -89,7 +89,9 @@ const EncounterCard: React.FC<EncounterCardProps> = ({
                   ? new Date(encounter.createdAt).toLocaleDateString()
                   : 'N/A'}
               </div>
-              <div className={`badge ${getStatusBadgeClass(encounter.status)}`}>
+              <div
+                className={`badge transition-all duration-200 ${getStatusBadgeClass(encounter.status)}`}
+              >
                 {getStatusLabel(encounter.status)}
               </div>
             </div>
@@ -141,7 +143,7 @@ const EncounterCard: React.FC<EncounterCardProps> = ({
                 encounter.status === 'completed') && (
                 <>
                   <button
-                    className="btn btn-sm btn-secondary bg-opacity-20 hover:bg-opacity-80"
+                    className="btn btn-sm btn-secondary bg-opacity-20 hover:bg-opacity-80 hover:scale-110 transition-all duration-200 active:scale-95"
                     title="Re-create Encounter"
                     onClick={(e) => {
                       logger.debug(
@@ -154,10 +156,10 @@ const EncounterCard: React.FC<EncounterCardProps> = ({
                     }}
                     disabled={isSaving || isDeleting}
                   >
-                    <DocumentDuplicateIcon className="w-4 h-4" />
+                    <DocumentDuplicateIcon className="w-4 h-4 transition-transform duration-200 hover:rotate-12" />
                   </button>
                   <button
-                    className="btn btn-sm bg-error bg-opacity-20 hover:bg-error hover:bg-opacity-40"
+                    className="btn btn-sm bg-error bg-opacity-20 hover:bg-error hover:bg-opacity-40 hover:scale-110 transition-all duration-200 active:scale-95"
                     title="Delete Encounter"
                     onClick={(e) => {
                       logger.debug(
@@ -170,7 +172,7 @@ const EncounterCard: React.FC<EncounterCardProps> = ({
                     }}
                     disabled={isSaving || isDeleting}
                   >
-                    <TrashIcon className="w-4 h-4 text-error" />
+                    <TrashIcon className="w-4 h-4 text-error transition-transform duration-200 hover:scale-110" />
                   </button>
                 </>
               )}

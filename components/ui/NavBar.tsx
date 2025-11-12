@@ -24,7 +24,11 @@ const NavBar: React.FC<Props> = ({ router }) => {
             {item.enabled ? (
               <Link
                 href={item.path}
-                className={`${isActive(item.path) ? 'underline font-bold' : 'hover:text-primary-content/80'}`}
+                className={`relative transition-all duration-200 ${
+                  isActive(item.path)
+                    ? 'font-bold after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-white after:rounded-full'
+                    : 'hover:text-primary-content/80 hover:scale-105 inline-block'
+                }`}
               >
                 {item.label}
               </Link>

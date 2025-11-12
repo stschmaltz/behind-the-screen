@@ -72,8 +72,13 @@ const LootGeneratorPage: NextPage = () => {
 
   if (isLoading || isLoadingUsage) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <span className="loading loading-spinner loading-lg"></span>
+      <div className="flex items-center justify-center min-h-screen bg-base-100">
+        <div className="flex flex-col items-center gap-4 fade-in">
+          <span className="loading loading-spinner loading-lg text-primary"></span>
+          <p className="text-base-content opacity-60 animate-pulse">
+            Loading loot generator...
+          </p>
+        </div>
       </div>
     );
   }

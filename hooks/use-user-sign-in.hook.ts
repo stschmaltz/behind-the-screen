@@ -31,7 +31,7 @@ function useUserSignIn(): readonly [
         setIsLoadingPlaceholders(false);
 
         // Identify user in PostHog
-        if (data.userSignIn?.user) {
+        if (data.userSignIn?.user && user.sub) {
           posthog.identify(user.sub, {
             email: user.email,
             name: user.name,

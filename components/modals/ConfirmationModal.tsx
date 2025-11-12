@@ -19,15 +19,19 @@ const ConfirmationModal = ({
 
   return (
     <dialog className={`modal ${isOpen ? 'modal-open' : ''}`}>
-      <div className="modal-box">
+      <div className="modal-box slide-up shadow-2xl">
         <h3 className="font-bold text-lg">{title}</h3>
         <p className="py-4 whitespace-pre-wrap">{message}</p>
         <div className="modal-action">
-          <button className="btn" onClick={onClose} disabled={isProcessing}>
+          <button
+            className="btn hover:scale-105 transition-all duration-200 active:scale-95"
+            onClick={onClose}
+            disabled={isProcessing}
+          >
             Cancel
           </button>
           <button
-            className="btn btn-error"
+            className="btn btn-error hover:scale-105 transition-all duration-200 active:scale-95"
             onClick={onConfirm}
             disabled={isProcessing}
           >
@@ -39,7 +43,7 @@ const ConfirmationModal = ({
           </button>
         </div>
       </div>
-      <form method="dialog" className="modal-backdrop">
+      <form method="dialog" className="modal-backdrop fade-in">
         <button onClick={onClose} disabled={isProcessing}>
           close
         </button>

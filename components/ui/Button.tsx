@@ -55,11 +55,14 @@ const Button: React.FC<ButtonProps> = React.memo(
       <button
         type={type}
         onClick={handleClick}
-        disabled={disabled}
-        className={`${variantClasses} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
+        disabled={disabled || loading}
+        className={`${variantClasses} ${disabled || loading ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105 active:scale-95'} transition-all duration-200 ${className}`}
       >
         {loading ? (
-          <span className="loading loading-spinner loading-xs" />
+          <span className="flex items-center gap-2">
+            <span className="loading loading-spinner loading-xs" />
+            {label && <span>Loading...</span>}
+          </span>
         ) : icon ? (
           icon
         ) : (

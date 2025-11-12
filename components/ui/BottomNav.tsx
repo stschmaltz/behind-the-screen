@@ -16,7 +16,7 @@ export function BottomNav() {
   const router = useRouter();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-base-100 border-t border-base-200 md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-base-100 border-t border-base-200 md:hidden shadow-[0_-4px_12px_rgba(0,0,0,0.1)]">
       <ul className="flex justify-around items-center h-20 pb-6 pt-2">
         {navItems.map(({ href, label, icon: Icon }) => {
           const active = router.pathname === href;
@@ -25,11 +25,17 @@ export function BottomNav() {
             <li key={href} className="flex-1">
               <Link
                 href={href}
-                className={`flex flex-col items-center justify-center gap-1 text-xs ${active ? 'text-primary font-bold' : 'text-base-content'}`}
+                className={`flex flex-col items-center justify-center gap-1 text-xs transition-all duration-200 ${
+                  active
+                    ? 'text-primary font-bold scale-110'
+                    : 'text-base-content hover:scale-105 active:scale-95'
+                }`}
                 aria-label={label}
               >
                 <Icon
-                  className={`w-6 h-6 ${active ? 'text-primary' : 'text-base-content'}`}
+                  className={`w-6 h-6 transition-all duration-200 ${
+                    active ? 'text-primary bounce-subtle' : 'text-base-content'
+                  }`}
                 />
                 <span>{label}</span>
               </Link>

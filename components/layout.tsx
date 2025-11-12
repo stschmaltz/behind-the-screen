@@ -28,8 +28,13 @@ function Layout({ children }: LayoutProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="loading loading-spinner loading-lg text-primary"></div>
+      <div className="min-h-screen flex items-center justify-center bg-base-100">
+        <div className="flex flex-col items-center gap-4">
+          <div className="loading loading-spinner loading-lg text-primary"></div>
+          <p className="text-base-content opacity-60 animate-pulse">
+            Loading...
+          </p>
+        </div>
       </div>
     );
   }
@@ -74,10 +79,10 @@ function Layout({ children }: LayoutProps) {
         />
         <meta name="twitter:image" content="/twitter-image.png" key="twimage" />
       </Head>
-      <header className="sticky top-0 z-30 bg-primary text-white p-2">
+      <header className="sticky top-0 z-30 bg-primary text-white p-2 shadow-lg">
         <div className="container mx-auto flex flex-wrap items-center justify-between">
-          <Link href="/" className="flex items-center">
-            <h1 className="ml-2 text-xl md:text-2xl font-bold">
+          <Link href="/" className="flex items-center group">
+            <h1 className="ml-2 text-xl md:text-2xl font-bold transition-transform duration-200 group-hover:scale-105">
               DM Essentials
             </h1>
           </Link>
@@ -85,7 +90,7 @@ function Layout({ children }: LayoutProps) {
             <NavBar router={router} />
 
             <KofiButton
-              buttonClassName="btn btn-ghost btn-sm hidden md:flex"
+              buttonClassName="btn btn-ghost btn-sm hidden md:flex hover:scale-105 transition-transform"
               text="Support"
             />
             <AccountMenu
@@ -100,9 +105,9 @@ function Layout({ children }: LayoutProps) {
         </div>
       </header>
 
-      <main className="flex-grow flex flex-col">
+      <main className="flex-grow flex flex-col fade-in">
         {isHomePage ? (
-          <div className="container mx-auto px-4 py-8 ">{children}</div>
+          <div className="container mx-auto px-4 py-8">{children}</div>
         ) : (
           <div className="container mx-auto px-4 py-6 md:py-8 flex-grow max-w-4xl min-h-[80vh]">
             {children}
@@ -144,10 +149,10 @@ function Layout({ children }: LayoutProps) {
           </div>
         </div>
         {showLegalModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-            <div className="bg-base-100 rounded-lg shadow-lg max-w-md w-full mx-2 p-6 relative">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60 fade-in">
+            <div className="bg-base-100 rounded-lg shadow-2xl max-w-md w-full mx-2 p-6 relative slide-up">
               <button
-                className="absolute top-2 right-2 btn btn-xs btn-circle btn-ghost"
+                className="absolute top-2 right-2 btn btn-xs btn-circle btn-ghost hover:rotate-90 transition-transform duration-200"
                 onClick={() => setShowLegalModal(false)}
                 aria-label="Close Legal Notice"
                 type="button"
