@@ -109,7 +109,7 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
                   onChange={setRace}
                   placeholder="Type or select a race..."
                   label="Race (Optional)"
-                  disabled={isLoading || !useAiEnhanced}
+                  disabled={isLoading}
                 />
               </div>
               <button
@@ -131,7 +131,7 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
                   onChange={setOccupation}
                   placeholder="Type or select an occupation..."
                   label="Occupation (Optional)"
-                  disabled={isLoading || !useAiEnhanced}
+                  disabled={isLoading}
                 />
               </div>
               <button
@@ -153,7 +153,7 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
                   onChange={setContext}
                   placeholder="Type or select a setting..."
                   label="Setting/Context (Optional)"
-                  disabled={isLoading || !useAiEnhanced}
+                  disabled={isLoading}
                 />
               </div>
               <button
@@ -174,7 +174,7 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
                   checked={includeSecret}
                   onChange={(e) => setIncludeSecret(e.target.checked)}
                   className="checkbox checkbox-primary"
-                  disabled={isLoading || !useAiEnhanced}
+                  disabled={isLoading}
                 />
                 <span className="label-text">Include Secret</span>
               </label>
@@ -187,7 +187,7 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
                   checked={includeBackground}
                   onChange={(e) => setIncludeBackground(e.target.checked)}
                   className="checkbox checkbox-primary"
-                  disabled={isLoading || !useAiEnhanced}
+                  disabled={isLoading}
                 />
                 <span className="label-text">Include Background Story</span>
               </label>
