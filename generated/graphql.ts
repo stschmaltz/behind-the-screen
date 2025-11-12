@@ -457,6 +457,7 @@ export type UserPreferences = {
   _id: Scalars['ID']['output'];
   activeCampaignId: Maybe<Scalars['ID']['output']>;
   aiGenerationUsageCount: Maybe<Scalars['Int']['output']>;
+  hasRequestedMoreUses: Maybe<Scalars['Boolean']['output']>;
   theme: Maybe<Scalars['String']['output']>;
 };
 
@@ -604,7 +605,7 @@ export type AllPlayersQuery = { __typename?: 'Query', allPlayers: Array<{ __type
 export type GetUserPreferencesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserPreferencesQuery = { __typename?: 'Query', getUserPreferences: { __typename?: 'UserPreferences', _id: string, activeCampaignId: string | null, theme: string | null, aiGenerationUsageCount: number | null } | null };
+export type GetUserPreferencesQuery = { __typename?: 'Query', getUserPreferences: { __typename?: 'UserPreferences', _id: string, activeCampaignId: string | null, theme: string | null, hasRequestedMoreUses: boolean | null, aiGenerationUsageCount: number | null } | null };
 
 export type SetActiveCampaignMutationVariables = Exact<{
   input: SetActiveCampaignInput;
