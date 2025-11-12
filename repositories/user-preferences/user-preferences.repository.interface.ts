@@ -23,6 +23,8 @@ export interface UserPreferencesRepositoryInterface {
       limit: number;
       resetDate?: string;
       hasRequestedMoreUses?: boolean;
+      loginCount?: number;
+      lastLoginDate?: string;
     }>
   >;
 

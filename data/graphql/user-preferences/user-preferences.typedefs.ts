@@ -12,10 +12,10 @@ const userPreferencesTypeDefs = /* GraphQL */ `
     email: String!
     usageCount: Int!
     limit: Int!
-    resetDate: Date
+    resetDate: String
     hasRequestedMoreUses: Boolean
     loginCount: Int
-    lastLoginDate: Date
+    lastLoginDate: String
   }
 `;
 
