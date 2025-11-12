@@ -23,7 +23,6 @@ interface LootGeneratorFormProps {
   setUseAiEnhanced: (value: boolean) => void;
   remainingAiUses: number;
   hasAvailableAiUses: boolean;
-  resetDate: Date | null;
   hasRequestedMoreUses: boolean;
   onRequestMoreUses: () => void;
 }
@@ -46,16 +45,9 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
   setUseAiEnhanced,
   remainingAiUses,
   hasAvailableAiUses,
-  resetDate,
   hasRequestedMoreUses,
   onRequestMoreUses,
 }) => {
-  const getResetDateText = () => {
-    if (!resetDate) return null;
-    const nextReset = new Date(resetDate.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-    return `Resets ${nextReset.toLocaleDateString()}`;
-  };
   const getLootQualityDescription = (quality: LootQuality): string => {
     switch (quality) {
       case 'basic':
@@ -180,9 +172,8 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
                   </span>
                   <span className="label-text-alt text-xs">
                     {hasAvailableAiUses
-                      ? `${remainingAiUses} of 25 uses remaining`
-                      : 'No uses remaining'}
-                    {resetDate && ` • ${getResetDateText()}`}
+                      ? `${remainingAiUses} of 25 AI generations remaining (rolling 7-day window)`
+                      : 'No AI generations remaining (rolling 7-day window)'}
                   </span>
                   {!hasAvailableAiUses && !hasRequestedMoreUses && (
                     <button

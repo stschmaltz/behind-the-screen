@@ -1,3 +1,6 @@
+import { appContainer } from '../../../container/inversify.config';
+import { TYPES } from '../../../container/types';
+import { NpcGenerationRepositoryInterface } from '../../../repositories/generation/npc-generation.repository.interface';
 import {
   GraphQLContext,
   isAuthorizedOrThrow,
@@ -79,6 +82,31 @@ function parseNpcData(responseText: string) {
   return null;
 }
 
+async function saveNpcGeneration({
+  userId,
+  race,
+  occupation,
+  context,
+  includeSecret,
+  includeBackground,
+  npc,
+}: any) {
+  const npcGenerationRepository =
+    appContainer.get<NpcGenerationRepositoryInterface>(
+      TYPES.NpcGenerationRepository,
+    );
+  await npcGenerationRepository.saveGeneration({
+    userId,
+    timestamp: Date.now(),
+    race: race || undefined,
+    occupation: occupation || undefined,
+    context: context || undefined,
+    includeSecret,
+    includeBackground,
+    npc,
+  });
+}
+
 const generateNpcMutationResolver = {
   Mutation: {
     async generateNpc(
@@ -132,6 +160,16 @@ const generateNpcMutationResolver = {
       if (!npcData || !npcData.name) {
         throw new Error('Mastra service did not return valid NPC data.');
       }
+
+      await saveNpcGeneration({
+        userId: contextObj.user._id,
+        race,
+        occupation,
+        context,
+        includeSecret,
+        includeBackground,
+        npc: npcData,
+      });
 
       return npcData;
     },

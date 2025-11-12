@@ -26,7 +26,6 @@ interface NpcGeneratorFormProps {
   setUseAiEnhanced: (value: boolean) => void;
   remainingAiUses: number;
   hasAvailableAiUses: boolean;
-  resetDate: Date | null;
   hasRequestedMoreUses: boolean;
   onRequestMoreUses: () => void;
 }
@@ -49,16 +48,9 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
   setUseAiEnhanced,
   remainingAiUses,
   hasAvailableAiUses,
-  resetDate,
   hasRequestedMoreUses,
   onRequestMoreUses,
 }) => {
-  const getResetDateText = () => {
-    if (!resetDate) return null;
-    const nextReset = new Date(resetDate.getTime() + 7 * 24 * 60 * 60 * 1000);
-
-    return `Resets ${nextReset.toLocaleDateString()}`;
-  };
   const randomizeRace = () => {
     if (!isLoading && useAiEnhanced) {
       const randomIndex = Math.floor(Math.random() * RACE_OPTIONS.length);
@@ -218,9 +210,8 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
                   </span>
                   <span className="label-text-alt text-xs">
                     {hasAvailableAiUses
-                      ? `${remainingAiUses} of 25 uses remaining`
-                      : 'No uses remaining'}
-                    {resetDate && ` • ${getResetDateText()}`}
+                      ? `${remainingAiUses} of 25 AI generations remaining (rolling 7-day window)`
+                      : 'No AI generations remaining (rolling 7-day window)'}
                   </span>
                   {!hasAvailableAiUses && !hasRequestedMoreUses && (
                     <button

@@ -53,10 +53,9 @@ const LootGeneratorPage: NextPage = () => {
   const {
     remainingUses,
     hasAvailableUses,
-    resetDate,
     hasRequestedMoreUses,
-    incrementUsage,
     requestMoreUses,
+    refetch: refetchUsage,
     isLoading: isLoadingUsage,
   } = useGenerationUsage();
 
@@ -108,11 +107,11 @@ const LootGeneratorPage: NextPage = () => {
         },
       );
 
-      if (isUsingAiFeatures) {
-        await incrementUsage();
-      }
-
       setLoot(data.generateLoot);
+
+      if (isUsingAiFeatures) {
+        refetchUsage();
+      }
       addEntry({
         partyLevel,
         srdItemCount,
@@ -182,7 +181,6 @@ const LootGeneratorPage: NextPage = () => {
               setUseAiEnhanced={setUseAiEnhanced}
               remainingAiUses={remainingUses}
               hasAvailableAiUses={hasAvailableUses}
-              resetDate={resetDate}
               hasRequestedMoreUses={hasRequestedMoreUses}
               onRequestMoreUses={requestMoreUses}
             />

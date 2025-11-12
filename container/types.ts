@@ -7,4 +7,5 @@ export const TYPES = {
   AdventureRepository: Symbol.for('AdventureRepository'),
   UserPreferencesRepository: Symbol.for('UserPreferencesRepository'),
   LootGenerationRepository: Symbol.for('LootGenerationRepository'),
+  NpcGenerationRepository: Symbol.for('NpcGenerationRepository'),
 };

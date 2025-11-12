@@ -11,6 +11,12 @@ export const getUserPreferencesQuery = /* GraphQL */ `
   }
 `;
 
+export const getAiGenerationCountQuery = /* GraphQL */ `
+  query GetAiGenerationCount {
+    getAiGenerationCount
+  }
+`;
+
 export const setActiveCampaignMutation = /* GraphQL */ `
   mutation SetActiveCampaign($input: SetActiveCampaignInput!) {
     setActiveCampaign(input: $input) {

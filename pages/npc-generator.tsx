@@ -56,10 +56,9 @@ const NpcGeneratorPage: NextPage = () => {
   const {
     remainingUses,
     hasAvailableUses,
-    resetDate,
     hasRequestedMoreUses,
-    incrementUsage,
     requestMoreUses,
+    refetch: refetchUsage,
     isLoading: isLoadingUsage,
   } = useGenerationUsage();
 
@@ -120,11 +119,11 @@ const NpcGeneratorPage: NextPage = () => {
         },
       );
 
-      if (isUsingAiFeatures) {
-        await incrementUsage();
-      }
-
       setNpc(data.generateNpc);
+
+      if (isUsingAiFeatures) {
+        refetchUsage();
+      }
       addEntry({
         race: actualRace,
         occupation: actualOccupation,
@@ -195,7 +194,6 @@ const NpcGeneratorPage: NextPage = () => {
               setUseAiEnhanced={setUseAiEnhanced}
               remainingAiUses={remainingUses}
               hasAvailableAiUses={hasAvailableUses}
-              resetDate={resetDate}
               hasRequestedMoreUses={hasRequestedMoreUses}
               onRequestMoreUses={requestMoreUses}
             />

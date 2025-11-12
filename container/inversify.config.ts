@@ -16,6 +16,8 @@ import { UserPreferencesRepositoryInterface } from '../repositories/user-prefere
 import { UserPreferencesRepository } from '../repositories/user-preferences/user-preferences.repository';
 import { LootGenerationRepository } from '../repositories/generation/loot-generation.repository';
 import { LootGenerationRepositoryInterface } from '../repositories/generation/loot-generation.repository.interface';
+import { NpcGenerationRepository } from '../repositories/generation/npc-generation.repository';
+import { NpcGenerationRepositoryInterface } from '../repositories/generation/npc-generation.repository.interface';
 
 const appContainer = new Container();
 
@@ -46,5 +48,9 @@ appContainer
 appContainer
   .bind<LootGenerationRepositoryInterface>(TYPES.LootGenerationRepository)
   .to(LootGenerationRepository);
+
+appContainer
+  .bind<NpcGenerationRepositoryInterface>(TYPES.NpcGenerationRepository)
+  .to(NpcGenerationRepository);
 
 export { appContainer };

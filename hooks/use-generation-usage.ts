@@ -3,7 +3,7 @@ import { useQuery } from './use-async-query';
 import { asyncFetch } from '../data/graphql/graphql-fetcher';
 import {
   getUserPreferencesQuery,
-  incrementAiGenerationUsageMutation,
+  getAiGenerationCountQuery,
   requestMoreUsesMutation,
 } from '../data/graphql/snippets/user-preferences';
 import type { GetUserPreferencesQuery } from '../generated/graphql';
@@ -15,50 +15,37 @@ interface UseGenerationUsageResult {
   usageCount: number;
   remainingUses: number;
   hasAvailableUses: boolean;
-  resetDate: Date | null;
   hasRequestedMoreUses: boolean;
   isLoading: boolean;
-  incrementUsage: () => Promise<void>;
-  requestMoreUses: () => Promise<void>;
   refetch: () => void;
+  requestMoreUses: () => Promise<void>;
 }
 
 export function useGenerationUsage(): UseGenerationUsageResult {
   const [usageCount, setUsageCount] = useState<number>(0);
-  const [resetDate, setResetDate] = useState<Date | null>(null);
   const [hasRequestedMoreUses, setHasRequestedMoreUses] = useState<boolean>(false);
 
-  const { data, loading, refresh } = useQuery<GetUserPreferencesQuery>({
+  const { data: prefsData, loading: prefsLoading } = useQuery<GetUserPreferencesQuery>({
     query: getUserPreferencesQuery,
   });
 
+  const { data: countData, loading: countLoading, refresh } = useQuery<{ getAiGenerationCount: number }>({
+    query: getAiGenerationCountQuery,
+  });
+
   useEffect(() => {
-    if (data?.getUserPreferences) {
-      if (data.getUserPreferences.aiGenerationUsageCount !== undefined && data.getUserPreferences.aiGenerationUsageCount !== null) {
-        setUsageCount(data.getUserPreferences.aiGenerationUsageCount);
-      }
-      if (data.getUserPreferences.aiUsageResetDate) {
-        setResetDate(new Date(data.getUserPreferences.aiUsageResetDate));
-      }
-      if (data.getUserPreferences.hasRequestedMoreUses !== undefined) {
-        setHasRequestedMoreUses(data.getUserPreferences.hasRequestedMoreUses);
+    if (prefsData?.getUserPreferences) {
+      if (prefsData.getUserPreferences.hasRequestedMoreUses !== undefined) {
+        setHasRequestedMoreUses(prefsData.getUserPreferences.hasRequestedMoreUses);
       }
     }
-  }, [data]);
+  }, [prefsData]);
 
-  const incrementUsage = async (): Promise<void> => {
-    try {
-      const result = await asyncFetch<{
-        incrementAiGenerationUsage: { aiGenerationUsageCount: number };
-      }>(incrementAiGenerationUsageMutation, {});
-
-      setUsageCount(result.incrementAiGenerationUsage.aiGenerationUsageCount);
-      refresh();
-    } catch (error) {
-      logger.error('Failed to increment AI generation usage', error);
-      throw error;
+  useEffect(() => {
+    if (countData?.getAiGenerationCount !== undefined) {
+      setUsageCount(countData.getAiGenerationCount);
     }
-  };
+  }, [countData]);
 
   const requestMoreUsesHandler = async (): Promise<void> => {
     try {
@@ -81,12 +68,10 @@ export function useGenerationUsage(): UseGenerationUsageResult {
     usageCount,
     remainingUses,
     hasAvailableUses,
-    resetDate,
     hasRequestedMoreUses,
-    isLoading: loading,
-    incrementUsage,
-    requestMoreUses: requestMoreUsesHandler,
+    isLoading: prefsLoading || countLoading,
     refetch: refresh,
+    requestMoreUses: requestMoreUsesHandler,
   };
 }
 

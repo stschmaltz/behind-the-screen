@@ -5,4 +5,8 @@ export interface LootGenerationRepositoryInterface {
     input: Partial<LootGeneration> & { userId: string },
   ): Promise<LootGeneration>;
   getGenerationsByUser(input: { userId: string }): Promise<LootGeneration[]>;
+  countAiGenerations(input: {
+    userId: string;
+    since: Date;
+  }): Promise<number>;
 }
