@@ -103,11 +103,13 @@ const generateLootMutationResolver = {
       isAuthorizedOrThrow(contextObj);
       const fullMastraUrl = buildMastraUrl();
       const requestBody = {
-        partyLevel,
-        srdItemCount,
-        randomItemCount,
-        context: context || undefined,
-        lootQuality: lootQuality || 'standard',
+        inputData: {
+          partyLevel,
+          srdItemCount,
+          randomItemCount,
+          context: context || undefined,
+          lootQuality: lootQuality || 'standard',
+        },
       };
       logger.info('[generateLoot] Sending request to Mastra:', {
         url: fullMastraUrl,

@@ -32,8 +32,7 @@ const generateNpcMutationTypeDefs = /* GraphQL */ `
 `;
 
 const MASTRA_SERVICE_BASE_URL = process.env.MASTRA_SERVICE_BASE_URL;
-const MASTRA_WORKFLOW_PATH =
-  '/api/workflows/npcGenerationWorkflow/start-async';
+const MASTRA_WORKFLOW_PATH = '/api/workflows/npcGenerationWorkflow/start-async';
 
 function buildMastraUrl() {
   if (!MASTRA_SERVICE_BASE_URL) {
@@ -101,11 +100,13 @@ const generateNpcMutationResolver = {
 
       const fullMastraUrl = buildMastraUrl();
       const requestBody = {
-        race: race || undefined,
-        occupation: occupation || undefined,
-        context: context || undefined,
-        includeSecret,
-        includeBackground,
+        inputData: {
+          race: race || undefined,
+          occupation: occupation || undefined,
+          context: context || undefined,
+          includeSecret,
+          includeBackground,
+        },
       };
 
       logger.info('[generateNpc] Sending request to Mastra:', {
