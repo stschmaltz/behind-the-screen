@@ -60,10 +60,8 @@ Comprehensive testing has been added to the Dungeon Master Essentials applicatio
 
 ## Running Tests
 
-### Unit & Integration Tests
-
 ```bash
-# Run all unit tests
+# Run all tests
 npm test
 
 # Run tests in watch mode (for development)
@@ -72,24 +70,6 @@ npm run test:watch
 # Run tests with coverage report
 npm run test:coverage
 ```
-
-### End-to-End Tests
-
-```bash
-# Run E2E tests
-npm run test:e2e
-
-# Run E2E tests with UI (interactive, recommended)
-npm run test:e2e:ui
-
-# Run E2E tests in headed mode (see browser)
-npm run test:e2e:headed
-
-# Debug a specific test
-npm run test:e2e:debug
-```
-
-See [E2E_TESTING.md](./E2E_TESTING.md) for complete E2E testing guide.
 
 ## Test Configuration
 
@@ -101,7 +81,6 @@ See [E2E_TESTING.md](./E2E_TESTING.md) for complete E2E testing guide.
 
 ## Files Added
 
-### Unit & Integration Tests
 ```
 jest.config.js                                    # Jest configuration
 jest.setup.js                                     # Test setup and polyfills
@@ -115,19 +94,6 @@ hooks/__tests__/
   └── useEnemyState.test.ts                      # 16 tests (100% coverage)
 hooks/encounter/__tests__/
   └── use-draft-encounter.test.ts                # 15 tests (100% coverage)
-pages/encounters/__tests__/
-  └── MonsterSelector.test.tsx                   # 13 tests (100% coverage)
-```
-
-### End-to-End Tests
-```
-playwright.config.ts                              # Playwright configuration
-E2E_TESTING.md                                    # Complete E2E testing guide
-.env.test.example                                 # Test credentials template
-e2e/
-  ├── README.md                                   # Quick start guide
-  ├── example.spec.ts                             # Basic navigation tests
-  └── encounter-full-flow.spec.ts                 # Complete encounter workflow
 ```
 
 ## Benefits
@@ -140,18 +106,11 @@ e2e/
 
 ## Next Steps
 
-### Unit Tests
 Consider adding tests for:
 - Additional complex hooks (usePlayerManagement)
 - More UI components (encounter tables, character cards)
 - API routes and GraphQL resolvers
-
-### E2E Tests (Playwright)
-✅ Framework configured and ready
-- Add more user flow tests
-- Test error scenarios
-- Test with different user roles
-- Add visual regression testing
+- End-to-end tests (when ready to invest the time)
 
 ## Coverage Goals
 
