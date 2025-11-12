@@ -174,9 +174,13 @@ const LootTrackerPage: NextPage = () => {
       (pi) => pi.name === itemToMove.name && pi.cost === itemToMove.cost,
     ); // Simple matching by name and cost
     if (existingPartyItemIndex > -1) {
-      const updatedPartyItems = [...partyLootItems];
-      updatedPartyItems[existingPartyItemIndex].quantity += transferQuantity;
-      setPartyLootItems(updatedPartyItems);
+      setPartyLootItems(
+        partyLootItems.map((item, index) =>
+          index === existingPartyItemIndex
+            ? { ...item, quantity: item.quantity + transferQuantity }
+            : item,
+        ),
+      );
     } else {
       setPartyLootItems([
         ...partyLootItems,

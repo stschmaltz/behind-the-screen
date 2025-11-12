@@ -12,6 +12,48 @@ import { showDaisyToast } from '../../lib/daisy-toast';
 
 const DEBOUNCE_DELAY = 500;
 
+/**
+ * Builds the mutation input object for saving an encounter
+ * Includes only fields that are present and valid
+ */
+const buildEncounterMutationInput = (
+  encounter: Encounter | NewEncounterTemplate,
+  encounterId: string,
+): any => {
+  const baseFields = {
+    name: encounter.name,
+    description: encounter.description,
+    notes: encounter.notes,
+    enemies: encounter.enemies,
+    status: encounter.status,
+    campaignId: encounter.campaignId,
+  };
+
+  const optionalFields: Record<string, any> = {};
+
+  if (encounterId !== 'new') {
+    optionalFields._id = encounterId;
+  }
+
+  // Add optional fields if they exist
+  const fieldChecks: Array<[string, string]> = [
+    ['adventureId', 'adventureId'],
+    ['players', 'players'],
+    ['npcs', 'npcs'],
+    ['initiativeOrder', 'initiativeOrder'],
+    ['currentRound', 'currentRound'],
+    ['currentTurn', 'currentTurn'],
+  ];
+
+  fieldChecks.forEach(([outputKey, inputKey]) => {
+    if (inputKey in encounter && (encounter as any)[inputKey]) {
+      optionalFields[outputKey] = (encounter as any)[inputKey];
+    }
+  });
+
+  return { ...baseFields, ...optionalFields };
+};
+
 const validateNewEncounter = (
   encounter: Encounter | NewEncounterTemplate,
   options?: { requireAdventure?: boolean },
@@ -66,42 +108,7 @@ const useManageEncounter = () => {
         name: encounter.name,
       });
 
-      const mutationInput: any = {
-        name: encounter.name,
-        description: encounter.description,
-        notes: encounter.notes,
-        enemies: encounter.enemies,
-        status: encounter.status,
-        campaignId: encounter.campaignId,
-      };
-
-      if (encounterId !== 'new') {
-        mutationInput._id = encounterId;
-      }
-
-      if ('adventureId' in encounter && encounter.adventureId) {
-        mutationInput.adventureId = encounter.adventureId;
-      }
-
-      if ('players' in encounter && encounter.players) {
-        mutationInput.players = encounter.players;
-      }
-
-      if ('npcs' in encounter && encounter.npcs) {
-        mutationInput.npcs = encounter.npcs;
-      }
-
-      if ('initiativeOrder' in encounter && encounter.initiativeOrder) {
-        mutationInput.initiativeOrder = encounter.initiativeOrder;
-      }
-
-      if ('currentRound' in encounter && encounter.currentRound) {
-        mutationInput.currentRound = encounter.currentRound;
-      }
-
-      if ('currentTurn' in encounter && encounter.currentTurn) {
-        mutationInput.currentTurn = encounter.currentTurn;
-      }
+      const mutationInput = buildEncounterMutationInput(encounter, encounterId);
 
       await asyncFetch(saveEncounterMutation, { input: mutationInput });
       logger.info('Encounter saved successfully', {
@@ -114,10 +121,6 @@ const useManageEncounter = () => {
           const readyEncountersSection =
             document.getElementById('ready-encounters');
           if (readyEncountersSection) {
-            readyEncountersSection.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start',
-            });
             readyEncountersSection.scrollIntoView({
               behavior: 'smooth',
               block: 'start',

@@ -14,6 +14,7 @@ import {
 import LootHistory from '../components/loot/LootHistory';
 import { isFeatureEnabled } from '../lib/featureFlags';
 import { asyncFetch } from '../data/graphql/graphql-fetcher';
+import { useGenerationUsage } from '../hooks/use-generation-usage';
 
 const GENERATE_LOOT_MUTATION = `
   mutation GenerateLoot($partyLevel: Int!, $srdItemCount: Int!, $randomItemCount: Int!, $context: String) {
@@ -43,7 +44,14 @@ const LootGeneratorPage: NextPage = () => {
   const [loot, setLoot] = useState<LootItemType[] | null>(null);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [useAiEnhanced, setUseAiEnhanced] = useState<boolean>(true);
   const { history, addEntry, removeEntry, clearHistory } = useLootHistory();
+  const {
+    remainingUses,
+    hasAvailableUses,
+    incrementUsage,
+    isLoading: isLoadingUsage,
+  } = useGenerationUsage();
 
   useEffect(() => {
     if (!isLoading && user && !isFeatureEnabled(user.email)) {
@@ -51,7 +59,13 @@ const LootGeneratorPage: NextPage = () => {
     }
   }, [isLoading, user, router]);
 
-  if (isLoading || (user && !isFeatureEnabled(user.email))) {
+  useEffect(() => {
+    if (!hasAvailableUses) {
+      setUseAiEnhanced(false);
+    }
+  }, [hasAvailableUses]);
+
+  if (isLoading || isLoadingUsage || (user && !isFeatureEnabled(user.email))) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <span className="loading loading-spinner loading-lg"></span>
@@ -74,22 +88,33 @@ const LootGeneratorPage: NextPage = () => {
     setError(null);
     setLoot(null);
 
+    const isUsingAiFeatures =
+      useAiEnhanced && (randomItemCount > 0 || context.trim().length > 0);
+
     try {
+      const actualRandomItemCount = useAiEnhanced ? randomItemCount : 0;
+      const actualContext = useAiEnhanced ? context : '';
+
       const data = await asyncFetch<{ generateLoot: LootItemType[] }>(
         GENERATE_LOOT_MUTATION,
         {
           partyLevel,
           srdItemCount,
-          randomItemCount,
-          context,
+          randomItemCount: actualRandomItemCount,
+          context: actualContext,
         },
       );
+
+      if (isUsingAiFeatures) {
+        await incrementUsage();
+      }
+
       setLoot(data.generateLoot);
       addEntry({
         partyLevel,
         srdItemCount,
-        randomItemCount,
-        context,
+        randomItemCount: actualRandomItemCount,
+        context: actualContext,
         loot: data.generateLoot,
       });
     } catch (err: unknown) {
@@ -118,6 +143,10 @@ const LootGeneratorPage: NextPage = () => {
             isLoading={isGenerating}
             handleSubmit={handleSubmit}
             error={error}
+            useAiEnhanced={useAiEnhanced}
+            setUseAiEnhanced={setUseAiEnhanced}
+            remainingAiUses={remainingUses}
+            hasAvailableAiUses={hasAvailableUses}
           />
         </div>
 

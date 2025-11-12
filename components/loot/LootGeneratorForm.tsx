@@ -15,6 +15,10 @@ interface LootGeneratorFormProps {
   isLoading: boolean;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
   error: string | null;
+  useAiEnhanced: boolean;
+  setUseAiEnhanced: (value: boolean) => void;
+  remainingAiUses: number;
+  hasAvailableAiUses: boolean;
 }
 
 const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
@@ -29,6 +33,10 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
   isLoading,
   handleSubmit,
   error,
+  useAiEnhanced,
+  setUseAiEnhanced,
+  remainingAiUses,
+  hasAvailableAiUses,
 }) => {
   return (
     <div className="card bg-base-100 shadow-xl h-fit min-w-[250px]">
@@ -80,7 +88,7 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
                 min={0}
                 max={10}
                 className="input-bordered w-full"
-                disabled={isLoading}
+                disabled={isLoading || !useAiEnhanced}
               />
             </div>
 
@@ -93,8 +101,32 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
                 onChange={(e) => setContext(e.target.value)}
                 className="input-bordered w-full"
                 placeholder="e.g., forest, dungeon, underwater"
-                disabled={isLoading}
+                disabled={isLoading || !useAiEnhanced}
               />
+            </div>
+
+            <div className="divider"></div>
+
+            <div className="form-control">
+              <label className="label cursor-pointer justify-start gap-4">
+                <input
+                  type="checkbox"
+                  checked={useAiEnhanced}
+                  onChange={(e) => setUseAiEnhanced(e.target.checked)}
+                  className="toggle toggle-primary"
+                  disabled={isLoading || !hasAvailableAiUses}
+                />
+                <div className="flex flex-col">
+                  <span className="label-text font-semibold">
+                    AI Enhanced Mode
+                  </span>
+                  <span className="label-text-alt text-xs">
+                    {hasAvailableAiUses
+                      ? `${remainingAiUses} uses remaining`
+                      : 'No uses remaining - using free mode'}
+                  </span>
+                </div>
+              </label>
             </div>
           </div>
 

@@ -13,4 +13,6 @@ export interface UserPreferencesRepositoryInterface {
   }): Promise<UserPreferences>;
 
   setTheme(input: { userId: string; theme: string }): Promise<UserPreferences>;
+
+  incrementAiGenerationUsage(userId: string): Promise<UserPreferences>;
 }

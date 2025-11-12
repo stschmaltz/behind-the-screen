@@ -1,4 +1,52 @@
-import { EncounterCharacter } from '../types/encounters';
+import {
+  EncounterCharacter,
+  InitiativeOrderCharacter,
+} from '../types/encounters';
+
+/**
+ * Sorts characters by initiative in descending order
+ */
+export const sortCharactersByInitiative = (
+  characters: InitiativeOrderCharacter[],
+): InitiativeOrderCharacter[] => {
+  return [...characters].sort(
+    (a, b) => (b.initiative ?? 0) - (a.initiative ?? 0),
+  );
+};
+
+/**
+ * Filters out dead enemy characters (keeps all non-enemies and living enemies)
+ */
+export const filterAliveCharacters = (
+  characters: InitiativeOrderCharacter[],
+): InitiativeOrderCharacter[] => {
+  return characters.filter(
+    (char) => char.type !== 'enemy' || (char.currentHP ?? 0) > 0,
+  );
+};
+
+/**
+ * Gets the character at a specific turn index
+ */
+export const getCharacterAtTurn = (
+  characters: InitiativeOrderCharacter[],
+  turnIndex: number,
+): InitiativeOrderCharacter | undefined => {
+  return characters[turnIndex - 1];
+};
+
+/**
+ * Gets the current character in initiative order
+ */
+export const getCurrentCharacter = (
+  characters: InitiativeOrderCharacter[],
+  currentTurn: number,
+): InitiativeOrderCharacter | undefined => {
+  const sorted = sortCharactersByInitiative(characters);
+  const alive = filterAliveCharacters(sorted);
+
+  return getCharacterAtTurn(alive, currentTurn);
+};
 
 type DifficultyThresholds = {
   easy: number;
@@ -43,62 +91,92 @@ const encounterMultipliers = [
   { count: 15, multiplier: 4 },
 ];
 
-export const getChallengeRatingXp = (challengeRating: string): number => {
-  if (challengeRating.includes('/')) {
-    const [numerator, denominator] = challengeRating.split('/').map(Number);
-    if (!isNaN(numerator) && !isNaN(denominator)) {
-      return Math.floor((numerator / denominator) * 50);
-    }
+const CR_TO_XP_TABLE: { [key: number]: number } = {
+  0: 10,
+  0.125: 25,
+  0.25: 50,
+  0.5: 100,
+  1: 200,
+  2: 450,
+  3: 700,
+  4: 1100,
+  5: 1800,
+  6: 2300,
+  7: 2900,
+  8: 3900,
+  9: 5000,
+  10: 5900,
+  11: 7200,
+  12: 8400,
+  13: 10000,
+  14: 11500,
+  15: 13000,
+  16: 15000,
+  17: 18000,
+  18: 20000,
+  19: 22000,
+  20: 25000,
+  21: 33000,
+  22: 41000,
+  23: 50000,
+  24: 62000,
+  25: 75000,
+  26: 90000,
+  27: 105000,
+  28: 120000,
+  29: 135000,
+  30: 155000,
+};
+
+/**
+ * Parses fractional CR strings (e.g., "1/4", "1/2") and converts to XP
+ */
+const parseFractionalCR = (challengeRating: string): number | null => {
+  if (!challengeRating.includes('/')) return null;
+
+  const [numerator, denominator] = challengeRating.split('/').map(Number);
+  if (!isNaN(numerator) && !isNaN(denominator)) {
+    return Math.floor((numerator / denominator) * 50);
   }
 
+  return null;
+};
+
+/**
+ * Extracts XP value from strings like "CR 5 (1,800 XP)"
+ */
+const extractXPFromString = (challengeRating: string): number | null => {
   const xpMatch = challengeRating.match(/\(([0-9,]+)\s*XP\)/);
   if (xpMatch && xpMatch[1]) {
     return parseInt(xpMatch[1].replace(/,/g, ''), 10);
   }
 
+  return null;
+};
+
+/**
+ * Looks up XP value for a numeric CR in the standard table
+ */
+const lookupCRXP = (challengeRating: string): number | null => {
   const crNumber = parseFloat(challengeRating);
   if (!isNaN(crNumber)) {
-    const crToXp: { [key: number]: number } = {
-      0: 10,
-      0.125: 25,
-      0.25: 50,
-      0.5: 100,
-      1: 200,
-      2: 450,
-      3: 700,
-      4: 1100,
-      5: 1800,
-      6: 2300,
-      7: 2900,
-      8: 3900,
-      9: 5000,
-      10: 5900,
-      11: 7200,
-      12: 8400,
-      13: 10000,
-      14: 11500,
-      15: 13000,
-      16: 15000,
-      17: 18000,
-      18: 20000,
-      19: 22000,
-      20: 25000,
-      21: 33000,
-      22: 41000,
-      23: 50000,
-      24: 62000,
-      25: 75000,
-      26: 90000,
-      27: 105000,
-      28: 120000,
-      29: 135000,
-      30: 155000,
-    };
-
-    return crToXp[crNumber] || 0;
+    return CR_TO_XP_TABLE[crNumber] || null;
   }
 
-  return 0;
+  return null;
+};
+
+/**
+ * Converts a challenge rating string to XP value
+ * Handles fractional CRs (e.g., "1/4"), XP strings (e.g., "CR 5 (1,800 XP)"), and numeric CRs
+ */
+export const getChallengeRatingXp = (challengeRating: string): number => {
+  return (
+    parseFractionalCR(challengeRating) ??
+    extractXPFromString(challengeRating) ??
+    lookupCRXP(challengeRating) ??
+    0
+  );
 };
 
 export const getEncounterMultiplier = (monsterCount: number): number => {

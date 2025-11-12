@@ -22,6 +22,10 @@ interface NpcGeneratorFormProps {
   isLoading: boolean;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
   error: string | null;
+  useAiEnhanced: boolean;
+  setUseAiEnhanced: (value: boolean) => void;
+  remainingAiUses: number;
+  hasAvailableAiUses: boolean;
 }
 
 const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
@@ -38,6 +42,10 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
   isLoading,
   handleSubmit,
   error,
+  useAiEnhanced,
+  setUseAiEnhanced,
+  remainingAiUses,
+  hasAvailableAiUses,
 }) => {
   return (
     <div className="card bg-base-100 shadow-xl h-fit min-w-[250px]">
@@ -55,7 +63,7 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
               onChange={setRace}
               placeholder="Type or select a race..."
               label="Race (Optional)"
-              disabled={isLoading}
+              disabled={isLoading || !useAiEnhanced}
             />
 
             <Combobox
@@ -64,7 +72,7 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
               onChange={setOccupation}
               placeholder="Type or select an occupation..."
               label="Occupation (Optional)"
-              disabled={isLoading}
+              disabled={isLoading || !useAiEnhanced}
             />
 
             <Combobox
@@ -73,7 +81,7 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
               onChange={setContext}
               placeholder="Type or select a setting..."
               label="Setting/Context (Optional)"
-              disabled={isLoading}
+              disabled={isLoading || !useAiEnhanced}
             />
 
             <div className="form-control">
@@ -83,7 +91,7 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
                   checked={includeSecret}
                   onChange={(e) => setIncludeSecret(e.target.checked)}
                   className="checkbox checkbox-primary"
-                  disabled={isLoading}
+                  disabled={isLoading || !useAiEnhanced}
                 />
                 <span className="label-text">Include Secret</span>
               </label>
@@ -96,9 +104,33 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
                   checked={includeBackground}
                   onChange={(e) => setIncludeBackground(e.target.checked)}
                   className="checkbox checkbox-primary"
-                  disabled={isLoading}
+                  disabled={isLoading || !useAiEnhanced}
                 />
                 <span className="label-text">Include Background Story</span>
+              </label>
+            </div>
+
+            <div className="divider"></div>
+
+            <div className="form-control">
+              <label className="label cursor-pointer justify-start gap-4">
+                <input
+                  type="checkbox"
+                  checked={useAiEnhanced}
+                  onChange={(e) => setUseAiEnhanced(e.target.checked)}
+                  className="toggle toggle-primary"
+                  disabled={isLoading || !hasAvailableAiUses}
+                />
+                <div className="flex flex-col">
+                  <span className="label-text font-semibold">
+                    AI Enhanced Mode
+                  </span>
+                  <span className="label-text-alt text-xs">
+                    {hasAvailableAiUses
+                      ? `${remainingAiUses} uses remaining`
+                      : 'No uses remaining - using free mode'}
+                  </span>
+                </div>
               </label>
             </div>
           </div>

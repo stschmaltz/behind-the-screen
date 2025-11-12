@@ -35,7 +35,7 @@ const MonsterCombobox: React.FC<MonsterComboboxProps> = ({
 
   const parentDialog = useMemo(() => findParentDialog(dropdownRef.current), []);
 
-  useClickOutside(dropdownRef, () => setIsOpen(false), {
+  useClickOutside<HTMLDivElement>(dropdownRef, () => setIsOpen(false), {
     enabled: true,
     parentDialog,
     onDialogClose: () => {

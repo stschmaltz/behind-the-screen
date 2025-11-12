@@ -21,7 +21,7 @@ interface UseClickOutsideOptions {
  * @param options - Optional configuration
  */
 export const useClickOutside = <T extends HTMLElement = HTMLElement>(
-  ref: RefObject<T>,
+  ref: RefObject<T | null>,
   callback: () => void,
   options: UseClickOutsideOptions = {},
 ): void => {

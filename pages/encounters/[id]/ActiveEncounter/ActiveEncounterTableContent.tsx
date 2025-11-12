@@ -8,6 +8,7 @@ import { showDaisyToast } from '../../../../lib/daisy-toast';
 import { useEncounterTurnManagement } from '../../../../hooks/encounter/use-encounter-turn-management';
 import { Encounter, EncounterCharacter } from '../../../../types/encounters';
 import { usePopoverContext } from '../../../../context/PopoverContext';
+import { getCurrentCharacter } from '../../../../lib/encounterUtils';
 import NewEnemyModal from '../enemy/NewEnemyModal';
 import AddPlayersModal from '../AddPlayersModal';
 
@@ -52,11 +53,10 @@ const ActiveEncounterTableContent: React.FC<
     setEncounter(newEncounter);
 
     if (newEncounter.currentTurn !== encounter.currentTurn) {
-      const currentCharacter = newEncounter.initiativeOrder
-        .sort((a, b) => (b.initiative ?? 0) - (a.initiative ?? 0))
-        .filter((char) => char.type !== 'enemy' || (char.currentHP ?? 0) > 0)[
-        (newEncounter.currentTurn ?? 1) - 1
-      ];
+      const currentCharacter = getCurrentCharacter(
+        newEncounter.initiativeOrder,
+        newEncounter.currentTurn ?? 1,
+      );
 
       if (currentCharacter) {
         showDaisyToast('success', `${currentCharacter.name}'s turn`);

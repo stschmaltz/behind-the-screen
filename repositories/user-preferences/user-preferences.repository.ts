@@ -159,6 +159,52 @@ export class UserPreferencesRepository
     }
   }
 
+  public async incrementAiGenerationUsage(
+    userId: string,
+  ): Promise<UserPreferences> {
+    const { db } = await getDbClient();
+    const now = new Date();
+
+    const existingPrefs = await this.getUserPreferences(userId);
+
+    if (existingPrefs) {
+      const result = await db.collection(this.collectionName).findOneAndUpdate(
+        { _id: new ObjectId(existingPrefs._id), userId: new ObjectId(userId) },
+        {
+          $inc: {
+            aiGenerationUsageCount: 1,
+          },
+          $set: {
+            updatedAt: now,
+          },
+        },
+        { returnDocument: 'after' },
+      );
+
+      if (!result) {
+        throw new Error('Failed to increment AI generation usage');
+      }
+
+      return this.mapToUserPreferences(result);
+    } else {
+      const newPrefs = {
+        userId: new ObjectId(userId),
+        aiGenerationUsageCount: 1,
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      const insertResult = await db
+        .collection(this.collectionName)
+        .insertOne(newPrefs);
+
+      return this.mapToUserPreferences({
+        ...newPrefs,
+        _id: insertResult.insertedId,
+      });
+    }
+  }
+
   private mapToUserPreferences(doc: any): UserPreferences {
     return {
       _id: doc._id?.toString() || doc._id,
@@ -166,6 +212,7 @@ export class UserPreferencesRepository
       activeCampaignId:
         doc.activeCampaignId?.toString() || doc.activeCampaignId,
       theme: doc.theme,
+      aiGenerationUsageCount: doc.aiGenerationUsageCount || 0,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };

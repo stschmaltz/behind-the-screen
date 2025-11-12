@@ -12,6 +12,7 @@ const userPreferencesMutationTypeDefs = /* GraphQL */ `
   extend type Mutation {
     setActiveCampaign(input: SetActiveCampaignInput!): UserPreferences
     setTheme(input: SetThemeInput!): UserPreferences
+    incrementAiGenerationUsage: UserPreferences
   }
 
   input SetActiveCampaignInput {
@@ -68,6 +69,19 @@ const userPreferencesMutationResolver = {
         userId: context.user._id,
         theme: input.theme,
       });
+    },
+
+    async incrementAiGenerationUsage(
+      _: any,
+      __: any,
+      context: GraphQLContext,
+    ): Promise<UserPreferences | null> {
+      logger.info('incrementAiGenerationUsage');
+      isAuthorizedOrThrow(context);
+
+      return userPreferencesRepository.incrementAiGenerationUsage(
+        context.user._id,
+      );
     },
   },
 };
