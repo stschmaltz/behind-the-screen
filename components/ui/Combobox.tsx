@@ -16,6 +16,7 @@ interface ComboboxProps {
   disabled?: boolean;
   label?: string;
   required?: boolean;
+  size?: 'sm' | 'md';
 }
 
 const Combobox: React.FC<ComboboxProps> = ({
@@ -27,6 +28,7 @@ const Combobox: React.FC<ComboboxProps> = ({
   disabled = false,
   label,
   required = false,
+  size = 'md',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -119,8 +121,10 @@ const Combobox: React.FC<ComboboxProps> = ({
   return (
     <div className={`form-control w-full ${className}`}>
       {label && (
-        <label className="label">
-          <span className="label-text">
+        <label className={`label ${size === 'sm' ? 'py-1' : ''}`}>
+          <span
+            className={`label-text ${size === 'sm' ? 'font-medium text-sm' : ''}`}
+          >
             {label}
             {required && <span className="text-error ml-1">*</span>}
           </span>
@@ -128,7 +132,7 @@ const Combobox: React.FC<ComboboxProps> = ({
       )}
       <div className="relative" ref={dropdownRef}>
         <div
-          className="input input-bordered w-full flex items-center cursor-text"
+          className={`input input-bordered w-full flex items-center cursor-text ${size === 'sm' ? 'input-sm' : ''}`}
           onClick={() => {
             if (!disabled) {
               inputRef.current?.focus();
@@ -150,7 +154,9 @@ const Combobox: React.FC<ComboboxProps> = ({
             required={required}
           />
           <div className="h-full flex items-center pointer-events-none">
-            <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+            <ChevronDownIcon
+              className={`${size === 'sm' ? 'h-4 w-4' : 'h-5 w-5'} text-gray-400`}
+            />
           </div>
         </div>
         {isOpen && filteredOptions.length > 0 && (

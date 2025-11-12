@@ -74,18 +74,18 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
 
   return (
     <div className="card bg-base-100 shadow-xl h-fit min-w-[250px]">
-      <div className="card-body">
-        <h1 className="card-title text-3xl font-bold text-center mb-6 flex items-center justify-center gap-3">
-          <UserIcon className="w-8 h-8 text-primary" />
+      <div className="card-body p-4 sm:p-6">
+        <h1 className="card-title text-2xl font-bold text-center mb-3 flex items-center justify-center gap-2">
+          <UserIcon className="w-6 h-6 text-primary" />
           NPC Generator
         </h1>
 
-        <div className="alert alert-info shadow-sm">
+        <div className="alert alert-info shadow-sm text-sm py-2">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
-            className="stroke-current shrink-0 w-6 h-6"
+            className="stroke-current shrink-0 w-5 h-5"
           >
             <path
               strokeLinecap="round"
@@ -94,13 +94,13 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
               d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          <span className="text-sm">
+          <span className="text-xs">
             Empty fields will be randomly generated
           </span>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 gap-6">
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <div className="grid grid-cols-1 gap-3">
             <div className="flex gap-2 items-end">
               <div className="flex-1">
                 <Combobox
@@ -110,16 +110,17 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
                   placeholder="Type or select a race..."
                   label="Race (Optional)"
                   disabled={isLoading}
+                  size="sm"
                 />
               </div>
               <button
                 type="button"
                 onClick={randomizeRace}
                 disabled={isLoading}
-                className="btn btn-square btn-outline"
+                className="btn btn-sm btn-square btn-outline"
                 title="Randomize Race"
               >
-                <DiceIcon className="w-5 h-5" />
+                <DiceIcon className="w-4 h-4" />
               </button>
             </div>
 
@@ -132,16 +133,17 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
                   placeholder="Type or select an occupation..."
                   label="Occupation (Optional)"
                   disabled={isLoading}
+                  size="sm"
                 />
               </div>
               <button
                 type="button"
                 onClick={randomizeOccupation}
                 disabled={isLoading}
-                className="btn btn-square btn-outline"
+                className="btn btn-sm btn-square btn-outline"
                 title="Randomize Occupation"
               >
-                <DiceIcon className="w-5 h-5" />
+                <DiceIcon className="w-4 h-4" />
               </button>
             </div>
 
@@ -154,72 +156,75 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
                   placeholder="Type or select a setting..."
                   label="Setting/Context (Optional)"
                   disabled={isLoading}
+                  size="sm"
                 />
               </div>
               <button
                 type="button"
                 onClick={randomizeContext}
                 disabled={isLoading}
-                className="btn btn-square btn-outline"
+                className="btn btn-sm btn-square btn-outline"
                 title="Randomize Setting"
               >
-                <DiceIcon className="w-5 h-5" />
+                <DiceIcon className="w-4 h-4" />
               </button>
             </div>
 
             <div className="form-control">
-              <label className="label cursor-pointer justify-start gap-4">
+              <label className="label cursor-pointer justify-start gap-3 py-1">
                 <input
                   type="checkbox"
                   checked={includeSecret}
                   onChange={(e) => setIncludeSecret(e.target.checked)}
-                  className="checkbox checkbox-primary"
+                  className="checkbox checkbox-sm checkbox-primary"
                   disabled={isLoading}
                 />
-                <span className="label-text">Include Secret</span>
+                <span className="label-text text-sm">Include Secret</span>
               </label>
             </div>
 
             <div className="form-control">
-              <label className="label cursor-pointer justify-start gap-4">
+              <label className="label cursor-pointer justify-start gap-3 py-1">
                 <input
                   type="checkbox"
                   checked={includeBackground}
                   onChange={(e) => setIncludeBackground(e.target.checked)}
-                  className="checkbox checkbox-primary"
+                  className="checkbox checkbox-sm checkbox-primary"
                   disabled={isLoading}
                 />
-                <span className="label-text">Include Background Story</span>
+                <span className="label-text text-sm">
+                  Include Background Story
+                </span>
               </label>
             </div>
 
-            <div className="divider"></div>
+            <div className="divider my-2"></div>
 
             <div className="form-control">
-              <label className="label cursor-pointer justify-start gap-4">
+              <label className="label cursor-pointer justify-start gap-3 py-1">
                 <input
                   type="checkbox"
                   checked={useAiEnhanced}
                   onChange={(e) => setUseAiEnhanced(e.target.checked)}
-                  className="toggle toggle-primary"
+                  className="toggle toggle-primary toggle-sm"
                   disabled={isLoading || !hasAvailableAiUses}
                 />
                 <div className="flex flex-col flex-1">
-                  <span className="label-text font-semibold">
+                  <span className="label-text font-semibold text-sm">
                     AI Enhanced Mode
                   </span>
                   <span className="label-text-alt text-xs">
                     {hasAvailableAiUses
                       ? remainingAiUses > 1000
-                        ? 'Unlimited AI generations'
-                        : `${remainingAiUses} of 25 AI generations remaining (rolling 7-day window)`
-                      : 'No AI generations remaining (rolling 7-day window)'}
+                        ? 'Unlimited'
+                        : `${remainingAiUses}/25 remaining (7-day window)`
+                      : 'No generations remaining'}
                   </span>
                   {!hasAvailableAiUses && !hasRequestedMoreUses && (
                     <button
                       type="button"
                       onClick={onRequestMoreUses}
-                      className="btn btn-xs btn-ghost mt-1 self-start"
+                      className="btn btn-xs btn-ghost mt-1 self-start p-0 h-auto min-h-0"
                     >
                       Request More Uses
                     </button>
@@ -234,20 +239,20 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
             </div>
           </div>
 
-          <div className="mt-6">
+          <div className="mt-4">
             <Button
               type="submit"
-              label={isLoading ? 'Generating NPC...' : 'Generate NPC'}
+              label={isLoading ? 'Generating...' : 'Generate NPC'}
               variant="primary"
               disabled={isLoading}
               loading={isLoading}
-              className="w-full py-3 text-lg"
+              className="w-full py-2"
             />
           </div>
         </form>
 
         {error && (
-          <div className="mt-6 alert alert-error shadow-lg">
+          <div className="mt-3 alert alert-error shadow-lg text-sm">
             <div>
               <ErrorIcon className="stroke-current flex-shrink-0 h-6 w-6" />
               <span>Error: {error}</span>
