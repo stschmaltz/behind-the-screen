@@ -6,6 +6,7 @@ export interface UserPreferences {
   activeCampaignId?: string;
   theme?: string;
   aiGenerationUsageCount?: number;
+  aiUsageResetDate?: Date;
   createdAt: Date;
   updatedAt: Date;
 }

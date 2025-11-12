@@ -5,4 +5,7 @@ export interface UserObject {
   name?: string;
   picture?: string;
   emailVerified?: boolean;
+  aiUsageCount?: number;
+  aiUsageResetDate?: Date;
+  aiWeeklyLimit?: number;
 }

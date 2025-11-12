@@ -1,6 +1,8 @@
 import React from 'react';
 import { CoinIcon, EmptyLootIcon, TreasureChestIcon } from '../icons';
 
+export type Rarity = 'common' | 'uncommon' | 'rare' | 'very rare' | 'legendary';
+
 export type LootItemType = {
   level?: string;
   coins?: string;
@@ -8,6 +10,7 @@ export type LootItemType = {
   description?: string;
   note?: string;
   source?: 'official' | 'random';
+  rarity?: Rarity;
 };
 
 interface LootDisplayProps {
@@ -98,6 +101,33 @@ const LootDisplay: React.FC<LootDisplayProps> = ({
     return source;
   };
 
+  const getRarityColor = (rarity?: Rarity): string => {
+    switch (rarity) {
+      case 'common':
+        return 'badge-ghost';
+      case 'uncommon':
+        return 'badge-success';
+      case 'rare':
+        return 'badge-info';
+      case 'very rare':
+        return 'badge-secondary';
+      case 'legendary':
+        return 'badge-warning';
+      default:
+        return 'badge-ghost';
+    }
+  };
+
+  const getRarityLabel = (rarity?: Rarity): string => {
+    if (!rarity) return 'Common';
+
+    return rarity.charAt(0).toUpperCase() + rarity.slice(1);
+  };
+
+  const hasJackpot = otherEntries.some(
+    (e) => e.rarity === 'very rare' || e.rarity === 'legendary',
+  );
+
   return (
     <div className="card bg-base-100 shadow-xl overflow-hidden h-full">
       <div className="bg-primary text-primary-content p-4">
@@ -106,6 +136,11 @@ const LootDisplay: React.FC<LootDisplayProps> = ({
           Generated Loot Table
         </h2>
         {context && <p className="text-sm opacity-80 mt-1">Theme: {context}</p>}
+        {hasJackpot && (
+          <div className="mt-2 px-3 py-1 bg-warning text-warning-content rounded-lg text-sm font-semibold animate-pulse">
+            ✨ JACKPOT! You found rare treasure! ✨
+          </div>
+        )}
       </div>
 
       <div className="card-body divide-y divide-base-300 max-h-[60vh] overflow-y-auto">
@@ -144,13 +179,22 @@ const LootDisplay: React.FC<LootDisplayProps> = ({
                       <span className="font-medium mr-2">{index + 1}.</span>
                       {entry.item}
                     </div>
-                    {entry.source && (
-                      <span
-                        className={`badge badge-outline whitespace-nowrap ${entry.source === 'official' ? 'badge-info' : 'badge-secondary'} ml-2`}
-                      >
-                        {sourceToDisplay(entry.source)}
-                      </span>
-                    )}
+                    <div className="flex gap-2 ml-2 flex-shrink-0">
+                      {entry.rarity && (
+                        <span
+                          className={`badge ${getRarityColor(entry.rarity)} whitespace-nowrap`}
+                        >
+                          {getRarityLabel(entry.rarity)}
+                        </span>
+                      )}
+                      {entry.source && (
+                        <span
+                          className={`badge badge-outline whitespace-nowrap ${entry.source === 'official' ? 'badge-info' : 'badge-secondary'}`}
+                        >
+                          {sourceToDisplay(entry.source)}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   {entry.description && (
                     <div className="text-sm mt-1 text-base-content/80 ml-6">

@@ -127,8 +127,8 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
                   </span>
                   <span className="label-text-alt text-xs">
                     {hasAvailableAiUses
-                      ? `${remainingAiUses} uses remaining`
-                      : 'No uses remaining - using free mode'}
+                      ? `${remainingAiUses} of 25 uses remaining this week`
+                      : 'No uses remaining - resets weekly'}
                   </span>
                 </div>
               </label>

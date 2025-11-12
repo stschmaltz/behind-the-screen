@@ -3,6 +3,8 @@ import { FormInput } from '../ui/FormInput';
 import { Button } from '../ui/Button';
 import { ErrorIcon, TreasureChestIcon } from '../icons';
 
+export type LootQuality = 'basic' | 'standard' | 'good' | 'major' | 'legendary';
+
 interface LootGeneratorFormProps {
   partyLevel: number;
   setPartyLevel: (value: number) => void;
@@ -12,6 +14,8 @@ interface LootGeneratorFormProps {
   setRandomItemCount: (value: number) => void;
   context: string;
   setContext: (value: string) => void;
+  lootQuality: LootQuality;
+  setLootQuality: (value: LootQuality) => void;
   isLoading: boolean;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
   error: string | null;
@@ -30,6 +34,8 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
   setRandomItemCount,
   context,
   setContext,
+  lootQuality,
+  setLootQuality,
   isLoading,
   handleSubmit,
   error,
@@ -38,6 +44,23 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
   remainingAiUses,
   hasAvailableAiUses,
 }) => {
+  const getLootQualityDescription = (quality: LootQuality): string => {
+    switch (quality) {
+      case 'basic':
+        return 'Mostly common items, trinkets';
+      case 'standard':
+        return 'Normal mix of items';
+      case 'good':
+        return 'More uncommon and rare items';
+      case 'major':
+        return 'Guaranteed rare+ items';
+      case 'legendary':
+        return 'Jackpot! Very rare or legendary';
+      default:
+        return '';
+    }
+  };
+
   return (
     <div className="card bg-base-100 shadow-xl h-fit min-w-[250px]">
       <div className="card-body">
@@ -86,7 +109,7 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
                 value={randomItemCount}
                 onChange={(e) => setRandomItemCount(parseInt(e.target.value))}
                 min={0}
-                max={10}
+                max={5}
                 className="input-bordered w-full"
                 disabled={isLoading || !useAiEnhanced}
               />
@@ -103,6 +126,29 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
                 placeholder="e.g., forest, dungeon, underwater"
                 disabled={isLoading || !useAiEnhanced}
               />
+            </div>
+
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text font-medium">Loot Quality</span>
+              </label>
+              <select
+                className="select select-bordered w-full"
+                value={lootQuality}
+                onChange={(e) => setLootQuality(e.target.value as LootQuality)}
+                disabled={isLoading || !useAiEnhanced}
+              >
+                <option value="basic">Basic - Trinkets & Common Items</option>
+                <option value="standard">Standard - Normal Mix</option>
+                <option value="good">Good - Better Items</option>
+                <option value="major">Major - Rare Treasure</option>
+                <option value="legendary">Legendary - Jackpot!</option>
+              </select>
+              <label className="label">
+                <span className="label-text-alt">
+                  {getLootQualityDescription(lootQuality)}
+                </span>
+              </label>
             </div>
 
             <div className="divider"></div>
@@ -122,8 +168,8 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
                   </span>
                   <span className="label-text-alt text-xs">
                     {hasAvailableAiUses
-                      ? `${remainingAiUses} uses remaining`
-                      : 'No uses remaining - using free mode'}
+                      ? `${remainingAiUses} of 25 uses remaining this week`
+                      : 'No uses remaining - resets weekly'}
                   </span>
                 </div>
               </label>

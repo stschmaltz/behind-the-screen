@@ -17,6 +17,9 @@ const mapUserDocumentToUserObject = (doc: UserDocument): UserObject => ({
   name: doc.name,
   picture: doc.picture,
   emailVerified: doc.emailVerified ?? false,
+  aiUsageCount: doc.aiUsageCount ?? 0,
+  aiUsageResetDate: doc.aiUsageResetDate,
+  aiWeeklyLimit: doc.aiWeeklyLimit ?? 25,
 });
 
 class UserRepository implements UserRepositoryInterface {
@@ -107,6 +110,111 @@ class UserRepository implements UserRepositoryInterface {
       return users.map(mapUserDocumentToUserObject);
     } catch (error) {
       logger.error('Error fetching all users', error);
+      throw error;
+    }
+  }
+
+  public async incrementAiUsage(auth0Id: string): Promise<UserObject> {
+    try {
+      const { db } = await getDbClient();
+      const now = new Date();
+      const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+      const user = await db.collection<UserDocument>(collectionName).findOne({
+        auth0Id,
+      });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      const resetDate = user.aiUsageResetDate || new Date(0);
+      const shouldReset = resetDate < oneWeekAgo;
+
+      const updatedUser = await db
+        .collection<UserDocument>(collectionName)
+        .findOneAndUpdate(
+          { auth0Id },
+          {
+            $set: {
+              aiUsageCount: shouldReset ? 1 : (user.aiUsageCount || 0) + 1,
+              aiUsageResetDate: shouldReset ? now : resetDate,
+              aiWeeklyLimit: 25,
+            },
+          },
+          { returnDocument: 'after' },
+        );
+
+      if (!updatedUser) {
+        throw new Error('Failed to update user');
+      }
+
+      return mapUserDocumentToUserObject(updatedUser);
+    } catch (error) {
+      logger.error('Error incrementing AI usage', error);
+      throw error;
+    }
+  }
+
+  public async checkAiUsageLimit(auth0Id: string): Promise<{
+    canUse: boolean;
+    remaining: number;
+    limit: number;
+    resetDate: Date;
+  }> {
+    try {
+      const { db } = await getDbClient();
+      const now = new Date();
+      const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+      const user = await db.collection<UserDocument>(collectionName).findOne({
+        auth0Id,
+      });
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      const resetDate = user.aiUsageResetDate || new Date(0);
+      const shouldReset = resetDate < oneWeekAgo;
+      const limit = user.aiWeeklyLimit || 25;
+      const currentUsage = shouldReset ? 0 : user.aiUsageCount || 0;
+
+      return {
+        canUse: currentUsage < limit,
+        remaining: Math.max(0, limit - currentUsage),
+        limit,
+        resetDate: shouldReset ? now : resetDate,
+      };
+    } catch (error) {
+      logger.error('Error checking AI usage limit', error);
+      throw error;
+    }
+  }
+
+  public async getAiUsageStats(): Promise<
+    Array<{
+      email: string;
+      usageCount: number;
+      limit: number;
+      resetDate: Date | undefined;
+    }>
+  > {
+    try {
+      const { db } = await getDbClient();
+      const users = await db
+        .collection<UserDocument>(collectionName)
+        .find({})
+        .toArray();
+
+      return users.map((user) => ({
+        email: user.email,
+        usageCount: user.aiUsageCount || 0,
+        limit: user.aiWeeklyLimit || 25,
+        resetDate: user.aiUsageResetDate,
+      }));
+    } catch (error) {
+      logger.error('Error fetching AI usage stats', error);
       throw error;
     }
   }

@@ -716,16 +716,7 @@ export const NAMES_BY_RACE_AND_GENDER: Record<
       'Rattle',
       'Click',
     ],
-    Female: [
-      'Chime',
-      'Trill',
-      'Song',
-      'Bell',
-      'Echo',
-      'Hum',
-      'Warble',
-      'Pip',
-    ],
+    Female: ['Chime', 'Trill', 'Song', 'Bell', 'Echo', 'Hum', 'Warble', 'Pip'],
     'Non-binary': [
       'Rustle',
       'Snap',
@@ -798,16 +789,7 @@ export const NAMES_BY_RACE_AND_GENDER: Record<
       'Tazz',
       'Vix',
     ],
-    'Non-binary': [
-      'Bix',
-      'Dex',
-      'Fix',
-      'Hix',
-      'Kex',
-      'Lix',
-      'Rex',
-      'Zex',
-    ],
+    'Non-binary': ['Bix', 'Dex', 'Fix', 'Hix', 'Kex', 'Lix', 'Rex', 'Zex'],
   },
 };
 
@@ -943,4 +925,3 @@ export const BACKGROUNDS = [
   'made a fortune and lost it, now rebuilding their life',
   'was trained for a completely different profession but changed careers',
 ];
-

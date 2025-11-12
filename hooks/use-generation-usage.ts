@@ -8,7 +8,7 @@ import {
 import type { GetUserPreferencesQuery } from '../generated/graphql';
 import { logger } from '../lib/logger';
 
-const MAX_FREE_AI_GENERATIONS = 10;
+const MAX_FREE_AI_GENERATIONS = 25;
 
 interface UseGenerationUsageResult {
   usageCount: number;

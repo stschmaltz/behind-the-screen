@@ -12,10 +12,18 @@ interface Feedback {
   timestamp: string;
 }
 
+interface AiUsageStat {
+  email: string;
+  usageCount: number;
+  limit: number;
+  resetDate?: string;
+}
+
 function AdminPage() {
   const { user, isLoading } = useUser();
   const [users, setUsers] = useState<UserObject[] | null>(null);
   const [feedback, setFeedback] = useState<Feedback[] | null>(null);
+  const [aiUsageStats, setAiUsageStats] = useState<AiUsageStat[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
@@ -32,6 +40,10 @@ function AdminPage() {
         .then((res) => res.json())
         .then((data) => setFeedback(data.feedback))
         .catch(() => setError('Failed to fetch feedback'));
+      fetch('/api/ai-usage/stats')
+        .then((res) => res.json())
+        .then((data) => setAiUsageStats(data.stats))
+        .catch(() => setError('Failed to fetch AI usage stats'));
     }
   }, [user, isLoading, router]);
 
@@ -49,7 +61,7 @@ function AdminPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-base-200 p-4 gap-8">
-      <div className="card w-full max-w-2xl bg-base-100 shadow-xl mb-8">
+      <div className="card w-full max-w-2xl bg-base-100 shadow-xl">
         <div className="card-body items-center text-center">
           <h2 className="card-title">Admin Dashboard</h2>
           <p className="text-lg">User List</p>
@@ -71,6 +83,58 @@ function AdminPage() {
                       <td>{u.email}</td>
                     </tr>
                   ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="card w-full max-w-2xl bg-base-100 shadow-xl">
+        <div className="card-body items-center text-center">
+          <h2 className="card-title">AI Usage Statistics</h2>
+          <p className="text-lg">Weekly Limit: 25 generations per user</p>
+          {error ? (
+            <span className="text-error">{error}</span>
+          ) : aiUsageStats === null ? (
+            <span className="loading loading-spinner loading-md"></span>
+          ) : (
+            <div className="overflow-x-auto w-full">
+              <table className="table w-full">
+                <thead>
+                  <tr>
+                    <th>Email</th>
+                    <th>Usage</th>
+                    <th>Limit</th>
+                    <th>Remaining</th>
+                    <th>Reset Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {aiUsageStats.map((stat, i) => {
+                    const remaining = stat.limit - stat.usageCount;
+                    const nextResetDate = stat.resetDate
+                      ? new Date(
+                          new Date(stat.resetDate).getTime() +
+                            7 * 24 * 60 * 60 * 1000,
+                        ).toLocaleDateString()
+                      : 'Not set';
+
+                    return (
+                      <tr key={i}>
+                        <td>{stat.email}</td>
+                        <td>{stat.usageCount}</td>
+                        <td>{stat.limit}</td>
+                        <td
+                          className={
+                            remaining === 0 ? 'text-error font-bold' : ''
+                          }
+                        >
+                          {remaining}
+                        </td>
+                        <td>{nextResetDate}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

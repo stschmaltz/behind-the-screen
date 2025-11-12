@@ -6,6 +6,7 @@ import {
   LootDisplay,
   LootGeneratorForm,
   LootItemType,
+  LootQuality,
 } from '../components/loot';
 import {
   GenerationEntry,
@@ -17,12 +18,13 @@ import { asyncFetch } from '../data/graphql/graphql-fetcher';
 import { useGenerationUsage } from '../hooks/use-generation-usage';
 
 const GENERATE_LOOT_MUTATION = `
-  mutation GenerateLoot($partyLevel: Int!, $srdItemCount: Int!, $randomItemCount: Int!, $context: String) {
+  mutation GenerateLoot($partyLevel: Int!, $srdItemCount: Int!, $randomItemCount: Int!, $context: String, $lootQuality: String) {
     generateLoot(
       partyLevel: $partyLevel
       srdItemCount: $srdItemCount
       randomItemCount: $randomItemCount
       context: $context
+      lootQuality: $lootQuality
     ) {
       level
       coins
@@ -30,6 +32,7 @@ const GENERATE_LOOT_MUTATION = `
       description
       note
       source
+      rarity
     }
   }
 `;
@@ -39,8 +42,9 @@ const LootGeneratorPage: NextPage = () => {
   const { user, isLoading } = useUser();
   const [partyLevel, setPartyLevel] = useState<number>(3);
   const [srdItemCount, setSrdItemCount] = useState<number>(4);
-  const [randomItemCount, setRandomItemCount] = useState<number>(4);
+  const [randomItemCount, setRandomItemCount] = useState<number>(3);
   const [context, setContext] = useState<string>('');
+  const [lootQuality, setLootQuality] = useState<LootQuality>('standard');
   const [loot, setLoot] = useState<LootItemType[] | null>(null);
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -102,6 +106,7 @@ const LootGeneratorPage: NextPage = () => {
           srdItemCount,
           randomItemCount: actualRandomItemCount,
           context: actualContext,
+          lootQuality: useAiEnhanced ? lootQuality : 'standard',
         },
       );
 
@@ -140,6 +145,8 @@ const LootGeneratorPage: NextPage = () => {
             setRandomItemCount={setRandomItemCount}
             context={context}
             setContext={setContext}
+            lootQuality={lootQuality}
+            setLootQuality={setLootQuality}
             isLoading={isGenerating}
             handleSubmit={handleSubmit}
             error={error}

@@ -164,20 +164,32 @@ export class UserPreferencesRepository
   ): Promise<UserPreferences> {
     const { db } = await getDbClient();
     const now = new Date();
+    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
     const existingPrefs = await this.getUserPreferences(userId);
 
     if (existingPrefs) {
+      const resetDate = existingPrefs.aiUsageResetDate || new Date(0);
+      const shouldReset = resetDate < oneWeekAgo;
+
       const result = await db.collection(this.collectionName).findOneAndUpdate(
         { _id: new ObjectId(existingPrefs._id), userId: new ObjectId(userId) },
-        {
-          $inc: {
-            aiGenerationUsageCount: 1,
-          },
-          $set: {
-            updatedAt: now,
-          },
-        },
+        shouldReset
+          ? {
+              $set: {
+                aiGenerationUsageCount: 1,
+                aiUsageResetDate: now,
+                updatedAt: now,
+              },
+            }
+          : {
+              $inc: {
+                aiGenerationUsageCount: 1,
+              },
+              $set: {
+                updatedAt: now,
+              },
+            },
         { returnDocument: 'after' },
       );
 
@@ -190,6 +202,7 @@ export class UserPreferencesRepository
       const newPrefs = {
         userId: new ObjectId(userId),
         aiGenerationUsageCount: 1,
+        aiUsageResetDate: now,
         createdAt: now,
         updatedAt: now,
       };
@@ -213,6 +226,7 @@ export class UserPreferencesRepository
         doc.activeCampaignId?.toString() || doc.activeCampaignId,
       theme: doc.theme,
       aiGenerationUsageCount: doc.aiGenerationUsageCount || 0,
+      aiUsageResetDate: doc.aiUsageResetDate,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,
     };
