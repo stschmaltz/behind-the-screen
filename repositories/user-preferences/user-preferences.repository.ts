@@ -159,64 +159,6 @@ export class UserPreferencesRepository
     }
   }
 
-  public async incrementAiGenerationUsage(
-    userId: string,
-  ): Promise<UserPreferences> {
-    const { db } = await getDbClient();
-    const now = new Date();
-    const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-
-    const existingPrefs = await this.getUserPreferences(userId);
-
-    if (existingPrefs) {
-      const resetDate = existingPrefs.aiUsageResetDate || new Date(0);
-      const shouldReset = resetDate < oneWeekAgo;
-
-      const result = await db.collection(this.collectionName).findOneAndUpdate(
-        { _id: new ObjectId(existingPrefs._id), userId: new ObjectId(userId) },
-        shouldReset
-          ? {
-              $set: {
-                aiGenerationUsageCount: 1,
-                aiUsageResetDate: now,
-                updatedAt: now,
-              },
-            }
-          : {
-              $inc: {
-                aiGenerationUsageCount: 1,
-              },
-              $set: {
-                updatedAt: now,
-              },
-            },
-        { returnDocument: 'after' },
-      );
-
-      if (!result) {
-        throw new Error('Failed to increment AI generation usage');
-      }
-
-      return this.mapToUserPreferences(result);
-    } else {
-      const newPrefs = {
-        userId: new ObjectId(userId),
-        aiGenerationUsageCount: 1,
-        aiUsageResetDate: now,
-        createdAt: now,
-        updatedAt: now,
-      };
-
-      const insertResult = await db
-        .collection(this.collectionName)
-        .insertOne(newPrefs);
-
-      return this.mapToUserPreferences({
-        ...newPrefs,
-        _id: insertResult.insertedId,
-      });
-    }
-  }
 
   public async getAllUsageStats(): Promise<
     Array<{
@@ -233,8 +175,11 @@ export class UserPreferencesRepository
       const { db } = await getDbClient();
       const userPrefsCollection = db.collection(this.collectionName);
       const usersCollection = db.collection('users');
+      const lootGenerationsCollection = db.collection('lootGenerations');
+      const npcGenerationsCollection = db.collection('npcGenerations');
 
       const allUsers = await usersCollection.find({}).toArray();
+      const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
       const stats = await Promise.all(
         allUsers.map(async (user) => {
@@ -242,11 +187,26 @@ export class UserPreferencesRepository
             userId: user._id,
           });
 
+          const [lootCount, npcCount] = await Promise.all([
+            lootGenerationsCollection.countDocuments({
+              userId: user._id,
+              createdAt: { $gte: sevenDaysAgo },
+              useAi: true,
+            }),
+            npcGenerationsCollection.countDocuments({
+              userId: user._id,
+              createdAt: { $gte: sevenDaysAgo },
+              useAi: true,
+            }),
+          ]);
+
+          const totalUsageCount = lootCount + npcCount;
+
           return {
             email: user.email || 'Unknown',
-            usageCount: prefs?.aiGenerationUsageCount || 0,
+            usageCount: totalUsageCount,
             limit: 25,
-            resetDate: prefs?.aiUsageResetDate?.toISOString(),
+            resetDate: sevenDaysAgo.toISOString(),
             hasRequestedMoreUses: prefs?.hasRequestedMoreUses || false,
             loginCount: user.loginCount || 0,
             lastLoginDate: user.lastLoginDate?.toISOString(),
@@ -315,8 +275,6 @@ export class UserPreferencesRepository
       activeCampaignId:
         doc.activeCampaignId?.toString() || doc.activeCampaignId,
       theme: doc.theme,
-      aiGenerationUsageCount: doc.aiGenerationUsageCount || 0,
-      aiUsageResetDate: doc.aiUsageResetDate,
       hasRequestedMoreUses: doc.hasRequestedMoreUses || false,
       createdAt: doc.createdAt,
       updatedAt: doc.updatedAt,

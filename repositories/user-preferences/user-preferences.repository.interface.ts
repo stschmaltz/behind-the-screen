@@ -14,8 +14,6 @@ export interface UserPreferencesRepositoryInterface {
 
   setTheme(input: { userId: string; theme: string }): Promise<UserPreferences>;
 
-  incrementAiGenerationUsage(userId: string): Promise<UserPreferences>;
-
   getAllUsageStats(): Promise<
     Array<{
       email: string;
