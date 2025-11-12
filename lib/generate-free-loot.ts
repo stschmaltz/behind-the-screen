@@ -110,7 +110,7 @@ export function generateFreeLoot(
     description: 'Currency found on the creature or in the area',
     note: '',
     source: 'random',
-    rarity: 'Common',
+    rarity: 'common',
   });
 
   for (let i = 0; i < itemCount; i++) {
@@ -143,8 +143,8 @@ export function generateFreeLoot(
       item,
       description,
       note: category,
-      source: 'Free',
-      rarity: 'Common',
+      source: 'random',
+      rarity: 'common',
     });
   }
 
