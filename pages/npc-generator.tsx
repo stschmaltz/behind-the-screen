@@ -19,13 +19,14 @@ import { useGenerationUsage } from '../hooks/use-generation-usage';
 import { generateFreeNpc } from '../lib/generate-free-npc';
 
 const GENERATE_NPC_MUTATION = `
-  mutation GenerateNpc($race: String, $occupation: String, $context: String, $includeSecret: Boolean!, $includeBackground: Boolean!) {
+  mutation GenerateNpc($race: String, $occupation: String, $context: String, $includeSecret: Boolean!, $includeBackground: Boolean!, $useFastMode: Boolean!) {
     generateNpc(
       race: $race
       occupation: $occupation
       context: $context
       includeSecret: $includeSecret
       includeBackground: $includeBackground
+      useFastMode: $useFastMode
     ) {
       name
       race
@@ -53,6 +54,7 @@ const NpcGeneratorPage: NextPage = () => {
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [useAiEnhanced, setUseAiEnhanced] = useState<boolean>(true);
+  const [useFastMode, setUseFastMode] = useState<boolean>(true);
   const [isFormCollapsed, setIsFormCollapsed] = useState<boolean>(false);
   const { history, addEntry, removeEntry, clearHistory } = useNpcHistory();
   const {
@@ -126,6 +128,7 @@ const NpcGeneratorPage: NextPage = () => {
             context: actualContext || null,
             includeSecret: actualIncludeSecret,
             includeBackground: actualIncludeBackground,
+            useFastMode,
           },
         );
 
@@ -228,6 +231,8 @@ const NpcGeneratorPage: NextPage = () => {
               error={error}
               useAiEnhanced={useAiEnhanced}
               setUseAiEnhanced={setUseAiEnhanced}
+              useFastMode={useFastMode}
+              setUseFastMode={setUseFastMode}
               remainingAiUses={remainingUses}
               hasAvailableAiUses={hasAvailableUses}
               hasRequestedMoreUses={hasRequestedMoreUses}

@@ -95,14 +95,14 @@ function AdminPage() {
                 <thead>
                   <tr>
                     <th>Email</th>
+                    <th>Login Count</th>
+                    <th>Last Login</th>
                     <th>AI Usage (7d)</th>
                     <th>Total Ever</th>
                     <th>AI Limit</th>
                     <th>AI Remaining</th>
                     <th>AI Reset Date</th>
                     <th>Requested More</th>
-                    <th>Login Count</th>
-                    <th>Last Login</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -129,6 +129,12 @@ function AdminPage() {
                       return (
                         <tr key={i}>
                           <td>{stat.email}</td>
+                          <td>{stat.loginCount ?? 0}</td>
+                          <td>
+                            {stat.lastLoginDate
+                              ? new Date(stat.lastLoginDate).toLocaleString()
+                              : 'Never'}
+                          </td>
                           <td>{stat.usageCount}</td>
                           <td className="font-semibold">
                             {stat.totalUsageEver}
@@ -148,12 +154,6 @@ function AdminPage() {
                             ) : (
                               <span className="text-base-content/50">-</span>
                             )}
-                          </td>
-                          <td>{stat.loginCount ?? 0}</td>
-                          <td>
-                            {stat.lastLoginDate
-                              ? new Date(stat.lastLoginDate).toLocaleString()
-                              : 'Never'}
                           </td>
                         </tr>
                       );
