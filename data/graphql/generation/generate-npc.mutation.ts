@@ -25,11 +25,13 @@ const generateNpcMutationTypeDefs = /* GraphQL */ `
 
   extend type Mutation {
     generateNpc(
+      gender: String
       race: String
       occupation: String
       context: String
       includeSecret: Boolean!
       includeBackground: Boolean!
+      useFastMode: Boolean!
     ): Npc!
   }
 `;
@@ -112,17 +114,21 @@ const generateNpcMutationResolver = {
     async generateNpc(
       _: any,
       {
+        gender,
         race,
         occupation,
         context,
         includeSecret,
         includeBackground,
+        useFastMode,
       }: {
+        gender?: string;
         race?: string;
         occupation?: string;
         context?: string;
         includeSecret: boolean;
         includeBackground: boolean;
+        useFastMode: boolean;
       },
       contextObj: GraphQLContext,
     ) {
@@ -131,11 +137,13 @@ const generateNpcMutationResolver = {
       const fullMastraUrl = buildMastraUrl();
       const requestBody = {
         inputData: {
+          gender: gender || undefined,
           race: race || undefined,
           occupation: occupation || undefined,
           context: context || undefined,
           includeSecret,
           includeBackground,
+          useFastMode,
         },
       };
 

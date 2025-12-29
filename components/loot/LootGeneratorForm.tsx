@@ -3,71 +3,202 @@ import { FormInput } from '../ui/FormInput';
 import { Button } from '../ui/Button';
 import { ErrorIcon, TreasureChestIcon } from '../icons';
 
+// ============================================================================
+// Types
+// ============================================================================
+
 export type LootQuality = 'basic' | 'standard' | 'good' | 'major' | 'legendary';
 
-interface LootGeneratorFormProps {
+export interface LootFormValues {
   partyLevel: number;
-  setPartyLevel: (value: number) => void;
   srdItemCount: number;
-  setSrdItemCount: (value: number) => void;
   randomItemCount: number;
-  setRandomItemCount: (value: number) => void;
   context: string;
-  setContext: (value: string) => void;
   lootQuality: LootQuality;
-  setLootQuality: (value: LootQuality) => void;
   includeEffects: boolean;
-  setIncludeEffects: (value: boolean) => void;
-  isLoading: boolean;
-  handleSubmit: (e: React.FormEvent) => Promise<void>;
-  error: string | null;
-  useAiEnhanced: boolean;
-  setUseAiEnhanced: (value: boolean) => void;
-  remainingAiUses: number;
-  hasAvailableAiUses: boolean;
-  hasRequestedMoreUses: boolean;
-  onRequestMoreUses: () => void;
 }
 
-const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
-  partyLevel,
-  setPartyLevel,
-  srdItemCount,
-  setSrdItemCount,
-  randomItemCount,
-  setRandomItemCount,
-  context,
-  setContext,
-  lootQuality,
-  setLootQuality,
-  includeEffects,
-  setIncludeEffects,
-  isLoading,
-  handleSubmit,
-  error,
-  useAiEnhanced,
-  setUseAiEnhanced,
-  remainingAiUses,
-  hasAvailableAiUses,
-  hasRequestedMoreUses,
+export interface AiModeConfig {
+  enabled: boolean;
+  remainingUses: number;
+  hasAvailableUses: boolean;
+  hasRequestedMoreUses: boolean;
+}
+
+interface LootGeneratorFormProps {
+  values: LootFormValues;
+  onChange: (values: Partial<LootFormValues>) => void;
+  aiMode: AiModeConfig;
+  onAiModeChange: (enabled: boolean) => void;
+  onRequestMoreUses: () => void;
+  isLoading: boolean;
+  error: string | null;
+  onSubmit: (e: React.FormEvent) => Promise<void>;
+}
+
+// ============================================================================
+// Constants
+// ============================================================================
+
+const LOOT_QUALITY_DESCRIPTIONS: Record<LootQuality, string> = {
+  basic: 'Mostly common items, trinkets',
+  standard: 'Normal mix of items',
+  good: 'More uncommon and rare items',
+  major: 'Guaranteed rare+ items',
+  legendary: 'Jackpot! Very rare or legendary',
+};
+
+const LOOT_QUALITY_OPTIONS: { value: LootQuality; label: string }[] = [
+  { value: 'basic', label: 'Basic' },
+  { value: 'standard', label: 'Standard' },
+  { value: 'good', label: 'Good' },
+  { value: 'major', label: 'Major' },
+  { value: 'legendary', label: 'Legendary' },
+];
+
+// ============================================================================
+// Sub-components
+// ============================================================================
+
+interface AiModeToggleProps {
+  aiMode: AiModeConfig;
+  onAiModeChange: (enabled: boolean) => void;
+  onRequestMoreUses: () => void;
+  disabled: boolean;
+}
+
+const AiModeToggle: React.FC<AiModeToggleProps> = ({
+  aiMode,
+  onAiModeChange,
   onRequestMoreUses,
+  disabled,
 }) => {
-  const getLootQualityDescription = (quality: LootQuality): string => {
-    switch (quality) {
-      case 'basic':
-        return 'Mostly common items, trinkets';
-      case 'standard':
-        return 'Normal mix of items';
-      case 'good':
-        return 'More uncommon and rare items';
-      case 'major':
-        return 'Guaranteed rare+ items';
-      case 'legendary':
-        return 'Jackpot! Very rare or legendary';
-      default:
-        return '';
-    }
-  };
+  const usageText = aiMode.hasAvailableUses
+    ? aiMode.remainingUses > 1000
+      ? 'Unlimited'
+      : `${aiMode.remainingUses}/25 remaining (7-day window)`
+    : 'No generations remaining';
+
+  return (
+    <div className="form-control">
+      <label className="label cursor-pointer justify-start gap-3 py-1">
+        <input
+          type="checkbox"
+          checked={aiMode.enabled}
+          onChange={(e) => onAiModeChange(e.target.checked)}
+          className="toggle toggle-primary toggle-sm"
+          disabled={disabled || !aiMode.hasAvailableUses}
+        />
+        <div className="flex flex-col flex-1">
+          <span className="label-text font-semibold text-sm">
+            AI Enhanced Mode
+          </span>
+          <span className="label-text-alt text-xs">{usageText}</span>
+          {!aiMode.hasAvailableUses && !aiMode.hasRequestedMoreUses && (
+            <button
+              type="button"
+              onClick={onRequestMoreUses}
+              className="btn btn-xs btn-ghost mt-1 self-start p-0 h-auto min-h-0"
+            >
+              Request More Uses
+            </button>
+          )}
+          {aiMode.hasRequestedMoreUses && (
+            <span className="text-xs text-success mt-1">
+              ✓ Request submitted
+            </span>
+          )}
+        </div>
+      </label>
+    </div>
+  );
+};
+
+interface LootQualitySelectProps {
+  value: LootQuality;
+  onChange: (value: LootQuality) => void;
+  disabled: boolean;
+}
+
+const LootQualitySelect: React.FC<LootQualitySelectProps> = ({
+  value,
+  onChange,
+  disabled,
+}) => (
+  <div className="form-control">
+    <label className="label py-1">
+      <span className="label-text font-medium text-sm">Loot Quality</span>
+    </label>
+    <select
+      className="select select-bordered select-sm w-full"
+      value={value}
+      onChange={(e) => onChange(e.target.value as LootQuality)}
+      disabled={disabled}
+    >
+      {LOOT_QUALITY_OPTIONS.map((opt) => (
+        <option key={opt.value} value={opt.value}>
+          {opt.label}
+        </option>
+      ))}
+    </select>
+    <label className="label py-0">
+      <span className="label-text-alt text-xs">
+        {LOOT_QUALITY_DESCRIPTIONS[value]}
+      </span>
+    </label>
+  </div>
+);
+
+interface EffectsToggleProps {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  disabled: boolean;
+}
+
+const EffectsToggle: React.FC<EffectsToggleProps> = ({
+  checked,
+  onChange,
+  disabled,
+}) => (
+  <div className="form-control">
+    <label className="label py-1">
+      <span className="label-text font-medium text-sm">Item Effects</span>
+    </label>
+    <label className="label cursor-pointer justify-start gap-2 border border-base-300 rounded-lg px-3 py-2 bg-base-200">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="checkbox checkbox-sm checkbox-primary"
+        disabled={disabled}
+      />
+      <span className="label-text text-xs">
+        Include effects when applicable
+      </span>
+    </label>
+    <label className="label py-0">
+      <span className="label-text-alt text-xs">
+        Mechanical or flavor effects
+      </span>
+    </label>
+  </div>
+);
+
+// ============================================================================
+// Main Component
+// ============================================================================
+
+const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
+  values,
+  onChange,
+  aiMode,
+  onAiModeChange,
+  onRequestMoreUses,
+  isLoading,
+  error,
+  onSubmit,
+}) => {
+  const isAiDisabled = isLoading || !aiMode.enabled;
 
   return (
     <div className="card bg-base-100 shadow-xl h-fit min-w-[250px]">
@@ -77,184 +208,93 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
           Loot Table Generator
         </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <form onSubmit={onSubmit} className="space-y-3">
+          {/* Core Settings */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div className="form-control">
-              <FormInput
-                id="partyLevel"
-                label="Party Level"
-                type="number"
-                value={partyLevel}
-                onChange={(e) => setPartyLevel(parseInt(e.target.value))}
-                min={1}
-                max={20}
-                required
-                className="input-bordered w-full input-sm"
-                disabled={isLoading}
-              />
-            </div>
+            <FormInput
+              id="partyLevel"
+              label="Party Level"
+              type="number"
+              value={values.partyLevel}
+              onChange={(e) =>
+                onChange({ partyLevel: parseInt(e.target.value) })
+              }
+              min={1}
+              max={20}
+              required
+              className="input-bordered w-full input-sm"
+              disabled={isLoading}
+            />
 
-            <div className="form-control">
-              <FormInput
-                id="srdItemCount"
-                label="Official Source Items"
-                type="number"
-                value={srdItemCount}
-                onChange={(e) => setSrdItemCount(parseInt(e.target.value))}
-                min={0}
-                max={10}
-                required
-                className="input-bordered w-full input-sm"
-                disabled={isLoading}
-              />
-            </div>
+            <FormInput
+              id="srdItemCount"
+              label="Official Source Items"
+              type="number"
+              value={values.srdItemCount}
+              onChange={(e) =>
+                onChange({ srdItemCount: parseInt(e.target.value) })
+              }
+              min={0}
+              max={10}
+              required
+              className="input-bordered w-full input-sm"
+              disabled={isLoading}
+            />
 
-            <div className="form-control">
-              <FormInput
-                id="randomItemCount"
-                label="AI Generated Items"
-                type="number"
-                value={randomItemCount}
-                onChange={(e) => setRandomItemCount(parseInt(e.target.value))}
-                min={0}
-                max={5}
-                className="input-bordered w-full input-sm"
-                disabled={isLoading || !useAiEnhanced}
-              />
-            </div>
+            <FormInput
+              id="randomItemCount"
+              label="AI Generated Items"
+              type="number"
+              value={values.randomItemCount}
+              onChange={(e) =>
+                onChange({ randomItemCount: parseInt(e.target.value) })
+              }
+              min={0}
+              max={5}
+              className="input-bordered w-full input-sm"
+              disabled={isAiDisabled}
+            />
           </div>
 
+          {/* AI-Enhanced Options */}
           <div className="grid grid-cols-1 gap-3">
-            <div className="form-control">
-              <FormInput
-                id="context"
-                label="Location (Optional)"
-                type="text"
-                value={context}
-                onChange={(e) => setContext(e.target.value)}
-                className="input-bordered w-full input-sm"
-                placeholder="e.g., ancient tomb, dragon's hoard, enchanted forest"
-                disabled={isLoading || !useAiEnhanced}
-              />
-            </div>
+            <FormInput
+              id="context"
+              label="Location (Optional)"
+              type="text"
+              value={values.context}
+              onChange={(e) => onChange({ context: e.target.value })}
+              className="input-bordered w-full input-sm"
+              placeholder="e.g., ancient tomb, dragon's hoard, enchanted forest"
+              disabled={isAiDisabled}
+            />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="form-control">
-                <label className="label py-1">
-                  <span className="label-text font-medium text-sm">
-                    Loot Quality
-                  </span>
-                </label>
-                <select
-                  className="select select-bordered select-sm w-full"
-                  value={lootQuality}
-                  onChange={(e) =>
-                    setLootQuality(e.target.value as LootQuality)
-                  }
-                  disabled={isLoading || !useAiEnhanced}
-                >
-                  <option value="basic">Basic</option>
-                  <option value="standard">Standard</option>
-                  <option value="good">Good</option>
-                  <option value="major">Major</option>
-                  <option value="legendary">Legendary</option>
-                </select>
-                <label className="label py-0">
-                  <span className="label-text-alt text-xs">
-                    {getLootQualityDescription(lootQuality)}
-                  </span>
-                </label>
-              </div>
+              <LootQualitySelect
+                value={values.lootQuality}
+                onChange={(val) => onChange({ lootQuality: val })}
+                disabled={isAiDisabled}
+              />
 
-              <div className="form-control">
-                <label className="label py-1">
-                  <span className="label-text font-medium text-sm">
-                    Item Effects
-                  </span>
-                </label>
-                <label className="label cursor-pointer justify-start gap-2 border border-base-300 rounded-lg px-3 py-2 bg-base-200">
-                  <input
-                    type="checkbox"
-                    checked={includeEffects}
-                    onChange={(e) => setIncludeEffects(e.target.checked)}
-                    className="checkbox checkbox-sm checkbox-primary"
-                    disabled={isLoading || !useAiEnhanced}
-                  />
-                  <span className="label-text text-xs">
-                    Include effects when applicable
-                  </span>
-                </label>
-                <label className="label py-0">
-                  <span className="label-text-alt text-xs">
-                    Mechanical or flavor effects
-                  </span>
-                </label>
-              </div>
+              <EffectsToggle
+                checked={values.includeEffects}
+                onChange={(checked) => onChange({ includeEffects: checked })}
+                disabled={isAiDisabled}
+              />
             </div>
           </div>
 
-          <div className="divider my-2"></div>
+          <div className="divider my-2" />
 
-          <div className="grid grid-cols-1 gap-3">
-            <div className="form-control hidden">
-              <label className="label py-1">
-                <span className="label-text font-medium text-sm">
-                  Loot Quality (old)
-                </span>
-              </label>
-              <select
-                className="select select-bordered select-sm w-full hidden"
-                value={lootQuality}
-                onChange={(e) => setLootQuality(e.target.value as LootQuality)}
-                disabled={isLoading || !useAiEnhanced}
-              >
-                <option value="basic">Basic</option>
-                <option value="standard">Standard</option>
-                <option value="good">Good</option>
-                <option value="major">Major</option>
-                <option value="legendary">Legendary</option>
-              </select>
-            </div>
+          {/* AI Mode Toggle */}
+          <AiModeToggle
+            aiMode={aiMode}
+            onAiModeChange={onAiModeChange}
+            onRequestMoreUses={onRequestMoreUses}
+            disabled={isLoading}
+          />
 
-            <div className="form-control">
-              <label className="label cursor-pointer justify-start gap-3 py-1">
-                <input
-                  type="checkbox"
-                  checked={useAiEnhanced}
-                  onChange={(e) => setUseAiEnhanced(e.target.checked)}
-                  className="toggle toggle-primary toggle-sm"
-                  disabled={isLoading || !hasAvailableAiUses}
-                />
-                <div className="flex flex-col flex-1">
-                  <span className="label-text font-semibold text-sm">
-                    AI Enhanced Mode
-                  </span>
-                  <span className="label-text-alt text-xs">
-                    {hasAvailableAiUses
-                      ? remainingAiUses > 1000
-                        ? 'Unlimited'
-                        : `${remainingAiUses}/25 remaining (7-day window)`
-                      : 'No generations remaining'}
-                  </span>
-                  {!hasAvailableAiUses && !hasRequestedMoreUses && (
-                    <button
-                      type="button"
-                      onClick={onRequestMoreUses}
-                      className="btn btn-xs btn-ghost mt-1 self-start p-0 h-auto min-h-0"
-                    >
-                      Request More Uses
-                    </button>
-                  )}
-                  {hasRequestedMoreUses && (
-                    <span className="text-xs text-success mt-1">
-                      ✓ Request submitted
-                    </span>
-                  )}
-                </div>
-              </label>
-            </div>
-          </div>
-
+          {/* Submit Button */}
           <div className="mt-4">
             <Button
               type="submit"
@@ -267,6 +307,7 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
           </div>
         </form>
 
+        {/* Error Display */}
         {error && (
           <div className="mt-3 alert alert-error shadow-lg text-sm">
             <div>

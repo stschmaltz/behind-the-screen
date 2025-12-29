@@ -1,5 +1,5 @@
 import { NextPage } from 'next';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
 import posthog from 'posthog-js';
@@ -10,6 +10,10 @@ import {
   NpcHistory,
   NpcType,
 } from '../components/npc';
+import type {
+  AiModeConfig,
+  NpcFormValues,
+} from '../components/npc/NpcGeneratorForm';
 import {
   NpcGenerationEntry,
   useNpcHistory,
@@ -18,9 +22,14 @@ import { asyncFetch } from '../data/graphql/graphql-fetcher';
 import { useGenerationUsage } from '../hooks/use-generation-usage';
 import { generateFreeNpc } from '../lib/generate-free-npc';
 
+// ============================================================================
+// GraphQL
+// ============================================================================
+
 const GENERATE_NPC_MUTATION = `
-  mutation GenerateNpc($race: String, $occupation: String, $context: String, $includeSecret: Boolean!, $includeBackground: Boolean!, $useFastMode: Boolean!) {
+  mutation GenerateNpc($gender: String, $race: String, $occupation: String, $context: String, $includeSecret: Boolean!, $includeBackground: Boolean!, $useFastMode: Boolean!) {
     generateNpc(
+      gender: $gender
       race: $race
       occupation: $occupation
       context: $context
@@ -43,19 +52,39 @@ const GENERATE_NPC_MUTATION = `
   }
 `;
 
+// ============================================================================
+// Default Values
+// ============================================================================
+
+const DEFAULT_FORM_VALUES: NpcFormValues = {
+  gender: '',
+  race: '',
+  occupation: '',
+  context: '',
+  includeSecret: false,
+  includeBackground: false,
+};
+
+// ============================================================================
+// Page Component
+// ============================================================================
+
 const NpcGeneratorPage: NextPage = () => {
   const { isLoading } = useUser();
-  const [race, setRace] = useState<string>('');
-  const [occupation, setOccupation] = useState<string>('');
-  const [context, setContext] = useState<string>('');
-  const [includeSecret, setIncludeSecret] = useState<boolean>(false);
-  const [includeBackground, setIncludeBackground] = useState<boolean>(false);
+
+  // Form state
+  const [formValues, setFormValues] =
+    useState<NpcFormValues>(DEFAULT_FORM_VALUES);
+  const [useAiEnhanced, setUseAiEnhanced] = useState(true);
+  const [useFastMode, setUseFastMode] = useState(true);
+
+  // UI state
   const [npc, setNpc] = useState<NpcType | null>(null);
-  const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [useAiEnhanced, setUseAiEnhanced] = useState<boolean>(true);
-  const [useFastMode, setUseFastMode] = useState<boolean>(true);
-  const [isFormCollapsed, setIsFormCollapsed] = useState<boolean>(false);
+  const [isFormCollapsed, setIsFormCollapsed] = useState(false);
+
+  // Hooks
   const { history, addEntry, removeEntry, clearHistory } = useNpcHistory();
   const {
     remainingUses,
@@ -66,35 +95,40 @@ const NpcGeneratorPage: NextPage = () => {
     isLoading: isLoadingUsage,
   } = useGenerationUsage();
 
+  // Disable AI mode if no uses available
   useEffect(() => {
     if (!hasAvailableUses) {
       setUseAiEnhanced(false);
     }
   }, [hasAvailableUses]);
 
-  if (isLoading || isLoadingUsage) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-base-100">
-        <div className="flex flex-col items-center gap-4 fade-in">
-          <span className="loading loading-spinner loading-lg text-primary"></span>
-          <p className="text-base-content opacity-60 animate-pulse">
-            Loading NPC generator...
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // Derived state
+  const aiMode: AiModeConfig = {
+    enabled: useAiEnhanced,
+    fastMode: useFastMode,
+    remainingUses,
+    hasAvailableUses,
+    hasRequestedMoreUses,
+  };
 
-  function handleSelect(entry: NpcGenerationEntry) {
-    setRace(entry.race);
-    setOccupation(entry.occupation);
-    setContext(entry.context);
-    setIncludeSecret(entry.includeSecret);
-    setIncludeBackground(entry.includeBackground);
+  // Handlers
+  const handleFormChange = useCallback((updates: Partial<NpcFormValues>) => {
+    setFormValues((prev) => ({ ...prev, ...updates }));
+  }, []);
+
+  const handleHistorySelect = useCallback((entry: NpcGenerationEntry) => {
+    setFormValues({
+      gender: entry.gender || '',
+      race: entry.race,
+      occupation: entry.occupation,
+      context: entry.context,
+      includeSecret: entry.includeSecret,
+      includeBackground: entry.includeBackground,
+    });
     setNpc(entry.npc);
     setError(null);
     setIsFormCollapsed(false);
-  }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,9 +136,19 @@ const NpcGeneratorPage: NextPage = () => {
     setError(null);
     setNpc(null);
 
+    const {
+      gender,
+      race,
+      occupation,
+      context,
+      includeSecret,
+      includeBackground,
+    } = formValues;
+
     const isUsingAiFeatures =
       useAiEnhanced &&
-      (race.trim().length > 0 ||
+      (gender.trim().length > 0 ||
+        race.trim().length > 0 ||
         occupation.trim().length > 0 ||
         context.trim().length > 0 ||
         includeSecret ||
@@ -114,24 +158,18 @@ const NpcGeneratorPage: NextPage = () => {
       let generatedNpc: NpcType;
 
       if (useAiEnhanced) {
-        const actualRace = race;
-        const actualOccupation = occupation;
-        const actualContext = context;
-        const actualIncludeSecret = includeSecret;
-        const actualIncludeBackground = includeBackground;
-
         const data = await asyncFetch<{ generateNpc: NpcType }>(
           GENERATE_NPC_MUTATION,
           {
-            race: actualRace || null,
-            occupation: actualOccupation || null,
-            context: actualContext || null,
-            includeSecret: actualIncludeSecret,
-            includeBackground: actualIncludeBackground,
+            gender: gender || null,
+            race: race || null,
+            occupation: occupation || null,
+            context: context || null,
+            includeSecret,
+            includeBackground,
             useFastMode,
           },
         );
-
         generatedNpc = data.generateNpc;
 
         if (isUsingAiFeatures) {
@@ -148,9 +186,11 @@ const NpcGeneratorPage: NextPage = () => {
 
       setNpc(generatedNpc);
 
-      // Track NPC generated event
+      // Analytics
       posthog.capture('npc_generated', {
         use_ai_enhanced: useAiEnhanced,
+        use_fast_mode: useFastMode,
+        has_gender: !!gender,
         has_race: !!race,
         has_occupation: !!occupation,
         has_context: !!context,
@@ -160,6 +200,7 @@ const NpcGeneratorPage: NextPage = () => {
       });
 
       addEntry({
+        gender: useAiEnhanced ? gender : '',
         race: useAiEnhanced ? race : '',
         occupation: useAiEnhanced ? occupation : '',
         context: useAiEnhanced ? context : '',
@@ -169,19 +210,35 @@ const NpcGeneratorPage: NextPage = () => {
       });
       setIsFormCollapsed(true);
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message || 'Failed to generate NPC.');
-        posthog.captureException(err);
-      } else {
-        setError('An unknown error occurred.');
-      }
+      const message =
+        err instanceof Error ? err.message : 'An unknown error occurred.';
+      setError(message || 'Failed to generate NPC.');
+      if (err instanceof Error) posthog.captureException(err);
     }
     setIsGenerating(false);
   };
 
+  // Loading state
+  if (isLoading || isLoadingUsage) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-base-100">
+        <div className="flex flex-col items-center gap-4 fade-in">
+          <span className="loading loading-spinner loading-lg text-primary" />
+          <p className="text-base-content opacity-60 animate-pulse">
+            Loading NPC generator...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Collapsed form summary
+  const formSummary = `${formValues.race || 'Random'} ${formValues.occupation || 'Random'}${formValues.context ? ` • ${formValues.context}` : ''}${formValues.includeSecret ? ' • Secret' : ''}${formValues.includeBackground ? ' • Background' : ''}`;
+
   return (
     <div className="min-h-screen h-full bg-base-200/30 px-4 py-8 md:px-8 lg:px-12">
       <div className="max-w-6xl mx-auto space-y-6">
+        {/* Beta Banner */}
         <div className="alert alert-info">
           <div className="flex-1">
             <p>
@@ -197,6 +254,7 @@ const NpcGeneratorPage: NextPage = () => {
           </div>
         </div>
 
+        {/* Form Section */}
         <div className="relative">
           {npc && !isGenerating && (
             <button
@@ -213,57 +271,46 @@ const NpcGeneratorPage: NextPage = () => {
           )}
 
           <div
-            className={`transition-all duration-300 ${isFormCollapsed ? 'max-h-0 overflow-hidden opacity-0' : 'max-h-[2000px] opacity-100'}`}
+            className={`transition-all duration-300 ${
+              isFormCollapsed
+                ? 'max-h-0 overflow-hidden opacity-0'
+                : 'max-h-[2000px] opacity-100'
+            }`}
           >
             <NpcGeneratorForm
-              race={race}
-              setRace={setRace}
-              occupation={occupation}
-              setOccupation={setOccupation}
-              context={context}
-              setContext={setContext}
-              includeSecret={includeSecret}
-              setIncludeSecret={setIncludeSecret}
-              includeBackground={includeBackground}
-              setIncludeBackground={setIncludeBackground}
-              isLoading={isGenerating}
-              handleSubmit={handleSubmit}
-              error={error}
-              useAiEnhanced={useAiEnhanced}
-              setUseAiEnhanced={setUseAiEnhanced}
-              useFastMode={useFastMode}
-              setUseFastMode={setUseFastMode}
-              remainingAiUses={remainingUses}
-              hasAvailableAiUses={hasAvailableUses}
-              hasRequestedMoreUses={hasRequestedMoreUses}
+              values={formValues}
+              onChange={handleFormChange}
+              aiMode={aiMode}
+              onAiModeChange={setUseAiEnhanced}
+              onFastModeChange={setUseFastMode}
               onRequestMoreUses={requestMoreUses}
+              isLoading={isGenerating}
+              error={error}
+              onSubmit={handleSubmit}
             />
           </div>
 
           {isFormCollapsed && npc && (
             <div className="card bg-base-100 shadow-lg">
               <div className="card-body py-3 px-6">
-                <p className="text-sm text-base-content/70">
-                  {race || 'Random'} {occupation || 'Random'}
-                  {context && ` • ${context}`}
-                  {includeSecret && ' • Secret'}
-                  {includeBackground && ' • Background'}
-                </p>
+                <p className="text-sm text-base-content/70">{formSummary}</p>
               </div>
             </div>
           )}
         </div>
 
+        {/* NPC Display */}
         {(npc || isGenerating) && (
           <div className="w-full">
             <NpcDisplay npc={npc} isGenerating={isGenerating} />
           </div>
         )}
 
+        {/* History */}
         <div className="w-full">
           <NpcHistory
             history={history}
-            onSelect={handleSelect}
+            onSelect={handleHistorySelect}
             onDelete={removeEntry}
             onClear={clearHistory}
           />

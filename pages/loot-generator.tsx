@@ -1,5 +1,5 @@
 import { NextPage } from 'next';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
 import posthog from 'posthog-js';
@@ -8,8 +8,11 @@ import {
   LootDisplay,
   LootGeneratorForm,
   LootItemType,
-  LootQuality,
 } from '../components/loot';
+import type {
+  AiModeConfig,
+  LootFormValues,
+} from '../components/loot/LootGeneratorForm';
 import {
   GenerationEntry,
   useLootHistory,
@@ -18,6 +21,10 @@ import LootHistory from '../components/loot/LootHistory';
 import { asyncFetch } from '../data/graphql/graphql-fetcher';
 import { useGenerationUsage } from '../hooks/use-generation-usage';
 import { generateFreeLoot } from '../lib/generate-free-loot';
+
+// ============================================================================
+// GraphQL
+// ============================================================================
 
 const GENERATE_LOOT_MUTATION = `
   mutation GenerateLoot($partyLevel: Int!, $srdItemCount: Int!, $randomItemCount: Int!, $context: String, $lootQuality: String, $includeEffects: Boolean) {
@@ -41,19 +48,38 @@ const GENERATE_LOOT_MUTATION = `
   }
 `;
 
+// ============================================================================
+// Default Values
+// ============================================================================
+
+const DEFAULT_FORM_VALUES: LootFormValues = {
+  partyLevel: 3,
+  srdItemCount: 4,
+  randomItemCount: 3,
+  context: '',
+  lootQuality: 'standard',
+  includeEffects: true,
+};
+
+// ============================================================================
+// Page Component
+// ============================================================================
+
 const LootGeneratorPage: NextPage = () => {
   const { isLoading } = useUser();
-  const [partyLevel, setPartyLevel] = useState<number>(3);
-  const [srdItemCount, setSrdItemCount] = useState<number>(4);
-  const [randomItemCount, setRandomItemCount] = useState<number>(3);
-  const [context, setContext] = useState<string>('');
-  const [lootQuality, setLootQuality] = useState<LootQuality>('standard');
-  const [includeEffects, setIncludeEffects] = useState<boolean>(true);
+
+  // Form state
+  const [formValues, setFormValues] =
+    useState<LootFormValues>(DEFAULT_FORM_VALUES);
+  const [useAiEnhanced, setUseAiEnhanced] = useState(true);
+
+  // UI state
   const [loot, setLoot] = useState<LootItemType[] | null>(null);
-  const [isGenerating, setIsGenerating] = useState<boolean>(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [useAiEnhanced, setUseAiEnhanced] = useState<boolean>(true);
-  const [isFormCollapsed, setIsFormCollapsed] = useState<boolean>(false);
+  const [isFormCollapsed, setIsFormCollapsed] = useState(false);
+
+  // Hooks
   const { history, addEntry, removeEntry, clearHistory } = useLootHistory();
   const {
     remainingUses,
@@ -64,40 +90,54 @@ const LootGeneratorPage: NextPage = () => {
     isLoading: isLoadingUsage,
   } = useGenerationUsage();
 
+  // Disable AI mode if no uses available
   useEffect(() => {
     if (!hasAvailableUses) {
       setUseAiEnhanced(false);
     }
   }, [hasAvailableUses]);
 
-  if (isLoading || isLoadingUsage) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-base-100">
-        <div className="flex flex-col items-center gap-4 fade-in">
-          <span className="loading loading-spinner loading-lg text-primary"></span>
-          <p className="text-base-content opacity-60 animate-pulse">
-            Loading loot generator...
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // Derived state
+  const aiMode: AiModeConfig = {
+    enabled: useAiEnhanced,
+    remainingUses,
+    hasAvailableUses,
+    hasRequestedMoreUses,
+  };
 
-  function handleSelect(entry: GenerationEntry) {
-    setPartyLevel(entry.partyLevel);
-    setSrdItemCount(entry.srdItemCount);
-    setRandomItemCount(entry.randomItemCount);
-    setContext(entry.context);
+  // Handlers
+  const handleFormChange = useCallback((updates: Partial<LootFormValues>) => {
+    setFormValues((prev) => ({ ...prev, ...updates }));
+  }, []);
+
+  const handleHistorySelect = useCallback((entry: GenerationEntry) => {
+    setFormValues({
+      partyLevel: entry.partyLevel,
+      srdItemCount: entry.srdItemCount,
+      randomItemCount: entry.randomItemCount,
+      context: entry.context,
+      lootQuality: 'standard', // History doesn't store this, use default
+      includeEffects: true, // History doesn't store this, use default
+    });
     setLoot(entry.loot);
     setError(null);
     setIsFormCollapsed(false);
-  }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsGenerating(true);
     setError(null);
     setLoot(null);
+
+    const {
+      partyLevel,
+      srdItemCount,
+      randomItemCount,
+      context,
+      lootQuality,
+      includeEffects,
+    } = formValues;
 
     const isUsingAiFeatures =
       useAiEnhanced && (randomItemCount > 0 || context.trim().length > 0);
@@ -106,21 +146,17 @@ const LootGeneratorPage: NextPage = () => {
       let generatedLoot: LootItemType[];
 
       if (useAiEnhanced) {
-        const actualRandomItemCount = randomItemCount;
-        const actualContext = context;
-
         const data = await asyncFetch<{ generateLoot: LootItemType[] }>(
           GENERATE_LOOT_MUTATION,
           {
             partyLevel,
             srdItemCount,
-            randomItemCount: actualRandomItemCount,
-            context: actualContext,
-            lootQuality: lootQuality,
-            includeEffects: includeEffects,
+            randomItemCount,
+            context,
+            lootQuality,
+            includeEffects,
           },
         );
-
         generatedLoot = data.generateLoot;
 
         if (isUsingAiFeatures) {
@@ -132,7 +168,7 @@ const LootGeneratorPage: NextPage = () => {
 
       setLoot(generatedLoot);
 
-      // Track loot generated event
+      // Analytics
       posthog.capture('loot_generated', {
         use_ai_enhanced: useAiEnhanced,
         party_level: partyLevel,
@@ -153,19 +189,35 @@ const LootGeneratorPage: NextPage = () => {
       });
       setIsFormCollapsed(true);
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message || 'Failed to generate loot.');
-        posthog.captureException(err);
-      } else {
-        setError('An unknown error occurred.');
-      }
+      const message =
+        err instanceof Error ? err.message : 'An unknown error occurred.';
+      setError(message || 'Failed to generate loot.');
+      if (err instanceof Error) posthog.captureException(err);
     }
     setIsGenerating(false);
   };
 
+  // Loading state
+  if (isLoading || isLoadingUsage) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-base-100">
+        <div className="flex flex-col items-center gap-4 fade-in">
+          <span className="loading loading-spinner loading-lg text-primary" />
+          <p className="text-base-content opacity-60 animate-pulse">
+            Loading loot generator...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Collapsed form summary
+  const formSummary = `Level ${formValues.partyLevel} • ${formValues.srdItemCount} Official + ${formValues.randomItemCount} AI Items${formValues.context ? ` • ${formValues.context}` : ''}`;
+
   return (
     <div className="min-h-screen h-full bg-base-200/30 px-4 py-8 md:px-8 lg:px-12">
       <div className="max-w-6xl mx-auto space-y-6">
+        {/* Beta Banner */}
         <div className="alert alert-info">
           <div className="flex-1">
             <p>
@@ -181,6 +233,7 @@ const LootGeneratorPage: NextPage = () => {
           </div>
         </div>
 
+        {/* Form Section */}
         <div className="relative">
           {loot && !isGenerating && (
             <button
@@ -197,60 +250,49 @@ const LootGeneratorPage: NextPage = () => {
           )}
 
           <div
-            className={`transition-all duration-300 ${isFormCollapsed ? 'max-h-0 overflow-hidden opacity-0' : 'max-h-[2000px] opacity-100'}`}
+            className={`transition-all duration-300 ${
+              isFormCollapsed
+                ? 'max-h-0 overflow-hidden opacity-0'
+                : 'max-h-[2000px] opacity-100'
+            }`}
           >
             <LootGeneratorForm
-              partyLevel={partyLevel}
-              setPartyLevel={setPartyLevel}
-              srdItemCount={srdItemCount}
-              setSrdItemCount={setSrdItemCount}
-              randomItemCount={randomItemCount}
-              setRandomItemCount={setRandomItemCount}
-              context={context}
-              setContext={setContext}
-              lootQuality={lootQuality}
-              setLootQuality={setLootQuality}
-              includeEffects={includeEffects}
-              setIncludeEffects={setIncludeEffects}
-              isLoading={isGenerating}
-              handleSubmit={handleSubmit}
-              error={error}
-              useAiEnhanced={useAiEnhanced}
-              setUseAiEnhanced={setUseAiEnhanced}
-              remainingAiUses={remainingUses}
-              hasAvailableAiUses={hasAvailableUses}
-              hasRequestedMoreUses={hasRequestedMoreUses}
+              values={formValues}
+              onChange={handleFormChange}
+              aiMode={aiMode}
+              onAiModeChange={setUseAiEnhanced}
               onRequestMoreUses={requestMoreUses}
+              isLoading={isGenerating}
+              error={error}
+              onSubmit={handleSubmit}
             />
           </div>
 
           {isFormCollapsed && loot && (
             <div className="card bg-base-100 shadow-lg">
               <div className="card-body py-3 px-6">
-                <p className="text-sm text-base-content/70">
-                  Level {partyLevel} • {srdItemCount} Official +{' '}
-                  {randomItemCount} AI Items
-                  {context && ` • ${context}`}
-                </p>
+                <p className="text-sm text-base-content/70">{formSummary}</p>
               </div>
             </div>
           )}
         </div>
 
+        {/* Loot Display */}
         {(loot || isGenerating) && (
           <div className="w-full">
             <LootDisplay
               loot={loot}
-              context={context}
+              context={formValues.context}
               isGenerating={isGenerating}
             />
           </div>
         )}
 
+        {/* History */}
         <div className="w-full">
           <LootHistory
             history={history}
-            onSelect={handleSelect}
+            onSelect={handleHistorySelect}
             onDelete={removeEntry}
             onClear={clearHistory}
           />

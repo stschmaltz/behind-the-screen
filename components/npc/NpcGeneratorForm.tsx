@@ -3,72 +3,200 @@ import { Button } from '../ui/Button';
 import { Combobox } from '../ui/Combobox';
 import { DiceIcon, ErrorIcon, UserIcon } from '../icons';
 import {
+  GENDER_OPTIONS,
   OCCUPATION_OPTIONS,
   RACE_OPTIONS,
   SETTING_OPTIONS,
 } from '../../data/npc-data';
 
-interface NpcGeneratorFormProps {
+// ============================================================================
+// Types
+// ============================================================================
+
+export interface NpcFormValues {
+  gender: string;
   race: string;
-  setRace: (value: string) => void;
   occupation: string;
-  setOccupation: (value: string) => void;
   context: string;
-  setContext: (value: string) => void;
   includeSecret: boolean;
-  setIncludeSecret: (value: boolean) => void;
   includeBackground: boolean;
-  setIncludeBackground: (value: boolean) => void;
-  isLoading: boolean;
-  handleSubmit: (e: React.FormEvent) => Promise<void>;
-  error: string | null;
-  useAiEnhanced: boolean;
-  setUseAiEnhanced: (value: boolean) => void;
-  remainingAiUses: number;
-  hasAvailableAiUses: boolean;
-  hasRequestedMoreUses: boolean;
-  onRequestMoreUses: () => void;
 }
 
-const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
-  race,
-  setRace,
-  occupation,
-  setOccupation,
-  context,
-  setContext,
-  includeSecret,
-  setIncludeSecret,
-  includeBackground,
-  setIncludeBackground,
-  isLoading,
-  handleSubmit,
-  error,
-  useAiEnhanced,
-  setUseAiEnhanced,
-  remainingAiUses,
-  hasAvailableAiUses,
-  hasRequestedMoreUses,
+export interface AiModeConfig {
+  enabled: boolean;
+  fastMode: boolean;
+  remainingUses: number;
+  hasAvailableUses: boolean;
+  hasRequestedMoreUses: boolean;
+}
+
+interface NpcGeneratorFormProps {
+  values: NpcFormValues;
+  onChange: (values: Partial<NpcFormValues>) => void;
+  aiMode: AiModeConfig;
+  onAiModeChange: (enabled: boolean) => void;
+  onFastModeChange: (fastMode: boolean) => void;
+  onRequestMoreUses: () => void;
+  isLoading: boolean;
+  error: string | null;
+  onSubmit: (e: React.FormEvent) => Promise<void>;
+}
+
+// ============================================================================
+// Sub-components
+// ============================================================================
+
+interface RandomizeButtonProps {
+  onClick: () => void;
+  disabled: boolean;
+  title: string;
+}
+
+const RandomizeButton: React.FC<RandomizeButtonProps> = ({
+  onClick,
+  disabled,
+  title,
+}) => (
+  <button
+    type="button"
+    onClick={onClick}
+    disabled={disabled}
+    className="btn btn-sm btn-square btn-outline"
+    title={title}
+  >
+    <DiceIcon className="w-4 h-4" />
+  </button>
+);
+
+interface CheckboxFieldProps {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  disabled: boolean;
+  label: string;
+}
+
+const CheckboxField: React.FC<CheckboxFieldProps> = ({
+  checked,
+  onChange,
+  disabled,
+  label,
+}) => (
+  <div className="form-control">
+    <label className="label cursor-pointer justify-start gap-3 py-1">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="checkbox checkbox-sm checkbox-primary"
+        disabled={disabled}
+      />
+      <span className="label-text text-sm">{label}</span>
+    </label>
+  </div>
+);
+
+interface AiModeToggleProps {
+  aiMode: AiModeConfig;
+  onAiModeChange: (enabled: boolean) => void;
+  onFastModeChange: (fastMode: boolean) => void;
+  onRequestMoreUses: () => void;
+  disabled: boolean;
+}
+
+const AiModeToggle: React.FC<AiModeToggleProps> = ({
+  aiMode,
+  onAiModeChange,
+  onFastModeChange,
   onRequestMoreUses,
+  disabled,
 }) => {
-  const randomizeRace = () => {
-    if (!isLoading) {
-      const randomIndex = Math.floor(Math.random() * RACE_OPTIONS.length);
-      setRace(RACE_OPTIONS[randomIndex].value);
-    }
-  };
+  const usageText = aiMode.hasAvailableUses
+    ? aiMode.remainingUses > 1000
+      ? 'Unlimited'
+      : `${aiMode.remainingUses}/25 remaining (7-day window)`
+    : 'No generations remaining';
 
-  const randomizeOccupation = () => {
-    if (!isLoading) {
-      const randomIndex = Math.floor(Math.random() * OCCUPATION_OPTIONS.length);
-      setOccupation(OCCUPATION_OPTIONS[randomIndex].value);
-    }
-  };
+  return (
+    <div className="form-control">
+      <div className="flex flex-wrap items-start gap-6">
+        {/* AI Enhanced Toggle */}
+        <label className="label cursor-pointer justify-start gap-3 py-1">
+          <input
+            type="checkbox"
+            checked={aiMode.enabled}
+            onChange={(e) => onAiModeChange(e.target.checked)}
+            className="toggle toggle-primary toggle-sm"
+            disabled={disabled || !aiMode.hasAvailableUses}
+          />
+          <div className="flex flex-col">
+            <span className="label-text font-semibold text-sm">
+              AI Enhanced Mode
+            </span>
+            <span className="label-text-alt text-xs">{usageText}</span>
+            {!aiMode.hasAvailableUses && !aiMode.hasRequestedMoreUses && (
+              <button
+                type="button"
+                onClick={onRequestMoreUses}
+                className="btn btn-xs btn-ghost mt-1 self-start p-0 h-auto min-h-0"
+              >
+                Request More Uses
+              </button>
+            )}
+            {aiMode.hasRequestedMoreUses && (
+              <span className="text-xs text-success mt-1">
+                ✓ Request submitted
+              </span>
+            )}
+          </div>
+        </label>
 
-  const randomizeContext = () => {
+        {/* Fast/Pro Mode Toggle - only shown when AI is enabled */}
+        {aiMode.enabled && (
+          <label className="label cursor-pointer justify-start gap-3 py-1 min-w-[160px]">
+            <input
+              type="checkbox"
+              checked={!aiMode.fastMode}
+              onChange={(e) => onFastModeChange(!e.target.checked)}
+              className="toggle toggle-secondary toggle-sm"
+              disabled={disabled}
+            />
+            <div className="flex flex-col">
+              <span className="label-text font-semibold text-sm">
+                {aiMode.fastMode ? 'Fast' : 'Pro'}
+              </span>
+              <span className="label-text-alt text-xs">
+                {aiMode.fastMode ? 'Quick generation' : 'Higher quality'}
+              </span>
+            </div>
+          </label>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ============================================================================
+// Main Component
+// ============================================================================
+
+const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
+  values,
+  onChange,
+  aiMode,
+  onAiModeChange,
+  onFastModeChange,
+  onRequestMoreUses,
+  isLoading,
+  error,
+  onSubmit,
+}) => {
+  const randomize = (
+    field: keyof NpcFormValues,
+    options: { value: string }[],
+  ) => {
     if (!isLoading) {
-      const randomIndex = Math.floor(Math.random() * SETTING_OPTIONS.length);
-      setContext(SETTING_OPTIONS[randomIndex].value);
+      const randomIndex = Math.floor(Math.random() * options.length);
+      onChange({ [field]: options[randomIndex].value });
     }
   };
 
@@ -99,144 +227,115 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
           </span>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-3">
+        <form onSubmit={onSubmit} className="space-y-3">
           <div className="grid grid-cols-1 gap-3">
-            <div className="flex gap-2 items-end">
-              <div className="flex-1">
-                <Combobox
-                  options={RACE_OPTIONS}
-                  value={race}
-                  onChange={setRace}
-                  placeholder="Type or select a race..."
-                  label="Race (Optional)"
+            {/* Gender and Race Fields - side by side */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Race Field */}
+              <div className="flex gap-2 items-end">
+                <div className="flex-1">
+                  <Combobox
+                    options={RACE_OPTIONS}
+                    value={values.race}
+                    onChange={(val) => onChange({ race: val })}
+                    placeholder="Type or select a race..."
+                    label="Race (Optional)"
+                    disabled={isLoading}
+                    size="sm"
+                  />
+                </div>
+                <RandomizeButton
+                  onClick={() => randomize('race', RACE_OPTIONS)}
                   disabled={isLoading}
-                  size="sm"
+                  title="Randomize Race"
                 />
               </div>
-              <button
-                type="button"
-                onClick={randomizeRace}
-                disabled={isLoading}
-                className="btn btn-sm btn-square btn-outline"
-                title="Randomize Race"
-              >
-                <DiceIcon className="w-4 h-4" />
-              </button>
+              {/* Gender Field */}
+              <div className="flex gap-2 items-end">
+                <div className="flex-1">
+                  <Combobox
+                    options={GENDER_OPTIONS}
+                    value={values.gender}
+                    onChange={(val) => onChange({ gender: val })}
+                    placeholder="Any gender..."
+                    label="Gender (Optional)"
+                    disabled={isLoading}
+                    size="sm"
+                  />
+                </div>
+                <RandomizeButton
+                  onClick={() => randomize('gender', GENDER_OPTIONS)}
+                  disabled={isLoading}
+                  title="Randomize Gender"
+                />
+              </div>
             </div>
 
+            {/* Occupation Field */}
             <div className="flex gap-2 items-end">
               <div className="flex-1">
                 <Combobox
                   options={OCCUPATION_OPTIONS}
-                  value={occupation}
-                  onChange={setOccupation}
+                  value={values.occupation}
+                  onChange={(val) => onChange({ occupation: val })}
                   placeholder="Type or select an occupation..."
                   label="Occupation (Optional)"
                   disabled={isLoading}
                   size="sm"
                 />
               </div>
-              <button
-                type="button"
-                onClick={randomizeOccupation}
+              <RandomizeButton
+                onClick={() => randomize('occupation', OCCUPATION_OPTIONS)}
                 disabled={isLoading}
-                className="btn btn-sm btn-square btn-outline"
                 title="Randomize Occupation"
-              >
-                <DiceIcon className="w-4 h-4" />
-              </button>
+              />
             </div>
 
+            {/* Context Field */}
             <div className="flex gap-2 items-end">
               <div className="flex-1">
                 <Combobox
                   options={SETTING_OPTIONS}
-                  value={context}
-                  onChange={setContext}
+                  value={values.context}
+                  onChange={(val) => onChange({ context: val })}
                   placeholder="Type or select a setting..."
                   label="Setting/Context (Optional)"
                   disabled={isLoading}
                   size="sm"
                 />
               </div>
-              <button
-                type="button"
-                onClick={randomizeContext}
+              <RandomizeButton
+                onClick={() => randomize('context', SETTING_OPTIONS)}
                 disabled={isLoading}
-                className="btn btn-sm btn-square btn-outline"
                 title="Randomize Setting"
-              >
-                <DiceIcon className="w-4 h-4" />
-              </button>
+              />
             </div>
 
-            <div className="form-control">
-              <label className="label cursor-pointer justify-start gap-3 py-1">
-                <input
-                  type="checkbox"
-                  checked={includeSecret}
-                  onChange={(e) => setIncludeSecret(e.target.checked)}
-                  className="checkbox checkbox-sm checkbox-primary"
-                  disabled={isLoading}
-                />
-                <span className="label-text text-sm">Include Secret</span>
-              </label>
-            </div>
+            {/* Optional Fields */}
+            <CheckboxField
+              checked={values.includeSecret}
+              onChange={(checked) => onChange({ includeSecret: checked })}
+              disabled={isLoading}
+              label="Include Secret"
+            />
 
-            <div className="form-control">
-              <label className="label cursor-pointer justify-start gap-3 py-1">
-                <input
-                  type="checkbox"
-                  checked={includeBackground}
-                  onChange={(e) => setIncludeBackground(e.target.checked)}
-                  className="checkbox checkbox-sm checkbox-primary"
-                  disabled={isLoading}
-                />
-                <span className="label-text text-sm">
-                  Include Background Story
-                </span>
-              </label>
-            </div>
+            <CheckboxField
+              checked={values.includeBackground}
+              onChange={(checked) => onChange({ includeBackground: checked })}
+              disabled={isLoading}
+              label="Include Background Story"
+            />
 
-            <div className="divider my-2"></div>
+            <div className="divider my-2" />
 
-            <div className="form-control">
-              <label className="label cursor-pointer justify-start gap-3 py-1">
-                <input
-                  type="checkbox"
-                  checked={useAiEnhanced}
-                  onChange={(e) => setUseAiEnhanced(e.target.checked)}
-                  className="toggle toggle-primary toggle-sm"
-                  disabled={isLoading || !hasAvailableAiUses}
-                />
-                <div className="flex flex-col flex-1">
-                  <span className="label-text font-semibold text-sm">
-                    AI Enhanced Mode
-                  </span>
-                  <span className="label-text-alt text-xs">
-                    {hasAvailableAiUses
-                      ? remainingAiUses > 1000
-                        ? 'Unlimited'
-                        : `${remainingAiUses}/25 remaining (7-day window)`
-                      : 'No generations remaining'}
-                  </span>
-                  {!hasAvailableAiUses && !hasRequestedMoreUses && (
-                    <button
-                      type="button"
-                      onClick={onRequestMoreUses}
-                      className="btn btn-xs btn-ghost mt-1 self-start p-0 h-auto min-h-0"
-                    >
-                      Request More Uses
-                    </button>
-                  )}
-                  {hasRequestedMoreUses && (
-                    <span className="text-xs text-success mt-1">
-                      ✓ Request submitted
-                    </span>
-                  )}
-                </div>
-              </label>
-            </div>
+            {/* AI Mode Toggle */}
+            <AiModeToggle
+              aiMode={aiMode}
+              onAiModeChange={onAiModeChange}
+              onFastModeChange={onFastModeChange}
+              onRequestMoreUses={onRequestMoreUses}
+              disabled={isLoading}
+            />
           </div>
 
           <div className="mt-4">

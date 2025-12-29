@@ -1,3 +1,9 @@
+export const GENDER_OPTIONS = [
+  { value: 'Male', label: 'Male' },
+  { value: 'Female', label: 'Female' },
+  { value: 'Non-binary', label: 'Non-binary' },
+];
+
 export const RACE_OPTIONS = [
   { value: 'Human', label: 'Human' },
   { value: 'Elf', label: 'Elf' },

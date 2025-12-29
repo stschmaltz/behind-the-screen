@@ -3,6 +3,7 @@ import type { NpcType } from '../types/npc';
 
 export interface NpcGenerationEntry {
   timestamp: number;
+  gender?: string;
   race: string;
   occupation: string;
   context: string;
