@@ -55,9 +55,16 @@ async function syncAuth0LoginData() {
         include_totals: false,
       });
 
-      const auth0Users: Auth0User[] = Array.isArray(response)
-        ? response
-        : response.data || [];
+      const rawUsers = Array.isArray(response) ? response : response.data || [];
+      const auth0Users: Auth0User[] = rawUsers.map((user) => ({
+        user_id: user.user_id || '',
+        email: user.email || '',
+        name: user.name,
+        picture: user.picture,
+        logins_count: user.logins_count,
+        last_login:
+          typeof user.last_login === 'string' ? user.last_login : undefined,
+      }));
 
       if (!auth0Users || auth0Users.length === 0) {
         hasMore = false;

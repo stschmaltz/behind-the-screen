@@ -175,7 +175,7 @@ const LootGeneratorPage: NextPage = () => {
                 href="/feedback"
                 className="text-white underline hover:text-base-100 font-semibold ml-1"
               >
-                Let us know!
+                Let me know!
               </Link>
             </p>
           </div>
