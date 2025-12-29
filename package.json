@@ -14,7 +14,9 @@
     "tsc": "tsc",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "sync-auth0-logins": "npx tsx --env-file=.env.local scripts/sync-auth0-login-data.ts",
+    "sync-auth0-logins:dry-run": "npx tsx --env-file=.env.local scripts/sync-auth0-login-data.ts --dry-run"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^3.5.0",
