@@ -73,26 +73,26 @@ You need Node.js 22, a MongoDB database and an Auth0 application.
 
 ## Project structure
 
-| Path                             | Contents                                                            |
-| -------------------------------- | ------------------------------------------------------------------- |
-| `pages/`                         | Routes and the components that belong to a single route             |
-| `pages/api/`                     | `graphql.ts` (the GraphQL endpoint), Auth0 handlers and REST routes |
-| `components/`                    | Shared UI; primitives are in `components/ui/`                       |
-| `hooks/`                         | Data fetching and state logic                                       |
-| `context/`                       | React context providers                                             |
-| `data/graphql/`                  | Schema and resolvers by domain; client operations in `snippets/`    |
-| `data/monsters/`, `data/spells/` | Static SRD data                                                     |
-| `repositories/`                  | MongoDB access, one repository per domain                           |
-| `container/`                     | Inversify bindings for the repositories                             |
-| `lib/`                           | Pure helpers (difficulty maths, logging, caching)                   |
-| `types/`                         | Domain types                                                        |
-| `generated/`                     | GraphQL codegen output                                              |
-| `scripts/`                       | One-off scripts for the monster and spell data                      |
-| `docs/`                          | API, testing and AI usage notes                                     |
+| Path                             | Contents                                                              |
+| -------------------------------- | --------------------------------------------------------------------- |
+| `pages/`                         | Routes and the components that belong to a single route               |
+| `pages/api/`                     | `graphql.ts` (the GraphQL endpoint), Auth0 handlers and REST routes   |
+| `components/`                    | Shared UI; primitives are in `components/ui/`                         |
+| `hooks/`                         | Data fetching and state logic                                         |
+| `context/`                       | React context providers                                               |
+| `data/graphql/`                  | Schema and resolvers by domain; most client operations in `snippets/` |
+| `data/monsters/`, `data/spells/` | Static SRD data                                                       |
+| `repositories/`                  | MongoDB access, one repository per domain                             |
+| `container/`                     | Inversify bindings for the repositories                               |
+| `lib/`                           | Pure helpers (difficulty maths, logging, caching)                     |
+| `types/`                         | Domain types                                                          |
+| `generated/`                     | GraphQL codegen output                                                |
+| `scripts/`                       | One-off scripts for the monster and spell data                        |
+| `docs/`                          | API, testing and AI usage notes                                       |
 
 ## How it fits together
 
-The browser talks to one GraphQL endpoint. A page calls a hook; the hook sends an operation from `data/graphql/snippets/`; the resolver checks the Auth0 session and calls a repository; the repository reads or writes MongoDB, always filtered by the signed-in user.
+The browser talks to one GraphQL endpoint. A page calls a hook; the hook sends an operation from `data/graphql/snippets/`; the resolver checks the Auth0 session and calls a repository; the repository reads or writes MongoDB. Reads and deletes are filtered by the signed-in user. Encounter saves are not yet (see [docs/api.md](docs/api.md)). A few pages define their operation inline instead of in `snippets/`.
 
 An encounter is a single document. Combat state (initiative order, hit points, conditions, current turn and round) is edited in the browser and saved as a whole with the `saveEncounter` mutation.
 

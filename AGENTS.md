@@ -35,7 +35,7 @@ A request flows through these layers, top to bottom:
 | ---------------- | -------------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | Page             | `pages/**`                                                           | Route component. Reads data through hooks.                                 |
 | Hook             | `hooks/**`                                                           | `useQuery` from `hooks/use-async-query.ts`, or `asyncFetch` for mutations. |
-| Operation string | `data/graphql/snippets/*.ts`                                         | The query and mutation documents the client sends.                         |
+| Operation string | `data/graphql/snippets/*.ts`, or inline in a few pages               | The query and mutation documents the client sends.                         |
 | API route        | `pages/api/graphql.ts`                                               | GraphQL Yoga. Builds the context from the Auth0 session.                   |
 | Schema           | `data/graphql/<domain>/*.typedefs.ts`, `*.query.ts`, `*.mutation.ts` | Type definitions and resolvers, assembled in `data/graphql/index.ts`.      |
 | Repository       | `repositories/<domain>/`                                             | All MongoDB access. Bound in `container/inversify.config.ts`.              |
@@ -58,7 +58,7 @@ Touch these in order, or the change will silently not work:
 1. Type definitions in `data/graphql/<domain>/<domain>.typedefs.ts`, including the `input` type if it is a mutation argument.
 2. Resolver in `<domain>.query.ts` or `<domain>.mutation.ts`. Call `isAuthorizedOrThrow(context)` first and pass `context.user._id` to the repository.
 3. Repository method and its interface in `repositories/<domain>/`.
-4. Client operation string in `data/graphql/snippets/<domain>.ts`. A field missing from the snippet is never fetched.
+4. Client operation string. Most are in `data/graphql/snippets/<domain>.ts`, but some are inline in the page that sends them (`pages/loot-generator.tsx`, `pages/npc-generator.tsx`, `pages/admin.tsx`). Find the operation the caller actually sends and update that one. A field missing from it is never fetched.
 5. TypeScript type in `types/`.
 6. A new domain also needs registering in `data/graphql/index.ts`, `container/types.ts` and `container/inversify.config.ts`.
 
@@ -86,13 +86,13 @@ Touch these in order, or the change will silently not work:
 ## Gotchas
 
 - **Every `.tsx` file under `pages/` is a route.** Encounter components are colocated in `pages/encounters/**` and each has a default export, so each is technically reachable by URL. Put new shared components in `components/`.
-- **Auth is enforced in two separate places.** Pages are gated client-side by `components/ProtectedLayout.tsx` using a `PUBLIC_PATHS` list, so a new public page must be added there. Data is gated server-side in each resolver and repository query. A resolver without `isAuthorizedOrThrow` and a `userId` filter is a data leak.
+- **Auth is enforced in two separate places.** Pages are gated client-side by `components/ProtectedLayout.tsx` using a `PUBLIC_PATHS` list, so a new public page must be added there. Data is gated server-side in each resolver and repository query. A resolver without `isAuthorizedOrThrow` and a `userId` filter is a data leak. Existing code has gaps: `EncounterRepository.saveEncounter` matches on `_id` alone, and the `me` query returns a hard-coded placeholder. Do not copy either pattern.
 - **`useQuery` has a 10 second in-memory cache** (`lib/query-cache.ts`). After a mutation, call `refresh` or pass `skipCache`, or the screen shows stale data that the next save can write back.
 - **Memoise `variables` and `transform`** passed to `useQuery`. They are effect dependencies, so a new object on each render refetches in a loop.
 - **GraphQL errors are masked.** The client only ever sees "API request failed". Read the dev server output for the real error.
 - **The pre-commit hook calls `npx.cmd`**, which exists only on Windows. On other systems the hook fails; run lint by hand and say so if you bypass it.
 - **`public/sw.js` and `public/workbox-*.js` are build output** from `next-pwa`. They are tracked by accident; do not edit them or commit changes to them.
-- **Admin pages** (`pages/admin.tsx`, `pages/api/user/*`, `pages/api/feedback/list.ts`, `pages/api/ai-usage/stats.ts`) are gated by the email allowlist in `lib/featureFlags.ts`.
+- **Admin pages** (`pages/admin.tsx`, `pages/api/user/count.ts`, `pages/api/user/list.ts`, `pages/api/feedback/list.ts`, `pages/api/ai-usage/stats.ts`) are gated by the email allowlist in `lib/featureFlags.ts`. `pages/api/user/delete.ts` is not admin-only: any signed-in user can call it to delete their own account.
 - **`.env.local` usually points at the production database.** Treat local writes as production writes. Read freely; create, change or delete data only when asked.
 - **Auth0 login cannot be automated by an agent** because it needs the owner's password. To check a screen in a browser without logging in, render the component on a temporary page with fixture data and delete the page before finishing.
 - `npm run sync-auth0-logins` points at a script that is not in the repository.

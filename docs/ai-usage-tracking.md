@@ -7,7 +7,10 @@ There are two limit implementations in the repository. Only the first is used by
 ## In use: counting saved generations
 
 - Each AI generation is saved to the `npc_generations` or `loot_generations` collection by the `generateNpc` and `generateLoot` resolvers in `data/graphql/generation/`.
-- The `getAiGenerationCount` query (`data/graphql/user-preferences/user-preferences.query.ts`) counts a user's documents in both collections from the last seven days. Exempt users always get 0.
+- The `getAiGenerationCount` query (`data/graphql/user-preferences/user-preferences.query.ts`) returns the number of AI generations from the last seven days. It is not a count of every saved document:
+  - NPC generations: every document in `npc_generations` for the user in that window.
+  - Loot generations: only documents with `randomItemCount > 0`. Loot made purely from SRD items is free and is not counted.
+  - Exempt users: the query returns `-999999` instead of a count, so the client-side check `usageCount < 25` always passes. Treat a negative value as "unlimited", not as a number of generations.
 - `hooks/use-generation-usage.ts` compares that count with `MAX_FREE_AI_GENERATIONS` (25). When none remain, the generator pages switch to free mode.
 - `requestMoreUses` records that a user asked for a higher limit, in their preferences.
 
