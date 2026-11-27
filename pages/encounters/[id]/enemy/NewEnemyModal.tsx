@@ -6,6 +6,7 @@ import AdvancedEnemyForm from './AdvancedEnemyForm';
 import { Button } from '../../../../components/ui/Button';
 import { EncounterCharacter } from '../../../../types/encounters';
 import { useModal } from '../../../../hooks/use-modal';
+import { generateMongoId } from '../../../../lib/mongo';
 
 interface Props {
   onAddCharacter: (
@@ -102,7 +103,7 @@ const NewEnemyModal: React.FC<Props> = ({
     }
 
     onAddCharacter(
-      newEnemy,
+      { ...newEnemy, _id: newEnemy._id || generateMongoId() },
       initiative === '' ? undefined : Number(initiative),
       characterType,
     );

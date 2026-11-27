@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import debounce from 'lodash/debounce';
 import { asyncFetch } from '../../data/graphql/graphql-fetcher';
 import {
@@ -8,7 +8,7 @@ import {
 } from '../../data/graphql/snippets/encounter';
 import { Encounter, NewEncounterTemplate } from '../../types/encounters';
 import { logger } from '../../lib/logger';
-import { showDaisyToast } from '../../lib/daisy-toast';
+import { clearCache } from '../../lib/query-cache';
 
 const DEBOUNCE_DELAY = 500;
 
@@ -111,6 +111,7 @@ const useManageEncounter = () => {
       const mutationInput = buildEncounterMutationInput(encounter, encounterId);
 
       await asyncFetch(saveEncounterMutation, { input: mutationInput });
+      clearCache();
       logger.info('Encounter saved successfully', {
         id: encounterId,
         name: encounter.name,
@@ -126,14 +127,6 @@ const useManageEncounter = () => {
               block: 'start',
             });
           }
-          const card = Array.from(
-            document.querySelectorAll('.encounter-card'),
-          ).find((el) => {
-            const nameEl = el.querySelector('.card-title');
-            return (
-              nameEl && nameEl.textContent?.trim() === encounter.name.trim()
-            );
-          });
         }, 500);
       }
 
@@ -147,23 +140,34 @@ const useManageEncounter = () => {
     }
   };
 
+  const pendingResolvers = useRef<
+    Array<(result: { success: boolean; errors?: string[] }) => void>
+  >([]);
+
   const debouncedSave = useCallback(
     debounce(
       (
         encounter: Encounter | NewEncounterTemplate | any,
-        resolve: (result: { success: boolean; errors?: string[] }) => void,
         options?: { requireAdventure?: boolean },
       ) => {
+        const resolvers = pendingResolvers.current;
+        pendingResolvers.current = [];
+        const resolveAll = (result: { success: boolean; errors?: string[] }) =>
+          resolvers.forEach((resolve) => resolve(result));
+
         setIsSaving(true);
         saveEncounter(encounter, options)
           .then((result) => {
             setIsSaving(false);
-            resolve(result);
+            resolveAll(result);
           })
           .catch((error) => {
             logger.error('Error in debounced save', error);
             setIsSaving(false);
-            resolve({ success: false, errors: ['Failed to save encounter'] });
+            resolveAll({
+              success: false,
+              errors: ['Failed to save encounter'],
+            });
           });
       },
       DEBOUNCE_DELAY,
@@ -181,7 +185,8 @@ const useManageEncounter = () => {
       options?: { requireAdventure?: boolean },
     ): Promise<{ success: boolean; errors?: string[] }> => {
       return new Promise((resolve) => {
-        debouncedSave(encounter, resolve, options);
+        pendingResolvers.current.push(resolve);
+        debouncedSave(encounter, options);
       });
     },
     [debouncedSave],
@@ -189,7 +194,7 @@ const useManageEncounter = () => {
 
   useEffect(() => {
     return () => {
-      debouncedSave.cancel();
+      debouncedSave.flush();
     };
   }, [debouncedSave]);
 
@@ -200,6 +205,7 @@ const useManageEncounter = () => {
       await asyncFetch(deleteEncounterMutation, {
         input: { id: encounterId.toString() },
       });
+      clearCache();
       logger.info('Encounter deleted successfully', { id: encounterId });
       setIsDeleting(false);
       return true;
@@ -220,6 +226,7 @@ const useManageEncounter = () => {
         await asyncFetch(updateEncounterDescriptionMutation, {
           input: { _id: encounterId, description: newDescription },
         });
+        clearCache();
         logger.info('Encounter description updated successfully', {
           id: encounterId,
         });

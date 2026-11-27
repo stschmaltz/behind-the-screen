@@ -6,6 +6,11 @@ import {
 } from '../../types/encounters';
 import { PlayerWithInitiative } from '../../types/player';
 import type { Player } from '../../generated/graphql';
+import {
+  getTurnIndex,
+  getTurnOrder,
+  resolveTurnAfterRosterChange,
+} from '../../lib/encounterUtils';
 
 interface UseTurnManagementResult {
   currentCharacter: InitiativeOrderCharacter;
@@ -26,13 +31,30 @@ export const useEncounterTurnManagement = (
   encounter: Encounter,
   onSave: (encounter: Encounter) => void,
 ): UseTurnManagementResult => {
-  const aliveCharacters = encounter.initiativeOrder.filter(
-    (character) => character.type !== 'enemy' || (character.currentHP ?? 0) > 0,
+  const sortedCharacters = getTurnOrder(encounter.initiativeOrder);
+  const currentTurnIndex = getTurnIndex(
+    encounter.currentTurn,
+    sortedCharacters.length,
   );
+  const currentTurnNumber = currentTurnIndex + 1;
+  const currentRoundNumber = encounter.currentRound ?? 1;
 
-  const sortedCharacters = [...aliveCharacters].sort(
-    (a, b) => (b.initiative ?? 0) - (a.initiative ?? 0),
-  );
+  const saveWithRoster = (
+    changes: Partial<Encounter> & {
+      initiativeOrder: InitiativeOrderCharacter[];
+    },
+  ) => {
+    onSave({
+      ...encounter,
+      ...changes,
+      ...resolveTurnAfterRosterChange(
+        encounter.initiativeOrder,
+        changes.initiativeOrder,
+        encounter.currentTurn,
+        currentRoundNumber,
+      ),
+    });
+  };
 
   const deadCharacters = encounter.initiativeOrder
     .filter(
@@ -52,14 +74,14 @@ export const useEncounterTurnManagement = (
   const handleNextTurn = () => {
     if (sortedCharacters.length === 0) return;
 
-    const isLastTurn = encounter.currentTurn === sortedCharacters.length;
-    const newTurn = isLastTurn ? 1 : encounter.currentTurn + 1;
-    const newRound = isLastTurn ? encounter.currentRound + 1 : encounter.currentRound;
+    const isLastTurn = currentTurnNumber >= sortedCharacters.length;
+    const newTurn = isLastTurn ? 1 : currentTurnNumber + 1;
+    const newRound = isLastTurn ? currentRoundNumber + 1 : currentRoundNumber;
 
     // Track turn advanced event
     posthog.capture('turn_advanced', {
       encounter_id: encounter._id,
-      current_round: encounter.currentRound,
+      current_round: currentRoundNumber,
       new_round: newRound,
       is_new_round: isLastTurn,
       active_character_count: sortedCharacters.length,
@@ -71,16 +93,16 @@ export const useEncounterTurnManagement = (
   const handlePreviousTurn = () => {
     if (sortedCharacters.length === 0) return;
 
-    const isFirstRound = encounter.currentRound === 1;
-    const isFirstTurn = encounter.currentTurn === 1;
+    const isFirstRound = currentRoundNumber <= 1;
+    const isFirstTurn = currentTurnNumber === 1;
     if (isFirstTurn && isFirstRound) return;
 
     const newTurn = isFirstTurn
       ? sortedCharacters.length
-      : encounter.currentTurn - 1;
+      : currentTurnNumber - 1;
     const newRound = isFirstTurn
-      ? Math.max(1, encounter.currentRound - 1)
-      : encounter.currentRound;
+      ? Math.max(1, currentRoundNumber - 1)
+      : currentRoundNumber;
 
     updateEncounter(newTurn, newRound);
   };
@@ -88,8 +110,7 @@ export const useEncounterTurnManagement = (
   const handleUpdateCharacter = (
     updatedCharacter: InitiativeOrderCharacter,
   ) => {
-    onSave({
-      ...encounter,
+    saveWithRoster({
       initiativeOrder: encounter.initiativeOrder.map((char) =>
         char._id === updatedCharacter._id ? updatedCharacter : char,
       ),
@@ -122,8 +143,7 @@ export const useEncounterTurnManagement = (
       updatedNpcs.push(newCharacter);
     }
 
-    onSave({
-      ...encounter,
+    saveWithRoster({
       enemies: updatedEnemies,
       npcs: updatedNpcs,
       initiativeOrder: [...encounter.initiativeOrder, newInitiativeCharacter],
@@ -153,8 +173,7 @@ export const useEncounterTurnManagement = (
         toInitiativeOrderPlayer(player, Number(initiative)),
     );
 
-    onSave({
-      ...encounter,
+    saveWithRoster({
       players: [
         ...encounter.players,
         ...selectedPlayers.map(({ player }) => ({ _id: player._id })),
@@ -165,11 +184,6 @@ export const useEncounterTurnManagement = (
       ],
     });
   };
-
-  let currentTurnIndex = (encounter.currentTurn ?? 1) - 1;
-  if (currentTurnIndex >= sortedCharacters.length) {
-    currentTurnIndex = 0;
-  }
 
   const currentCharacter =
     sortedCharacters.length > 0

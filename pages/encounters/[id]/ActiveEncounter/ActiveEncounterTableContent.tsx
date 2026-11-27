@@ -7,7 +7,6 @@ import { useEncounterContext } from '../../../../context/EncounterContext';
 import { showDaisyToast } from '../../../../lib/daisy-toast';
 import { useEncounterTurnManagement } from '../../../../hooks/encounter/use-encounter-turn-management';
 import { Encounter, EncounterCharacter } from '../../../../types/encounters';
-import { usePopoverContext } from '../../../../context/PopoverContext';
 import { getCurrentCharacter } from '../../../../lib/encounterUtils';
 import NewEnemyModal from '../enemy/NewEnemyModal';
 import AddPlayersModal from '../AddPlayersModal';
@@ -22,7 +21,6 @@ const ActiveEncounterTableContent: React.FC<
   ActiveEncounterTableContentProps
 > = ({ players: _ }) => {
   const { encounter, setEncounter, handleSave } = useEncounterContext();
-  const { isScrollLockActive } = usePopoverContext();
   const [showDeadPool, setShowDeadPool] = useState(false);
   const scrollableListRef = useRef<HTMLDivElement>(null);
   const characterRowRefs = useRef<Record<string, HTMLDivElement | null>>({});
@@ -31,42 +29,36 @@ const ActiveEncounterTableContent: React.FC<
     string | null
   >(null);
 
-  useEffect(() => {
-    const listElement = scrollableListRef.current;
-    const preventDefault = (e: WheelEvent | TouchEvent) => e.preventDefault();
-
-    if (isScrollLockActive) {
-      window.addEventListener('wheel', preventDefault, { passive: false });
-      window.addEventListener('touchmove', preventDefault, { passive: false });
-      listElement?.addEventListener('wheel', preventDefault, {
-        passive: false,
-      });
-      listElement?.addEventListener('touchmove', preventDefault, {
-        passive: false,
-      });
-    }
-
-    return () => {
-      window.removeEventListener('wheel', preventDefault);
-      window.removeEventListener('touchmove', preventDefault);
-      listElement?.removeEventListener('wheel', preventDefault);
-      listElement?.removeEventListener('touchmove', preventDefault);
-    };
-  }, [isScrollLockActive]);
-
   const onSave = (newEncounter: Encounter) => {
-    handleSave(newEncounter);
+    handleSave(newEncounter).then((result) => {
+      if (!result.success) {
+        showDaisyToast(
+          'error',
+          result.errors?.join('; ') || 'Failed to save encounter',
+        );
+      }
+    });
     setEncounter(newEncounter);
 
-    if (newEncounter.currentTurn !== encounter.currentTurn) {
-      const currentCharacter = getCurrentCharacter(
-        newEncounter.initiativeOrder,
-        newEncounter.currentTurn ?? 1,
-      );
+    const previousCharacter = getCurrentCharacter(
+      encounter.initiativeOrder,
+      encounter.currentTurn ?? 1,
+    );
+    const nextCharacter = getCurrentCharacter(
+      newEncounter.initiativeOrder,
+      newEncounter.currentTurn ?? 1,
+    );
+    const hasTurnChanged =
+      newEncounter.currentTurn !== encounter.currentTurn ||
+      newEncounter.currentRound !== encounter.currentRound;
 
-      if (currentCharacter) {
-        showDaisyToast('success', `${currentCharacter.name}'s turn`);
-      }
+    if (
+      nextCharacter &&
+      (nextCharacter._id !== previousCharacter?._id ||
+        (hasTurnChanged &&
+          newEncounter.initiativeOrder === encounter.initiativeOrder))
+    ) {
+      showDaisyToast('success', `${nextCharacter.name}'s turn`);
     }
   };
 
@@ -80,25 +72,39 @@ const ActiveEncounterTableContent: React.FC<
     handleAddCharacterToActive,
     handleAddPlayersToActive,
   } = useEncounterTurnManagement(encounter, onSave);
+  const currentTurnNumber = Math.max(
+    1,
+    sortedCharacters.findIndex((c) => c._id === currentCharacter._id) + 1,
+  );
+
+  const currentCharacterId = currentCharacter?._id;
 
   useEffect(() => {
-    if (currentCharacter && characterRowRefs.current[currentCharacter._id]) {
-      characterRowRefs.current[currentCharacter._id]?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-      });
-    }
-  }, [currentCharacter, currentCharacter?._id]);
+    const list = scrollableListRef.current;
+    const row = currentCharacterId
+      ? characterRowRefs.current[currentCharacterId]
+      : null;
+    if (!list || !row) return;
+
+    const listRect = list.getBoundingClientRect();
+    const rowRect = row.getBoundingClientRect();
+    const offset =
+      rowRect.top - listRect.top - (listRect.height - rowRect.height) / 2;
+
+    list.scrollTo({ top: list.scrollTop + offset, behavior: 'smooth' });
+  }, [currentCharacterId]);
 
   const getMonsterData = (
     characterId: string,
   ): EncounterCharacter | undefined => {
-    return encounter.enemies.find((enemy) => enemy._id === characterId);
+    return (
+      encounter.enemies.find((enemy) => enemy._id === characterId) ||
+      encounter.npcs?.find((npc) => npc._id === characterId)
+    );
   };
 
-  const currentCharacterId = currentCharacter?._id;
   const currentCharacterHasStats =
-    currentCharacter?.type === 'enemy' &&
+    currentCharacter?.type !== 'player' &&
     Boolean(currentCharacterId && getMonsterData(currentCharacterId));
 
   useEffect(() => {
@@ -146,7 +152,7 @@ const ActiveEncounterTableContent: React.FC<
                 Round {encounter.currentRound ?? 1}
               </span>
               <span className="badge  badge-outline">
-                Turn {encounter.currentTurn}
+                Turn {currentTurnNumber}
               </span>
             </div>
             <div className="flex flex-row gap-2 w-full">
@@ -156,7 +162,9 @@ const ActiveEncounterTableContent: React.FC<
                 className="btn-sm w-full flex-1 disabled:bg-secondary/25"
                 onClick={handlePreviousTurn}
                 disabled={
-                  encounter.currentTurn === 1 && encounter.currentRound === 1
+                  sortedCharacters.length === 0 ||
+                  (currentTurnNumber === 1 &&
+                    (encounter.currentRound ?? 1) <= 1)
                 }
               />
               <Button
@@ -198,7 +206,7 @@ const ActiveEncounterTableContent: React.FC<
 
         <div
           ref={scrollableListRef}
-          className={`relative  h-full max-h-[60vh] sm:max-h-[70vh] mb-4 overflow-y-auto`}
+          className="relative h-full max-h-[60vh] sm:max-h-[70vh] mb-4 overflow-y-auto overscroll-auto"
         >
           <div className="space-y-2 w-full bg-base-100 rounded-lg p-2 border border-base-300">
             {sortedCharacters.map((character) => (
@@ -211,7 +219,7 @@ const ActiveEncounterTableContent: React.FC<
                 isCurrentTurn={character._id === currentCharacter._id}
                 onUpdateCharacter={handleUpdateCharacter}
                 monsterData={
-                  character.type === 'enemy'
+                  character.type !== 'player'
                     ? getMonsterData(character._id)
                     : undefined
                 }
