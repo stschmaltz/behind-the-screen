@@ -283,10 +283,8 @@ const ActiveEncounterTableContent: React.FC<
                 </span>
               )}
               <MonsterStatBlock
-                monster={{
-                  ...statPanelMonster,
-                  name: statPanelCharacter?.name ?? statPanelMonster.name,
-                }}
+                monster={statPanelMonster}
+                displayName={statPanelCharacter?.name}
                 compact
               />
             </>

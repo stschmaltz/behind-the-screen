@@ -10,6 +10,7 @@ import { MonsterReference } from '../../lib/monsterReference';
 
 interface Props {
   monster: EncounterCharacter;
+  displayName?: string;
   compact?: boolean;
 }
 
@@ -34,7 +35,11 @@ const formatAbilityScore = (score?: number) => {
   return `${score} (${sign}${modifier})`;
 };
 
-const MonsterStatBlock: React.FC<Props> = ({ monster, compact = false }) => {
+const MonsterStatBlock: React.FC<Props> = ({
+  monster,
+  displayName,
+  compact = false,
+}) => {
   const [imgSrc, setImgSrc] = useState(monster.img_url);
   const [imgError, setImgError] = useState(false);
   const { spells } = useSpells();
@@ -71,7 +76,7 @@ const MonsterStatBlock: React.FC<Props> = ({ monster, compact = false }) => {
       <div className="flex flex-col md:flex-row gap-4">
         <div className="flex-1 min-w-0">
           <h2 className={compact ? 'text-xl font-bold' : 'text-2xl font-bold'}>
-            {monster.name}
+            {displayName ?? monster.name}
           </h2>
           {monster.meta && (
             <p className="italic text-gray-500">{monster.meta}</p>
