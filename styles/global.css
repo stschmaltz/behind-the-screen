@@ -7,42 +7,205 @@
   -webkit-font-smoothing: antialiased;
 }
 
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+  text-rendering: optimizeLegibility;
+}
+
+:where(
+    a,
+    button,
+    [role='button'],
+    input,
+    select,
+    textarea,
+    summary
+  ):focus-visible {
+  outline: 2px solid oklch(var(--p));
+  outline-offset: 2px;
+}
+
+header :where(a, button):focus-visible {
+  outline-color: oklch(var(--pc));
+}
+
+::selection {
+  background-color: oklch(var(--p) / 0.25);
+}
+
 @layer utilities {
   .smooth-transition {
     transition: all 0.2s ease-in-out;
   }
-  
+
   .hover-lift {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    transition:
+      transform 0.2s ease-in-out,
+      box-shadow 0.2s ease-in-out;
   }
-  
+
   .hover-lift:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
   }
-  
+
   .hover-scale {
     transition: transform 0.2s ease-in-out;
   }
-  
+
   .hover-scale:hover {
     transform: scale(1.02);
   }
-  
+
   .fade-in {
     animation: fadeIn 0.4s ease-in-out;
   }
-  
+
   .slide-up {
     animation: slideUp 0.3s ease-out;
   }
-  
+
   .slide-down {
     animation: slideDown 0.3s ease-out;
   }
-  
+
   .bounce-subtle {
     animation: bounceSubtle 0.5s ease-in-out;
+  }
+
+  .page-enter {
+    animation: pageEnter 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .pop-in {
+    animation: popIn 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .backdrop-fade {
+    animation: backdropFade 0.2s ease-out both;
+  }
+
+  .reveal {
+    animation: reveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 70ms);
+  }
+
+  .press {
+    transition:
+      transform 0.15s ease,
+      box-shadow 0.2s ease,
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .press:active {
+    transform: scale(0.98);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes backdropFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-glow {
+  background: radial-gradient(
+      60% 55% at 50% 0%,
+      oklch(var(--p) / 0.16),
+      transparent 70%
+    ),
+    radial-gradient(40% 40% at 85% 20%, oklch(var(--a) / 0.1), transparent 70%);
+}
+
+.feature-card {
+  position: relative;
+  transition:
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.feature-card:hover,
+.feature-card:focus-visible {
+  transform: translateY(-3px);
+  border-color: oklch(var(--p) / 0.6);
+  box-shadow: 0 12px 28px -12px oklch(var(--p) / 0.35);
+}
+
+.feature-card:active {
+  transform: translateY(-1px) scale(0.99);
+}
+
+.feature-card .feature-arrow {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.feature-card:hover .feature-arrow {
+  transform: translateX(4px);
+}
+
+.modal-open .modal-box {
+  animation: popIn 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *:not(.loading),
+  *:not(.loading)::before,
+  *:not(.loading)::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
@@ -96,7 +259,8 @@
 }
 
 @keyframes bounceSubtle {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -105,7 +269,13 @@
 }
 
 .btn {
-  transition: all 0.15s ease-in-out;
+  transition:
+    transform 0.15s ease-in-out,
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out,
+    color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out,
+    opacity 0.15s ease-in-out;
 }
 
 .btn:active {
@@ -113,7 +283,10 @@
 }
 
 .card {
-  transition: all 0.2s ease-in-out;
+  transition:
+    box-shadow 0.2s ease-in-out,
+    border-color 0.2s ease-in-out,
+    background-color 0.2s ease-in-out;
 }
 
 .loading-spinner {
@@ -134,7 +307,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -145,21 +319,19 @@
 .input:focus,
 .textarea:focus,
 .select:focus {
-  outline: 2px solid hsl(var(--p) / 0.5);
+  outline: 2px solid oklch(var(--p) / 0.5);
   outline-offset: 2px;
-  transition: all 0.2s ease-in-out;
 }
 
 .input,
 .textarea,
 .select {
-  transition: all 0.2s ease-in-out;
+  transition:
+    border-color 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out,
+    background-color 0.2s ease-in-out;
 }
 
 .link {
-  transition: all 0.2s ease-in-out;
-}
-
-.badge {
-  transition: all 0.2s ease-in-out;
+  transition: color 0.2s ease-in-out;
 }

@@ -1,11 +1,15 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { darkThemes, themeDisplayNames } from './theme-options';
 import { useTheme } from '../context/ThemeContext';
+import { useClickOutside } from '../hooks/useClickOutside';
 
 const ThemeSwitcher: React.FC = () => {
   const { theme: currentTheme, setTheme } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const closeDropdown = useCallback(() => setIsOpen(false), []);
+  useClickOutside(dropdownRef, closeDropdown, { enabled: isOpen });
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -70,6 +74,7 @@ const ThemeSwitcher: React.FC = () => {
         className="btn btn-ghost btn-circle hover:scale-110 transition-all duration-200 active:scale-95"
         onClick={toggleDropdown}
         aria-expanded={isOpen}
+        aria-label="Change theme"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -86,7 +91,7 @@ const ThemeSwitcher: React.FC = () => {
         </svg>
       </button>
       {isOpen && (
-        <div className="mt-0 dropdown-content shadow-2xl bg-base-100 rounded-box w-64 max-h-96 overflow-y-auto z-50 slide-down border border-base-300">
+        <div className="mt-0 dropdown-content shadow-2xl bg-base-100 rounded-box w-64 max-h-96 overflow-y-auto z-50 pop-in origin-top-right text-base-content border border-base-300">
           <div className="grid grid-cols-1 gap-1 p-2">
             <div className="mb-2 p-2 border-b border-base-300">
               <div className="grid grid-cols-2 gap-1">
