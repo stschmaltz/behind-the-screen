@@ -329,6 +329,21 @@ describe('active encounter', () => {
       expect(currentTurnName()).toBe('Goblin');
       expect(screen.getByText('Turn 4')).toBeInTheDocument();
     });
+    it('clamps an out-of-range initiative and shows the stored value', async () => {
+      const user = userEvent.setup();
+      renderEncounter();
+      const input = within(rowFor('Goblin')).getByLabelText('Initiative');
+
+      await user.clear(input);
+      await user.type(input, '99');
+      await user.tab();
+      expect(input).toHaveValue(35);
+
+      await user.clear(input);
+      await user.type(input, '99');
+      await user.tab();
+      expect(input).toHaveValue(35);
+    });
   });
 
   describe('scrolling', () => {
@@ -375,6 +390,26 @@ describe('active encounter', () => {
 
       expect(event.defaultPrevented).toBe(true);
       await waitFor(() => expect(input).toHaveValue(1));
+    });
+    it('ignores horizontal wheel movement over the amount field', async () => {
+      const user = userEvent.setup();
+      renderEncounter();
+      await user.click(within(rowFor('Wolf')).getByLabelText('Adjust HP'));
+      const input = screen.getByPlaceholderText('Amount');
+      await user.type(input, '5');
+
+      const event = new WheelEvent('wheel', {
+        cancelable: true,
+        bubbles: true,
+        deltaX: 80,
+        deltaY: 0,
+      });
+      act(() => {
+        input.dispatchEvent(event);
+      });
+
+      expect(event.defaultPrevented).toBe(false);
+      expect(input).toHaveValue(5);
     });
   });
 

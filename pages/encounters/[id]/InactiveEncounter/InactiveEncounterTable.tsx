@@ -37,7 +37,9 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
   } = useEncounterDraft(encounter, players, setHasUnsavedChanges);
 
   const onSave = async () => {
-    const { success, errors } = await handleSave(draftEncounter);
+    const { success, errors } = await handleSave(draftEncounter, {
+      immediate: true,
+    });
     if (success) {
       setEncounter(draftEncounter);
       setHasUnsavedChanges(false);
@@ -72,7 +74,9 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
       status: 'active' as const,
     };
 
-    const { success, errors } = await handleSave(updatedEncounter);
+    const { success, errors } = await handleSave(updatedEncounter, {
+      immediate: true,
+    });
     if (success) {
       setHasUnsavedChanges(false);
       posthog.capture('encounter_started', {

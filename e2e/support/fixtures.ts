@@ -110,18 +110,19 @@ export class EncounterPage {
   deadPool = () => this.page.getByRole('heading', { name: /Dead Pool/ });
 
   /**
-   * Runs an action and waits for the save it triggers to land. Saves are
-   * debounced, so the request we want always starts after the action returns;
-   * waiting for a new request avoids matching an earlier save still in flight.
+   * Runs an action and waits for the save it triggers to land. Listening
+   * starts before the action because explicit saves (start, finish, rename)
+   * go out at once; a save already in flight is not matched, since only
+   * requests that begin after this point are seen.
    */
   async andSave(action: () => Promise<unknown>) {
-    await action();
-    const request = await this.page.waitForRequest(
+    const pending = this.page.waitForRequest(
       (candidate) =>
         candidate.url().includes('/api/graphql') &&
         (candidate.postData() ?? '').includes('saveEncounter'),
     );
-    const response = await request.response();
+    await action();
+    const response = await (await pending).response();
     expect((await response?.json())?.errors).toBeUndefined();
   }
 

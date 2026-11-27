@@ -7,7 +7,11 @@ import React, {
   useMemo,
 } from 'react';
 import { Encounter, NewEncounterTemplate } from '../types/encounters';
-import { useManageEncounter } from '../hooks/encounter/use-manage-encounter';
+import {
+  SaveOptions,
+  SaveResult,
+  useManageEncounter,
+} from '../hooks/encounter/use-manage-encounter';
 
 interface EncounterContextProps {
   encounter: Encounter;
@@ -15,7 +19,8 @@ interface EncounterContextProps {
   isSaving: boolean;
   handleSave: (
     encounter: Encounter | NewEncounterTemplate,
-  ) => Promise<{ success: boolean; errors?: string[] }>;
+    options?: SaveOptions,
+  ) => Promise<SaveResult>;
   deleteEncounter: (encounterId: string) => Promise<boolean>;
   updateEncounterDescription: (
     encounterId: string,
@@ -43,8 +48,10 @@ export const EncounterProvider: React.FC<EncounterProviderProps> = ({
   } = useManageEncounter();
 
   const handleSave = useCallback(
-    (encounterToSave: Encounter | NewEncounterTemplate) =>
-      originalHandleSave(encounterToSave),
+    (
+      encounterToSave: Encounter | NewEncounterTemplate,
+      options?: SaveOptions,
+    ) => originalHandleSave(encounterToSave, options),
     [originalHandleSave],
   );
 

@@ -16,11 +16,21 @@ export const SEED_FILE = path.join(AUTH_DIR, 'seed.json');
 /**
  * The suite writes campaigns, players and encounters for dedicated test
  * users into whatever database the dev server is connected to. Refuse to run
- * unless that database is clearly not production.
+ * unless that database is clearly not production. The check reads this
+ * process's environment, which is only the server's environment when the
+ * suite launches the server itself, so an external server needs an explicit
+ * override.
  */
 export const assertSafeDatabase = () => {
   const dbName = process.env.DB_NAME ?? '';
   if (process.env.E2E_ALLOW_ANY_DB === 'true') return;
+  if (process.env.E2E_BASE_URL) {
+    throw new Error(
+      'E2E_BASE_URL points the suite at a server it did not start, so its ' +
+        'database cannot be checked. Setup deletes and recreates the test ' +
+        "users' data there. Set E2E_ALLOW_ANY_DB=true to confirm that is safe.",
+    );
+  }
   if (!/dev|test|e2e|local/i.test(dbName)) {
     throw new Error(
       `Refusing to run e2e tests against database "${dbName}". ` +

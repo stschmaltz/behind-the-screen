@@ -41,7 +41,7 @@ export const HPModifierPopover = React.forwardRef<
       if (!input) return;
 
       const handleWheel = (e: WheelEvent) => {
-        if (document.activeElement !== input) return;
+        if (document.activeElement !== input || e.deltaY === 0) return;
         e.preventDefault();
         e.stopPropagation();
 

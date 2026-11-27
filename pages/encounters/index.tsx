@@ -11,8 +11,39 @@ import EncounterPageHeader from '../../components/encounters/EncounterPageHeader
 import ConfirmationModal from '../../components/modals/ConfirmationModal';
 import CopyConfirmationModal from '../../components/modals/CopyConfirmationModal';
 import { logger } from '../../lib/logger';
-import type { Encounter } from '../../generated/graphql';
-import type { NewEncounterTemplate } from '../../types/encounters';
+import { showDaisyToast } from '../../lib/daisy-toast';
+import type {
+  Encounter,
+  EncounterCharacter as GqlEncounterCharacter,
+} from '../../generated/graphql';
+import type {
+  EncounterCharacter,
+  NewEncounterTemplate,
+} from '../../types/encounters';
+
+const toEncounterCharacter = (
+  character: GqlEncounterCharacter,
+): EncounterCharacter => ({
+  ...character,
+  meta: character.meta ?? undefined,
+  speed: character.speed ?? undefined,
+  challenge: character.challenge ?? undefined,
+  actions: character.actions ?? undefined,
+  legendaryActions: character.legendaryActions ?? undefined,
+  img_url: character.img_url ?? undefined,
+  monsterSource: character.monsterSource ?? undefined,
+  traits: character.traits ?? undefined,
+  stats: character.stats
+    ? {
+        STR: character.stats.STR ?? 0,
+        DEX: character.stats.DEX ?? 0,
+        CON: character.stats.CON ?? 0,
+        INT: character.stats.INT ?? 0,
+        WIS: character.stats.WIS ?? 0,
+        CHA: character.stats.CHA ?? 0,
+      }
+    : undefined,
+});
 
 const LoadingState = () => (
   <div className="bg-base-100 flex items-center justify-center min-h-[40vh]">
@@ -172,40 +203,23 @@ const EncountersPage: NextPage = () => {
   const handleCopyConfirm = useCallback(async () => {
     if (!encounterToCopy || isSaving || !newEncounterName.trim()) return;
     logger.debug('Original encounter ID for copy:', encounterToCopy._id);
-    const newEncounterData: NewEncounterTemplate = {
+    const newEncounterData: NewEncounterTemplate & {
+      npcs: EncounterCharacter[];
+    } = {
       name: newEncounterName.trim(),
       status: 'inactive',
-      enemies: (encounterToCopy.enemies || []).map((e) => ({
-        ...e,
-        meta: e.meta ?? undefined,
-        speed: e.speed ?? undefined,
-        challenge: e.challenge ?? undefined,
-        actions: e.actions ?? undefined,
-        legendaryActions: e.legendaryActions ?? undefined,
-        img_url: e.img_url ?? undefined,
-        monsterSource: e.monsterSource ?? undefined,
-        traits: e.traits ?? undefined,
-        stats: e.stats
-          ? {
-              STR: e.stats.STR ?? 0,
-              DEX: e.stats.DEX ?? 0,
-              CON: e.stats.CON ?? 0,
-              INT: e.stats.INT ?? 0,
-              WIS: e.stats.WIS ?? 0,
-              CHA: e.stats.CHA ?? 0,
-            }
-          : undefined,
-      })),
+      enemies: (encounterToCopy.enemies || []).map(toEncounterCharacter),
+      npcs: (encounterToCopy.npcs || []).map(toEncounterCharacter),
       notes: encounterToCopy.notes || [],
       description: encounterToCopy.description || '',
       campaignId: encounterToCopy.campaignId?.toString() || '',
       adventureId: encounterToCopy.adventureId?.toString(),
     };
     logger.debug('Attempting to save cloned data:', newEncounterData);
-    const { success } = await performSaveEncounter(newEncounterData);
-    setEncounterToCopy(null);
-    setNewEncounterName('');
+    const { success, errors } = await performSaveEncounter(newEncounterData);
     if (success) {
+      setEncounterToCopy(null);
+      setNewEncounterName('');
       logger.info('Save reported success. Refreshing encounters list...');
       try {
         await refreshEncounters();
@@ -220,6 +234,7 @@ const EncountersPage: NextPage = () => {
       }
     } else {
       logger.error('Save reported failure.');
+      showDaisyToast('error', errors?.join('; ') || 'Failed to copy encounter');
     }
   }, [
     encounterToCopy,

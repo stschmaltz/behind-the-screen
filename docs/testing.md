@@ -59,8 +59,9 @@ First time only: `npx playwright install chromium`.
 
 - **Its own server.** The suite starts `next dev` on port 3100 with a separate
   build folder (`.next-e2e`), so it does not interfere with a dev server you
-  already have open on port 3000. Set `E2E_BASE_URL` to point it at an
-  already-running server instead.
+  already have open on port 3000. It never reuses a server that is already
+  running. To point it at an external server, set `E2E_BASE_URL` together with
+  `E2E_ALLOW_ANY_DB=true`: the suite cannot check that server's database.
 - **Sign-in.** Tests never visit the Auth0 login page. `e2e/support/session.ts`
   signs a session cookie for two dedicated test users (`e2e|dm-essentials-primary`
   and `e2e|dm-essentials-other`) using `AUTH0_SECRET` from `.env.local`.
@@ -88,5 +89,5 @@ test('next turn', async ({ page, createEncounter }) => {
 });
 ```
 
-Use `view.andSave(...)` before reloading or checking the API: saves are debounced
-by half a second, so a reload straight after a click can beat the save.
+Use `view.andSave(...)` before reloading or checking the API: combat autosaves are
+debounced by half a second, so a reload straight after a click can beat the save.

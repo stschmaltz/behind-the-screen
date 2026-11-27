@@ -31,7 +31,7 @@ const ActiveEncounterTableContent: React.FC<
 
   const onSave = (newEncounter: Encounter) => {
     handleSave(newEncounter).then((result) => {
-      if (!result.success) {
+      if (!result.success && !result.cancelled) {
         showDaisyToast(
           'error',
           result.errors?.join('; ') || 'Failed to save encounter',
@@ -92,7 +92,7 @@ const ActiveEncounterTableContent: React.FC<
       rowRect.top - listRect.top - (listRect.height - rowRect.height) / 2;
 
     list.scrollTo({ top: list.scrollTop + offset, behavior: 'smooth' });
-  }, [currentCharacterId]);
+  }, [currentCharacterId, currentTurnNumber]);
 
   const getMonsterData = (
     characterId: string,

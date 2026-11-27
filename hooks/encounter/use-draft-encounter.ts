@@ -61,6 +61,7 @@ export const useEncounterDraft = (
 
     const initiativeOrder = [
       ...encounter.enemies.map((enemy) => toInitiativeOrder(enemy, 'enemy')),
+      ...(encounter.npcs ?? []).map((npc) => toInitiativeOrder(npc, 'npc')),
       ...encounterPlayers.map((player) => toInitiativeOrder(player, 'player')),
     ];
 
