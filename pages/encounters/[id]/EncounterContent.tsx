@@ -24,7 +24,17 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
     isSaving,
     deleteEncounter,
     updateEncounterDescription,
+    isDemo,
+    onLeave,
   } = useEncounterContext();
+
+  const leaveEncounter = () => {
+    if (onLeave) {
+      onLeave();
+    } else {
+      router.push('/encounters');
+    }
+  };
 
   const [draftName, setDraftName] = useState(encounter.name);
   const { showModal: showDeleteModal, closeModal: closeDeleteModal } = useModal(
@@ -70,7 +80,7 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
         ).length,
       });
 
-      router.push('/encounters');
+      leaveEncounter();
     } else {
       logger.error('Failed to delete encounter.');
     }
@@ -96,7 +106,7 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
           rounds_completed: encounter.currentRound || 1,
         });
 
-        router.push('/encounters');
+        leaveEncounter();
       } else {
         logger.error('Failed to finish encounter.');
       }
@@ -190,13 +200,15 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
             </div>
             <div className="flex flex-col items-start sm:items-end gap-3 w-full">
               <div className="card-actions flex w-full gap-2 sm:flex-row sm:w-auto sm:justify-end sm:gap-3">
-                <Button
-                  label="Delete Encounter"
-                  onClick={openDeleteModalAndSetState}
-                  variant="error"
-                  className="btn-sm flex-1 w-auto min-w-[9rem]"
-                  disabled={isSaving || isFinishingEncounter || isDeleting}
-                />
+                {!isDemo && (
+                  <Button
+                    label="Delete Encounter"
+                    onClick={openDeleteModalAndSetState}
+                    variant="error"
+                    className="btn-sm flex-1 w-auto min-w-[9rem]"
+                    disabled={isSaving || isFinishingEncounter || isDeleting}
+                  />
+                )}
                 {status === 'active' && (
                   <Button
                     label="Finish Encounter"

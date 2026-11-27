@@ -81,14 +81,20 @@ const ActiveEncounterTableContent: React.FC<
     handleAddPlayersToActive,
   } = useEncounterTurnManagement(encounter, onSave);
 
+  const currentTurnId = currentCharacter?._id;
+  const lastScrolledTurnId = useRef(currentTurnId);
+
   useEffect(() => {
-    if (currentCharacter && characterRowRefs.current[currentCharacter._id]) {
-      characterRowRefs.current[currentCharacter._id]?.scrollIntoView({
+    if (lastScrolledTurnId.current === currentTurnId) return;
+    lastScrolledTurnId.current = currentTurnId;
+
+    if (currentTurnId) {
+      characterRowRefs.current[currentTurnId]?.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
       });
     }
-  }, [currentCharacter, currentCharacter?._id]);
+  }, [currentTurnId]);
 
   const getMonsterData = (
     characterId: string,
