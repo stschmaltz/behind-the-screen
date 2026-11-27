@@ -71,7 +71,7 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
       status: 'active' as const,
     };
 
-    const success = await handleSave(updatedEncounter);
+    const { success } = await handleSave(updatedEncounter);
     if (success) {
       posthog.capture('encounter_started', {
         encounter_id: encounter._id,

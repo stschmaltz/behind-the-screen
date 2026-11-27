@@ -101,7 +101,11 @@ const NewEnemyModal: React.FC<Props> = ({
       return;
     }
 
-    onAddCharacter(newEnemy, Number(initiative) || undefined, characterType);
+    onAddCharacter(
+      newEnemy,
+      initiative === '' ? undefined : Number(initiative),
+      characterType,
+    );
 
     posthog.capture('enemy_added_to_encounter', {
       character_type: characterType,
