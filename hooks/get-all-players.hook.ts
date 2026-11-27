@@ -5,7 +5,7 @@ import { useQuery } from './use-async-query';
 
 const EMPTY_PLAYERS: AllPlayersQuery['allPlayers'] = [];
 
-function getAllPlayers(): {
+function getAllPlayers(options: { enabled?: boolean } = {}): {
   players: AllPlayersQuery['allPlayers'];
   loading: boolean;
   refresh: () => Promise<AllPlayersQuery | null>;
@@ -16,6 +16,7 @@ function getAllPlayers(): {
     refresh,
   } = useQuery<AllPlayersQuery>({
     query: allPlayersQuery,
+    enabled: options.enabled ?? true,
   });
 
   const players = useMemo(() => data?.allPlayers ?? EMPTY_PLAYERS, [data]);

@@ -4,6 +4,14 @@ const withPWA = require('next-pwa')({
   register: true,
   skipWaiting: true,
   disable: process.env.NODE_ENV === 'development',
+  publicExcludes: [
+    '!**/*.exe',
+    '!**/*.wav',
+    '!sitemap*.xml',
+    '!robots.txt',
+    '!privacy-policy.html',
+    '!terms-of-service.html',
+  ],
 });
 
 const securityHeaders = [
@@ -26,12 +34,21 @@ const securityHeaders = [
   {
     key: 'Content-Security-Policy',
     // Adjust this policy based on your specific needs
-    value: `default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' storage.ko-fi.com va.vercel-scripts.com js.stripe.com us-assets.i.posthog.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com storage.ko-fi.com rsms.me; font-src 'self' fonts.gstatic.com; img-src 'self' d205bpvrqc9yn1.cloudfront.net media-waterdeep.cursecdn.com data: storage.ko-fi.com; frame-src ko-fi.com js.stripe.com; object-src 'none'; frame-ancestors 'none'; connect-src 'self' https://api.sendgrid.com us.i.posthog.com us-assets.i.posthog.com;`,
+    value: `default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' storage.ko-fi.com va.vercel-scripts.com js.stripe.com us-assets.i.posthog.com; style-src 'self' 'unsafe-inline' storage.ko-fi.com; font-src 'self'; img-src 'self' d205bpvrqc9yn1.cloudfront.net media-waterdeep.cursecdn.com data: storage.ko-fi.com; frame-src ko-fi.com js.stripe.com; object-src 'none'; frame-ancestors 'none'; connect-src 'self' https://api.sendgrid.com us.i.posthog.com us-assets.i.posthog.com;`,
   },
 ];
 
 module.exports = withPWA({
   reactStrictMode: true,
+  poweredByHeader: false,
+  experimental: {
+    optimizePackageImports: [
+      '@heroicons/react',
+      'react-icons',
+      'lodash',
+      '@floating-ui/react',
+    ],
+  },
   trailingSlash: true,
   skipTrailingSlashRedirect: true,
   async rewrites() {
@@ -52,6 +69,24 @@ module.exports = withPWA({
         // Apply these headers to all routes in your application.
         source: '/:path*',
         headers: securityHeaders,
+      },
+      {
+        source: '/icons/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=604800, stale-while-revalidate=2592000',
+          },
+        ],
+      },
+      {
+        source: '/images/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=604800, stale-while-revalidate=2592000',
+          },
+        ],
       },
     ];
   },

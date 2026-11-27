@@ -31,10 +31,11 @@ const transformCampaigns = (
     }))
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
-function getAllCampaigns() {
+function getAllCampaigns(options: { enabled?: boolean } = {}) {
   const { data, loading, refresh } = useQuery<TransformedCampaign[]>({
     query: allCampaignsQuery,
     transform: transformCampaigns,
+    enabled: options.enabled ?? true,
   });
 
   const campaigns = data ?? [];

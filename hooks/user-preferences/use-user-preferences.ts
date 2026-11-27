@@ -18,13 +18,16 @@ interface UseUserPreferencesResult {
   setActiveCampaign: (campaignId: string | null) => Promise<void>;
 }
 
-export function useUserPreferences(): UseUserPreferencesResult {
+export function useUserPreferences(
+  options: { enabled?: boolean } = {},
+): UseUserPreferencesResult {
   const [activeCampaignId, setActiveCampaignIdState] = useState<
     string | undefined
   >();
 
   const { data, loading } = useQuery<GetUserPreferencesQuery>({
     query: getUserPreferencesQuery,
+    enabled: options.enabled ?? true,
   });
 
   useEffect(() => {
