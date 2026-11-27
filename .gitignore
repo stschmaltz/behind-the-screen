@@ -23,6 +23,10 @@
 *.pem
 .vscode
 
+# agent worktrees and personal agent settings
+.claude/worktrees/
+.claude/settings.local.json
+
 # debug
 npm-debug.log*
 yarn-debug.log*

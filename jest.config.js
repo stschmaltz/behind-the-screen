@@ -7,6 +7,13 @@ const createJestConfig = nextJest({
 const customJestConfig = {
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testEnvironment: 'jest-environment-jsdom',
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    '/.next',
+    '<rootDir>/.claude/',
+    '<rootDir>/e2e/',
+  ],
+  modulePathIgnorePatterns: ['<rootDir>/.claude/'],
   moduleNameMapper: {
     '^@/components/(.*)$': '<rootDir>/components/$1',
     '^@/pages/(.*)$': '<rootDir>/pages/$1',
@@ -15,7 +22,6 @@ const customJestConfig = {
     '^@/types/(.*)$': '<rootDir>/types/$1',
     '^@/context/(.*)$': '<rootDir>/context/$1',
   },
-  testPathIgnorePatterns: ['/node_modules/', '/.claude/', '/e2e/', '/.next'],
   testMatch: ['**/__tests__/**/*.test.[jt]s?(x)', '**/*.test.[jt]s?(x)'],
   collectCoverageFrom: [
     'components/**/*.{js,jsx,ts,tsx}',
