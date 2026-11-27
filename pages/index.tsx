@@ -109,6 +109,11 @@ const HomePage: NextPage = () => {
             to organize your game world
           </span>
         </Link>
+        {!user && (
+          <Link href="/demo" className="btn btn-primary slide-up">
+            Try a demo encounter, no account needed
+          </Link>
+        )}
         <p className="text-center max-w-xl text-base-content fade-in">
           Your feedback is vital as I build this solo project. Please share your
           valuable thoughts and feature requests{' '}

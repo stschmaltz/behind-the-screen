@@ -11,6 +11,7 @@ const PUBLIC_PATHS = [
   '/api/auth/logout',
 
   '/login-required',
+  '/demo',
   '/domain-moved',
   '/404',
   '/_offline',

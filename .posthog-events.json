@@ -68,5 +68,25 @@
     "eventName": "generation_limit_reached",
     "description": "User hits AI generation usage limit and requests more",
     "filePath": "hooks/use-generation-usage.ts"
+  },
+  {
+    "eventName": "demo_started",
+    "description": "Visitor opens the demo encounter with no saved demo state",
+    "filePath": "pages/demo.tsx"
+  },
+  {
+    "eventName": "demo_finished",
+    "description": "Visitor finishes the demo encounter",
+    "filePath": "pages/demo.tsx"
+  },
+  {
+    "eventName": "demo_reset",
+    "description": "Visitor resets or reruns the demo encounter",
+    "filePath": "pages/demo.tsx"
+  },
+  {
+    "eventName": "demo_signup_clicked",
+    "description": "Visitor clicks a sign-up link on the demo page (from: banner or finish)",
+    "filePath": "pages/demo.tsx"
   }
 ]

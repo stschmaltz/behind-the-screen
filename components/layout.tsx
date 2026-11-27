@@ -111,7 +111,9 @@ function Layout({ children }: LayoutProps) {
         ) : (
           <div
             className={`container mx-auto px-4 py-6 md:py-8 flex-grow min-h-[80vh] ${
-              router.pathname === '/encounters/[id]' ? 'max-w-7xl' : 'max-w-4xl'
+              ['/encounters/[id]', '/demo'].includes(router.pathname)
+                ? 'max-w-7xl'
+                : 'max-w-4xl'
             }`}
           >
             {children}
