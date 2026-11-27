@@ -1,14 +1,9 @@
 import React from 'react';
 import ActiveEncounterTableContent from './ActiveEncounterTableContent';
 import type { Player } from '../../../../generated/graphql';
-import { PopoverProvider } from '../../../../context/PopoverContext';
 
 const ActiveEncounterTable: React.FC<{ players: Player[] }> = ({ players }) => {
-  return (
-    <PopoverProvider>
-      <ActiveEncounterTableContent players={players} />
-    </PopoverProvider>
-  );
+  return <ActiveEncounterTableContent players={players} />;
 };
 
 export default ActiveEncounterTable;

@@ -48,6 +48,62 @@ export const getCurrentCharacter = (
   return getCharacterAtTurn(alive, currentTurn);
 };
 
+/**
+ * Returns living characters in the order they act
+ */
+export const getTurnOrder = (
+  characters: InitiativeOrderCharacter[],
+): InitiativeOrderCharacter[] =>
+  sortCharactersByInitiative(filterAliveCharacters(characters));
+
+/**
+ * Converts a stored 1-based turn into a valid index into the turn order
+ */
+export const getTurnIndex = (currentTurn: number, orderLength: number) => {
+  const index = (currentTurn ?? 1) - 1;
+
+  return index >= 0 && index < orderLength ? index : 0;
+};
+
+/**
+ * Works out the turn and round after the roster changes (death, revive,
+ * new combatant, initiative edit) so the turn stays with the same character.
+ * If the acting character was removed, the turn passes to whoever was next.
+ */
+export const resolveTurnAfterRosterChange = (
+  previousCharacters: InitiativeOrderCharacter[],
+  nextCharacters: InitiativeOrderCharacter[],
+  currentTurn: number,
+  currentRound: number,
+): { currentTurn: number; currentRound: number } => {
+  const round = currentRound ?? 1;
+  const previousOrder = getTurnOrder(previousCharacters);
+  const nextOrder = getTurnOrder(nextCharacters);
+
+  if (nextOrder.length === 0 || previousOrder.length === 0) {
+    return { currentTurn: 1, currentRound: round };
+  }
+
+  const previousIndex = getTurnIndex(currentTurn, previousOrder.length);
+  const nextIds = nextOrder.map((character) => character._id);
+
+  for (let offset = 0; offset < previousOrder.length; offset++) {
+    const candidateIndex = previousIndex + offset;
+    const hasWrapped = candidateIndex >= previousOrder.length;
+    const candidate = previousOrder[candidateIndex % previousOrder.length];
+    const position = nextIds.indexOf(candidate._id);
+
+    if (position !== -1) {
+      return {
+        currentTurn: position + 1,
+        currentRound: hasWrapped ? round + 1 : round,
+      };
+    }
+  }
+
+  return { currentTurn: 1, currentRound: round };
+};
+
 type DifficultyThresholds = {
   easy: number;
   medium: number;
@@ -135,8 +191,8 @@ const parseFractionalCR = (challengeRating: string): number | null => {
   if (!challengeRating.includes('/')) return null;
 
   const [numerator, denominator] = challengeRating.split('/').map(Number);
-  if (!isNaN(numerator) && !isNaN(denominator)) {
-    return Math.floor((numerator / denominator) * 50);
+  if (!isNaN(numerator) && !isNaN(denominator) && denominator !== 0) {
+    return CR_TO_XP_TABLE[numerator / denominator] ?? null;
   }
 
   return null;

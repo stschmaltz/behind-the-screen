@@ -12,6 +12,7 @@ import DescriptionDisplay from '../../../components/DescriptionDisplay';
 import EncounterDifficultyBadge from '../../../components/EncounterDifficultyBadge';
 import InlineEditableText from '../../../components/ui/InlineEditableText';
 import { logger } from '../../../lib/logger';
+import { showDaisyToast } from '../../../lib/daisy-toast';
 
 interface EncounterContentProps {
   players: Player[];
@@ -20,6 +21,7 @@ interface EncounterContentProps {
 const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
   const {
     encounter,
+    setEncounter,
     handleSave,
     isSaving,
     deleteEncounter,
@@ -83,6 +85,7 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
       leaveEncounter();
     } else {
       logger.error('Failed to delete encounter.');
+      showDaisyToast('error', 'Failed to delete encounter');
     }
   };
 
@@ -94,7 +97,7 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
         status: 'completed' as const,
         completedAt: new Date().toISOString(),
       };
-      const success = await handleSave(finishedEncounter);
+      const { success } = await handleSave(finishedEncounter);
       if (success) {
         // Track encounter completed event
         posthog.capture('encounter_completed', {
@@ -109,6 +112,7 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
         leaveEncounter();
       } else {
         logger.error('Failed to finish encounter.');
+        showDaisyToast('error', 'Failed to finish encounter');
       }
     } catch (error) {
       logger.error('Error finishing encounter:', error);
@@ -131,12 +135,14 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
       name: trimmedNewName,
     };
 
-    const success = await handleSave(updatedEncounterForSave);
+    const { success } = await handleSave(updatedEncounterForSave);
 
     if (success) {
+      setEncounter((prev) => ({ ...prev, name: trimmedNewName }));
       logger.info('Encounter name updated successfully via inline edit.');
     } else {
       logger.error('Failed to save encounter name change via inline edit.');
+      showDaisyToast('error', 'Failed to rename encounter');
       setDraftName(encounter.name);
     }
   };

@@ -69,7 +69,11 @@ const BasicEnemyForm: React.FC<Props> = ({
               id="initiative"
               type="number"
               value={initiative}
-              onChange={(e) => setInitiative(Number(e.target.value))}
+              onChange={(e) =>
+                setInitiative(
+                  e.target.value === '' ? '' : Number(e.target.value),
+                )
+              }
               required
               width="w-full sm:w-32"
             />

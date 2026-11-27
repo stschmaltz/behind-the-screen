@@ -26,19 +26,21 @@ function useUserSignIn(): readonly [
           name: user.name,
           picture: user.picture,
         },
-      }).then((data) => {
-        setCurrentUser && setCurrentUser(data.userSignIn?.user);
-        setIsLoadingPlaceholders(false);
+      })
+        .then((data) => {
+          setCurrentUser && setCurrentUser(data.userSignIn?.user);
+          setIsLoadingPlaceholders(false);
 
-        // Identify user in PostHog
-        if (data.userSignIn?.user && user.sub) {
-          posthog.identify(user.sub, {
-            email: user.email,
-            name: user.name,
-            auth0Id: user.sub,
-          });
-        }
-      });
+          // Identify user in PostHog
+          if (data.userSignIn?.user && user.sub) {
+            posthog.identify(user.sub, {
+              email: user.email,
+              name: user.name,
+              auth0Id: user.sub,
+            });
+          }
+        })
+        .catch(() => setIsLoadingPlaceholders(false));
     } else {
       setIsLoadingPlaceholders(false);
     }
