@@ -100,7 +100,7 @@ const FAQS: FaqItem[] = [
   {
     question: 'Do I need an account?',
     answer:
-      'The NPC and loot generators work without an account. Saving encounters, campaigns and players requires a free sign-in so your data follows you across devices.',
+      'The demo encounter and the NPC and loot generators work without an account. Saving encounters, campaigns and players requires a free sign-in so your data follows you across devices.',
   },
   {
     question: 'Which monsters are included?',
@@ -150,8 +150,11 @@ const HomePage: NextPage = () => {
             className="reveal flex flex-col sm:flex-row items-center gap-3 pt-2"
             style={stagger(0)}
           >
-            <Link href="/encounters" className="btn btn-primary btn-lg gap-2">
-              {user ? 'Open Encounter Manager' : 'Start tracking combat'}
+            <Link
+              href={user ? '/encounters' : '/demo'}
+              className="btn btn-primary btn-lg gap-2"
+            >
+              {user ? 'Open Encounter Manager' : 'Try a demo encounter'}
               <ArrowRightIcon className="h-5 w-5" />
             </Link>
             <Link href="/npc-generator" className="btn btn-ghost btn-lg">
@@ -159,7 +162,9 @@ const HomePage: NextPage = () => {
             </Link>
           </div>
           <p className="reveal text-sm text-base-content/60" style={stagger(1)}>
-            Free to use. No ads, no spam.
+            {user
+              ? 'Free to use. No ads, no spam.'
+              : 'No account needed for the demo. Free to use, no ads, no spam.'}
           </p>
           {user?.email === 'stschmaltz@gmail.com' && (
             <Link

@@ -21,6 +21,19 @@ interface EncounterContextProps {
     encounterId: string,
     newDescription: string,
   ) => Promise<void>;
+  isDemo: boolean;
+  onLeave?: () => void;
+}
+
+export interface EncounterStorage {
+  save: (
+    encounter: Encounter | NewEncounterTemplate,
+  ) => Promise<{ success: boolean; errors?: string[] }>;
+  remove: (encounterId: string) => Promise<boolean>;
+  updateDescription: (
+    encounterId: string,
+    newDescription: string,
+  ) => Promise<void>;
 }
 
 const EncounterContext = createContext<EncounterContextProps | null>(null);
@@ -28,19 +41,25 @@ const EncounterContext = createContext<EncounterContextProps | null>(null);
 interface EncounterProviderProps {
   initialEncounter: Encounter;
   children: ReactNode;
+  storage?: EncounterStorage;
+  isDemo?: boolean;
+  onLeave?: () => void;
 }
 
 export const EncounterProvider: React.FC<EncounterProviderProps> = ({
   initialEncounter,
   children,
+  storage,
+  isDemo = false,
+  onLeave,
 }) => {
   const [encounter, setEncounter] = useState<Encounter>(initialEncounter);
-  const {
-    handleSave: originalHandleSave,
-    isSaving,
-    deleteEncounter,
-    updateDescription: originalUpdateDescription,
-  } = useManageEncounter();
+  const manageEncounter = useManageEncounter();
+  const originalHandleSave = storage?.save ?? manageEncounter.handleSave;
+  const deleteEncounter = storage?.remove ?? manageEncounter.deleteEncounter;
+  const originalUpdateDescription =
+    storage?.updateDescription ?? manageEncounter.updateDescription;
+  const isSaving = storage ? false : manageEncounter.isSaving;
 
   const handleSave = useCallback(
     (encounterToSave: Encounter | NewEncounterTemplate) =>
@@ -70,6 +89,8 @@ export const EncounterProvider: React.FC<EncounterProviderProps> = ({
       handleSave,
       deleteEncounter,
       updateEncounterDescription,
+      isDemo,
+      onLeave,
     }),
     [
       encounter,
@@ -78,6 +99,8 @@ export const EncounterProvider: React.FC<EncounterProviderProps> = ({
       handleSave,
       deleteEncounter,
       updateEncounterDescription,
+      isDemo,
+      onLeave,
     ],
   );
 

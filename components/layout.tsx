@@ -112,7 +112,7 @@ function Layout({ children }: LayoutProps) {
               isHomePage
                 ? 'py-8'
                 : `py-6 md:py-8 min-h-[80vh] ${
-                    router.pathname === '/encounters/[id]'
+                    ['/encounters/[id]', '/demo'].includes(router.pathname)
                       ? 'max-w-7xl'
                       : 'max-w-4xl'
                   }`

@@ -41,7 +41,11 @@ const LoginRequiredPage: NextPage = () => {
               Log In / Sign up
             </Link>
 
-            <Link href="/" className="btn btn-outline w-full">
+            <Link href="/demo" className="btn btn-outline w-full">
+              Try the demo first
+            </Link>
+
+            <Link href="/" className="btn btn-ghost w-full">
               Return to Home
             </Link>
           </div>

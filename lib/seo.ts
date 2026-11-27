@@ -49,6 +49,7 @@ const ROUTE_SEO: Record<string, RouteSeo> = {
 
 const INDEXABLE_ROUTES = new Set([
   '/',
+  '/demo',
   '/npc-generator',
   '/loot-generator',
   '/support',

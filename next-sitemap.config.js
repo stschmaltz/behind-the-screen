@@ -6,6 +6,7 @@ const siteUrl =
 
 const PUBLIC_PAGES = {
   '/': { priority: 1.0, changefreq: 'weekly' },
+  '/demo': { priority: 0.9, changefreq: 'weekly' },
   '/npc-generator': { priority: 0.9, changefreq: 'weekly' },
   '/loot-generator': { priority: 0.9, changefreq: 'weekly' },
   '/support': { priority: 0.3, changefreq: 'monthly' },

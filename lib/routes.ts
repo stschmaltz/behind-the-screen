@@ -2,6 +2,7 @@ const PUBLIC_PATHS = new Set([
   '/',
   '/npc-generator',
   '/loot-generator',
+  '/demo',
   '/support',
   '/privacy',
   '/terms',
