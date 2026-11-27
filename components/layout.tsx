@@ -109,7 +109,13 @@ function Layout({ children }: LayoutProps) {
           <div
             key={router.pathname}
             className={`${hasNavigated ? 'page-enter ' : ''}container mx-auto px-4 flex-grow ${
-              isHomePage ? 'py-8' : 'py-6 md:py-8 min-h-[80vh] max-w-4xl'
+              isHomePage
+                ? 'py-8'
+                : `py-6 md:py-8 min-h-[80vh] ${
+                    router.pathname === '/encounters/[id]'
+                      ? 'max-w-7xl'
+                      : 'max-w-4xl'
+                  }`
             }`}
           >
             {children}
