@@ -19,11 +19,12 @@ Encounter Manager (repo name `behind-the-screen`, live at https://encountermanag
 | Lint without fixing | `npx next lint --ignore-path .gitignore .` | Use this to check only.                                               |
 | Unit tests          | `npm test`                                 | Jest and Testing Library, jsdom.                                      |
 | One test file       | `npx jest path/to/file.test.ts`            |                                                                       |
+| End-to-end tests    | `npm run test:e2e`                         | Playwright. Starts its own dev server on port 3100. See below.        |
 | Format              | `npm run fmt`                              | Prettier: semicolons, single quotes.                                  |
 | Production build    | `npm run build`                            | Also regenerates the sitemap and the PWA service worker in `public/`. |
 | GraphQL types       | `npm run codegen`                          | Needs the dev server running. Writes `generated/graphql.ts`.          |
 
-Before calling work done, run the type check, lint and tests. For anything a user sees, also load it in a browser.
+Before calling work done, run the type check, lint and tests. For anything a user sees, also load it in a browser. For anything that touches the encounter flow, also run the end-to-end tests.
 
 ## Architecture
 
@@ -86,20 +87,22 @@ Touch these in order, or the change will silently not work:
 ## Gotchas
 
 - **Every `.tsx` file under `pages/` is a route.** Encounter components are colocated in `pages/encounters/**` and each has a default export, so each is technically reachable by URL. Put new shared components in `components/`.
-- **Auth is enforced in two separate places.** Pages are gated client-side by `components/ProtectedLayout.tsx` using the `PUBLIC_PATHS` list in `lib/routes.ts`, so a new public page must be added there. A public page that search engines should index also needs adding to `INDEXABLE_ROUTES` in `lib/seo.ts` and `PUBLIC_PAGES` in `next-sitemap.config.js`. Data is gated server-side in each resolver and repository query. A resolver without `isAuthorizedOrThrow` and a `userId` filter is a data leak. Existing code has gaps: `EncounterRepository.saveEncounter` matches on `_id` alone, and the `me` query returns a hard-coded placeholder. Do not copy either pattern.
-- **`useQuery` has a 10 second in-memory cache** (`lib/query-cache.ts`). After a mutation, call `refresh` or pass `skipCache`, or the screen shows stale data that the next save can write back.
+- **Auth is enforced in two separate places.** Pages are gated client-side by `components/ProtectedLayout.tsx` using the `PUBLIC_PATHS` list in `lib/routes.ts`, so a new public page must be added there. A public page that search engines should index also needs adding to `INDEXABLE_ROUTES` in `lib/seo.ts` and `PUBLIC_PAGES` in `next-sitemap.config.js`. Data is gated server-side in each resolver and repository query. A resolver without `isAuthorizedOrThrow` and a `userId` filter is a data leak. Existing code has a gap: the `me` query returns a hard-coded placeholder. Do not copy that pattern.
+- **`useQuery` has a 10 second in-memory cache** (`lib/query-cache.ts`). After a mutation, call `clearCache()` (as `hooks/encounter/use-manage-encounter.ts` does), call `refresh`, or pass `skipCache`, or the screen shows stale data that the next save can write back.
 - **Memoise `variables` and `transform`** passed to `useQuery`. They are effect dependencies, so a new object on each render refetches in a loop.
 - **GraphQL errors are masked.** The client only ever sees "API request failed". Read the dev server output for the real error.
 - **The pre-commit hook calls `npx.cmd`**, which exists only on Windows. On other systems the hook fails; run lint by hand and say so if you bypass it.
 - **`public/sw.js` and `public/workbox-*.js` are build output** from `next-pwa`. They are tracked by accident; do not edit them or commit changes to them.
 - **Admin pages** (`pages/admin.tsx`, `pages/api/user/count.ts`, `pages/api/user/list.ts`, `pages/api/feedback/list.ts`, `pages/api/ai-usage/stats.ts`) are gated by the email allowlist in `lib/featureFlags.ts`. `pages/api/user/delete.ts` is not admin-only: any signed-in user can call it to delete their own account.
 - **`.env.local` usually points at the production database.** Treat local writes as production writes. Read freely; create, change or delete data only when asked.
-- **Auth0 login cannot be automated by an agent** because it needs the owner's password. To check a screen in a browser without logging in, render the component on a temporary page with fixture data and delete the page before finishing.
+- **Auth0 login cannot be automated by an agent** because it needs the owner's password. The end-to-end tests get around this by signing a session cookie for dedicated test users (`e2e/support/session.ts`); they write those users' data to the database in `.env.local` and refuse to run unless `DB_NAME` contains `dev`, `test`, `e2e` or `local`. To check a one-off screen in a browser without logging in, render the component on a temporary page with fixture data and delete the page before finishing.
 - `npm run sync-auth0-logins` points at a script that is not in the repository.
 
 ## Working agreements
 
 - Never push to `main` and never merge a pull request. `main` deploys straight to production on Vercel. Work on a branch and open a pull request.
+- **Finish every unit of work with a reviewed pull request, without being asked.** When a unit of work is done and verified: commit it, push the branch, open a pull request (or push to the one already open for that branch), request a GitHub Copilot review, then read the review and address it. Fix what is right, reply with the reason where a comment is wrong, and push the fixes. Report the pull request link and what the review changed. Do not merge.
+- Request the Copilot review with the GraphQL `requestReviews` mutation and `botIds: ["BOT_kgDOCnlnWA"]` (the `copilot-pull-request-reviewer` bot). `gh pr edit --add-reviewer` fails on this repository, and the REST `requested_reviewers` endpoint silently ignores the bot.
 - Several agent sessions often work on this repository at once. Before a broad edit, check `git status` for changes you did not make, leave them alone, and mention any overlap.
 - Commit in small units with present-tense messages ("Fix turn order after revive"). Keep refactors in separate commits from behaviour changes.
 - A bug fix comes with a test that fails without the fix.
@@ -110,5 +113,5 @@ Touch these in order, or the change will silently not work:
 
 - `README.md`: setup and overview for humans.
 - `docs/api.md`: the GraphQL and REST surface.
-- `docs/testing.md`: how tests are organised and what is covered.
+- `docs/testing.md`: how tests are organised and what is covered, including the Playwright end-to-end suite.
 - `docs/ai-usage-tracking.md`: the weekly limit on AI generations.

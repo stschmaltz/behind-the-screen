@@ -1,10 +1,12 @@
 import React, { useRef, useState } from 'react';
+import posthog from 'posthog-js';
 import MonsterSelector from './MonsterSelector';
 import BasicEnemyForm from './BasicEnemyForm';
 import AdvancedEnemyForm from './AdvancedEnemyForm';
 import { Button } from '../../../../components/ui/Button';
 import { EncounterCharacter } from '../../../../types/encounters';
 import { useModal } from '../../../../hooks/use-modal';
+import { generateMongoId } from '../../../../lib/mongo';
 
 interface Props {
   onAddCharacter: (
@@ -100,7 +102,18 @@ const NewEnemyModal: React.FC<Props> = ({
       return;
     }
 
-    onAddCharacter(newEnemy, Number(initiative) || undefined, characterType);
+    onAddCharacter(
+      { ...newEnemy, _id: newEnemy._id || generateMongoId() },
+      initiative === '' ? undefined : Number(initiative),
+      characterType,
+    );
+
+    posthog.capture('enemy_added_to_encounter', {
+      character_type: characterType,
+      source: selectedMonsterName ? 'library' : 'custom',
+      monster_name: selectedMonsterName || undefined,
+      during_combat: Boolean(requireInitiative),
+    });
 
     handleCloseActions();
   };
