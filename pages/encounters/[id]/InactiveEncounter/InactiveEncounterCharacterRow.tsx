@@ -101,12 +101,9 @@ const InactiveEncounterCharacterRow = ({
             id={`maxHP-${character.name}`}
             aria-label="Maximum HP"
             onChange={(e) => {
-              const maxHP = Number(e.target.value);
-              onUpdate?.({
-                ...character,
-                maxHP,
-                currentHP: Math.max(character.currentHP ?? maxHP, maxHP),
-              });
+              const maxHP =
+                e.target.value === '' ? undefined : Number(e.target.value);
+              onUpdate?.({ ...character, maxHP, currentHP: maxHP });
             }}
           />
         </td>

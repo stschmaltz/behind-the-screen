@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Encounter,
   EncounterCharacter,
@@ -12,6 +12,12 @@ export const useEncounterDraft = (
   setHasUnsavedChanges?: (hasUnsavedChanges: boolean) => void,
 ) => {
   const [draftEncounter, setDraftEncounter] = useState(encounter);
+  const hasLocalEdits = useRef(false);
+  const lastEncounterId = useRef(encounter._id);
+  const markEdited = () => {
+    hasLocalEdits.current = true;
+    setHasUnsavedChanges?.(true);
+  };
 
   const toInitiativeOrder = (
     character: Player | EncounterCharacter,
@@ -28,8 +34,24 @@ export const useEncounterDraft = (
   });
 
   useEffect(() => {
+    const isSameEncounter = lastEncounterId.current === encounter._id;
+    lastEncounterId.current = encounter._id;
+
+    if (isSameEncounter && hasLocalEdits.current) {
+      setDraftEncounter((prev) => ({
+        ...prev,
+        name: encounter.name,
+        description: encounter.description,
+      }));
+
+      return;
+    }
+
+    hasLocalEdits.current = false;
+
     if (encounter.initiativeOrder.length > 0) {
       setDraftEncounter(encounter);
+
       return;
     }
 
@@ -49,10 +71,11 @@ export const useEncounterDraft = (
     newCharacter: EncounterCharacter,
     type: 'enemy' | 'npc' | 'player',
   ) => {
-    setHasUnsavedChanges?.(true);
+    markEdited();
     setDraftEncounter((prev) => ({
       ...prev,
-      enemies: [...prev.enemies, newCharacter],
+      enemies: type === 'npc' ? prev.enemies : [...prev.enemies, newCharacter],
+      npcs: type === 'npc' ? [...(prev.npcs ?? []), newCharacter] : prev.npcs,
       initiativeOrder: [
         ...prev.initiativeOrder,
         toInitiativeOrder(newCharacter, type),
@@ -63,7 +86,7 @@ export const useEncounterDraft = (
   const handleAddPlayers = (
     selectedPlayers: import('../../types/player').PlayerWithInitiative[],
   ) => {
-    setHasUnsavedChanges?.(true);
+    markEdited();
     setDraftEncounter((prev) => {
       const newPlayers = selectedPlayers
         .map((sp) => sp.player)
@@ -98,7 +121,7 @@ export const useEncounterDraft = (
   };
 
   const handleUpdateCharacter = (character: InitiativeOrderCharacter) => {
-    setHasUnsavedChanges?.(true);
+    markEdited();
     setDraftEncounter((prev) => ({
       ...prev,
       initiativeOrder: prev.initiativeOrder.map((c) =>
@@ -108,7 +131,7 @@ export const useEncounterDraft = (
   };
 
   const handleDeleteCharacter = (characterId: string) => {
-    setHasUnsavedChanges?.(true);
+    markEdited();
     setDraftEncounter((prev) => {
       const characterToDelete = prev.initiativeOrder.find(
         (c) => c._id === characterId,
@@ -125,8 +148,9 @@ export const useEncounterDraft = (
         ),
       };
 
-      if (characterToDelete.type === 'enemy') {
+      if (characterToDelete.type !== 'player') {
         newState.enemies = prev.enemies.filter((e) => e._id !== characterId);
+        newState.npcs = (prev.npcs ?? []).filter((n) => n._id !== characterId);
       }
 
       if (characterToDelete.type === 'player') {

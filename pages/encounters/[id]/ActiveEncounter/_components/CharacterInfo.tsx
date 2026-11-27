@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { EncounterCharacter } from '../../../../../types/encounters';
 import ViewStatsButton from '../../../../../components/ui/ViewStatsButton';
 import InlineEditableText from '../../../../../components/ui/InlineEditableText';
@@ -13,6 +13,44 @@ interface CharacterInfoProps {
   onUpdateName?: (newName: string) => void;
   onUpdateInitiative?: (value: number) => void;
 }
+
+const InitiativeInput: React.FC<{
+  value?: number;
+  onCommit: (value: number) => void;
+}> = ({ value, onCommit }) => {
+  const [draft, setDraft] = useState(value === undefined ? '' : String(value));
+
+  useEffect(() => {
+    setDraft(value === undefined ? '' : String(value));
+  }, [value]);
+
+  const commit = () => {
+    const parsed = Number(draft);
+    if (draft.trim() === '' || isNaN(parsed)) {
+      setDraft(value === undefined ? '' : String(value));
+
+      return;
+    }
+    if (parsed !== value) onCommit(parsed);
+  };
+
+  return (
+    <input
+      type="number"
+      value={draft}
+      min={0}
+      max={35}
+      aria-label="Initiative"
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={commit}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') e.currentTarget.blur();
+      }}
+      className="w-12 bg-transparent border-none outline-none text-base-content text-opacity-90 px-1 py-0 focus:bg-base-200/60 focus:shadow-inner rounded transition group-hover:bg-base-200/40 group-hover:shadow-inner"
+      style={{ appearance: 'textfield' }}
+    />
+  );
+};
 
 export const CharacterInfo: React.FC<CharacterInfoProps> = ({
   name,
@@ -50,16 +88,7 @@ export const CharacterInfo: React.FC<CharacterInfoProps> = ({
       {onUpdateInitiative ? (
         <span className="text-sm text-base-content text-opacity-70 flex items-center gap-1 group">
           Initiative:
-          <input
-            type="number"
-            value={initiative ?? ''}
-            min={0}
-            max={35}
-            aria-label="Initiative"
-            onChange={(e) => onUpdateInitiative(Number(e.target.value))}
-            className="w-12 bg-transparent border-none outline-none text-base-content text-opacity-90 px-1 py-0 focus:bg-base-200/60 focus:shadow-inner rounded transition group-hover:bg-base-200/40 group-hover:shadow-inner"
-            style={{ appearance: 'textfield' }}
-          />
+          <InitiativeInput value={initiative} onCommit={onUpdateInitiative} />
         </span>
       ) : (
         <span className="text-sm text-base-content text-opacity-70">

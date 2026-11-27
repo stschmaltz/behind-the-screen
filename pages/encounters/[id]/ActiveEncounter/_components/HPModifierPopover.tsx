@@ -1,6 +1,5 @@
-import React, { WheelEvent } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { FloatingContext } from '@floating-ui/react';
-import { usePopoverContext } from '../../../../../context/PopoverContext';
 
 export const HPModifierPopover = React.forwardRef<
   HTMLDivElement,
@@ -28,43 +27,37 @@ export const HPModifierPopover = React.forwardRef<
     },
     ref,
   ) => {
-    const { setIsScrollLockActive } = usePopoverContext();
+    const inputRef = useRef<HTMLInputElement>(null);
+    const modifierValueRef = useRef(modifierValue);
+    modifierValueRef.current = modifierValue;
+    const setModifierValueRef = useRef(setModifierValue);
+    setModifierValueRef.current = setModifierValue;
 
     const popoverClasses =
       'z-50 p-3 card bg-base-200 shadow-xl w-56 overflow-hidden !transition-none';
 
-    const handleInputFocus = () => {
-      setIsScrollLockActive(true);
-    };
+    useEffect(() => {
+      const input = inputRef.current;
+      if (!input) return;
 
-    const handleInputBlur = () => {
-      setIsScrollLockActive(false);
-    };
+      const handleWheel = (e: WheelEvent) => {
+        if (document.activeElement !== input) return;
+        e.preventDefault();
+        e.stopPropagation();
 
-    const handleClose = () => {
-      setIsScrollLockActive(false);
-      onClose();
-    };
+        const currentValue = parseInt(modifierValueRef.current, 10) || 0;
+        const newValue =
+          e.deltaY < 0 ? currentValue + 1 : Math.max(1, currentValue - 1);
+        setModifierValueRef.current(String(newValue));
+      };
 
-    const handleApply = () => {
-      setIsScrollLockActive(false);
-      onApply();
-    };
+      input.addEventListener('wheel', handleWheel, { passive: false });
 
-    const handleInputScroll = (e: WheelEvent<HTMLInputElement>) => {
-      e.stopPropagation();
+      return () => input.removeEventListener('wheel', handleWheel);
+    }, []);
 
-      const currentValue = parseInt(modifierValue, 10) || 0;
-      let newValue = currentValue;
-
-      if (e.deltaY < 0) {
-        newValue = currentValue + 1;
-      } else if (e.deltaY > 0) {
-        newValue = Math.max(1, currentValue - 1);
-      }
-
-      setModifierValue(String(newValue));
-    };
+    const handleClose = onClose;
+    const handleApply = onApply;
 
     return (
       <div
@@ -106,9 +99,7 @@ export const HPModifierPopover = React.forwardRef<
           min="1"
           autoFocus
           onKeyDown={(e) => e.key === 'Enter' && handleApply()}
-          onFocus={handleInputFocus}
-          onBlur={handleInputBlur}
-          onWheel={handleInputScroll}
+          ref={inputRef}
         />
         <div className="flex justify-end gap-2 mt-2">
           <button className="btn btn-xs btn-ghost" onClick={handleClose}>

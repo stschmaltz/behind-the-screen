@@ -202,7 +202,7 @@ const EncountersPage: NextPage = () => {
       adventureId: encounterToCopy.adventureId?.toString(),
     };
     logger.debug('Attempting to save cloned data:', newEncounterData);
-    const success = await performSaveEncounter(newEncounterData);
+    const { success } = await performSaveEncounter(newEncounterData);
     setEncounterToCopy(null);
     setNewEncounterName('');
     if (success) {

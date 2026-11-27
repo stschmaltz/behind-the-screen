@@ -19,9 +19,9 @@ describe('encounterUtils', () => {
     });
 
     it('should handle fractional CR values', () => {
-      expect(getChallengeRatingXp('1/8')).toBe(6);
-      expect(getChallengeRatingXp('1/4')).toBe(12);
-      expect(getChallengeRatingXp('1/2')).toBe(25);
+      expect(getChallengeRatingXp('1/8')).toBe(25);
+      expect(getChallengeRatingXp('1/4')).toBe(50);
+      expect(getChallengeRatingXp('1/2')).toBe(100);
     });
 
     it('should extract XP from CR strings with XP values', () => {
@@ -112,7 +112,7 @@ describe('encounterUtils', () => {
 
     it('should handle fractional CR enemies', () => {
       const enemies = [createEnemy('1/4'), createEnemy('1/2')];
-      expect(calculateAdjustedXp(enemies)).toBe(55);
+      expect(calculateAdjustedXp(enemies)).toBe(225);
     });
 
     it('should apply correct multiplier for large groups', () => {
@@ -216,10 +216,10 @@ describe('encounterUtils', () => {
     });
 
     it('should return trivial difficulty for very weak encounter', () => {
-      const enemies = [createEnemy('1/4')];
+      const enemies = [createEnemy('0')];
       const result = getEncounterDifficulty(enemies, [1]);
       expect(result.difficulty).toBe('trivial');
-      expect(result.adjustedXp).toBe(12);
+      expect(result.adjustedXp).toBe(10);
     });
 
     it('should return medium difficulty', () => {
@@ -246,8 +246,8 @@ describe('encounterUtils', () => {
       const enemies = [createEnemy('1'), createEnemy('1'), createEnemy('1/2')];
       const result = getEncounterDifficulty(enemies, [3, 3, 3, 3]);
 
-      expect(result.difficulty).toBe('medium');
-      expect(result.adjustedXp).toBe(850);
+      expect(result.difficulty).toBe('hard');
+      expect(result.adjustedXp).toBe(1000);
       expect(result.thresholds).toEqual({
         easy: 300,
         medium: 600,
@@ -261,10 +261,10 @@ describe('encounterUtils', () => {
       const partyLevels = [1];
       const result = getEncounterDifficulty(enemies, partyLevels);
 
-      expect(result.adjustedXp).toBe(12);
+      expect(result.adjustedXp).toBe(50);
       expect(result.thresholds.easy).toBe(25);
       expect(result.thresholds.medium).toBe(50);
-      expect(result.difficulty).toBe('trivial');
+      expect(result.difficulty).toBe('medium');
     });
 
     it('should handle large party vs many enemies', () => {
