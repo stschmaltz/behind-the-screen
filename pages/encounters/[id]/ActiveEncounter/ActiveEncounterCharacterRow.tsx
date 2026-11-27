@@ -1,4 +1,5 @@
 import React, { forwardRef, useState } from 'react';
+import posthog from 'posthog-js';
 import ListLayout from './_components/ListLayout';
 import {
   Condition,
@@ -15,6 +16,8 @@ const ActiveEncounterCharacterRow = forwardRef<
     onUpdateCharacter: (character: InitiativeOrderCharacter) => void;
     monsterData?: EncounterCharacter;
     onPopoverVisibilityChange?: (isOpen: boolean) => void;
+    onViewStats?: () => void;
+    isStatsShown?: boolean;
   }
 >(
   (
@@ -24,6 +27,8 @@ const ActiveEncounterCharacterRow = forwardRef<
       onUpdateCharacter,
       monsterData,
       onPopoverVisibilityChange,
+      onViewStats,
+      isStatsShown,
     },
     ref,
   ) => {
@@ -39,7 +44,7 @@ const ActiveEncounterCharacterRow = forwardRef<
       Boolean(monsterData);
     const currentHP = character.currentHP ?? 0;
 
-    const openModal = () => setIsModalOpen(true);
+    const openModal = onViewStats ?? (() => setIsModalOpen(true));
 
     const handleHealthApply = () => {
       const numValue = Number(modifierValue);
@@ -83,6 +88,13 @@ const ActiveEncounterCharacterRow = forwardRef<
           break;
       }
 
+      posthog.capture('character_hp_modified', {
+        modifier_type: modifierType,
+        amount: numValue,
+        character_type: character.type,
+        reduced_to_zero: currentHP > 0 && newHP <= 0,
+      });
+
       onUpdateCharacter({ ...character, currentHP: newHP, tempHP: newTempHP });
       setModifierValue('');
       setPopoverOpen(false);
@@ -119,7 +131,7 @@ const ActiveEncounterCharacterRow = forwardRef<
     return (
       <div
         ref={ref}
-        className={`card relative border-[1px] ${isCurrentTurn ? 'bg-primary bg-opacity-10 z-10 border-primary ' : 'bg-base-300/40'} shadow-sm mb-1`}
+        className={`card relative border-[1px] ${isCurrentTurn ? 'bg-primary bg-opacity-10 z-10 border-primary ' : 'bg-base-300/40'} ${isStatsShown && !isCurrentTurn ? 'border-info' : ''} shadow-sm mb-1`}
       >
         {
           <MonsterDetailModal

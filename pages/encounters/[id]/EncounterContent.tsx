@@ -134,7 +134,7 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
   const { status } = encounter;
 
   return (
-    <div className="p-4">
+    <div className={`p-4 ${status === 'active' ? '' : 'max-w-4xl mx-auto'}`}>
       <div className="card bg-base-100 shadow-sm mb-4">
         <div className="card-body">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">

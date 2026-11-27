@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import posthog from 'posthog-js';
 import MonsterSelector from './MonsterSelector';
 import BasicEnemyForm from './BasicEnemyForm';
 import AdvancedEnemyForm from './AdvancedEnemyForm';
@@ -101,6 +102,13 @@ const NewEnemyModal: React.FC<Props> = ({
     }
 
     onAddCharacter(newEnemy, Number(initiative) || undefined, characterType);
+
+    posthog.capture('enemy_added_to_encounter', {
+      character_type: characterType,
+      source: selectedMonsterName ? 'library' : 'custom',
+      monster_name: selectedMonsterName || undefined,
+      during_combat: Boolean(requireInitiative),
+    });
 
     handleCloseActions();
   };

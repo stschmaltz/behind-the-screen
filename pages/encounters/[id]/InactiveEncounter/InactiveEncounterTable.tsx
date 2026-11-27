@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import posthog from 'posthog-js';
 import InactiveEncounterCharacterRow from './InactiveEncounterCharacterRow';
 import NewEnemyModal from '../enemy/NewEnemyModal';
 import AddPlayersModal from '../AddPlayersModal';
@@ -72,6 +73,18 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
 
     const success = await handleSave(updatedEncounter);
     if (success) {
+      posthog.capture('encounter_started', {
+        encounter_id: encounter._id,
+        enemy_count: updatedEncounter.initiativeOrder.filter(
+          (c) => c.type === 'enemy',
+        ).length,
+        player_count: updatedEncounter.initiativeOrder.filter(
+          (c) => c.type === 'player',
+        ).length,
+        npc_count: updatedEncounter.initiativeOrder.filter(
+          (c) => c.type === 'npc',
+        ).length,
+      });
       showDaisyToast('success', 'Encounter started');
       setEncounter(updatedEncounter);
     } else {
