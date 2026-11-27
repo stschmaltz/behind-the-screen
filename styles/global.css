@@ -75,11 +75,11 @@ header :where(a, button):focus-visible {
   }
 
   .page-enter {
-    animation: pageEnter 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: pageEnter 0.28s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   }
 
   .pop-in {
-    animation: popIn 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: popIn 0.18s cubic-bezier(0.22, 1, 0.36, 1) backwards;
   }
 
   .backdrop-fade {
@@ -87,7 +87,7 @@ header :where(a, button):focus-visible {
   }
 
   .reveal {
-    animation: reveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: reveal 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
     animation-delay: calc(var(--i, 0) * 70ms);
   }
 
@@ -191,7 +191,7 @@ header :where(a, button):focus-visible {
 }
 
 .modal-open .modal-box {
-  animation: popIn 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: popIn 0.2s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
