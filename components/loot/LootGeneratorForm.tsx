@@ -34,6 +34,7 @@ interface LootGeneratorFormProps {
   isLoading: boolean;
   error: string | null;
   onSubmit: (e: React.FormEvent) => Promise<void>;
+  aiSlot?: React.ReactNode;
 }
 
 // ============================================================================
@@ -197,16 +198,17 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
   isLoading,
   error,
   onSubmit,
+  aiSlot,
 }) => {
   const isAiDisabled = isLoading || !aiMode.enabled;
 
   return (
     <div className="card bg-base-100 shadow-xl h-fit min-w-[250px]">
       <div className="card-body p-4 sm:p-6">
-        <h1 className="card-title text-2xl font-bold text-center mb-3 flex items-center justify-center gap-2">
+        <h2 className="card-title text-2xl font-bold text-center mb-3 flex items-center justify-center gap-2">
           <TreasureChestIcon className="w-6 h-6 text-primary" />
           Loot Table Generator
-        </h1>
+        </h2>
 
         <form onSubmit={onSubmit} className="space-y-3">
           {/* Core Settings */}
@@ -287,12 +289,14 @@ const LootGeneratorForm: React.FC<LootGeneratorFormProps> = ({
           <div className="divider my-2" />
 
           {/* AI Mode Toggle */}
-          <AiModeToggle
-            aiMode={aiMode}
-            onAiModeChange={onAiModeChange}
-            onRequestMoreUses={onRequestMoreUses}
-            disabled={isLoading}
-          />
+          {aiSlot ?? (
+            <AiModeToggle
+              aiMode={aiMode}
+              onAiModeChange={onAiModeChange}
+              onRequestMoreUses={onRequestMoreUses}
+              disabled={isLoading}
+            />
+          )}
 
           {/* Submit Button */}
           <div className="mt-4">

@@ -21,7 +21,10 @@ interface UseGenerationUsageResult {
   requestMoreUses: () => Promise<void>;
 }
 
-export function useGenerationUsage(): UseGenerationUsageResult {
+export function useGenerationUsage(
+  options: { enabled?: boolean } = {},
+): UseGenerationUsageResult {
+  const enabled = options.enabled ?? true;
   const [usageCount, setUsageCount] = useState<number>(0);
   const [hasRequestedMoreUses, setHasRequestedMoreUses] =
     useState<boolean>(false);
@@ -29,6 +32,7 @@ export function useGenerationUsage(): UseGenerationUsageResult {
   const { data: prefsData, loading: prefsLoading } =
     useQuery<GetUserPreferencesQuery>({
       query: getUserPreferencesQuery,
+      enabled,
     });
 
   const {
@@ -37,6 +41,7 @@ export function useGenerationUsage(): UseGenerationUsageResult {
     refresh,
   } = useQuery<{ getAiGenerationCount: number }>({
     query: getAiGenerationCountQuery,
+    enabled,
     skipCache: true,
   });
 
@@ -60,15 +65,16 @@ export function useGenerationUsage(): UseGenerationUsageResult {
   }, [countData]);
 
   useEffect(() => {
+    if (!enabled) return;
     const handleFocus = () => {
-      refresh();
+      refresh().catch(() => undefined);
     };
 
     window.addEventListener('focus', handleFocus);
     return () => {
       window.removeEventListener('focus', handleFocus);
     };
-  }, [refresh]);
+  }, [refresh, enabled]);
 
   const requestMoreUsesHandler = async (): Promise<void> => {
     try {
