@@ -18,12 +18,11 @@ export class EncounterRepository implements EncounterRepositoryInterface {
     const { _id, userId, ...docToInsert } = input;
 
     const result = await db.collection(this.collectionName).findOneAndUpdate(
-      { _id: new ObjectId(_id) },
+      { _id: new ObjectId(_id), userId: new ObjectId(userId) },
       {
+        $setOnInsert: { createdAt: new Date() },
         $set: {
-          createdAt: new Date(),
           ...docToInsert,
-          userId: new ObjectId(userId),
           campaignId: new ObjectId(docToInsert.campaignId),
           adventureId: docToInsert.adventureId
             ? new ObjectId(docToInsert.adventureId)

@@ -39,6 +39,8 @@ describe('useEncounterDraft', () => {
     currentRound: 0,
     currentTurn: 0,
     campaignId: new ObjectId('507f1f77bcf86cd799439011'),
+    userId: 'user-1',
+    createdAt: new Date('2024-01-01'),
     ...overrides,
   });
 
@@ -153,6 +155,36 @@ describe('useEncounterDraft', () => {
       });
 
       expect(result.current.draftEncounter.initiativeOrder[0].type).toBe('npc');
+      expect(result.current.draftEncounter.npcs).toEqual([newNpc]);
+      expect(result.current.draftEncounter.enemies).toEqual([]);
+
+      act(() => {
+        result.current.handleDeleteCharacter('npc-1');
+      });
+
+      expect(result.current.draftEncounter.npcs).toEqual([]);
+      expect(result.current.draftEncounter.initiativeOrder).toEqual([]);
+    });
+
+    it('should keep unsaved edits when the encounter is renamed', () => {
+      const encounter = createMockEncounter();
+      const { result, rerender } = renderHook(
+        ({ current }) => useEncounterDraft(current, mockPlayers),
+        { initialProps: { current: encounter } },
+      );
+
+      act(() => {
+        result.current.handleAddCharacter(
+          createMockEnemy('enemy-1', 'Goblin'),
+          'enemy',
+        );
+      });
+
+      rerender({ current: { ...encounter, name: 'Renamed' } });
+
+      expect(result.current.draftEncounter.name).toBe('Renamed');
+      expect(result.current.draftEncounter.enemies).toHaveLength(1);
+      expect(result.current.draftEncounter.initiativeOrder).toHaveLength(1);
     });
 
     it('should initialize character with correct HP values', () => {
@@ -185,8 +217,8 @@ describe('useEncounterDraft', () => {
       );
 
       const selectedPlayers = [
-        { player: mockPlayers[0], initiative: '15' },
-        { player: mockPlayers[1], initiative: '12' },
+        { player: mockPlayers[0], initiative: 15 },
+        { player: mockPlayers[1], initiative: 12 },
       ];
 
       act(() => {
@@ -207,7 +239,7 @@ describe('useEncounterDraft', () => {
         useEncounterDraft(encounter, mockPlayers),
       );
 
-      const selectedPlayers = [{ player: mockPlayers[0], initiative: '15' }];
+      const selectedPlayers = [{ player: mockPlayers[0], initiative: 15 }];
 
       act(() => {
         result.current.handleAddPlayers(selectedPlayers);
@@ -225,7 +257,7 @@ describe('useEncounterDraft', () => {
         useEncounterDraft(encounter, mockPlayers),
       );
 
-      const selectedPlayers = [{ player: mockPlayers[0], initiative: '18' }];
+      const selectedPlayers = [{ player: mockPlayers[0], initiative: 18 }];
 
       act(() => {
         result.current.handleAddPlayers(selectedPlayers);
@@ -241,7 +273,9 @@ describe('useEncounterDraft', () => {
         useEncounterDraft(encounter, mockPlayers),
       );
 
-      const selectedPlayers = [{ player: mockPlayers[0], initiative: '' }];
+      const selectedPlayers = [
+        { player: mockPlayers[0], initiative: '' as const },
+      ];
 
       act(() => {
         result.current.handleAddPlayers(selectedPlayers);

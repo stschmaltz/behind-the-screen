@@ -63,3 +63,7 @@ error.log
 
 .vercel
 .env*.local
+
+# e2e auth state
+/e2e/.auth/
+/.next-e2e/

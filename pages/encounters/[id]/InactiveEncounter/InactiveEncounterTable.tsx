@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import posthog from 'posthog-js';
 import InactiveEncounterCharacterRow from './InactiveEncounterCharacterRow';
 import NewEnemyModal from '../enemy/NewEnemyModal';
 import AddPlayersModal from '../AddPlayersModal';
@@ -36,12 +37,13 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
   } = useEncounterDraft(encounter, players, setHasUnsavedChanges);
 
   const onSave = async () => {
-    const success = await handleSave(draftEncounter);
+    const { success, errors } = await handleSave(draftEncounter);
     if (success) {
+      setEncounter(draftEncounter);
       setHasUnsavedChanges(false);
       showDaisyToast('success', 'Encounter saved');
     } else {
-      showDaisyToast('error', 'Failed to save encounter');
+      showDaisyToast('error', errors?.join('; ') || 'Failed to save encounter');
     }
   };
 
@@ -70,12 +72,28 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
       status: 'active' as const,
     };
 
-    const success = await handleSave(updatedEncounter);
+    const { success, errors } = await handleSave(updatedEncounter);
     if (success) {
+      setHasUnsavedChanges(false);
+      posthog.capture('encounter_started', {
+        encounter_id: encounter._id,
+        enemy_count: updatedEncounter.initiativeOrder.filter(
+          (c) => c.type === 'enemy',
+        ).length,
+        player_count: updatedEncounter.initiativeOrder.filter(
+          (c) => c.type === 'player',
+        ).length,
+        npc_count: updatedEncounter.initiativeOrder.filter(
+          (c) => c.type === 'npc',
+        ).length,
+      });
       showDaisyToast('success', 'Encounter started');
       setEncounter(updatedEncounter);
     } else {
-      showDaisyToast('error', 'Failed to start encounter');
+      showDaisyToast(
+        'error',
+        errors?.join('; ') || 'Failed to start encounter',
+      );
     }
   };
 
@@ -157,7 +175,6 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
               <th>Name</th>
               <th>Initiative</th>
               <th>HP</th>
-              <th>Temp HP</th>
               <th>AC</th>
               <th></th>
             </tr>

@@ -41,3 +41,52 @@ Not covered by unit tests: resolvers, repositories, REST routes and most compone
 ## Type checking tests
 
 `npm run tsc` covers test files as well as source.
+
+## End-to-end tests (Playwright)
+
+Browser tests for the encounter flow live in `e2e/`. They drive the real app
+against the real API and database.
+
+```bash
+npm run test:e2e        # headless run
+npm run test:e2e:ui     # interactive runner
+npx playwright show-report
+```
+
+First time only: `npx playwright install chromium`.
+
+### How it works
+
+- **Its own server.** The suite starts `next dev` on port 3100 with a separate
+  build folder (`.next-e2e`), so it does not interfere with a dev server you
+  already have open on port 3000. Set `E2E_BASE_URL` to point it at an
+  already-running server instead.
+- **Sign-in.** Tests never visit the Auth0 login page. `e2e/support/session.ts`
+  signs a session cookie for two dedicated test users (`e2e|dm-essentials-primary`
+  and `e2e|dm-essentials-other`) using `AUTH0_SECRET` from `.env.local`.
+- **Data.** `e2e/global-setup.ts` deletes everything those two test users own,
+  then creates a campaign, an adventure and two players. Each test seeds its own
+  encounter through the GraphQL API (`e2e/support/api.ts`).
+- **Safety.** The suite writes to whatever database `.env.local` points at and
+  refuses to run unless `DB_NAME` contains `dev`, `test`, `e2e` or `local`
+  (override with `E2E_ALLOW_ANY_DB=true`). It only ever touches the two test
+  users' data.
+
+### Writing a test
+
+```ts
+import { EncounterPage, expect, test } from './support/fixtures';
+
+test('next turn', async ({ page, createEncounter }) => {
+  const encounter = await createEncounter(); // active, 10 enemies + 1 player
+  const view = new EncounterPage(page);
+  await view.open(encounter.id);
+
+  await view.andSave(() => view.nextButton().click());
+
+  await expect(view.currentTurnRow()).toContainText('Bravo Goblin');
+});
+```
+
+Use `view.andSave(...)` before reloading or checking the API: saves are debounced
+by half a second, so a reload straight after a click can beat the save.
