@@ -68,10 +68,10 @@ function Layout({ children }: LayoutProps) {
           <Link
             href="/"
             className="flex items-center group"
-            aria-label="DM Essentials home"
+            aria-label="Encounter Manager home"
           >
             <span className="ml-2 text-xl md:text-2xl font-bold transition-transform duration-200 group-hover:scale-105">
-              DM Essentials
+              Encounter Manager
             </span>
           </Link>
           <div className="flex items-center gap-2 md:gap-4">
@@ -128,7 +128,7 @@ function Layout({ children }: LayoutProps) {
       <footer className="p-4 pb-6 md:pb-4 bg-neutral text-neutral-content mb-16 md:mb-0">
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center text-sm">
           <div className="flex flex-col items-center mb-4 md:mb-0 text-xs">
-            &copy; {new Date().getFullYear()} Dungeon Master Essentials.
+            &copy; {new Date().getFullYear()} Encounter Manager.
             <div>
               All rights reserved.
               <button

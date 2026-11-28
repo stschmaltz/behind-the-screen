@@ -113,7 +113,7 @@ const AccountSettingsPage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Account Settings - DM Essentials</title>
+        <title>Account Settings - Encounter Manager</title>
       </Head>
       <div className="container px-4 py-8 mx-auto">
         <h1 className="text-3xl font-bold mb-8">Account Settings</h1>

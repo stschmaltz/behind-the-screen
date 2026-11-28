@@ -45,7 +45,7 @@ export const KofiButton: React.FC<KofiButtonProps> = ({
               ✕
             </button>
             <h3 className="font-bold text-lg mb-4 text-center">
-              Support DM Essentials
+              Support Encounter Manager
             </h3>
 
             <p className="text-center text-sm mb-4">
@@ -62,7 +62,7 @@ export const KofiButton: React.FC<KofiButtonProps> = ({
                   height: '560px',
                   background: 'transparent',
                 }}
-                title="Support DM Essentials"
+                title="Support Encounter Manager"
                 allow="payment"
                 loading="lazy"
               />

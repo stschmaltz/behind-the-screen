@@ -67,7 +67,7 @@ const FeedbackPage: NextPage = () => {
           <h2 className="text-xl font-semibold mb-4">Thank You!</h2>
           <p className="mb-6">
             Your feedback has been submitted successfully and emailed to the
-            developer. Thanks for helping make Dungeon Master Essentials better!
+            developer. Thanks for helping make Encounter Manager better!
           </p>
           <Link href="/" className="btn btn-primary">
             Return to Home
@@ -76,8 +76,8 @@ const FeedbackPage: NextPage = () => {
       ) : (
         <div className="w-full max-w-md">
           <p className="mb-6 text-center">
-            I&apos;d love to hear your thoughts on Dungeon Master Essentials.
-            Your feedback will help shape the future of this app!
+            I&apos;d love to hear your thoughts on Encounter Manager. Your
+            feedback will help shape the future of this app!
           </p>
 
           {error && (

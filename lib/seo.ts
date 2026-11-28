@@ -1,5 +1,5 @@
 export const SITE_URL = 'https://encountermanager.com';
-export const SITE_NAME = 'DM Essentials';
+export const SITE_NAME = 'Encounter Manager';
 export const OG_IMAGE = `${SITE_URL}/images/profile.png`;
 
 interface RouteSeo {
@@ -19,25 +19,25 @@ const ROUTE_SEO: Record<string, RouteSeo> = {
       'Roll random treasure for your D&D 5e party by level: coins, gear, trinkets, magic items and custom loot. A free loot generator for Dungeon Masters.',
   },
   '/support': {
-    title: 'Support DM Essentials',
+    title: 'Support Encounter Manager',
     description:
-      'Support the development of DM Essentials, a free toolkit of encounter, NPC and loot tools for Dungeon Masters.',
+      'Support the development of Encounter Manager, a free toolkit of encounter, NPC and loot tools for Dungeon Masters.',
   },
   '/privacy': {
     title: 'Privacy Policy',
-    description: 'How DM Essentials collects, uses and protects your data.',
+    description: 'How Encounter Manager collects, uses and protects your data.',
   },
   '/terms': {
     title: 'Terms of Service',
-    description: 'The terms that govern your use of DM Essentials.',
+    description: 'The terms that govern your use of Encounter Manager.',
   },
   '/feedback': {
     title: 'Send Feedback',
     description:
-      'Share feature requests, bug reports and ideas to help shape DM Essentials.',
+      'Share feature requests, bug reports and ideas to help shape Encounter Manager.',
   },
   '/encounters': {
-    title: 'Encounter Manager',
+    title: 'Your Encounters',
     description:
       'Plan and run D&D 5e combat encounters with initiative tracking, HP, conditions and a full monster database.',
   },
@@ -106,6 +106,6 @@ export const buildWebSiteJsonLd = () => ({
   '@context': 'https://schema.org',
   '@type': 'WebSite',
   name: SITE_NAME,
-  alternateName: ['Dungeon Master Essentials', 'Encounter Manager'],
+  alternateName: ['DM Essentials', 'Dungeon Master Essentials'],
   url: `${SITE_URL}/`,
 });
