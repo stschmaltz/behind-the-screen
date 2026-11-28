@@ -17,7 +17,7 @@ const LoginRequiredPage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Login Required - DM Essentials</title>
+        <title>Login Required - Encounter Manager</title>
         <meta
           name="description"
           content="Please log in to access this content"

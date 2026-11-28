@@ -5,8 +5,8 @@ const OfflinePage: NextPage = () => {
     <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-center">
       <h1 className="text-2xl font-bold">You&apos;re offline</h1>
       <p className="max-w-md text-base-content/70">
-        DM Essentials needs an internet connection right now. Reconnect and this
-        page will be ready to go.
+        Encounter Manager needs an internet connection right now. Reconnect and
+        this page will be ready to go.
       </p>
       <button
         type="button"

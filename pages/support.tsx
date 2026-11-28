@@ -6,10 +6,10 @@ const SupportPage: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Support DM Essentials</title>
+        <title>Support Encounter Manager</title>
         <meta
           name="description"
-          content="Support the development of DM Essentials tools for Dungeon Masters."
+          content="Support the development of Encounter Manager tools for Dungeon Masters."
           key="desc"
         />
       </Head>
@@ -17,14 +17,14 @@ const SupportPage: NextPage = () => {
         <div className="max-w-2xl w-full text-center">
           <div className="flex items-center justify-center mb-6">
             <HeartIcon className="h-10 w-10 text-red-500 mr-2" />
-            <h1 className="text-3xl font-bold">Support DM Essentials</h1>
+            <h1 className="text-3xl font-bold">Support Encounter Manager</h1>
           </div>
 
           <p className="mb-8 text-lg">
-            DM Essentials is a free, open-source project created to help Game
-            Masters run better tabletop RPG games. If you&apos;ve found these
-            tools helpful and want to support continued development, you can buy
-            me a coffee!
+            Encounter Manager is a free, open-source project created to help
+            Game Masters run better tabletop RPG games. If you&apos;ve found
+            these tools helpful and want to support continued development, you
+            can buy me a coffee!
           </p>
 
           <p className="text-base mb-2 text-base-content/80">
@@ -43,7 +43,7 @@ const SupportPage: NextPage = () => {
                 background: 'transparent',
               }}
               height="600"
-              title="Support DM Essentials"
+              title="Support Encounter Manager"
               allow="payment"
               loading="lazy"
             />
@@ -60,7 +60,7 @@ const SupportPage: NextPage = () => {
               <li>Quality time to continue building this solo project</li>
             </ul>
 
-            <p>Thank you for your support and for using DM Essentials!</p>
+            <p>Thank you for your support and for using Encounter Manager!</p>
           </div>
         </div>
       </div>

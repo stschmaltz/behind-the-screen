@@ -95,7 +95,7 @@ const FEATURES = [
 
 const FAQS: FaqItem[] = [
   {
-    question: 'Is DM Essentials free?',
+    question: 'Is Encounter Manager free?',
     answer:
       'Yes. The encounter manager, combat tracker, NPC generator and loot generator are free to use. A free account lets you save encounters and campaigns.',
   },
@@ -112,7 +112,7 @@ const FAQS: FaqItem[] = [
   {
     question: 'Can I use it on my phone or tablet?',
     answer:
-      'Yes. DM Essentials is designed for phones, tablets and laptops, and can be installed to your home screen like an app.',
+      'Yes. Encounter Manager is designed for phones, tablets and laptops, and can be installed to your home screen like an app.',
   },
 ];
 
@@ -128,7 +128,7 @@ const HomePage: NextPage = () => {
       <JsonLd
         id="webapp"
         data={buildWebAppJsonLd({
-          name: 'DM Essentials Encounter Manager',
+          name: 'Encounter Manager',
           description: PAGE_DESCRIPTION,
           path: '/',
         })}
@@ -138,7 +138,7 @@ const HomePage: NextPage = () => {
       <div className="flex flex-col items-center gap-16 pb-8">
         <section className="hero-glow w-full rounded-3xl px-4 py-12 md:py-16 text-center flex flex-col items-center gap-5">
           <p className="text-sm font-semibold uppercase tracking-widest text-primary">
-            Dungeon Master Essentials
+            For Dungeon Masters
           </p>
           <h1 className="max-w-3xl text-4xl md:text-5xl font-extrabold leading-tight text-balance">
             The free D&amp;D 5e encounter manager &amp; combat tracker

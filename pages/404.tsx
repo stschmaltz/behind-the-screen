@@ -6,7 +6,7 @@ const Custom404: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Page Not Found | DM Essentials</title>
+        <title>Page Not Found | Encounter Manager</title>
       </Head>
       <div className="flex flex-col items-center justify-center text-center min-h-[60vh] gap-4">
         <p
