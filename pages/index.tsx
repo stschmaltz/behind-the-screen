@@ -28,6 +28,8 @@ const PAGE_TITLE = 'D&D 5e Encounter Manager & Combat Tracker';
 const PAGE_DESCRIPTION =
   'Free D&D 5e encounter manager and combat tracker. Track initiative, HP and conditions, build encounters from a full monster database, and generate NPCs and loot for your campaigns.';
 
+const SIGN_UP_URL = '/api/auth/login?returnTo=%2Fencounters';
+
 const TOOLS = [
   {
     href: '/encounters',
@@ -157,9 +159,11 @@ const HomePage: NextPage = () => {
               {user ? 'Open Encounter Manager' : 'Try a demo encounter'}
               <ArrowRightIcon className="h-5 w-5" />
             </Link>
-            <Link href="/npc-generator" className="btn btn-ghost btn-lg">
-              Try the NPC generator
-            </Link>
+            {!user && (
+              <a href={SIGN_UP_URL} className="btn btn-ghost btn-lg">
+                Sign up to save your encounters
+              </a>
+            )}
           </div>
           <p className="reveal text-sm text-base-content/60" style={stagger(1)}>
             {user
