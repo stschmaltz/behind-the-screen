@@ -18,7 +18,7 @@ export const ListLayout: React.FC<{
   modifierValue: string;
   setModifierType: (type: 'damage' | 'heal' | 'temp') => void;
   setModifierValue: (value: string) => void;
-  onUpdateArmorClass: (value: number) => void;
+  onUpdateArmorClass: (value: number | undefined) => void;
   onApplyModifier: () => void;
   onAddCondition: (condition: Condition) => void;
   onRemoveCondition: (condition: Condition) => void;

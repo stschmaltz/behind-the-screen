@@ -198,7 +198,30 @@ describe('active encounter', () => {
 
       await user.click(screen.getByRole('button', { name: 'Next' }));
 
-      expect(showDaisyToast).toHaveBeenCalledWith('success', "Fighter's turn");
+      expect(showDaisyToast).toHaveBeenCalledWith(
+        'success',
+        "Fighter's turn",
+        expect.objectContaining({ replaceId: 'turn-change' }),
+      );
+    });
+
+    it('reuses one toast for turn changes so they do not stack', async () => {
+      const user = userEvent.setup();
+      renderEncounter();
+      const next = screen.getByRole('button', { name: 'Next' });
+
+      await user.click(next);
+      await user.click(next);
+      await user.click(next);
+
+      const turnToastIds = (showDaisyToast as jest.Mock).mock.calls
+        .filter(([, message]) => String(message).endsWith("'s turn"))
+        .map(([, , options]) => options?.replaceId);
+      expect(turnToastIds).toEqual([
+        'turn-change',
+        'turn-change',
+        'turn-change',
+      ]);
     });
 
     it('recovers when the saved turn is past the end of the order', async () => {
@@ -410,6 +433,37 @@ describe('active encounter', () => {
 
       expect(event.defaultPrevented).toBe(false);
       expect(input).toHaveValue(5);
+    });
+  });
+
+  describe('row controls', () => {
+    it('opens the HP popover from the HP readout itself', async () => {
+      const user = userEvent.setup();
+      renderEncounter();
+
+      await user.click(within(rowFor('Wolf')).getByText(/HP: 10\/10/));
+
+      expect(screen.getByPlaceholderText('Amount')).toBeInTheDocument();
+    });
+
+    it('describes the HP button with the current health', () => {
+      renderEncounter();
+
+      expect(
+        within(rowFor('Wolf')).getByLabelText('Adjust HP'),
+      ).toHaveAccessibleDescription(/HP: 10\/10/);
+    });
+
+    it('clears armor class instead of saving it as 0', async () => {
+      const user = userEvent.setup();
+      renderEncounter();
+      const input = within(rowFor('Wolf')).getByLabelText('Armor Class');
+
+      await user.clear(input);
+
+      expect(input).toHaveValue(null);
+      const saved = lastSaved().initiativeOrder.find((c) => c._id === 'e2');
+      expect(saved?.armorClass).toBeUndefined();
     });
   });
 

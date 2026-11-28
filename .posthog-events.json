@@ -57,7 +57,7 @@
   {
     "eventName": "character_hp_modified",
     "description": "User modifies a character's HP during combat",
-    "filePath": "pages/encounters/[id]/ActiveEncounter/_components/HPModifierPopover.tsx"
+    "filePath": "pages/encounters/[id]/ActiveEncounter/ActiveEncounterCharacterRow.tsx"
   },
   {
     "eventName": "enemy_added_to_encounter",

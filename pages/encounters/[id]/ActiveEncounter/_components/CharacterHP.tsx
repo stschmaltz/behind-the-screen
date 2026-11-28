@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
 import {
   autoUpdate,
   flip,
@@ -33,6 +33,7 @@ export const CharacterHP: React.FC<{
   onApplyModifier,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const hpReadoutId = useId();
 
   const { refs, floatingStyles, context } = useFloating({
     open: isOpen,
@@ -62,47 +63,42 @@ export const CharacterHP: React.FC<{
     return 'progress-error';
   };
 
-  const HPDisplay = () => {
-    if (maxHP) {
-      return (
-        <div className="flex flex-col items-end">
-          <span
-            className={`text-sm font-medium whitespace-nowrap mb-0.5 ${
-              currentHP <= 0 ? 'text-neutral-content text-opacity-70' : ''
-            }`}
-          >
-            HP: {currentHP}/{maxHP}
-            {typeof tempHP === 'number' && tempHP > 0 && (
-              <span className="ml-1 text-info">(+{tempHP})</span>
-            )}
-          </span>
-          {currentHP > 0 && (
-            <progress
-              className={`progress ${getProgressColor()} w-20 h-2`}
-              value={currentHP}
-              max={maxHP}
-              aria-label={`Health: ${currentHP} of ${maxHP}`}
-            ></progress>
-          )}
-        </div>
-      );
-    }
-
-    return (
-      <div
-        className={`px-2 py-1 rounded-full text-white text-sm font-medium whitespace-nowrap ${
-          currentHP <= 0
-            ? 'bg-neutral text-neutral-content text-opacity-70'
-            : 'bg-info'
+  const hpDisplay = maxHP ? (
+    <span id={hpReadoutId} className="flex flex-col items-end">
+      <span
+        className={`text-sm font-medium whitespace-nowrap mb-0.5 ${
+          currentHP <= 0 ? 'text-neutral-content text-opacity-70' : ''
         }`}
       >
-        HP: {currentHP}
+        HP: {currentHP}/{maxHP}
         {typeof tempHP === 'number' && tempHP > 0 && (
           <span className="ml-1 text-info">(+{tempHP})</span>
         )}
-      </div>
-    );
-  };
+      </span>
+      {currentHP > 0 && (
+        <progress
+          className={`progress ${getProgressColor()} w-20 h-2`}
+          value={currentHP}
+          max={maxHP}
+          aria-label={`Health: ${currentHP} of ${maxHP}`}
+        ></progress>
+      )}
+    </span>
+  ) : (
+    <span
+      id={hpReadoutId}
+      className={`px-2 py-1 rounded-full text-white text-sm font-medium whitespace-nowrap ${
+        currentHP <= 0
+          ? 'bg-neutral text-neutral-content text-opacity-70'
+          : 'bg-info'
+      }`}
+    >
+      HP: {currentHP}
+      {typeof tempHP === 'number' && tempHP > 0 && (
+        <span className="ml-1 text-info">(+{tempHP})</span>
+      )}
+    </span>
+  );
 
   const handleApply = () => {
     onApplyModifier();
@@ -111,15 +107,20 @@ export const CharacterHP: React.FC<{
 
   return (
     <>
-      <div className="flex items-center justify-end gap-1">
-        <HPDisplay />
+      <div className="flex items-center justify-end">
         <button
           ref={refs.setReference}
-          className="btn btn-xs btn-ghost"
+          type="button"
+          className="flex items-center gap-2 rounded-lg px-2 py-1 -my-1 cursor-pointer transition-colors hover:bg-base-content/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
           aria-label="Adjust HP"
+          aria-describedby={hpReadoutId}
+          title="Damage, heal or add temporary HP"
           {...getReferenceProps()}
         >
-          <span className="text-xs">+/-</span>
+          {hpDisplay}
+          <span className="btn btn-xs btn-ghost px-1 pointer-events-none">
+            +/-
+          </span>
         </button>
       </div>
 

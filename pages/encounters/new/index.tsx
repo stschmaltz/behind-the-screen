@@ -28,7 +28,9 @@ import { useUserPreferences } from '../../../hooks/user-preferences/use-user-pre
 import { useActiveCampaign } from '../../../context/ActiveCampaignContext';
 import { getAllCampaigns } from '../../../hooks/campaign/get-all-campaigns';
 import CampaignSelector from '../../../components/selectors/CampaignSelector';
-import AdventureSelector from '../../../components/selectors/AdventureSelector';
+import AdventureSelector, {
+  AdventureChangeMeta,
+} from '../../../components/selectors/AdventureSelector';
 import { useUnsavedChangesWarning } from '../../../hooks/use-unsaved-changes-warning';
 
 type EncounterInputData = Omit<NewEncounterTemplate, 'userId' | '_id'> & {
@@ -69,6 +71,8 @@ const NewEncounterPage: NextPage = () => {
 
   const [campaignId, setCampaignId] = useState<string | undefined>(undefined);
   const [adventureId, setAdventureId] = useState<string | undefined>(undefined);
+  const [pendingAdventureName, setPendingAdventureName] = useState('');
+  const [isCreatingAdventure, setIsCreatingAdventure] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   useUnsavedChangesWarning(hasUnsavedChanges);
@@ -128,7 +132,24 @@ const NewEncounterPage: NextPage = () => {
     }
 
     setIsPreparingHome(true);
-    const chosenAdventureId = isFirstCampaign ? undefined : adventureId;
+    let chosenAdventureId = isFirstCampaign ? undefined : adventureId;
+    const adventureNameToCreate = pendingAdventureName.trim();
+    if (targetCampaignId && adventureNameToCreate) {
+      const createdAdventureId = await saveAdventure({
+        name: adventureNameToCreate,
+        campaignId: targetCampaignId,
+        status: 'active',
+      });
+      if (!createdAdventureId) {
+        setIsPreparingHome(false);
+        showDaisyToast('error', 'Failed to create the adventure');
+
+        return;
+      }
+      chosenAdventureId = createdAdventureId;
+      setAdventureId(createdAdventureId);
+      setPendingAdventureName('');
+    }
     const home = await resolveEncounterHome(
       {
         campaignId: targetCampaignId,
@@ -175,6 +196,7 @@ const NewEncounterPage: NextPage = () => {
     if (success) {
       setHasUnsavedChanges(false);
       await setActiveCampaign(home.campaignId);
+      setActiveCampaignId(home.campaignId);
       showDaisyToast('success', 'Encounter saved');
 
       // Track encounter created event
@@ -191,7 +213,7 @@ const NewEncounterPage: NextPage = () => {
       router.push({
         pathname: '/encounters',
         query: {
-          selectedCampaign: home.campaignId,
+          campaignId: home.campaignId,
           newEncounterCreated: 'true',
           newEncounterName: encodeURIComponent(newEncounter.name),
         },
@@ -205,6 +227,7 @@ const NewEncounterPage: NextPage = () => {
     newEncounter,
     campaignId,
     adventureId,
+    pendingAdventureName,
     targetCampaignId,
     isFirstCampaign,
     campaignHasAdventures,
@@ -212,10 +235,10 @@ const NewEncounterPage: NextPage = () => {
     saveCampaign,
     saveAdventure,
     refreshCampaigns,
-    setActiveCampaignId,
     handleSave,
     router,
     setActiveCampaign,
+    setActiveCampaignId,
   ]);
 
   const handleCampaignChange = useCallback((id: string | undefined) => {
@@ -225,8 +248,9 @@ const NewEncounterPage: NextPage = () => {
   }, []);
 
   const handleAdventureChange = useCallback(
-    (id: string | undefined) => {
+    (id: string | undefined, meta?: AdventureChangeMeta) => {
       setAdventureId(id);
+      if (meta?.isAutomatic) return;
       setHasUnsavedChanges(true);
       refreshAdventures().catch((err) =>
         logger.warn('Could not refresh adventures', err),
@@ -281,6 +305,9 @@ const NewEncounterPage: NextPage = () => {
                 selectedAdventureId={adventureId}
                 selectedCampaignId={campaignId ?? activeCampaignId ?? ''}
                 onAdventureChange={handleAdventureChange}
+                onPendingNameChange={setPendingAdventureName}
+                onCreatingChange={setIsCreatingAdventure}
+                required
               />
               {willCreateAdventure && (
                 <p className="text-sm opacity-70">
@@ -311,6 +338,7 @@ const NewEncounterPage: NextPage = () => {
               disabled={
                 isSaving ||
                 isPreparingHome ||
+                isCreatingAdventure ||
                 (hasCampaigns && !campaignId) ||
                 (!!campaignId && adventuresLoading)
               }

@@ -143,6 +143,10 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
     (character) => character.type === 'enemy',
   ).length;
 
+  const totalNpcs = draftEncounter.initiativeOrder.filter(
+    (character) => character.type === 'npc',
+  ).length;
+
   return (
     <div>
       <div className="overflow-x-auto">
@@ -152,10 +156,16 @@ const InactiveEncounterTable: React.FC<Props> = ({ players }) => {
             <span className="badge badge-outline whitespace-nowrap">
               Players:{' '}
               {
-                draftEncounter.initiativeOrder.filter((c) => c.type !== 'enemy')
-                  .length
+                draftEncounter.initiativeOrder.filter(
+                  (c) => c.type === 'player',
+                ).length
               }
             </span>
+            {totalNpcs > 0 && (
+              <span className="badge badge-outline whitespace-nowrap">
+                NPCs: {totalNpcs}
+              </span>
+            )}
             <span className="badge badge-outline whitespace-nowrap">
               Enemies: {totalEnemies}
             </span>

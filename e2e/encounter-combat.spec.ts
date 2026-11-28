@@ -210,6 +210,11 @@ test.describe('running an encounter', () => {
     await view.open(encounter.id);
 
     await page.getByRole('button', { name: 'Finish Encounter' }).click();
+    await expect(page.getByText('Finish Encounter?')).toBeVisible();
+    await page
+      .locator('dialog', { hasText: 'Finish Encounter?' })
+      .getByRole('button', { name: 'Finish Encounter' })
+      .click();
 
     await expect(page).toHaveURL(/\/encounters\/?(\?.*)?$/);
     expect((await api.getEncounter(encounter.id))?.status).toBe('completed');

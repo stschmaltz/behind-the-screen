@@ -82,7 +82,7 @@ Touch these in order, or the change will silently not work:
 - Update state immutably. Put complex state transitions in a hook or in `lib/`, where they can be unit tested, and keep components thin.
 - Hook file names are mixed (`use-thing.ts`, `use-thing.hook.ts`, `useThing.ts`, and data hooks named `get-thing.ts`). Use `use-thing.ts` for new files and do not rename existing ones as a side effect.
 - Tests live in `__tests__/` beside the code they cover.
-- Analytics events go through `posthog.capture`. List every event in `.posthog-events.json` and keep that file truthful.
+- Analytics events go through `posthog.capture`. List every event in `.posthog-events.json` and keep that file truthful. Nothing is sent from `localhost` (`lib/analytics-filter.ts`), so check new events on a preview deployment.
 
 ## Gotchas
 

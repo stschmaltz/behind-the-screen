@@ -45,6 +45,7 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
   const [isDeleteModalActuallyOpen, setIsDeleteModalActuallyOpen] =
     useState(false);
   const [isFinishingEncounter, setIsFinishingEncounter] = useState(false);
+  const [isFinishModalOpen, setIsFinishModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const router = useRouter();
 
@@ -122,6 +123,7 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
       posthog.captureException(error as Error);
     } finally {
       setIsFinishingEncounter(false);
+      setIsFinishModalOpen(false);
     }
   };
 
@@ -226,7 +228,7 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
                 {status === 'active' && (
                   <Button
                     label="Finish Encounter"
-                    onClick={handleFinishEncounter}
+                    onClick={() => setIsFinishModalOpen(true)}
                     className="btn-sm btn-success flex-1 w-auto"
                     loading={isFinishingEncounter}
                     disabled={isSaving}
@@ -253,6 +255,16 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
         title="Delete Encounter?"
         message={`Are you sure you want to delete the encounter "${encounter.name}"? This action cannot be undone.`}
         isProcessing={isDeleting}
+      />
+      <ConfirmationModal
+        isOpen={isFinishModalOpen}
+        onClose={() => setIsFinishModalOpen(false)}
+        onConfirm={handleFinishEncounter}
+        title="Finish Encounter?"
+        message={`This ends combat for "${encounter.name}" in round ${encounter.currentRound ?? 1} and moves it to your completed encounters.`}
+        isProcessing={isFinishingEncounter}
+        confirmLabel="Finish Encounter"
+        confirmClassName="btn-success"
       />
     </div>
   );

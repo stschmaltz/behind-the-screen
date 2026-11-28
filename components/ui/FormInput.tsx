@@ -15,6 +15,7 @@ interface FormInputProps {
   required?: boolean;
   labelIcon?: React.ReactNode;
   disabled?: boolean;
+  ariaLabel?: string;
 }
 
 const FormInput: React.FC<FormInputProps> = ({
@@ -28,12 +29,14 @@ const FormInput: React.FC<FormInputProps> = ({
   step,
   width,
   placeholder,
-  className,
+  className = '',
   required = false,
   labelIcon,
   disabled = false,
+  ariaLabel,
 }) => {
   const widthClass = width ? width : 'w-full';
+  const isNumber = type === 'number';
 
   return (
     <div className={`form-control ${widthClass}`}>
@@ -51,11 +54,13 @@ const FormInput: React.FC<FormInputProps> = ({
         type={type}
         value={value}
         onChange={onChange}
-        {...(type === 'number' && { min, max, step })}
-        className={`input ${className}`}
+        onFocus={isNumber ? (e) => e.currentTarget.select() : undefined}
+        {...(isNumber && { min, max, step })}
+        className={`input ${className}`.trim()}
         placeholder={placeholder}
         required={required}
         disabled={disabled}
+        aria-label={ariaLabel}
       />
     </div>
   );

@@ -42,6 +42,11 @@ const INITIAL_ENEMY_STATE: EncounterCharacter = {
   },
 };
 
+const formatList = (items: string[]): string =>
+  items.length <= 1
+    ? items.join('')
+    : `${items.slice(0, -1).join(', ')} and ${items[items.length - 1]}`;
+
 const NewEnemyModal: React.FC<Props> = ({
   onAddCharacter,
   requireInitiative,
@@ -54,6 +59,7 @@ const NewEnemyModal: React.FC<Props> = ({
   const [initiative, setInitiative] = useState<number | ''>('');
   const [selectedMonsterName, setSelectedMonsterName] = useState<string>('');
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+  const [validationError, setValidationError] = useState('');
   const [characterType, setCharacterType] = useState<'enemy' | 'npc'>(
     allowedCharacterTypes.includes('enemy') ? 'enemy' : 'npc',
   );
@@ -78,6 +84,12 @@ const NewEnemyModal: React.FC<Props> = ({
 
   const handleStatUpdate = (enemy: EncounterCharacter) => {
     setNewEnemy(enemy);
+    setValidationError('');
+  };
+
+  const handleInitiativeChange = (value: number | '') => {
+    setInitiative(value);
+    setValidationError('');
   };
 
   const handleMonsterSelect = (
@@ -86,17 +98,22 @@ const NewEnemyModal: React.FC<Props> = ({
   ) => {
     setNewEnemy(monster);
     setSelectedMonsterName(monsterName);
+    setValidationError('');
   };
 
   const handleSubmit = () => {
-    if (
-      !newEnemy.name ||
-      newEnemy.maxHP <= 0 ||
-      newEnemy.armorClass <= 0 ||
-      (requireInitiative && (initiative === '' || isNaN(Number(initiative))))
-    ) {
-      alert(
-        `Please select a monster or fill in all required fields (Name, HP > 0, AC > 0${requireInitiative ? ', Initiative' : ''}) with valid values.`,
+    const missingFields = [
+      !newEnemy.name.trim() && 'a name',
+      !(newEnemy.maxHP > 0) && 'HP above 0',
+      !(newEnemy.armorClass > 0) && 'AC above 0',
+      requireInitiative &&
+        (initiative === '' || isNaN(Number(initiative))) &&
+        'an initiative',
+    ].filter((field): field is string => Boolean(field));
+
+    if (missingFields.length > 0) {
+      setValidationError(
+        `Pick a monster or enter ${formatList(missingFields)}.`,
       );
 
       return;
@@ -123,6 +140,7 @@ const NewEnemyModal: React.FC<Props> = ({
     setNewEnemy(INITIAL_ENEMY_STATE);
     setInitiative('');
     setIsAdvancedOpen(false);
+    setValidationError('');
     closeModal();
   };
 
@@ -147,7 +165,7 @@ const NewEnemyModal: React.FC<Props> = ({
             enemy={newEnemy}
             onEnemyChange={handleStatUpdate}
             initiative={initiative}
-            setInitiative={setInitiative}
+            setInitiative={handleInitiativeChange}
             requireInitiative={requireInitiative}
           />
 
@@ -200,6 +218,12 @@ const NewEnemyModal: React.FC<Props> = ({
               />
             </div>
           </div>
+
+          {validationError && (
+            <p role="alert" className="text-error text-sm mt-4">
+              {validationError}
+            </p>
+          )}
 
           <div className="modal-action">
             <form method="dialog">

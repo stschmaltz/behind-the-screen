@@ -101,7 +101,7 @@ const ActiveEncounterCharacterRow = forwardRef<
       onPopoverVisibilityChange?.(false);
     };
 
-    const handleUpdateArmorClass = (value: number) => {
+    const handleUpdateArmorClass = (value: number | undefined) => {
       onUpdateCharacter({ ...character, armorClass: value });
     };
 

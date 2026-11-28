@@ -13,6 +13,9 @@ import AddPlayersModal from '../AddPlayersModal';
 import MonsterStatBlock from '../../../../components/encounter/MonsterStatBlock';
 import { useMediaQuery } from '../../../../hooks/use-media-query';
 
+const TURN_TOAST_ID = 'turn-change';
+const TURN_TOAST_DURATION = 2000;
+
 interface ActiveEncounterTableContentProps {
   players: Player[];
 }
@@ -58,7 +61,10 @@ const ActiveEncounterTableContent: React.FC<
         (hasTurnChanged &&
           newEncounter.initiativeOrder === encounter.initiativeOrder))
     ) {
-      showDaisyToast('success', `${nextCharacter.name}'s turn`);
+      showDaisyToast('success', `${nextCharacter.name}'s turn`, {
+        replaceId: TURN_TOAST_ID,
+        duration: TURN_TOAST_DURATION,
+      });
     }
   };
 
