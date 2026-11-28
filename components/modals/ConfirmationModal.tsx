@@ -7,6 +7,8 @@ const ConfirmationModal = ({
   title,
   message,
   isProcessing,
+  confirmLabel = 'Confirm Delete',
+  confirmClassName = 'btn-error',
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -14,6 +16,8 @@ const ConfirmationModal = ({
   title: string;
   message: string;
   isProcessing?: boolean;
+  confirmLabel?: string;
+  confirmClassName?: string;
 }) => {
   if (!isOpen) return null;
 
@@ -31,14 +35,14 @@ const ConfirmationModal = ({
             Cancel
           </button>
           <button
-            className="btn btn-error hover:scale-105 transition-all duration-200 active:scale-95"
+            className={`btn ${confirmClassName} hover:scale-105 transition-all duration-200 active:scale-95`}
             onClick={onConfirm}
             disabled={isProcessing}
           >
             {isProcessing ? (
               <span className="loading loading-spinner loading-xs"></span>
             ) : (
-              'Confirm Delete'
+              confirmLabel
             )}
           </button>
         </div>

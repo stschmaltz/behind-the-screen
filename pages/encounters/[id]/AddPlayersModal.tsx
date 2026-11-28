@@ -63,7 +63,7 @@ const AddPlayersModal: React.FC<Props> = ({
   };
 
   const isInitiativeValid = (initiative: number | ''): initiative is number =>
-    typeof initiative === 'number' && !isNaN(initiative) && initiative > 0;
+    typeof initiative === 'number' && !isNaN(initiative) && initiative >= 0;
 
   const hasValidInitiative = () =>
     !requireInitiative ||
@@ -104,7 +104,7 @@ const AddPlayersModal: React.FC<Props> = ({
               );
 
               return (
-                <div key={index} className="mb-2 flex items-center gap-2">
+                <div key={player._id} className="mb-2 flex items-center gap-2">
                   <input
                     type="checkbox"
                     id={`player-${index}`}
@@ -117,9 +117,10 @@ const AddPlayersModal: React.FC<Props> = ({
                   {toggled && (
                     <input
                       type="number"
-                      min={1}
+                      min={0}
                       className="input input-bordered input-sm w-24 ml-2"
                       placeholder="Initiative"
+                      aria-label={`Initiative for ${player.name}`}
                       value={toggled.initiative ?? ''}
                       onChange={(e) =>
                         handleInitiativeChange(player._id, e.target.value)

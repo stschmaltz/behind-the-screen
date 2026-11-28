@@ -88,8 +88,8 @@ const InactiveEncounterCharacterRow = ({
             type="number"
             value={character.initiative ?? ''}
             className="w-16"
-            id={`initiative-${character.name}`}
-            aria-label="Initiative"
+            id={`initiative-${character._id}`}
+            ariaLabel={`Initiative for ${character.name}`}
             onChange={(e) => handleNumberChange('initiative', e)}
           />
         </td>
@@ -98,8 +98,8 @@ const InactiveEncounterCharacterRow = ({
             type="number"
             value={character.maxHP ?? ''}
             className="w-16"
-            id={`maxHP-${character.name}`}
-            aria-label="Maximum HP"
+            id={`maxHP-${character._id}`}
+            ariaLabel={`Maximum HP for ${character.name}`}
             onChange={(e) => {
               const maxHP =
                 e.target.value === '' ? undefined : Number(e.target.value);
@@ -112,8 +112,8 @@ const InactiveEncounterCharacterRow = ({
             type="number"
             value={character.armorClass ?? ''}
             className="w-16"
-            id={`armorClass-${character.name}`}
-            aria-label="Armor Class"
+            id={`armorClass-${character._id}`}
+            ariaLabel={`Armor Class for ${character.name}`}
             onChange={(e) => handleNumberChange('armorClass', e)}
           />
         </td>
