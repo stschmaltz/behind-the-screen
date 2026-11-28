@@ -74,7 +74,10 @@ export function loadSharedQuery<T>(
   const startedInGeneration = cacheGeneration;
   const request: Promise<T> = load()
     .then((data) => {
-      if (startedInGeneration === cacheGeneration) setCachedResult(key, data);
+      const isLatestRequest = inFlightQueries.get(key) === request;
+      if (isLatestRequest && startedInGeneration === cacheGeneration) {
+        setCachedResult(key, data);
+      }
 
       return data;
     })

@@ -64,6 +64,21 @@ describe('loadSharedQuery', () => {
     expect(getCachedResult('campaigns')).toEqual(['new']);
   });
 
+  it('keeps a forced refresh when an older request finishes after it', async () => {
+    const older = deferred<string[]>();
+    const load = jest
+      .fn()
+      .mockReturnValueOnce(older.promise)
+      .mockResolvedValueOnce(['new']);
+
+    const first = loadSharedQuery('campaigns', load);
+    await loadSharedQuery('campaigns', load, { forceRefresh: true });
+    older.resolve(['old']);
+    await first;
+
+    expect(getCachedResult('campaigns')).toEqual(['new']);
+  });
+
   it('does not cache a response that was requested before the cache was cleared', async () => {
     const stale = deferred<string[]>();
     const load = jest
