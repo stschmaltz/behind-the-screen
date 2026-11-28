@@ -19,15 +19,17 @@ export default defineConfig({
     navigationTimeout: 90_000,
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
-  // The suite runs its own dev server with its own build folder, so it never
-  // collides with (or depends on) a dev server you already have open.
+  // The suite always starts its own dev server with its own build folder. It
+  // never reuses one that is already running, because the database safety
+  // check in e2e/support/env.ts only holds for a server launched from this
+  // environment.
   webServer: process.env.E2E_BASE_URL
     ? undefined
     : {
         command: `npx next dev -p ${E2E_PORT}`,
         url: BASE_URL,
         env: { NEXT_DIST_DIR: '.next-e2e' },
-        reuseExistingServer: !process.env.CI,
+        reuseExistingServer: false,
         timeout: 180_000,
       },
 });

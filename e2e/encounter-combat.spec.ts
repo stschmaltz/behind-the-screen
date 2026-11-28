@@ -50,7 +50,7 @@ test.describe('running an encounter', () => {
     await expect(view.turnBadge(1)).toBeVisible();
     await expect(view.currentTurnRow()).toContainText('Alpha Boss');
 
-    await view.nextButton().click();
+    await view.andSave(() => view.nextButton().click());
     await expect(view.currentTurnRow()).toContainText('Bravo Goblin');
     await view.andSave(() => view.nextButton().click());
     await expect(view.currentTurnRow()).toContainText('Charlie Goblin');
@@ -86,8 +86,8 @@ test.describe('running an encounter', () => {
     const view = new EncounterPage(page);
     await view.open(encounter.id);
 
-    await view.nextButton().click();
-    await view.nextButton().click();
+    await view.andSave(() => view.nextButton().click());
+    await view.andSave(() => view.nextButton().click());
     await expect(view.currentTurnRow()).toContainText('Charlie Goblin');
 
     await view.andSave(() => view.damage('Alpha Boss', 10));

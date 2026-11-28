@@ -14,6 +14,9 @@ interface CharacterInfoProps {
   onUpdateInitiative?: (value: number) => void;
 }
 
+const MIN_INITIATIVE = 0;
+const MAX_INITIATIVE = 35;
+
 const InitiativeInput: React.FC<{
   value?: number;
   onCommit: (value: number) => void;
@@ -31,15 +34,17 @@ const InitiativeInput: React.FC<{
 
       return;
     }
-    if (parsed !== value) onCommit(parsed);
+    const clamped = Math.min(Math.max(MIN_INITIATIVE, parsed), MAX_INITIATIVE);
+    setDraft(String(clamped));
+    if (clamped !== value) onCommit(clamped);
   };
 
   return (
     <input
       type="number"
       value={draft}
-      min={0}
-      max={35}
+      min={MIN_INITIATIVE}
+      max={MAX_INITIATIVE}
       aria-label="Initiative"
       onChange={(e) => setDraft(e.target.value)}
       onBlur={commit}

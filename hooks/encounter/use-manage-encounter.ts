@@ -12,6 +12,25 @@ import { clearCache } from '../../lib/query-cache';
 
 const DEBOUNCE_DELAY = 500;
 
+export interface SaveResult {
+  success: boolean;
+  errors?: string[];
+  cancelled?: boolean;
+}
+
+export interface SaveOptions {
+  requireAdventure?: boolean;
+  /** Save now instead of waiting for the debounce. Use for explicit actions. */
+  immediate?: boolean;
+  /** Nothing may be saved to this encounter after this save succeeds. */
+  final?: boolean;
+}
+
+const SAVE_FAILED: SaveResult = {
+  success: false,
+  errors: ['Failed to save encounter'],
+};
+
 /**
  * Builds the mutation input object for saving an encounter
  * Includes only fields that are present and valid
@@ -83,8 +102,8 @@ const useManageEncounter = () => {
 
   const saveEncounter = async (
     encounterData: Encounter | NewEncounterTemplate | any,
-    options?: { requireAdventure?: boolean },
-  ): Promise<{ success: boolean; errors?: string[] }> => {
+    options?: SaveOptions,
+  ): Promise<SaveResult> => {
     const encounter = encounterData as Encounter | NewEncounterTemplate;
     const validationErrors = validateNewEncounter(encounter, options);
     logger.debug('Validating encounter', {
@@ -140,35 +159,50 @@ const useManageEncounter = () => {
     }
   };
 
-  const pendingResolvers = useRef<
-    Array<(result: { success: boolean; errors?: string[] }) => void>
-  >([]);
+  const pendingResolvers = useRef<Array<(result: SaveResult) => void>>([]);
+  const inFlightSave = useRef<Promise<SaveResult> | null>(null);
+  const closedEncounterId = useRef<string | null>(null);
+
+  const runSave = useCallback(
+    (
+      encounter: Encounter | NewEncounterTemplate | any,
+      options?: SaveOptions,
+    ): Promise<SaveResult> => {
+      const resolvers = pendingResolvers.current;
+      pendingResolvers.current = [];
+
+      setIsSaving(true);
+      const previous = inFlightSave.current ?? Promise.resolve(SAVE_FAILED);
+      const tracked: Promise<SaveResult> = previous
+        .then(() => saveEncounter(encounter, options))
+        .catch((error) => {
+          logger.error('Error saving encounter', error);
+
+          return SAVE_FAILED;
+        })
+        .then((result) => {
+          if (inFlightSave.current === tracked) {
+            inFlightSave.current = null;
+            setIsSaving(false);
+          }
+          resolvers.forEach((resolve) => resolve(result));
+
+          return result;
+        });
+      inFlightSave.current = tracked;
+
+      return tracked;
+    },
+    [],
+  );
 
   const debouncedSave = useCallback(
     debounce(
       (
         encounter: Encounter | NewEncounterTemplate | any,
-        options?: { requireAdventure?: boolean },
+        options?: SaveOptions,
       ) => {
-        const resolvers = pendingResolvers.current;
-        pendingResolvers.current = [];
-        const resolveAll = (result: { success: boolean; errors?: string[] }) =>
-          resolvers.forEach((resolve) => resolve(result));
-
-        setIsSaving(true);
-        saveEncounter(encounter, options)
-          .then((result) => {
-            setIsSaving(false);
-            resolveAll(result);
-          })
-          .catch((error) => {
-            logger.error('Error in debounced save', error);
-            setIsSaving(false);
-            resolveAll({
-              success: false,
-              errors: ['Failed to save encounter'],
-            });
-          });
+        runSave(encounter, options);
       },
       DEBOUNCE_DELAY,
       {
@@ -176,32 +210,64 @@ const useManageEncounter = () => {
         trailing: true,
       },
     ),
-    [],
+    [runSave],
   );
 
   const handleSave = useCallback(
     async (
       encounter: Encounter | Omit<NewEncounterTemplate, 'userId'>,
-      options?: { requireAdventure?: boolean },
-    ): Promise<{ success: boolean; errors?: string[] }> => {
+      options?: SaveOptions,
+    ): Promise<SaveResult> => {
+      const encounterId = '_id' in encounter ? encounter._id : undefined;
+      if (encounterId && closedEncounterId.current === encounterId) {
+        return { success: false, cancelled: true };
+      }
+
+      if (options?.immediate) {
+        debouncedSave.cancel();
+        if (options.final && encounterId) {
+          closedEncounterId.current = encounterId;
+        }
+        const result = await runSave(encounter, options);
+        if (!result.success && closedEncounterId.current === encounterId) {
+          closedEncounterId.current = null;
+        }
+
+        return result;
+      }
+
       return new Promise((resolve) => {
         pendingResolvers.current.push(resolve);
         debouncedSave(encounter, options);
       });
     },
-    [debouncedSave],
+    [debouncedSave, runSave],
   );
 
   useEffect(() => {
     return () => {
-      debouncedSave.flush();
+      if (closedEncounterId.current) {
+        debouncedSave.cancel();
+      } else {
+        debouncedSave.flush();
+      }
     };
   }, [debouncedSave]);
 
   const deleteEncounter = async (encounterId: string): Promise<boolean> => {
     logger.debug('Deleting encounter', { id: encounterId });
     setIsDeleting(true);
+
+    closedEncounterId.current = encounterId;
+    debouncedSave.cancel();
+    const cancelledSaves = pendingResolvers.current;
+    pendingResolvers.current = [];
+    cancelledSaves.forEach((resolve) =>
+      resolve({ success: false, cancelled: true }),
+    );
+
     try {
+      await inFlightSave.current;
       await asyncFetch(deleteEncounterMutation, {
         input: { id: encounterId.toString() },
       });
@@ -211,6 +277,7 @@ const useManageEncounter = () => {
       return true;
     } catch (err) {
       logger.error('Failed to delete encounter', err);
+      closedEncounterId.current = null;
       setIsDeleting(false);
       return false;
     }

@@ -97,7 +97,10 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
         status: 'completed' as const,
         completedAt: new Date().toISOString(),
       };
-      const { success } = await handleSave(finishedEncounter);
+      const { success } = await handleSave(finishedEncounter, {
+        immediate: true,
+        final: true,
+      });
       if (success) {
         // Track encounter completed event
         posthog.capture('encounter_completed', {
@@ -135,14 +138,19 @@ const EncounterContent: React.FC<EncounterContentProps> = ({ players }) => {
       name: trimmedNewName,
     };
 
-    const { success } = await handleSave(updatedEncounterForSave);
+    const previousName = encounter.name;
+    setEncounter((prev) => ({ ...prev, name: trimmedNewName }));
+
+    const { success } = await handleSave(updatedEncounterForSave, {
+      immediate: true,
+    });
 
     if (success) {
-      setEncounter((prev) => ({ ...prev, name: trimmedNewName }));
       logger.info('Encounter name updated successfully via inline edit.');
     } else {
       logger.error('Failed to save encounter name change via inline edit.');
       showDaisyToast('error', 'Failed to rename encounter');
+      setEncounter((prev) => ({ ...prev, name: previousName }));
       setDraftName(encounter.name);
     }
   };

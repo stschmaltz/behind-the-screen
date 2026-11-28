@@ -99,6 +99,27 @@ describe('useEncounterDraft', () => {
       ).toBeDefined();
     });
 
+    it('should include stored NPCs when building the initiative order', () => {
+      const encounter = createMockEncounter({
+        enemies: [createMockEnemy('enemy-1', 'Goblin')],
+        npcs: [createMockEnemy('npc-1', 'Guard')],
+      });
+
+      const { result } = renderHook(() =>
+        useEncounterDraft(encounter, mockPlayers),
+      );
+
+      expect(
+        result.current.draftEncounter.initiativeOrder.map((c) => [
+          c._id,
+          c.type,
+        ]),
+      ).toEqual([
+        ['enemy-1', 'enemy'],
+        ['npc-1', 'npc'],
+      ]);
+    });
+
     it('should filter out players not in provided players list', () => {
       const encounter = createMockEncounter({
         players: [{ _id: 'player-1' }, { _id: 'non-existent-player' }],
