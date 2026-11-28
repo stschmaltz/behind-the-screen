@@ -32,6 +32,16 @@ export const needsDefaultAdventure = (
   request: Pick<EncounterHomeRequest, 'adventureId' | 'campaignHasAdventures'>,
 ): boolean => !request.adventureId && !request.campaignHasAdventures;
 
+export const campaignHasAdventuresNow = async (
+  fetchAdventures: () => Promise<readonly unknown[] | null>,
+): Promise<boolean> => {
+  try {
+    return ((await fetchAdventures()) ?? []).length > 0;
+  } catch {
+    return true;
+  }
+};
+
 export const resolveEncounterHome = async (
   request: EncounterHomeRequest,
   creators: EncounterHomeCreators,

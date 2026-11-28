@@ -1,4 +1,5 @@
 import {
+  campaignHasAdventuresNow,
   DEFAULT_ADVENTURE_NAME,
   DEFAULT_CAMPAIGN_NAME,
   EncounterHomeRequest,
@@ -144,6 +145,22 @@ describe('resolveEncounterHome', () => {
       campaignId: 'new-campaign',
       createdCampaign: true,
     });
+  });
+});
+
+describe('campaignHasAdventuresNow', () => {
+  it('reads the freshly fetched list', async () => {
+    expect(await campaignHasAdventuresNow(async () => [{}])).toBe(true);
+    expect(await campaignHasAdventuresNow(async () => [])).toBe(false);
+    expect(await campaignHasAdventuresNow(async () => null)).toBe(false);
+  });
+
+  it('assumes adventures exist when the fetch fails, so none is created', async () => {
+    expect(
+      await campaignHasAdventuresNow(async () => {
+        throw new Error('network');
+      }),
+    ).toBe(true);
   });
 });
 

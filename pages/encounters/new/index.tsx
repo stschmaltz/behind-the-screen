@@ -17,11 +17,13 @@ import { useManageCampaign } from '../../../hooks/campaign/use-manage-campaign';
 import { useManageAdventure } from '../../../hooks/adventure/use-manage-adventure';
 import { getAllAdventures } from '../../../hooks/adventure/get-all-adventures';
 import {
+  campaignHasAdventuresNow,
   DEFAULT_ADVENTURE_NAME,
   DEFAULT_CAMPAIGN_NAME,
   needsDefaultAdventure,
   resolveEncounterHome,
 } from '../../../lib/encounterHome';
+import { logger } from '../../../lib/logger';
 import { useUserPreferences } from '../../../hooks/user-preferences/use-user-preferences';
 import { useActiveCampaign } from '../../../context/ActiveCampaignContext';
 import { getAllCampaigns } from '../../../hooks/campaign/get-all-campaigns';
@@ -89,6 +91,7 @@ const NewEncounterPage: NextPage = () => {
     adventures,
     loading: adventuresLoading,
     error: adventuresError,
+    refresh: refreshAdventures,
   } = getAllAdventures({ campaignId: targetCampaignId });
   const campaignHasAdventures = adventures.length > 0 || !!adventuresError;
   const willCreateAdventure =
@@ -125,12 +128,16 @@ const NewEncounterPage: NextPage = () => {
     }
 
     setIsPreparingHome(true);
+    const chosenAdventureId = isFirstCampaign ? undefined : adventureId;
     const home = await resolveEncounterHome(
       {
         campaignId: targetCampaignId,
-        adventureId: isFirstCampaign ? undefined : adventureId,
+        adventureId: chosenAdventureId,
         hasCampaigns: !isFirstCampaign,
-        campaignHasAdventures,
+        campaignHasAdventures:
+          targetCampaignId && !chosenAdventureId
+            ? await campaignHasAdventuresNow(refreshAdventures)
+            : campaignHasAdventures,
       },
       {
         createCampaign: (name) => saveCampaign({ name, status: 'active' }),
@@ -145,7 +152,9 @@ const NewEncounterPage: NextPage = () => {
       setActiveCampaignId(home.campaignId);
     }
     if (home.createdCampaign) {
-      await refreshCampaigns();
+      refreshCampaigns().catch((err) =>
+        logger.warn('Could not refresh campaigns after creating one', err),
+      );
     }
     if (!home.ok) {
       showDaisyToast('error', home.error);
@@ -199,6 +208,7 @@ const NewEncounterPage: NextPage = () => {
     targetCampaignId,
     isFirstCampaign,
     campaignHasAdventures,
+    refreshAdventures,
     saveCampaign,
     saveAdventure,
     refreshCampaigns,
@@ -214,10 +224,16 @@ const NewEncounterPage: NextPage = () => {
     setHasUnsavedChanges(true);
   }, []);
 
-  const handleAdventureChange = useCallback((id: string | undefined) => {
-    setAdventureId(id);
-    setHasUnsavedChanges(true);
-  }, []);
+  const handleAdventureChange = useCallback(
+    (id: string | undefined) => {
+      setAdventureId(id);
+      setHasUnsavedChanges(true);
+      refreshAdventures().catch((err) =>
+        logger.warn('Could not refresh adventures', err),
+      );
+    },
+    [refreshAdventures],
+  );
 
   return (
     <>
