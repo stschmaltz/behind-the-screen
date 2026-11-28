@@ -8,6 +8,8 @@ interface CacheEntry<T> {
 
 const queryCache: Record<string, CacheEntry<unknown>> = {};
 const CACHE_TTL = 10000; // Cache for 10 seconds
+const inFlightQueries = new Map<string, Promise<unknown>>();
+let cacheGeneration = 0;
 
 export function getCacheKey(query: string, variables?: object): string {
   return `${query}:${variables ? JSON.stringify(variables) : ''}`;
@@ -44,7 +46,47 @@ export function clearCache(): void {
   Object.keys(queryCache).forEach((key) => {
     delete queryCache[key];
   });
+  cacheGeneration += 1;
+  inFlightQueries.clear();
   logger.info('Query cache cleared');
+}
+
+interface SharedQueryOptions {
+  useCache?: boolean;
+  forceRefresh?: boolean;
+}
+
+export function loadSharedQuery<T>(
+  key: string,
+  load: () => Promise<T>,
+  { useCache = true, forceRefresh = false }: SharedQueryOptions = {},
+): Promise<T> {
+  if (!useCache) return load();
+
+  if (!forceRefresh) {
+    const cached = getCachedResult<T>(key);
+    if (cached) return Promise.resolve(cached);
+
+    const pending = inFlightQueries.get(key);
+    if (pending) return pending as Promise<T>;
+  }
+
+  const startedInGeneration = cacheGeneration;
+  const request: Promise<T> = load()
+    .then((data) => {
+      const isLatestRequest = inFlightQueries.get(key) === request;
+      if (isLatestRequest && startedInGeneration === cacheGeneration) {
+        setCachedResult(key, data);
+      }
+
+      return data;
+    })
+    .finally(() => {
+      if (inFlightQueries.get(key) === request) inFlightQueries.delete(key);
+    });
+  inFlightQueries.set(key, request);
+
+  return request;
 }
 
 export function clearCacheEntry(key: string): void {

@@ -61,15 +61,10 @@ export class EncounterRepository implements EncounterRepositoryInterface {
       .find({
         userId: new ObjectId(input.userId),
       })
+      .sort({ createdAt: -1 })
       .toArray();
 
-    logger.info('getAllEncounters', docs);
-    return docs
-      .map(this.mapToEncounter)
-      .sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      );
+    return docs.map(this.mapToEncounter);
   }
 
   public async deleteEncounter(input: {

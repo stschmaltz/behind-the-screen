@@ -86,7 +86,6 @@ export class AdventureRepository implements AdventureRepositoryInterface {
       })
       .toArray();
 
-    logger.info('getAllAdventures', docs);
     return docs.map(this.mapToAdventure);
   }
 
@@ -103,7 +102,6 @@ export class AdventureRepository implements AdventureRepositoryInterface {
       })
       .toArray();
 
-    logger.info('getAdventuresByCampaign', docs);
     return docs.map(this.mapToAdventure);
   }
 

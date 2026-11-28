@@ -71,14 +71,12 @@ export class PlayerRepository implements PlayerRepositoryInterface {
 
   public async getAllPlayers(input: { userId: string }): Promise<Player[]> {
     const { userId } = input;
-    logger.info('getAllPlayers', userId);
     const { db } = await getDbClient();
     const docs = await db
       .collection(this.collectionName)
       .find({ userId: new ObjectId(userId) })
       .toArray();
 
-    logger.info('getAllPlayers', docs);
     return docs.map(this.mapToPlayer);
   }
 
