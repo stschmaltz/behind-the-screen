@@ -40,7 +40,7 @@ A request flows through these layers, top to bottom:
 | API route        | `pages/api/graphql.ts`                                               | GraphQL Yoga. Builds the context from the Auth0 session.                   |
 | Schema           | `data/graphql/<domain>/*.typedefs.ts`, `*.query.ts`, `*.mutation.ts` | Type definitions and resolvers, assembled in `data/graphql/index.ts`.      |
 | Repository       | `repositories/<domain>/`                                             | All MongoDB access. Bound in `container/inversify.config.ts`.              |
-| Database         | `data/database/mongodb.ts`                                           | Cached `MongoClient`.                                                      |
+| Database         | `data/database/mongodb.ts`                                           | Cached `MongoClient`. Indexes are declared in `data/database/indexes.ts`.  |
 
 Other directories:
 
@@ -88,7 +88,7 @@ Touch these in order, or the change will silently not work:
 
 - **Every `.tsx` file under `pages/` is a route.** Encounter components are colocated in `pages/encounters/**` and each has a default export, so each is technically reachable by URL. Put new shared components in `components/`.
 - **Auth is enforced in two separate places.** Pages are gated client-side by `components/ProtectedLayout.tsx` using the `PUBLIC_PATHS` list in `lib/routes.ts`, so a new public page must be added there. A public page that search engines should index also needs adding to `INDEXABLE_ROUTES` in `lib/seo.ts` and `PUBLIC_PAGES` in `next-sitemap.config.js`. Data is gated server-side in each resolver and repository query. A resolver without `isAuthorizedOrThrow` and a `userId` filter is a data leak. Existing code has a gap: the `me` query returns a hard-coded placeholder. Do not copy that pattern.
-- **`useQuery` has a 10 second in-memory cache** (`lib/query-cache.ts`). After a mutation, call `clearCache()` (as `hooks/encounter/use-manage-encounter.ts` does), call `refresh`, or pass `skipCache`, or the screen shows stale data that the next save can write back.
+- **`useQuery` has a 10 second in-memory cache** (`lib/query-cache.ts`), and components that ask for the same query at the same time share one request. After a mutation, call `clearCache()` (as `hooks/encounter/use-manage-encounter.ts` does), call `refresh`, or pass `skipCache`, or the screen shows stale data that the next save can write back.
 - **Memoise `variables` and `transform`** passed to `useQuery`. They are effect dependencies, so a new object on each render refetches in a loop.
 - **GraphQL errors are masked.** The client only ever sees "API request failed". Read the dev server output for the real error.
 - **The pre-commit hook calls `npx.cmd`**, which exists only on Windows. On other systems the hook fails; run lint by hand and say so if you bypass it.

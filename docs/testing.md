@@ -23,6 +23,7 @@ Each test sits in a `__tests__/` directory beside the code it covers and is name
 | Character and enemy state | `hooks/__tests__/useCharacterState.test.ts`, `hooks/__tests__/useEnemyState.test.ts` |
 | Monster data parsing      | `hooks/__tests__/use-monsters.hook.test.ts`                                          |
 | Encounter setup draft     | `hooks/encounter/__tests__/use-draft-encounter.test.ts`                              |
+| Query cache and sharing   | `lib/__tests__/query-cache.test.ts`, `hooks/__tests__/use-async-query.test.tsx`      |
 
 Not covered by unit tests: resolvers, repositories, REST routes and most components. Check those by hand or in a browser.
 
