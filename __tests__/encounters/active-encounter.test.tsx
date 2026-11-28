@@ -446,6 +446,14 @@ describe('active encounter', () => {
       expect(screen.getByPlaceholderText('Amount')).toBeInTheDocument();
     });
 
+    it('describes the HP button with the current health', () => {
+      renderEncounter();
+
+      expect(
+        within(rowFor('Wolf')).getByLabelText('Adjust HP'),
+      ).toHaveAccessibleDescription(/HP: 10\/10/);
+    });
+
     it('clears armor class instead of saving it as 0', async () => {
       const user = userEvent.setup();
       renderEncounter();

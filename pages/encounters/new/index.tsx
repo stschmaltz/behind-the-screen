@@ -57,6 +57,7 @@ const NewEncounterPage: NextPage = () => {
   const [campaignId, setCampaignId] = useState<string | undefined>(undefined);
   const [adventureId, setAdventureId] = useState<string | undefined>(undefined);
   const [pendingAdventureName, setPendingAdventureName] = useState('');
+  const [isCreatingAdventure, setIsCreatingAdventure] = useState(false);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   useUnsavedChangesWarning(hasUnsavedChanges);
@@ -236,6 +237,7 @@ const NewEncounterPage: NextPage = () => {
                   selectedCampaignId={campaignId ?? activeCampaignId ?? ''}
                   onAdventureChange={handleAdventureChange}
                   onPendingNameChange={setPendingAdventureName}
+                  onCreatingChange={setIsCreatingAdventure}
                   required
                 />
               </div>
@@ -259,7 +261,12 @@ const NewEncounterPage: NextPage = () => {
             <Button
               className="w-full"
               onClick={onSave}
-              disabled={isSaving || isSavingAdventure || !campaignId}
+              disabled={
+                isSaving ||
+                isSavingAdventure ||
+                isCreatingAdventure ||
+                !campaignId
+              }
               label="Save"
             />
           </div>

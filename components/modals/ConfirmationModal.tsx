@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 
 const ConfirmationModal = ({
   isOpen,
@@ -19,10 +19,29 @@ const ConfirmationModal = ({
   confirmLabel?: string;
   confirmClassName?: string;
 }) => {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!isOpen || !dialog) return;
+    if (!dialog.open) dialog.showModal?.();
+
+    return () => {
+      if (dialog.open) dialog.close?.();
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
-    <dialog className={`modal ${isOpen ? 'modal-open' : ''}`}>
+    <dialog
+      ref={dialogRef}
+      className="modal modal-open"
+      onCancel={(event) => {
+        event.preventDefault();
+        if (!isProcessing) onClose();
+      }}
+    >
       <div className="modal-box slide-up shadow-2xl">
         <h3 className="font-bold text-lg">{title}</h3>
         <p className="py-4 whitespace-pre-wrap">{message}</p>

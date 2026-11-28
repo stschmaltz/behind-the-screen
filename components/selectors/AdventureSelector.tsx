@@ -17,6 +17,7 @@ interface AdventureSelectorProps {
   selectedCampaignId: string;
   required?: boolean;
   onPendingNameChange?: (name: string) => void;
+  onCreatingChange?: (isCreating: boolean) => void;
 }
 
 interface SaveAdventureResponse {
@@ -34,6 +35,7 @@ const AdventureSelector: React.FC<AdventureSelectorProps> = ({
   selectedCampaignId: campaignId,
   required = false,
   onPendingNameChange,
+  onCreatingChange,
 }) => {
   const {
     adventures,
@@ -52,6 +54,16 @@ const AdventureSelector: React.FC<AdventureSelectorProps> = ({
     [onPendingNameChange],
   );
   const autoSelectedCampaignId = useRef<string | null>(null);
+  const previousCampaignId = useRef(campaignId);
+  const isSubmittingAdventure = useRef(false);
+
+  useEffect(() => {
+    if (previousCampaignId.current === campaignId) return;
+    previousCampaignId.current = campaignId;
+    autoSelectedCampaignId.current = null;
+    setIsCreatingAdventure(false);
+    setNewAdventureName('');
+  }, [campaignId, setNewAdventureName]);
   const newAdventureInputRef = useRef<HTMLInputElement>(null);
 
   const filteredAdventures = useMemo(() => {
@@ -118,7 +130,10 @@ const AdventureSelector: React.FC<AdventureSelectorProps> = ({
 
   const handleCreateAdventure = useCallback(async () => {
     if (!newAdventureName.trim() || !campaignId) return;
+    if (isSubmittingAdventure.current) return;
 
+    isSubmittingAdventure.current = true;
+    onCreatingChange?.(true);
     try {
       const result = await asyncFetch<SaveAdventureResponse>(
         saveAdventureMutation,
@@ -143,6 +158,9 @@ const AdventureSelector: React.FC<AdventureSelectorProps> = ({
       }
     } catch (error) {
       logger.error('Failed to create adventure', error);
+    } finally {
+      isSubmittingAdventure.current = false;
+      onCreatingChange?.(false);
     }
   }, [
     newAdventureName,
@@ -150,6 +168,7 @@ const AdventureSelector: React.FC<AdventureSelectorProps> = ({
     onAdventureChange,
     refreshAdventures,
     setNewAdventureName,
+    onCreatingChange,
   ]);
 
   const handleCancelCreate = useCallback(() => {
