@@ -16,13 +16,16 @@ Tests run on Jest with Testing Library in a jsdom environment. Configuration is 
 
 Each test sits in a `__tests__/` directory beside the code it covers and is named `<source file>.test.ts` or `.test.tsx`.
 
-| Area                      | Tests                                                                                |
-| ------------------------- | ------------------------------------------------------------------------------------ |
-| Difficulty and XP maths   | `lib/__tests__/encounterUtils.test.ts`                                               |
-| Immutable list helpers    | `lib/__tests__/stateUtils.test.ts`                                                   |
-| Character and enemy state | `hooks/__tests__/useCharacterState.test.ts`, `hooks/__tests__/useEnemyState.test.ts` |
-| Monster data parsing      | `hooks/__tests__/use-monsters.hook.test.ts`                                          |
-| Encounter setup draft     | `hooks/encounter/__tests__/use-draft-encounter.test.ts`                              |
+| Area                      | Tests                                                                                                |
+| ------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Difficulty and XP maths   | `lib/__tests__/encounterUtils.test.ts`                                                               |
+| Immutable list helpers    | `lib/__tests__/stateUtils.test.ts`                                                                   |
+| Character and enemy state | `hooks/__tests__/useCharacterState.test.ts`, `hooks/__tests__/useEnemyState.test.ts`                 |
+| Monster data parsing      | `hooks/__tests__/use-monsters.hook.test.ts`                                                          |
+| Encounter setup draft     | `hooks/encounter/__tests__/use-draft-encounter.test.ts`                                              |
+| Combat and setup controls | `__tests__/encounters/active-encounter.test.tsx`, `__tests__/encounters/encounter-controls.test.tsx` |
+| Toasts and form inputs    | `lib/__tests__/daisy-toast.test.tsx`, `components/ui/__tests__/FormInput.test.tsx`                   |
+| Analytics event filter    | `lib/__tests__/analytics-filter.test.ts`                                                             |
 
 Not covered by unit tests: resolvers, repositories, REST routes and most components. Check those by hand or in a browser.
 
