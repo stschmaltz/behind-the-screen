@@ -4,7 +4,7 @@ import { FormInput } from '../../../../../components/ui/FormInput';
 export const ArmorClassInput: React.FC<{
   id: string;
   armorClass?: number;
-  onChange: (value: number) => void;
+  onChange: (value: number | undefined) => void;
   width?: string;
 }> = ({ id, armorClass, onChange, width = 'w-14' }) => (
   <div className="flex items-center justify-end gap-1">
@@ -14,7 +14,10 @@ export const ArmorClassInput: React.FC<{
       value={armorClass ?? ''}
       width={width}
       id={id}
-      onChange={(e) => onChange(Number(e.target.value))}
+      ariaLabel="Armor Class"
+      onChange={(e) =>
+        onChange(e.target.value === '' ? undefined : Number(e.target.value))
+      }
       placeholder="n/a"
       className="input-sm"
     />
