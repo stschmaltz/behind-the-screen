@@ -12,6 +12,7 @@ import React, {
 import { useUserPreferences } from '../hooks/user-preferences/use-user-preferences';
 import { getAllCampaigns } from '../hooks/campaign/get-all-campaigns';
 import { getAllPlayers } from '../hooks/get-all-players.hook';
+import { useAuthedQueriesEnabled } from '../hooks/use-authed-queries-enabled';
 
 interface ActiveCampaignContextType {
   activeCampaignId: string | null;
@@ -34,11 +35,14 @@ export const ActiveCampaignProvider: FC<ActiveCampaignProviderProps> = ({
   children,
 }) => {
   const [activeCampaignId, setActiveCampaignId] = useState<string | null>(null);
-  const { activeCampaignId: userPreferenceCampaignId } = useUserPreferences();
+  const enabled = useAuthedQueriesEnabled();
+  const { activeCampaignId: userPreferenceCampaignId } = useUserPreferences({
+    enabled,
+  });
 
   // Fetch campaigns and players directly (not in useMemo)
-  const { campaigns, loading: campaignsLoading } = getAllCampaigns();
-  const { players, loading: playersLoading } = getAllPlayers();
+  const { campaigns, loading: campaignsLoading } = getAllCampaigns({ enabled });
+  const { players, loading: playersLoading } = getAllPlayers({ enabled });
 
   // Initialize with user preferences
   useEffect(() => {

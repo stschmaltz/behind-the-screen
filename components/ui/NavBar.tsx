@@ -7,7 +7,8 @@ interface Props {
 }
 
 const NavBar: React.FC<Props> = ({ router }) => {
-  const isActive = (path: string) => router.pathname === path;
+  const isActive = (path: string) =>
+    router.pathname === path || router.pathname.startsWith(`${path}/`);
 
   const navItems = [
     { path: '/encounters', label: 'Encounter Manager', enabled: true },
@@ -17,17 +18,18 @@ const NavBar: React.FC<Props> = ({ router }) => {
   ];
 
   return (
-    <nav className="relative">
+    <nav className="relative" aria-label="Primary">
       <ul className="hidden md:flex space-x-4">
         {navItems.map((item) => (
           <li key={item.label}>
             {item.enabled ? (
               <Link
                 href={item.path}
-                className={`relative transition-all duration-200 ${
+                aria-current={isActive(item.path) ? 'page' : undefined}
+                className={`relative inline-block py-1 transition-opacity duration-200 after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:origin-left after:rounded-full after:bg-current after:transition-transform after:duration-300 ${
                   isActive(item.path)
-                    ? 'font-bold after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-0.5 after:bg-white after:rounded-full'
-                    : 'hover:text-primary-content/80 hover:scale-105 inline-block'
+                    ? 'font-bold after:scale-x-100'
+                    : 'opacity-90 hover:opacity-100 after:scale-x-0 hover:after:scale-x-100'
                 }`}
               >
                 {item.label}

@@ -6,6 +6,7 @@ import { AppProps } from 'next/app';
 import Head from 'next/head';
 import React, { ReactElement, ReactNode } from 'react';
 import { NextPage } from 'next';
+import { useRouter } from 'next/router';
 
 import SEO from '../next-seo.config';
 import { CurrentUserProvider } from '../context/UserContext';
@@ -14,6 +15,7 @@ import { ProtectedLayout } from '../components/ProtectedLayout';
 import { ActiveCampaignProvider } from '../context/ActiveCampaignContext';
 import { ThemeProvider } from '../context/ThemeContext';
 import { SpellsProvider } from '../context/SpellsContext';
+import { getCanonicalUrl, getRouteSeo, isIndexableRoute } from '../lib/seo';
 import '../styles/global.css';
 
 type NextPageWithLayout = NextPage & {
@@ -26,6 +28,10 @@ type AppPropsWithLayout = AppProps & {
 
 export default function App({ Component, pageProps }: AppPropsWithLayout) {
   usePWASetup();
+  const router = useRouter();
+  const routeSeo = getRouteSeo(router.pathname);
+  const indexable = isIndexableRoute(router.pathname);
+  const canonical = indexable ? getCanonicalUrl(router.asPath) : undefined;
 
   const defaultLayout = (page: ReactElement) => (
     <UserProvider user={pageProps.user}>
@@ -46,10 +52,26 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
       <Head>
         <meta
           name="viewport"
-          content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
+          content="width=device-width, initial-scale=1, viewport-fit=cover"
         />
       </Head>
-      <DefaultSeo {...SEO} />
+      <DefaultSeo
+        {...SEO}
+        title={routeSeo?.title}
+        description={routeSeo?.description ?? SEO.description}
+        canonical={canonical}
+        openGraph={{
+          ...SEO.openGraph,
+          url: canonical,
+          title: routeSeo?.title ?? SEO.openGraph.title,
+          description: routeSeo?.description ?? SEO.openGraph.description,
+        }}
+      />
+      {!indexable && (
+        <Head>
+          <meta key="robots" name="robots" content="noindex,follow" />
+        </Head>
+      )}
       {getLayout(<Component {...pageProps} />)}
       <Analytics />
       <SpeedInsights />

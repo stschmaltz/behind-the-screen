@@ -40,6 +40,7 @@ interface NpcGeneratorFormProps {
   isLoading: boolean;
   error: string | null;
   onSubmit: (e: React.FormEvent) => Promise<void>;
+  aiSlot?: React.ReactNode;
 }
 
 // ============================================================================
@@ -189,6 +190,7 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
   isLoading,
   error,
   onSubmit,
+  aiSlot,
 }) => {
   const randomize = (
     field: keyof NpcFormValues,
@@ -203,10 +205,10 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
   return (
     <div className="card bg-base-100 shadow-xl h-fit min-w-[250px]">
       <div className="card-body p-4 sm:p-6">
-        <h1 className="card-title text-2xl font-bold text-center mb-3 flex items-center justify-center gap-2">
+        <h2 className="card-title text-2xl font-bold text-center mb-3 flex items-center justify-center gap-2">
           <UserIcon className="w-6 h-6 text-primary" />
           NPC Generator
-        </h1>
+        </h2>
 
         <div className="alert alert-info shadow-sm text-sm py-2">
           <svg
@@ -329,13 +331,15 @@ const NpcGeneratorForm: React.FC<NpcGeneratorFormProps> = ({
             <div className="divider my-2" />
 
             {/* AI Mode Toggle */}
-            <AiModeToggle
-              aiMode={aiMode}
-              onAiModeChange={onAiModeChange}
-              onFastModeChange={onFastModeChange}
-              onRequestMoreUses={onRequestMoreUses}
-              disabled={isLoading}
-            />
+            {aiSlot ?? (
+              <AiModeToggle
+                aiMode={aiMode}
+                onAiModeChange={onAiModeChange}
+                onFastModeChange={onFastModeChange}
+                onRequestMoreUses={onRequestMoreUses}
+                disabled={isLoading}
+              />
+            )}
           </div>
 
           <div className="mt-4">

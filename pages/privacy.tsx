@@ -1,24 +1,25 @@
-import { NextPage } from 'next';
-import { useEffect } from 'react';
-import { useState } from 'react';
-import { logger } from '../lib/logger';
+import { GetStaticProps, NextPage } from 'next';
+import path from 'path';
+import { promises as fs } from 'fs';
 
-const Custom404: NextPage = () => {
-  const [html, setHtml] = useState('');
+interface Props {
+  html: string;
+}
 
-  useEffect(() => {
-    fetch('privacy-policy.html')
-      .then((res) => res.text())
-      .then(setHtml)
-      .catch(logger.error);
-  }, []);
+const PrivacyPage: NextPage<Props> = ({ html }) => (
+  <div
+    className="privacy-policy rounded-xl bg-white p-4 text-black md:p-8"
+    dangerouslySetInnerHTML={{ __html: html }}
+  />
+);
 
-  return (
-    <div
-      className="privacy-policy"
-      dangerouslySetInnerHTML={{ __html: html }}
-    />
+export const getStaticProps: GetStaticProps<Props> = async () => {
+  const html = await fs.readFile(
+    path.join(process.cwd(), 'public', 'privacy-policy.html'),
+    'utf8',
   );
+
+  return { props: { html } };
 };
 
-export default Custom404;
+export default PrivacyPage;

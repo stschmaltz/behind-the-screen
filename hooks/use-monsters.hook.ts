@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { EncounterCharacter } from '../types/encounters';
 import { generateMongoId } from '../lib/mongo';
 import { logger } from '../lib/logger';
@@ -95,40 +95,78 @@ export const createEmptyEnemyState = (
   };
 };
 
+interface MonsterCatalog {
+  monsters: MonsterData[];
+  options: MonsterOption[];
+}
+
+let monsterCatalogPromise: Promise<MonsterCatalog> | null = null;
+
+export const loadMonsterCatalog = (
+  forceRefresh = false,
+): Promise<MonsterCatalog> => {
+  if (!monsterCatalogPromise || forceRefresh) {
+    const pending = fetch('/api/monsters')
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch monsters');
+        }
+
+        return response.json() as Promise<MonsterData[]>;
+      })
+      .then((data) => ({
+        monsters: data,
+        options: data.map((monster) => ({
+          _id: monster._id,
+          name: monster.name,
+          original: monster,
+        })),
+      }));
+    pending.catch(() => {
+      if (monsterCatalogPromise === pending) monsterCatalogPromise = null;
+    });
+    monsterCatalogPromise = pending;
+  }
+
+  return monsterCatalogPromise;
+};
+
 export const useMonsters = () => {
   const [monsters, setMonsters] = useState<MonsterData[]>([]);
   const [options, setOptions] = useState<MonsterOption[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const isMounted = useRef(true);
 
-  const fetchMonsters = useCallback(async () => {
+  useEffect(() => {
+    isMounted.current = true;
+
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
+  const fetchMonsters = useCallback(async (forceRefresh = false) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await fetch('/api/monsters');
-      if (!response.ok) {
-        throw new Error('Failed to fetch monsters');
-      }
-      const data: MonsterData[] = await response.json();
-
-      const monsterOptions: MonsterOption[] = data.map((monster) => ({
-        _id: monster._id,
-        name: monster.name,
-        original: monster,
-      }));
-
-      setMonsters(data);
-      setOptions(monsterOptions);
+      const catalog = await loadMonsterCatalog(forceRefresh);
+      if (!isMounted.current) return;
+      setMonsters(catalog.monsters);
+      setOptions(catalog.options);
     } catch (err: unknown) {
+      if (!isMounted.current) return;
       const errorMessage =
         err instanceof Error ? err.message : 'An unknown error occurred';
       logger.error('Error fetching monsters:', err);
       setError(errorMessage);
     } finally {
-      setIsLoading(false);
+      if (isMounted.current) setIsLoading(false);
     }
   }, []);
+
+  const refetch = useCallback(() => fetchMonsters(true), [fetchMonsters]);
 
   useEffect(() => {
     fetchMonsters();
@@ -139,6 +177,6 @@ export const useMonsters = () => {
     options,
     isLoading,
     error,
-    refetch: fetchMonsters,
+    refetch,
   };
 };

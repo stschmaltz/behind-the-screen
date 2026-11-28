@@ -20,6 +20,11 @@ import {
 } from '../hooks/use-npc-history.hook';
 import { asyncFetch } from '../data/graphql/graphql-fetcher';
 import { useGenerationUsage } from '../hooks/use-generation-usage';
+import { useCurrentUserContext } from '../context/UserContext';
+import { SignInForAi } from '../components/generators/SignInForAi';
+import { ToolSeoContent } from '../components/seo/ToolSeoContent';
+import { JsonLd } from '../components/seo/JsonLd';
+import { buildWebAppJsonLd, FaqItem } from '../lib/seo';
 import { generateFreeNpc } from '../lib/generate-free-npc';
 
 // ============================================================================
@@ -65,12 +70,66 @@ const DEFAULT_FORM_VALUES: NpcFormValues = {
   includeBackground: false,
 };
 
+const STEPS = [
+  {
+    title: 'Pick what matters',
+    body: 'Choose a race, gender, occupation or setting, or leave everything blank for a fully random character.',
+  },
+  {
+    title: 'Generate',
+    body: 'Get a complete NPC with a name, age, personality, appearance, quirk and motivation in seconds.',
+  },
+  {
+    title: 'Reuse it later',
+    body: 'Every NPC is saved to your history on this device so you can bring them back mid-session.',
+  },
+];
+
+const FAQS: FaqItem[] = [
+  {
+    question: 'Is the NPC generator free?',
+    answer:
+      'Yes. The random NPC generator is free and works without an account. Signing in (also free) unlocks AI-enhanced NPCs that follow your prompts, with a weekly usage allowance.',
+  },
+  {
+    question: 'What does each generated NPC include?',
+    answer:
+      'Each NPC comes with a name, race, gender, age, occupation, personality, appearance, a quirk and a motivation. You can optionally add a secret and a short background story.',
+  },
+  {
+    question: 'Can I use it for games other than D&D 5e?',
+    answer:
+      'Yes. The NPCs are system-neutral descriptions with no stat blocks, so they work for Pathfinder, older D&D editions and most fantasy tabletop RPGs.',
+  },
+  {
+    question: 'Are my generated NPCs saved?',
+    answer:
+      'Your recent NPCs are stored in your browser history panel on this device, so you can reopen or delete them at any time.',
+  },
+];
+
+const RELATED_TOOLS = [
+  {
+    href: '/loot-generator',
+    label: 'Loot Generator',
+    description: 'Roll level-appropriate treasure and magic items.',
+  },
+  {
+    href: '/encounters',
+    label: 'Encounter Manager',
+    description: 'Track initiative, HP and conditions during combat.',
+  },
+];
+
 // ============================================================================
 // Page Component
 // ============================================================================
 
 const NpcGeneratorPage: NextPage = () => {
-  const { isLoading } = useUser();
+  const { user, isLoading: isLoadingAuth } = useUser();
+  const { currentUser } = useCurrentUserContext();
+  const isSignedIn = Boolean(currentUser);
+  const isCheckingSession = isLoadingAuth || (Boolean(user) && !isSignedIn);
 
   // Form state
   const [formValues, setFormValues] =
@@ -93,18 +152,19 @@ const NpcGeneratorPage: NextPage = () => {
     requestMoreUses,
     refetch: refetchUsage,
     isLoading: isLoadingUsage,
-  } = useGenerationUsage();
+  } = useGenerationUsage({ enabled: isSignedIn });
+  const aiEnabled = useAiEnhanced && isSignedIn && hasAvailableUses;
 
   // Disable AI mode if no uses available
   useEffect(() => {
-    if (!hasAvailableUses) {
+    if (isSignedIn && !isLoadingUsage && !hasAvailableUses) {
       setUseAiEnhanced(false);
     }
-  }, [hasAvailableUses]);
+  }, [hasAvailableUses, isSignedIn, isLoadingUsage]);
 
   // Derived state
   const aiMode: AiModeConfig = {
-    enabled: useAiEnhanced,
+    enabled: aiEnabled,
     fastMode: useFastMode,
     remainingUses,
     hasAvailableUses,
@@ -146,7 +206,7 @@ const NpcGeneratorPage: NextPage = () => {
     } = formValues;
 
     const isUsingAiFeatures =
-      useAiEnhanced &&
+      aiEnabled &&
       (gender.trim().length > 0 ||
         race.trim().length > 0 ||
         occupation.trim().length > 0 ||
@@ -157,7 +217,7 @@ const NpcGeneratorPage: NextPage = () => {
     try {
       let generatedNpc: NpcType;
 
-      if (useAiEnhanced) {
+      if (aiEnabled) {
         const data = await asyncFetch<{ generateNpc: NpcType }>(
           GENERATE_NPC_MUTATION,
           {
@@ -188,7 +248,7 @@ const NpcGeneratorPage: NextPage = () => {
 
       // Analytics
       posthog.capture('npc_generated', {
-        use_ai_enhanced: useAiEnhanced,
+        use_ai_enhanced: aiEnabled,
         use_fast_mode: useFastMode,
         has_gender: !!gender,
         has_race: !!race,
@@ -200,12 +260,12 @@ const NpcGeneratorPage: NextPage = () => {
       });
 
       addEntry({
-        gender: useAiEnhanced ? gender : '',
-        race: useAiEnhanced ? race : '',
-        occupation: useAiEnhanced ? occupation : '',
-        context: useAiEnhanced ? context : '',
-        includeSecret: useAiEnhanced ? includeSecret : false,
-        includeBackground: useAiEnhanced ? includeBackground : false,
+        gender: aiEnabled ? gender : '',
+        race: aiEnabled ? race : '',
+        occupation: aiEnabled ? occupation : '',
+        context: aiEnabled ? context : '',
+        includeSecret: aiEnabled ? includeSecret : false,
+        includeBackground: aiEnabled ? includeBackground : false,
         npc: generatedNpc,
       });
       setIsFormCollapsed(true);
@@ -218,41 +278,38 @@ const NpcGeneratorPage: NextPage = () => {
     setIsGenerating(false);
   };
 
-  // Loading state
-  if (isLoading || isLoadingUsage) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-base-100">
-        <div className="flex flex-col items-center gap-4 fade-in">
-          <span className="loading loading-spinner loading-lg text-primary" />
-          <p className="text-base-content opacity-60 animate-pulse">
-            Loading NPC generator...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   // Collapsed form summary
   const formSummary = `${formValues.race || 'Random'} ${formValues.occupation || 'Random'}${formValues.context ? ` • ${formValues.context}` : ''}${formValues.includeSecret ? ' • Secret' : ''}${formValues.includeBackground ? ' • Background' : ''}`;
 
   return (
-    <div className="min-h-screen h-full bg-base-200/30 px-4 py-8 md:px-8 lg:px-12">
+    <div className="pb-8">
+      <JsonLd
+        id="npc-generator-app"
+        data={buildWebAppJsonLd({
+          name: 'D&D 5e NPC Generator',
+          description:
+            'Free random NPC generator for D&D 5e and other tabletop RPGs.',
+          path: '/npc-generator',
+        })}
+      />
       <div className="max-w-6xl mx-auto space-y-6">
-        {/* Beta Banner */}
-        <div className="alert alert-info">
-          <div className="flex-1">
-            <p>
-              🎭 <strong>Beta Feature:</strong> This NPC Generator is in beta.
-              Have feedback or ideas?
-              <Link
-                href="/feedback"
-                className="text-white underline hover:text-base-100 font-semibold ml-1"
-              >
-                Let me know!
-              </Link>
-            </p>
-          </div>
-        </div>
+        <header className="text-center space-y-2">
+          <h1 className="text-3xl md:text-4xl font-bold text-balance">
+            Free D&amp;D 5e NPC Generator
+          </h1>
+          <p className="max-w-2xl mx-auto text-base-content/70 text-balance">
+            Create a memorable non-player character in one click: name, race,
+            occupation, personality, appearance, quirks and motivations, ready
+            to drop into your session.
+          </p>
+          <p className="text-xs text-base-content/60">
+            <span className="badge badge-accent badge-sm mr-2">Beta</span>
+            Have feedback or ideas?{' '}
+            <Link href="/feedback" className="link link-primary">
+              Let me know!
+            </Link>
+          </p>
+        </header>
 
         {/* Form Section */}
         <div className="relative">
@@ -287,6 +344,14 @@ const NpcGeneratorPage: NextPage = () => {
               isLoading={isGenerating}
               error={error}
               onSubmit={handleSubmit}
+              aiSlot={
+                isSignedIn ? undefined : (
+                  <SignInForAi
+                    returnTo="/npc-generator"
+                    isCheckingSession={isCheckingSession}
+                  />
+                )
+              }
             />
           </div>
 
@@ -315,6 +380,14 @@ const NpcGeneratorPage: NextPage = () => {
             onClear={clearHistory}
           />
         </div>
+
+        <ToolSeoContent
+          id="npc-generator"
+          howItWorksTitle="How the NPC generator works"
+          steps={STEPS}
+          faqs={FAQS}
+          relatedTools={RELATED_TOOLS}
+        />
       </div>
     </div>
   );

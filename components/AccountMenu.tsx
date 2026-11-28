@@ -20,7 +20,7 @@ export default function AccountMenu({
 }: AccountMenuProps) {
   if (!currentUser) {
     return (
-      <Link href="/api/auth/login" className="btn btn-ghost">
+      <Link href="/api/auth/login" className="btn btn-ghost btn-sm md:btn-md">
         Log In / Sign Up
       </Link>
     );
@@ -32,6 +32,7 @@ export default function AccountMenu({
         className="btn btn-ghost btn-circle avatar"
         onClick={toggleAccountMenu}
         aria-expanded={isAccountMenuOpen}
+        aria-label="Account menu"
       >
         <div className="w-10 rounded-full relative">
           <Image
@@ -45,7 +46,7 @@ export default function AccountMenu({
         </div>
       </button>
       {isAccountMenuOpen && (
-        <ul className="menu menu-sm dropdown-content mt-0 z-[1] p-2 shadow bg-base-100 rounded-box w-52 text-base-content">
+        <ul className="menu menu-sm dropdown-content mt-0 z-[1] p-2 shadow bg-base-100 pop-in origin-top-right rounded-box w-52 text-base-content">
           {currentUser.name && (
             <li className="menu-title">
               <span>Signed in as {currentUser.name}</span>
@@ -61,7 +62,7 @@ export default function AccountMenu({
           </li>
           <li>
             <Link
-              href="/api/auth/logout?returnTo=http%3A%2F%2Flocalhost%3A3000"
+              href="/api/auth/logout"
               onClick={() => setIsAccountMenuOpen(false)}
             >
               Logout
