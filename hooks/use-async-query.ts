@@ -4,7 +4,7 @@ import { logger } from '../lib/logger';
 import {
   getCacheKey,
   getCachedResult,
-  setCachedResult,
+  loadSharedQuery,
 } from '../lib/query-cache';
 
 interface QueryConfig<T> {
@@ -22,12 +22,29 @@ export function useQuery<T>({
   variables,
   skipCache = false,
 }: QueryConfig<T>) {
-  const [data, setData] = useState<T | null>(null);
+  const cacheKey = getCacheKey(query, variables);
+  const [data, setData] = useState<T | null>(() =>
+    enabled && !skipCache ? getCachedResult<T>(cacheKey) : null,
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   const isManuallyRefreshing = useRef(false);
-  const cacheKey = getCacheKey(query, variables);
+
+  const load = useCallback(
+    (forceRefresh: boolean) =>
+      loadSharedQuery<T>(
+        cacheKey,
+        async () => {
+          logger.info(`API CALL for query: ${query.substring(0, 50)}...`);
+          const response = await asyncFetch<T>(query, variables);
+
+          return transform ? transform(response) : response;
+        },
+        { useCache: !skipCache, forceRefresh },
+      ),
+    [query, variables, transform, skipCache, cacheKey],
+  );
 
   const fetchData = useCallback(
     async (forceRefresh = false) => {
@@ -35,28 +52,11 @@ export function useQuery<T>({
       setLoading(true);
 
       try {
-        if (!forceRefresh && !skipCache) {
-          const cachedData = getCachedResult<T>(cacheKey);
-          if (cachedData) {
-            setData(cachedData);
-            setError(null);
-            setLoading(false);
-            isManuallyRefreshing.current = false;
-            return cachedData;
-          }
-        }
-
-        logger.info(`API CALL for query: ${query.substring(0, 50)}...`);
-        const response = await asyncFetch<T>(query, variables);
-        const transformedData = transform ? transform(response) : response;
-
-        if (!skipCache) {
-          setCachedResult(cacheKey, transformedData);
-        }
-
-        setData(transformedData);
+        const result = await load(forceRefresh);
+        setData(result);
         setError(null);
-        return transformedData;
+
+        return result;
       } catch (err) {
         setError(err instanceof Error ? err : new Error('An error occurred'));
         console.error(err);
@@ -66,7 +66,7 @@ export function useQuery<T>({
         isManuallyRefreshing.current = false;
       }
     },
-    [query, variables, transform, skipCache, cacheKey],
+    [load],
   );
 
   useEffect(() => {
@@ -75,47 +75,25 @@ export function useQuery<T>({
     let isMounted = true;
     setLoading(true);
 
-    if (!skipCache) {
-      const cachedData = getCachedResult<T>(cacheKey);
-      if (cachedData) {
-        setData(cachedData);
-        setError(null);
-        setLoading(false);
-        return;
-      }
-    }
-
-    (async () => {
-      try {
-        logger.info(
-          `API CALL (effect) for query: ${query.substring(0, 50)}...`,
-        );
-        const response = await asyncFetch<T>(query, variables);
+    load(false)
+      .then((result) => {
         if (!isMounted) return;
-
-        const transformedData = transform ? transform(response) : response;
-
-        if (!skipCache) {
-          setCachedResult(cacheKey, transformedData);
-        }
-
-        setData(transformedData);
+        setData(result);
         setError(null);
-      } catch (err) {
+      })
+      .catch((err) => {
         if (!isMounted) return;
         setError(err instanceof Error ? err : new Error('An error occurred'));
         console.error(err);
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    })();
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
 
     return () => {
       isMounted = false;
     };
-  }, [query, enabled, variables, transform, skipCache, cacheKey]);
+  }, [enabled, load]);
 
   const refresh = useCallback(() => fetchData(true), [fetchData]);
 
