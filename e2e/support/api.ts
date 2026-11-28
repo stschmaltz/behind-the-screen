@@ -191,6 +191,23 @@ export class Api {
     return data.encounterById;
   }
 
+  owned = () =>
+    this.gql<{
+      allEncounters: {
+        name: string;
+        campaignId: string;
+        adventureId: string;
+      }[];
+      getAdventures: { _id: string; name: string; campaignId: string }[];
+      getCampaigns: { _id: string; name: string }[];
+    }>(
+      `query {
+        allEncounters { name campaignId adventureId }
+        getAdventures { _id name campaignId }
+        getCampaigns { _id name }
+      }`,
+    );
+
   /** Removes everything this test user owns so each run starts clean. */
   async purge() {
     const data = await this.gql<{

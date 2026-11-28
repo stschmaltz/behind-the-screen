@@ -19,6 +19,12 @@ export const OTHER_USER: TestUser = {
   name: 'E2E Other',
 };
 
+export const NEWCOMER_USER: TestUser = {
+  sub: 'e2e|dm-essentials-newcomer',
+  email: 'e2e-newcomer@example.test',
+  name: 'E2E Newcomer',
+};
+
 export const SESSION_COOKIE_NAME = 'appSession';
 
 /**
