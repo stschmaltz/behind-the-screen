@@ -123,9 +123,10 @@ const AdventureSelector: React.FC<AdventureSelectorProps> = ({
         return;
       }
 
+      autoSelectedCampaignId.current = campaignId;
       onAdventureChange(value === 'all' ? undefined : value);
     },
-    [onAdventureChange],
+    [onAdventureChange, campaignId],
   );
 
   const handleCreateAdventure = useCallback(async () => {
@@ -149,6 +150,7 @@ const AdventureSelector: React.FC<AdventureSelectorProps> = ({
       const newAdventureId = result?.saveAdventure?._id;
 
       if (newAdventureId) {
+        autoSelectedCampaignId.current = campaignId;
         onAdventureChange(newAdventureId);
 
         setNewAdventureName('');

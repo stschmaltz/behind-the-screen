@@ -66,15 +66,18 @@ First time only: `npx playwright install chromium`.
   running. To point it at an external server, set `E2E_BASE_URL` together with
   `E2E_ALLOW_ANY_DB=true`: the suite cannot check that server's database.
 - **Sign-in.** Tests never visit the Auth0 login page. `e2e/support/session.ts`
-  signs a session cookie for two dedicated test users (`e2e|dm-essentials-primary`
-  and `e2e|dm-essentials-other`) using `AUTH0_SECRET` from `.env.local`.
-- **Data.** `e2e/global-setup.ts` deletes everything those two test users own,
-  then creates a campaign, an adventure and two players. Each test seeds its own
-  encounter through the GraphQL API (`e2e/support/api.ts`).
+  signs a session cookie for dedicated test users (`e2e|dm-essentials-primary`,
+  `e2e|dm-essentials-other` and `e2e|dm-essentials-newcomer`) using
+  `AUTH0_SECRET` from `.env.local`.
+- **Data.** `e2e/global-setup.ts` deletes everything the primary and other test
+  users own, then creates a campaign, an adventure and two players. Each test
+  seeds its own encounter through the GraphQL API (`e2e/support/api.ts`). The
+  newcomer user has no campaigns: `e2e/first-encounter.spec.ts` purges it before
+  and after its run to test a brand-new DM's first encounter.
 - **Safety.** The suite writes to whatever database `.env.local` points at and
   refuses to run unless `DB_NAME` contains `dev`, `test`, `e2e` or `local`
-  (override with `E2E_ALLOW_ANY_DB=true`). It only ever touches the two test
-  users' data.
+  (override with `E2E_ALLOW_ANY_DB=true`). It only ever touches the test users'
+  data.
 
 ### Writing a test
 

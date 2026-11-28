@@ -81,11 +81,11 @@ function getAllAdventures(options?: GetAllAdventuresOptions) {
     }
   }, [campaignId, variables]);
 
-  const { data, loading, refresh } =
+  const { data, loading, error, refresh } =
     useQuery<TransformedAdventure[]>(queryConfig);
 
   const adventures = data ?? [];
-  return { adventures, loading, refresh };
+  return { adventures, loading, error, refresh };
 }
 
 export { getAllAdventures };

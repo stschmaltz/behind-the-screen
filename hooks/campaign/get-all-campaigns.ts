@@ -32,7 +32,7 @@ const transformCampaigns = (
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
 function getAllCampaigns(options: { enabled?: boolean } = {}) {
-  const { data, loading, refresh } = useQuery<TransformedCampaign[]>({
+  const { data, loading, error, refresh } = useQuery<TransformedCampaign[]>({
     query: allCampaignsQuery,
     transform: transformCampaigns,
     enabled: options.enabled ?? true,
@@ -40,7 +40,7 @@ function getAllCampaigns(options: { enabled?: boolean } = {}) {
 
   const campaigns = data ?? [];
 
-  return { campaigns, loading, refresh };
+  return { campaigns, loading, error, refresh };
 }
 
 export { getAllCampaigns };

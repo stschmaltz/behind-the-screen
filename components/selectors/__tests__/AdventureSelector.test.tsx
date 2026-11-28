@@ -76,6 +76,25 @@ describe('AdventureSelector', () => {
     });
   });
 
+  it('does not select again after the user clears the adventure', async () => {
+    const user = userEvent.setup();
+    const onAdventureChange = jest.fn();
+    const props = { onAdventureChange, required: true };
+    const { rerender } = render(
+      <AdventureSelector
+        {...props}
+        selectedCampaignId="a"
+        selectedAdventureId="a1"
+      />,
+    );
+
+    await user.selectOptions(screen.getByRole('combobox'), 'all');
+    rerender(<AdventureSelector {...props} selectedCampaignId="a" />);
+
+    expect(onAdventureChange).toHaveBeenCalledTimes(1);
+    expect(onAdventureChange).toHaveBeenLastCalledWith(undefined);
+  });
+
   it('sends one request and reports it while an adventure is being created', async () => {
     const user = userEvent.setup();
     let finish: (value: unknown) => void = () => {};
