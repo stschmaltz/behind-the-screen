@@ -10,12 +10,18 @@ import { NewEncounterTemplate } from '../../../types/encounters';
 import { FormInput } from '../../../components/ui/FormInput';
 import { Button } from '../../../components/ui/Button';
 import { showDaisyToast } from '../../../lib/daisy-toast';
-import { useManageEncounter } from '../../../hooks/encounter/use-manage-encounter';
+import {
+  useManageEncounter,
+  validateNewEncounter,
+} from '../../../hooks/encounter/use-manage-encounter';
+import { useManageAdventure } from '../../../hooks/adventure/use-manage-adventure';
 import { useUserPreferences } from '../../../hooks/user-preferences/use-user-preferences';
 import { useActiveCampaign } from '../../../context/ActiveCampaignContext';
 import { getAllCampaigns } from '../../../hooks/campaign/get-all-campaigns';
 import CampaignSelector from '../../../components/selectors/CampaignSelector';
-import AdventureSelector from '../../../components/selectors/AdventureSelector';
+import AdventureSelector, {
+  AdventureChangeMeta,
+} from '../../../components/selectors/AdventureSelector';
 import { useUnsavedChangesWarning } from '../../../hooks/use-unsaved-changes-warning';
 
 type EncounterInputData = Omit<NewEncounterTemplate, 'userId' | '_id'> & {
@@ -35,18 +41,22 @@ export const INITIAL_NEW_ENCOUNTER: NewEncounterTemplate = {
 const NewEncounterPage: NextPage = () => {
   const router = useRouter();
   const { handleSave, isSaving } = useManageEncounter();
+  const { handleSave: saveAdventure, isSaving: isSavingAdventure } =
+    useManageAdventure();
   const {
     newEncounter,
     setNewEncounter,
     handleFieldChange: originalHandleFieldChange,
   } = useNewEncounter();
   const { setActiveCampaign } = useUserPreferences();
-  const { activeCampaignId: contextCampaignId } = useActiveCampaign();
+  const { activeCampaignId: contextCampaignId, setActiveCampaignId } =
+    useActiveCampaign();
   const activeCampaignId = contextCampaignId || undefined;
   const { campaigns, loading: campaignsLoading } = getAllCampaigns();
 
   const [campaignId, setCampaignId] = useState<string | undefined>(undefined);
   const [adventureId, setAdventureId] = useState<string | undefined>(undefined);
+  const [pendingAdventureName, setPendingAdventureName] = useState('');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   useUnsavedChangesWarning(hasUnsavedChanges);
@@ -79,14 +89,43 @@ const NewEncounterPage: NextPage = () => {
       return;
     }
 
-    const encounterInput: EncounterInputData = {
+    const encounterDetails = {
       name: newEncounter.name,
       description: newEncounter.description,
       notes: newEncounter.notes || [],
       enemies: newEncounter.enemies,
       status: newEncounter.status,
       campaignId,
-      adventureId,
+    };
+
+    const detailErrors = validateNewEncounter(encounterDetails);
+    if (detailErrors.length > 0) {
+      detailErrors.forEach((err) => showDaisyToast('error', err));
+
+      return;
+    }
+
+    let adventureIdToSave = adventureId;
+    const adventureNameToCreate = pendingAdventureName.trim();
+    if (adventureNameToCreate) {
+      const createdAdventureId = await saveAdventure({
+        name: adventureNameToCreate,
+        campaignId,
+        status: 'active',
+      });
+      if (!createdAdventureId) {
+        showDaisyToast('error', 'Failed to create the adventure');
+
+        return;
+      }
+      adventureIdToSave = createdAdventureId;
+      setAdventureId(createdAdventureId);
+      setPendingAdventureName('');
+    }
+
+    const encounterInput: EncounterInputData = {
+      ...encounterDetails,
+      adventureId: adventureIdToSave,
     };
 
     const { success, errors } = await handleSave(encounterInput, {
@@ -95,6 +134,7 @@ const NewEncounterPage: NextPage = () => {
     if (success) {
       setHasUnsavedChanges(false);
       await setActiveCampaign(campaignId);
+      setActiveCampaignId(campaignId);
       showDaisyToast('success', 'Encounter saved');
 
       // Track encounter created event
@@ -103,13 +143,13 @@ const NewEncounterPage: NextPage = () => {
         enemy_count: newEncounter.enemies.length,
         has_description: !!newEncounter.description,
         campaign_id: campaignId,
-        adventure_id: adventureId,
+        adventure_id: adventureIdToSave,
       });
 
       router.push({
         pathname: '/encounters',
         query: {
-          selectedCampaign: campaignId,
+          campaignId,
           newEncounterCreated: 'true',
           newEncounterName: encodeURIComponent(newEncounter.name),
         },
@@ -123,9 +163,12 @@ const NewEncounterPage: NextPage = () => {
     newEncounter,
     campaignId,
     adventureId,
+    pendingAdventureName,
+    saveAdventure,
     handleSave,
     router,
     setActiveCampaign,
+    setActiveCampaignId,
   ]);
 
   const handleCampaignChange = useCallback((id: string | undefined) => {
@@ -134,10 +177,13 @@ const NewEncounterPage: NextPage = () => {
     setHasUnsavedChanges(true);
   }, []);
 
-  const handleAdventureChange = useCallback((id: string | undefined) => {
-    setAdventureId(id);
-    setHasUnsavedChanges(true);
-  }, []);
+  const handleAdventureChange = useCallback(
+    (id: string | undefined, meta?: AdventureChangeMeta) => {
+      setAdventureId(id);
+      if (!meta?.isAutomatic) setHasUnsavedChanges(true);
+    },
+    [],
+  );
 
   return (
     <>
@@ -189,6 +235,8 @@ const NewEncounterPage: NextPage = () => {
                   selectedAdventureId={adventureId}
                   selectedCampaignId={campaignId ?? activeCampaignId ?? ''}
                   onAdventureChange={handleAdventureChange}
+                  onPendingNameChange={setPendingAdventureName}
+                  required
                 />
               </div>
 
@@ -211,7 +259,7 @@ const NewEncounterPage: NextPage = () => {
             <Button
               className="w-full"
               onClick={onSave}
-              disabled={isSaving || !campaignId}
+              disabled={isSaving || isSavingAdventure || !campaignId}
               label="Save"
             />
           </div>
