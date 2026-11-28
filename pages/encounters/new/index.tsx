@@ -252,8 +252,8 @@ const NewEncounterPage: NextPage = () => {
           {isFirstCampaign ? (
             <p className="mb-4 text-sm opacity-70">
               This encounter will be saved to &ldquo;
-              {DEFAULT_CAMPAIGN_NAME}&rdquo;. You can set up more campaigns
-              later.
+              {DEFAULT_CAMPAIGN_NAME}&rdquo;. You can rename it later from
+              Manage Campaigns.
             </p>
           ) : (
             <div className="mb-4 grid grid-cols-1 gap-1">
